@@ -1,0 +1,16 @@
+{
+	"extends": ["plugin:svelte/recommended"],
+	"parserOptions": {
+		"extraFileExtensions": [".svelte"]
+	},
+	"ignorePatterns": ["tailwind.config.cjs", "svelte.config.js", "postcss.config.cjs"],
+	"overrides": [
+		{
+			"files": ["*.svelte"],
+			"parser": "svelte-eslint-parser",
+			"parserOptions": {
+				"parser": "@typescript-eslint/parser"
+			}
+		}
+	]
+}
