@@ -9,3 +9,67 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id        String      @id @default(uuid())
+  discordId String
+  scName    String
+  rsvps     EventUser[]
+  updatedAt DateTime    @updatedAt
+  createdAt DateTime    @default(now())
+}
+
+model EventRsvpRole {
+  id        String      @id @default(uuid())
+  name      String
+  limit     Int
+  members   EventUser[]
+  event     Event       @relation(fields: [eventId], references: [id])
+  eventId   String
+  updatedAt DateTime    @updatedAt
+  createdAt DateTime    @default(now())
+}
+
+model EventUser {
+  id        Int           @id @default(autoincrement())
+  pending   Boolean
+  user      User          @relation(fields: [userId], references: [id])
+  userId    String
+  rsvp      EventRsvpRole @relation(fields: [rsvpId], references: [id])
+  rsvpId    String
+  event     Event         @relation(fields: [eventId], references: [id])
+  eventId   String
+  updatedAt DateTime      @updatedAt
+  createdAt DateTime      @default(now())
+}
+
+model EventSettings {
+  id                 Int      @id @default(autoincrement())
+  hideLocation       Boolean
+  inviteOnly         Boolean
+  openToJoinRequests Boolean
+  allowTeamSwitching Boolean
+  allowCrewSwitching Boolean
+  event              Event    @relation(fields: [eventId], references: [id])
+  eventId            String   @unique
+  updatedAt          DateTime @updatedAt
+  createdAt          DateTime @default(now())
+}
+
+model Event {
+  id          String          @id @default(uuid())
+  name        String
+  summary     String
+  description String
+  eventType   String
+  location    String[]
+  roles       EventRsvpRole[]
+  members     EventUser[]
+  settings    EventSettings?
+  startAt     Int
+  endedAt     Int
+  duration    Int
+  posted      Boolean
+  updatedAt   DateTime        @updatedAt
+  createdAt   DateTime        @default(now())
+}
