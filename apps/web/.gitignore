@@ -5,3 +5,5 @@
 .output
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+regolith.rocks-*.*
