@@ -1,0 +1,1972 @@
+{
+    "ships": [
+        {
+            "name": "Aurora ES",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/ucp60er1lm6p0/store_small.jpg",
+            "roles": [
+                "Starter",
+                "Pathfinder"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Aurora LX",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/28jsrvn7jb54w/store_small.jpg",
+            "roles": [
+                "Pathfinder"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Aurora MR",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/4s60teylde8fl/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Aurora CL",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/w9pcyoav93o22/store_small.jpg",
+            "roles": [
+                "Light Freight"
+            ],
+            "cargo": 6
+        },
+        {
+            "name": "Aurora LN",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/zziqh7xqritjm/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "300i",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/v8hdypfs0zrod/store_small.jpg",
+            "roles": [
+                "Luxury Touring"
+            ],
+            "cargo": 8
+        },
+        {
+            "name": "315p",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/la559pu4e3lvz/store_small.jpg",
+            "roles": [
+                "Pathfinder"
+            ],
+            "cargo": 12
+        },
+        {
+            "name": "325a",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/7exrdatxh6z7n/store_small.jpg",
+            "roles": [
+                "Interdiction",
+                "Light Fighter"
+            ],
+            "cargo": 4
+        },
+        {
+            "name": "350r",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/5r333q5k9oyce/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 4
+        },
+        {
+            "name": "F7C Hornet",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/tcpakf2m1h1hx/store_small.jpg",
+            "roles": [
+                "Medium Fighter"
+            ],
+            "cargo": 2
+        },
+        {
+            "name": "F7C Hornet Wildfire",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/0uqzw1kqnfvxy/store_small.jpg",
+            "roles": [
+                "Medium Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "F7C-S Hornet Ghost",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/nbwncbo1436rs/store_small.jpg",
+            "roles": [
+                "Stealth Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "F7C-R Hornet Tracker",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/biy2mmvcz6eb2/store_small.jpg",
+            "roles": [
+                "Pathfinder"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "F7C-M Super Hornet",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/pjudaw3yj3odo/store_small.jpg",
+            "roles": [
+                "Medium Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "F7A Hornet",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/0d2fio79ep6af/store_small.jpeg",
+            "roles": [
+                "Medium Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "F7C-M Super Hornet Heartseeker",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/6ewzke6o3llh6/store_small.jpg",
+            "roles": [
+                "Medium Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Constellation Aquila",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/c2k21tjgn3z6a/store_small.jpg",
+            "roles": [
+                "Expedition"
+            ],
+            "cargo": 96
+        },
+        {
+            "name": "Constellation Andromeda",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/b5wlk3qo9v3iq/store_small.jpg",
+            "roles": [
+                "Medium Freight",
+                "Gun Ship"
+            ],
+            "cargo": 96
+        },
+        {
+            "name": "Constellation Taurus",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/uha4almaj3gyf/store_small.jpg",
+            "roles": [
+                "Medium Freight"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Constellation Phoenix",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/jkyny550a90um/store_small.jpg",
+            "roles": [
+                "Luxury Touring"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Constellation Phoenix Emerald",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/c6k45uuhq41ow/store_small.jpg",
+            "roles": [
+                "Touring"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Freelancer",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/z3mllk6zi0x7r/store_small.jpg",
+            "roles": [
+                "Medium Freight"
+            ],
+            "cargo": 66
+        },
+        {
+            "name": "Freelancer DUR",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/d5tl8fqymjuf7/store_small.png",
+            "roles": [
+                "Expedition"
+            ],
+            "cargo": 28
+        },
+        {
+            "name": "Freelancer MAX",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/l46ptmxtybjws/store_small.jpg",
+            "roles": [
+                "Medium Freight"
+            ],
+            "cargo": 122
+        },
+        {
+            "name": "Freelancer MIS",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/ybkygputhkx0g/store_small.jpg",
+            "roles": [
+                "Gun Ship"
+            ],
+            "cargo": 28
+        },
+        {
+            "name": "Cutlass Black",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/ni2w8d06b405a/store_small.jpg",
+            "roles": [
+                "Medium Freight"
+            ],
+            "cargo": 46
+        },
+        {
+            "name": "Cutlass Red",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/wqa6lfco4amc0/store_small.jpg",
+            "roles": [
+                "Medical"
+            ],
+            "cargo": 12
+        },
+        {
+            "name": "Cutlass Blue",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/2hllaegtpmzyy/store_small.jpg",
+            "roles": [
+                "Interdiction"
+            ],
+            "cargo": 12
+        },
+        {
+            "name": "Cutlass Black Best In Show Edition",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/vt0f0g30nua1v/store_small.jpg",
+            "roles": [
+                "Medium Fighter",
+                "Medium Freight"
+            ],
+            "cargo": 46
+        },
+        {
+            "name": "Cutlass Steel",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/mhuiu912ca4d1/store_small.jpg",
+            "roles": [
+                "Dropship"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Avenger Stalker",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/9tfhza1twrczn/store_small.jpg",
+            "roles": [
+                "Interdiction"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Avenger Titan Renegade",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/oc8p2v3n7c0e0/store_small.jpg",
+            "roles": [
+                "Light Freight"
+            ],
+            "cargo": 8
+        },
+        {
+            "name": "Avenger Warlock",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/l8znbwwoh2o8u/store_small.jpg",
+            "roles": [
+                "Interdiction"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Avenger Titan",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/fmhdkmvhi8ify/store_small.jpg",
+            "roles": [
+                "Light Freight"
+            ],
+            "cargo": 8
+        },
+        {
+            "name": "Gladiator",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/sonytrzapzugz/store_small.jpeg",
+            "roles": [
+                "Bomber"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "M50",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/l7p21pakfkth2/store_small.png",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Starfarer",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/5ukbyxyx8t6ek/store_small.jpg",
+            "roles": [
+                "Heavy Refuelling"
+            ],
+            "cargo": 295
+        },
+        {
+            "name": "Starfarer Gemini",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/c6423etmvm52z/store_small.jpg",
+            "roles": [
+                "Heavy Refuelling"
+            ],
+            "cargo": 295
+        },
+        {
+            "name": "Caterpillar",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/0ffxba4wywl0j/store_small.jpg",
+            "roles": [
+                "Heavy Freight"
+            ],
+            "cargo": 576
+        },
+        {
+            "name": "Caterpillar Pirate Edition",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/pztdfu1y7629m/store_small.jpg",
+            "roles": [
+                "Heavy Freight"
+            ],
+            "cargo": 576
+        },
+        {
+            "name": "Caterpillar Best In Show Edition",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/1r1vf9peutpr0/store_small.jpg",
+            "roles": [
+                "Heavy Freight"
+            ],
+            "cargo": 576
+        },
+        {
+            "name": "Retaliator Bomber",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/6zlwlepw0qj8d/store_small.jpg",
+            "roles": [
+                "Heavy Bomber"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Retaliator",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/yz2nr72vh4i63/store_small.jpg",
+            "roles": [
+                "Heavy Gunship"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Scythe",
+            "manufacturer": "VNCL",
+            "img": "https://media.robertsspaceindustries.com/kysobeqkurqyd/store_small.jpg",
+            "roles": [
+                "Medium Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Idris-M",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/59wd4xwt2qms4/store_small.jpeg",
+            "roles": [
+                "Frigate"
+            ],
+            "cargo": 831
+        },
+        {
+            "name": "Idris-P",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/hu649bwvjgrcb/store_small.jpg",
+            "roles": [
+                "Frigate"
+            ],
+            "cargo": 995
+        },
+        {
+            "name": "P-52 Merlin",
+            "manufacturer": "KRIG",
+            "img": "https://media.robertsspaceindustries.com/dpsn2y1j9wy6w/store_small.jpg",
+            "roles": [
+                "Snub Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Mustang Alpha",
+            "manufacturer": "CNOU",
+            "img": "https://media.robertsspaceindustries.com/jgjjgrbiw33wf/store_small.jpg",
+            "roles": [
+                "Cargo"
+            ],
+            "cargo": 6
+        },
+        {
+            "name": "Mustang Beta",
+            "manufacturer": "CNOU",
+            "img": "https://media.robertsspaceindustries.com/wwcvddegaral9/store_small.jpg",
+            "roles": [
+                "Pathfinder"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Mustang Gamma",
+            "manufacturer": "CNOU",
+            "img": "https://media.robertsspaceindustries.com/pxlk0om05jpxk/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Mustang Delta",
+            "manufacturer": "CNOU",
+            "img": "https://media.robertsspaceindustries.com/7gb75f5yivup7/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Mustang Omega",
+            "manufacturer": "CNOU",
+            "img": "https://media.robertsspaceindustries.com/udupgv9cpj76b/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Mustang Alpha Vindicator",
+            "manufacturer": "CNOU",
+            "img": "https://media.robertsspaceindustries.com/iohmvf24h4rsz/store_small.png",
+            "roles": [
+                "Starter",
+                "Light Freight"
+            ],
+            "cargo": 6
+        },
+        {
+            "name": "Redeemer",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/fi748d6hqv9jj/store_small.jpeg",
+            "roles": [
+                "Gunship"
+            ],
+            "cargo": 2
+        },
+        {
+            "name": "Gladius",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/dm0ceypxhdauf/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Gladius Valiant",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/hubxawbeqj9u7/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Pirate Gladius",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/9cwz2utclixvt/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Khartu-Al",
+            "manufacturer": "XNAA",
+            "img": "https://media.robertsspaceindustries.com/zd5doe8h0xemz/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Merchantman",
+            "manufacturer": "BANU",
+            "img": "https://media.robertsspaceindustries.com/gmtme5pca7eis/store_small.jpg",
+            "roles": [
+                "Heavy Freight"
+            ],
+            "cargo": 2880
+        },
+        {
+            "name": "890 Jump",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/t2bky2nbdg0ms/store_small.jpg",
+            "roles": [
+                "Luxury Touring"
+            ],
+            "cargo": 460
+        },
+        {
+            "name": "Carrack",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/bau5bdotm8te8/store_small.png",
+            "roles": [
+                "Expedition"
+            ],
+            "cargo": 456
+        },
+        {
+            "name": "Carrack w/C8X",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/twlkwwqy2mmk2/store_small.jpg",
+            "roles": [
+                "Expedition"
+            ],
+            "cargo": 456
+        },
+        {
+            "name": "Carrack Expedition w/C8X",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/1k5nfi962y4pp/store_small.jpg",
+            "roles": [
+                "Expedition"
+            ],
+            "cargo": 456
+        },
+        {
+            "name": "Carrack Expedition",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/gpfapokelyewn/store_small.jpg",
+            "roles": [
+                "Expedition"
+            ],
+            "cargo": 456
+        },
+        {
+            "name": "Herald",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/eqjgd53qha550/store_small.jpg",
+            "roles": [
+                "Medium Data"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Hull C",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/3ati06z7ifjzv/store_small.jpg",
+            "roles": [
+                "Heavy Freight"
+            ],
+            "cargo": 4608
+        },
+        {
+            "name": "Hull A",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/d8cvmu5s8kpmd/store_small.jpg",
+            "roles": [
+                "Medium Freight"
+            ],
+            "cargo": 64
+        },
+        {
+            "name": "Hull B",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/5r7g9f96lvwfz/store_small.jpg",
+            "roles": [
+                "Heavy Freight"
+            ],
+            "cargo": 384
+        },
+        {
+            "name": "Hull D",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/1j6650dnbblli/store_small.jpg",
+            "roles": [
+                "Heavy Freight"
+            ],
+            "cargo": 20736
+        },
+        {
+            "name": "Hull E",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/u61kavxfi9mgo/store_small.jpg",
+            "roles": [
+                "Heavy Freight"
+            ],
+            "cargo": 98304
+        },
+        {
+            "name": "Orion",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/v6r4v0l6h0lmi/store_small.jpg",
+            "roles": [
+                "Heavy Mining"
+            ],
+            "cargo": 384
+        },
+        {
+            "name": "Reclaimer",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/iweivr5xyt5j1/store_small.jpg",
+            "roles": [
+                "Heavy Salvage"
+            ],
+            "cargo": 180
+        },
+        {
+            "name": "Reclaimer Best In Show Edition",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/81432ksmdzn30/store_small.jpg",
+            "roles": [
+                "Heavy Salvage"
+            ],
+            "cargo": 180
+        },
+        {
+            "name": "Javelin",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/oc89p5ksizcla/store_small.jpg",
+            "roles": [
+                "Destroyer"
+            ],
+            "cargo": 5400
+        },
+        {
+            "name": "Vanguard Warden",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/sgzm3dw5q0o3y/store_small.jpg",
+            "roles": [
+                "Heavy Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Vanguard Harbinger",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/enygi6572pnkl/store_small.jpg",
+            "roles": [
+                "Bomber"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Vanguard Sentinel",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/u7jflg98ld4d9/store_small.jpg",
+            "roles": [
+                "Interdiction"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Vanguard Hoplite",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/a1e1v06v6fg9o/store_small.jpg",
+            "roles": [
+                "Dropship"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Reliant Kore",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/lkgsdt93racvf/store_small.jpg",
+            "roles": [
+                "Starter",
+                "Light Freight"
+            ],
+            "cargo": 6
+        },
+        {
+            "name": "Reliant Mako",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/4f25lfzd4vaqr/store_small.jpg",
+            "roles": [
+                "Reporting"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Reliant Sen",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/dhvoh5wvqe5wi/store_small.jpg",
+            "roles": [
+                "Light Science"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Reliant Tana",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/z0qh46jnljtuf/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Genesis",
+            "manufacturer": "CRUS",
+            "img": "https://media.robertsspaceindustries.com/gpdjd9p1jnxj4/store_small.jpg",
+            "roles": [
+                "Passenger"
+            ],
+            "cargo": 300
+        },
+        {
+            "name": "Glaive",
+            "manufacturer": "ESPR",
+            "img": "https://media.robertsspaceindustries.com/msy0lud5dd4eg/store_small.jpg",
+            "roles": [
+                "Medium Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Endeavor",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/ymfdp7ow9lm5c/store_small.jpeg",
+            "roles": [
+                "Heavy Science"
+            ],
+            "cargo": 500
+        },
+        {
+            "name": "Sabre",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/5ahkbuex0r8wm/store_small.jpeg",
+            "roles": [
+                "Stealth Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Sabre Comet",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/6uravr46xw6qf/store_small.jpg",
+            "roles": [
+                "Medium Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Sabre Raven",
+            "manufacturer": "AEGS",
+            "img": "https://robertsspaceindustries.com/media/3q1dirw16ezv5r/store_small/3_4_front_raven_blue_Enlarge_Crop.jpg",
+            "roles": [
+                "Interdiction"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Crucible",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/q81gvelwf2usv/store_small.jpg",
+            "roles": [
+                "Heavy Repair"
+            ],
+            "cargo": 230
+        },
+        {
+            "name": "P-72 Archimedes",
+            "manufacturer": "KRIG",
+            "img": "https://media.robertsspaceindustries.com/8p4kt5rzv0t39/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "P-72 Archimedes Emerald",
+            "manufacturer": "KRIG",
+            "img": "https://robertsspaceindustries.com/media/o94ip9isoyjmhr/store_small/Archimedes-Sku-Image-V3.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Blade",
+            "manufacturer": "ESPR",
+            "img": "https://media.robertsspaceindustries.com/0s9bslimticmx/store_small.png",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Prospector",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/l0zyyzk7g90ns/store_small.jpg",
+            "roles": [
+                "Prospecting and Mining"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Buccaneer",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/9930le6zi5mn3/store_small.jpg",
+            "roles": [
+                "Interdiction"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Dragonfly Yellowjacket",
+            "manufacturer": "DRAK",
+            "img": "https://robertsspaceindustries.com/media/am12jusvbx8mqr/store_small/Dragonfly-Left.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Dragonfly Black",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/x5ussyjswavpm/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "MPUV Personnel",
+            "manufacturer": "ARGO",
+            "img": "https://media.robertsspaceindustries.com/ee5eljtb2gs4b/store_small.jpg",
+            "roles": [
+                "Passenger"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "MPUV Cargo",
+            "manufacturer": "ARGO",
+            "img": "https://media.robertsspaceindustries.com/yah6nttyhb9rv/store_small.jpg",
+            "roles": [
+                "Light Freight"
+            ],
+            "cargo": 2
+        },
+        {
+            "name": "Terrapin",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/llq70ulvvi0ia/store_small.jpg",
+            "roles": [
+                "Pathfinder"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Polaris",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/ekv88lkd0owrj/store_small.jpg",
+            "roles": [
+                "Corvette"
+            ],
+            "cargo": 216
+        },
+        {
+            "name": "Prowler",
+            "manufacturer": "ESPR",
+            "img": "https://media.robertsspaceindustries.com/iaps0ps9oo83s/store_small.jpg",
+            "roles": [
+                "Dropship"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "85X",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/sm8ti6o025fm3/store_small.png",
+            "roles": [
+                "Touring"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Razor",
+            "manufacturer": "MRAI",
+            "img": "https://media.robertsspaceindustries.com/ryf59d1orpnzh/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Razor EX",
+            "manufacturer": "MRAI",
+            "img": "https://media.robertsspaceindustries.com/7ryipnsxv61xe/store_small.jpg",
+            "roles": [
+                "Stealth"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Razor LX",
+            "manufacturer": "MRAI",
+            "img": "https://media.robertsspaceindustries.com/k8vf8c6y16gcp/store_small.jpg",
+            "roles": [
+                "Luxury"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Hurricane",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/s6cv8zd5n24s2/store_small.jpg",
+            "roles": [
+                "Heavy Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Defender",
+            "manufacturer": "BANU",
+            "img": "https://media.robertsspaceindustries.com/nnb2oofnrlni9/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Eclipse",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/ej552bji5plg4/store_small.jpg",
+            "roles": [
+                "Stealth Bomber"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Nox",
+            "manufacturer": "XNAA",
+            "img": "https://media.robertsspaceindustries.com/945jxtrweugj1/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Nox Kue",
+            "manufacturer": "XNAA",
+            "img": "https://media.robertsspaceindustries.com/wluwxxxf8vyel/store_small.jpeg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Cyclone",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/bioukvx5hnvmr/store_small.jpg",
+            "roles": [
+                "Exploration",
+                "Recon"
+            ],
+            "cargo": 1
+        },
+        {
+            "name": "Cyclone TR",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/suy8o38g9ve1h/store_small.png",
+            "roles": [
+                "Combat"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Cyclone RC",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/o0eo9l0kj6oxl/store_small.png",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Cyclone RN",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/taepoxg46odc9/store_small.png",
+            "roles": [
+                "Recon"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Cyclone AA",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/us620vlv05itm/store_small.png",
+            "roles": [
+                "Anti-aircraft"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Cyclone MT",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/g8kqaqsn66ufb/store_small.jpg",
+            "roles": [
+                "Assault"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Ursa",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/2ronj9a48ng6q/store_small.jpg",
+            "roles": [
+                "Exploration"
+            ],
+            "cargo": 4
+        },
+        {
+            "name": "Ursa Fortuna",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/g62q7c3956cu1/store_small.jpg",
+            "roles": [
+                "Exploration"
+            ],
+            "cargo": 4
+        },
+        {
+            "name": "Lynx ",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/m6ikrk16sokre/store_small.jpg",
+            "roles": [
+                "Luxury Transport",
+                "Explorer"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "600i Touring",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/68f2og2gz2mdq/store_small.jpg",
+            "roles": [
+                "Touring"
+            ],
+            "cargo": 16
+        },
+        {
+            "name": "600i Explorer",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/nsl0zel8gmfxl/store_small.jpg",
+            "roles": [
+                "Expedition"
+            ],
+            "cargo": 40
+        },
+        {
+            "name": "X1",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/dfby6tstm2ddk/store_small.jpg",
+            "roles": [
+                "Touring"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "X1 Velocity",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/cz8otyln1w1tp/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "X1 Force",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/8gw5uoifiylxq/store_small.jpg",
+            "roles": [
+                "Combat"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Pioneer",
+            "manufacturer": "CNOU",
+            "img": "https://media.robertsspaceindustries.com/vtodzxlks918l/store_small.jpeg",
+            "roles": [
+                "Heavy Construction"
+            ],
+            "cargo": 600
+        },
+        {
+            "name": "Hawk",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/yshd7vv3i1ds0/store_small.png",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Hammerhead",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/93zcfnzsy6xnu/store_small.png",
+            "roles": [
+                "Heavy Gun Ship"
+            ],
+            "cargo": 40
+        },
+        {
+            "name": "Hammerhead Best In Show Edition",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/tmuyqtlpfh64d/store_small.jpg",
+            "roles": [
+                "Heavy Gun Ship"
+            ],
+            "cargo": 40
+        },
+        {
+            "name": "Nova",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/698j1tw6sqq4t/store_small.jpg",
+            "roles": [
+                "Combat"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Vulcan",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/6q50bb3oy5q8b/store_small.jpg",
+            "roles": [
+                "Medium Repair",
+                "Medium Refuel"
+            ],
+            "cargo": 12
+        },
+        {
+            "name": "100i",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/ntdv7khpw1hpz/store_small.jpg",
+            "roles": [
+                "Starter",
+                "Touring"
+            ],
+            "cargo": 2
+        },
+        {
+            "name": "125a",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/5nerri3qlhrxc/store_small.jpg",
+            "roles": [
+                "Starter",
+                "Light Fighter"
+            ],
+            "cargo": 2
+        },
+        {
+            "name": "135c",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/i4o2rd0gks96h/store_small.jpg",
+            "roles": [
+                "Starter",
+                "Light Freight"
+            ],
+            "cargo": 6
+        },
+        {
+            "name": "C2 Hercules",
+            "manufacturer": "CRUS",
+            "img": "https://media.robertsspaceindustries.com/y9nxh2pyic772/store_small.jpg",
+            "roles": [
+                "Transport"
+            ],
+            "cargo": 672
+        },
+        {
+            "name": "M2 Hercules",
+            "manufacturer": "CRUS",
+            "img": "https://media.robertsspaceindustries.com/3s79isis6qti3/store_small.jpg",
+            "roles": [
+                "Military Transport"
+            ],
+            "cargo": 468
+        },
+        {
+            "name": "A2 Hercules",
+            "manufacturer": "CRUS",
+            "img": "https://media.robertsspaceindustries.com/a14ekvttpyy6w/store_small.jpg",
+            "roles": [
+                "Heavy Bomber",
+                "Military Transport"
+            ],
+            "cargo": 234
+        },
+        {
+            "name": "Vulture",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/u4hhkc71wyuoh/store_small.jpg",
+            "roles": [
+                "Light Salvage"
+            ],
+            "cargo": 12
+        },
+        {
+            "name": "Apollo Triage",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/to77i2ovy5snn/store_small.jpg",
+            "roles": [
+                "Medical"
+            ],
+            "cargo": 28
+        },
+        {
+            "name": "Apollo Medivac",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/lp97kahwh9v15/store_small.jpg",
+            "roles": [
+                "Medical"
+            ],
+            "cargo": 28
+        },
+        {
+            "name": "Mercury",
+            "manufacturer": "CRUS",
+            "img": "https://media.robertsspaceindustries.com/219rro1mjtov6/store_small.jpg",
+            "roles": [
+                "Medium Cargo",
+                "Medium Data"
+            ],
+            "cargo": 114
+        },
+        {
+            "name": "Valkyrie",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/1ie4qfolpfwn8/store_small.jpg",
+            "roles": [
+                "Dropship"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Valkyrie Liberator Edition",
+            "manufacturer": "ANVL",
+            "img": "https://robertsspaceindustries.com/media/l87lynolh4pxyr/store_small/128934g7tt.jpg",
+            "roles": [
+                "Dropship"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Kraken",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/nnpwaac1eqp4p/store_small.jpg",
+            "roles": [
+                "Multi-Role - Light Carrier"
+            ],
+            "cargo": 3792
+        },
+        {
+            "name": "Kraken Privateer",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/nnu9953me3vod/store_small.jpg",
+            "roles": [
+                "Multi-Role - Light Carrier"
+            ],
+            "cargo": 768
+        },
+        {
+            "name": "Arrow",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/th8oqphlhb0bk/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "San'tok.yāi",
+            "manufacturer": "XNAA",
+            "img": "https://media.robertsspaceindustries.com/4s0zrs2svm1n9/store_small.jpg",
+            "roles": [
+                "Medium Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "SRV",
+            "manufacturer": "ARGO",
+            "img": "https://media.robertsspaceindustries.com/4ibvjrbgihdv5/store_small.jpg",
+            "roles": [
+                "Recovery"
+            ],
+            "cargo": 12
+        },
+        {
+            "name": "Corsair",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/ywf6uiw2qvkw4/store_small.jpg",
+            "roles": [
+                "Expedition"
+            ],
+            "cargo": 72
+        },
+        {
+            "name": "Ranger RC",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/86p4ac1l3rmra/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Ranger TR",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/eehhr9ql9y04w/store_small.jpg",
+            "roles": [
+                "Combat"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Ranger CV",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/1pe4mpq4m650v/store_small.jpg",
+            "roles": [
+                "Touring"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Ballista ",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/7vzgs23k7skkn/store_small.jpg",
+            "roles": [
+                "Military"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Anvil Ballista Snowblind",
+            "manufacturer": "ANVL",
+            "img": "https://robertsspaceindustries.com/media/a5nzp9tgvq2i5r/store_small/Ballista_Snowblind-Min.jpg",
+            "roles": [
+                "Military"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Anvil Ballista Dunestalker",
+            "manufacturer": "ANVL",
+            "img": "https://robertsspaceindustries.com/media/rjxw89rs3sk5wr/store_small/Ballista_Dunestalker-Min.jpg",
+            "roles": [
+                "Military"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Nautilus ",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/c6t6mr400hgx6/store_small.jpg",
+            "roles": [
+                "Minelayer"
+            ],
+            "cargo": 64
+        },
+        {
+            "name": "Nautilus Solstice Edition",
+            "manufacturer": "AEGS",
+            "img": "https://media.robertsspaceindustries.com/mp9p2pzrvdxw9/store_small.jpg",
+            "roles": [
+                "Minelayer"
+            ],
+            "cargo": 64
+        },
+        {
+            "name": "Mantis",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/q90tqrjmlr280/store_small.jpg",
+            "roles": [
+                "Interdictor"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "C8 Pisces",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/9y6uxd82fw0ne/store_small.jpg",
+            "roles": [
+                "Exploration"
+            ],
+            "cargo": 4
+        },
+        {
+            "name": "C8X Pisces Expedition ",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/kj7oh12zn2f1l/store_small.jpg",
+            "roles": [
+                "Expedition"
+            ],
+            "cargo": 4
+        },
+        {
+            "name": "C8R Pisces",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/j198wh0bkm9ml/store_small.jpg",
+            "roles": [
+                "Medical"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Ares Inferno ",
+            "manufacturer": "CRUS",
+            "img": "https://media.robertsspaceindustries.com/txyuxxqtu8otc/store_small.jpg",
+            "roles": [
+                "Heavy Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Ares Ion",
+            "manufacturer": "CRUS",
+            "img": "https://media.robertsspaceindustries.com/a2g2ta0lq0uq5/store_small.jpg",
+            "roles": [
+                "Heavy Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "MOLE",
+            "manufacturer": "ARGO",
+            "img": "https://media.robertsspaceindustries.com/nxjx5y43r2nbs/store_small.jpg",
+            "roles": [
+                "Prospecting and Mining"
+            ],
+            "cargo": 96
+        },
+        {
+            "name": "Argo Mole Carbon Edition",
+            "manufacturer": "ARGO",
+            "img": "https://media.robertsspaceindustries.com/ugpy6i9pbgbax/store_small.jpg",
+            "roles": [
+                "Prospecting and Mining"
+            ],
+            "cargo": 96
+        },
+        {
+            "name": "Argo Mole Talus Edition",
+            "manufacturer": "ARGO",
+            "img": "https://media.robertsspaceindustries.com/ghac95q2ncobp/store_small.jpg",
+            "roles": [
+                "Prospecting and Mining"
+            ],
+            "cargo": 96
+        },
+        {
+            "name": "G12",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/brmi1ci9rthmu/store_small.jpg",
+            "roles": [
+                "Touring"
+            ],
+            "cargo": 2
+        },
+        {
+            "name": "G12r",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/ou0nkzhocb2bd/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "G12a",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/2btmuamt8zv4g/store_small.jpg",
+            "roles": [
+                "Military"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Talon",
+            "manufacturer": "ESPR",
+            "img": "https://media.robertsspaceindustries.com/5ldm3z0l75na6/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Talon Shrike",
+            "manufacturer": "ESPR",
+            "img": "https://media.robertsspaceindustries.com/tfej2rg70irt2/store_small.jpg",
+            "roles": [
+                "Light Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "ROC-DS",
+            "manufacturer": "GRIN",
+            "img": "https://media.robertsspaceindustries.com/9qfnnzshu0vv0/store_small.jpg",
+            "roles": [
+                "Mining"
+            ],
+            "cargo": 4
+        },
+        {
+            "name": "ROC",
+            "manufacturer": "GRIN",
+            "img": "https://media.robertsspaceindustries.com/kuw6hsllahest/store_small.jpg",
+            "roles": [
+                "Mining"
+            ],
+            "cargo": 1
+        },
+        {
+            "name": "Nomad",
+            "manufacturer": "CNOU",
+            "img": "https://media.robertsspaceindustries.com/inqdpb67v815c/store_small.jpg",
+            "roles": [
+                "Starter"
+            ],
+            "cargo": 24
+        },
+        {
+            "name": "Perseus",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/rofj7fmgtekyg/store_small.jpg",
+            "roles": [
+                "Frigate"
+            ],
+            "cargo": 50
+        },
+        {
+            "name": "Scorpius",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/7u4jmdb7ev4h7/store_small.jpg",
+            "roles": [
+                "Heavy Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Scorpius Antares",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/ib2pmees0vrq3/store_small.jpg",
+            "roles": [
+                "Heavy Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Railen",
+            "manufacturer": "GAMA",
+            "img": "https://media.robertsspaceindustries.com/i3aybjtr4j7fq/store_small.jpg",
+            "roles": [
+                "Medium Freight"
+            ],
+            "cargo": 320
+        },
+        {
+            "name": "400i",
+            "manufacturer": "ORIG",
+            "img": "https://media.robertsspaceindustries.com/x4tbq6bz7kgkg/store_small.jpg",
+            "roles": [
+                "Touring"
+            ],
+            "cargo": 42
+        },
+        {
+            "name": "Liberator",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/k2zu1md2ulfxn/store_small.png",
+            "roles": [
+                "Light Carrier"
+            ],
+            "cargo": 400
+        },
+        {
+            "name": "Odyssey",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/xpz8d5rv7fl2n/store_small.jpg",
+            "roles": [
+                "Expedition"
+            ],
+            "cargo": 252
+        },
+        {
+            "name": "RAFT",
+            "manufacturer": "ARGO",
+            "img": "https://media.robertsspaceindustries.com/x4b15hx3vui08/store_small.jpg",
+            "roles": [
+                "Medium Freight"
+            ],
+            "cargo": 96
+        },
+        {
+            "name": "Spartan",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/y8efutalncw88/store_small.jpg",
+            "roles": [
+                "Transport"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "HoverQuad",
+            "manufacturer": "CNOU",
+            "img": "https://media.robertsspaceindustries.com/yz04lei9pkqob/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Expanse",
+            "manufacturer": "MISC",
+            "img": "https://media.robertsspaceindustries.com/wphusii1dnmxt/store_small.jpg",
+            "roles": [
+                "Refinery"
+            ],
+            "cargo": 128
+        },
+        {
+            "name": "Legionnaire",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/qxgdodjdhuvsr/store_small.jpeg",
+            "roles": [
+                "Boarding"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Mule",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/7e3msv82581fs/store_small.png",
+            "roles": [
+                "Transport"
+            ],
+            "cargo": 2
+        },
+        {
+            "name": "Centurion",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/3ov9voxt6ogbo/store_small.jpg",
+            "roles": [
+                "Combat"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "C1 Spirit",
+            "manufacturer": "CRUS",
+            "img": "https://media.robertsspaceindustries.com/ly51mm0p1vs6w/store_small.jpg",
+            "roles": [
+                "Medium Freight"
+            ],
+            "cargo": 64
+        },
+        {
+            "name": "A1 Spirit ",
+            "manufacturer": "CRUS",
+            "img": "https://media.robertsspaceindustries.com/nsqe4f3nl1mqn/store_small.jpg",
+            "roles": [
+                "Bomber"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "E1 Spirit",
+            "manufacturer": "CRUS",
+            "img": "https://media.robertsspaceindustries.com/mijopoh0bk9pb/store_small.jpg",
+            "roles": [
+                "Passenger"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "STV",
+            "manufacturer": "GRIN",
+            "img": "https://media.robertsspaceindustries.com/ryfsd44qh96d9/store_small.jpg",
+            "roles": [
+                "Transport"
+            ],
+            "cargo": 1
+        },
+        {
+            "name": "Cutter",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/f1g97yucvp6np/store_small.jpg",
+            "roles": [
+                "Starter",
+                "Light Freight"
+            ],
+            "cargo": 4
+        },
+        {
+            "name": "Cutter Scout",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/997gomyxfeg86/store_small.jpg",
+            "roles": [
+                "Reconnaissance and Intelligence"
+            ],
+            "cargo": 2
+        },
+        {
+            "name": "Cutter Rambler",
+            "manufacturer": "DRAK",
+            "img": "https://media.robertsspaceindustries.com/7xwtmjrvqlyee/store_small.jpg",
+            "roles": [
+                "Starter",
+                "Expedition"
+            ],
+            "cargo": 2
+        },
+        {
+            "name": "Galaxy",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/b2bx2kl8ewqej/store_small.jpg",
+            "roles": [
+                "Modular"
+            ],
+            "cargo": 64
+        },
+        {
+            "name": "Fury",
+            "manufacturer": "MRAI",
+            "img": "https://media.robertsspaceindustries.com/icoxi8ahyr0i9/store_small.jpg",
+            "roles": [
+                "Snub Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Fury MX",
+            "manufacturer": "MRAI",
+            "img": "https://media.robertsspaceindustries.com/afdx1cof4p8rb/store_small.jpg",
+            "roles": [
+                "Snub Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Fury LX",
+            "manufacturer": "MRAI",
+            "img": "https://media.robertsspaceindustries.com/c63hvy3xb308p/store_small.jpg",
+            "roles": [
+                "Racing"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Storm",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/tnzyh8r5iup5w/store_small.jpg",
+            "roles": [
+                "Combat Support"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Storm AA",
+            "manufacturer": "TMBL",
+            "img": "https://media.robertsspaceindustries.com/j1gpc25oaks9g/store_small.jpg",
+            "roles": [
+                "Combat Support"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Zeus Mk II ES",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/21443ernflvcw/store_small.jpg",
+            "roles": [
+                "Expedition"
+            ],
+            "cargo": 32
+        },
+        {
+            "name": "Zeus Mk II MR",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/pj51owg973q4h/store_small.jpg",
+            "roles": [
+                "Interdiction"
+            ],
+            "cargo": 16
+        },
+        {
+            "name": "Zeus Mk II CL",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/ypbhy8y8jsgea/store_small.jpg",
+            "roles": [
+                "Medium Freight"
+            ],
+            "cargo": 128
+        },
+        {
+            "name": "Arrastra",
+            "manufacturer": "RSI",
+            "img": "https://media.robertsspaceindustries.com/s77g3dj3gwes9/store_small.jpg",
+            "roles": [
+                "Mining and Refining"
+            ],
+            "cargo": 576
+        },
+        {
+            "name": "F8C Lightning",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/j6rvfrkux5nrm/store_small.jpg",
+            "roles": [
+                "Heavy Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "F8C Lightning Executive Edition",
+            "manufacturer": "ANVL",
+            "img": "https://media.robertsspaceindustries.com/ekto72z81x9kn/store_small.jpg",
+            "roles": [
+                "Heavy Fighter"
+            ],
+            "cargo": 0
+        },
+        {
+            "name": "Syulen",
+            "manufacturer": "GAMA",
+            "img": "https://media.robertsspaceindustries.com/8xho65s0f1emp/store_small.jpg",
+            "roles": [
+                "Starter"
+            ],
+            "cargo": 6
+        }
+    ],
+    "roles": [
+        "Starter",
+        "Pathfinder",
+        "Light Fighter",
+        "Light Freight",
+        "Luxury Touring",
+        "Interdiction",
+        "Racing",
+        "Medium Fighter",
+        "Stealth Fighter",
+        "Expedition",
+        "Medium Freight",
+        "Gun Ship",
+        "Touring",
+        "Medical",
+        "Dropship",
+        "Bomber",
+        "Heavy Refuelling",
+        "Heavy Freight",
+        "Heavy Bomber",
+        "Heavy Gunship",
+        "Frigate",
+        "Snub Fighter",
+        "Cargo",
+        "Gunship",
+        "Medium Data",
+        "Heavy Mining",
+        "Heavy Salvage",
+        "Destroyer",
+        "Heavy Fighter",
+        "Reporting",
+        "Light Science",
+        "Passenger",
+        "Heavy Science",
+        "Heavy Repair",
+        "Prospecting and Mining",
+        "Corvette",
+        "Stealth",
+        "Luxury",
+        "Stealth Bomber",
+        "Exploration",
+        "Recon",
+        "Combat",
+        "Anti-aircraft",
+        "Assault",
+        "Luxury Transport",
+        "Explorer",
+        "Heavy Construction",
+        "Heavy Gun Ship",
+        "Medium Repair",
+        "Medium Refuel",
+        "Transport",
+        "Military Transport",
+        "Light Salvage",
+        "Medium Cargo",
+        "Multi-Role - Light Carrier",
+        "Recovery",
+        "Military",
+        "Minelayer",
+        "Interdictor",
+        "Mining",
+        "Light Carrier",
+        "Refinery",
+        "Boarding",
+        "Reconnaissance and Intelligence",
+        "Modular",
+        "Combat Support",
+        "Mining and Refining"
+    ],
+    "manufacturers": [
+        "RSI",
+        "ORIG",
+        "ANVL",
+        "MISC",
+        "DRAK",
+        "AEGS",
+        "VNCL",
+        "KRIG",
+        "CNOU",
+        "XNAA",
+        "BANU",
+        "CRUS",
+        "ESPR",
+        "ARGO",
+        "MRAI",
+        "TMBL",
+        "GRIN",
+        "GAMA"
+    ]
+}
