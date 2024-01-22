@@ -3,7 +3,14 @@
 	"parserOptions": {
 		"extraFileExtensions": [".svelte"]
 	},
-	"ignorePatterns": ["tailwind.config.cjs", "svelte.config.js", "postcss.config.cjs"],
+	"ignorePatterns": [
+		"tailwind.config.cjs",
+		"svelte.config.js",
+		"postcss.config.cjs",
+		"/build",
+		"/.svelte-kit",
+		"/package"
+	],
 	"overrides": [
 		{
 			"files": ["*.svelte"],
