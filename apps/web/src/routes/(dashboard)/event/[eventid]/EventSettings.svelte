@@ -23,9 +23,9 @@
 			summary: data.summary,
 			description: data.description,
 			eventType: data.eventType,
-			location: [...data.location],
+			location: data.location ? [...data.location] : [],
 			roles: structuredClone(data.roles),
-			settings: structuredClone(data.settings),
+			settings: structuredClone(data.settings)!,
 			startAt: data.startAt,
 			duration: data.duration,
 		};
@@ -36,19 +36,70 @@
 
 	function checkIfDirty(source: PageData, mutable: MutableData) {
 		let clean = true;
+		let diff: string[] = [];
 		for (const key of Object.keys(mutable) as (keyof typeof mutable)[]) {
 			switch (key) {
 				case "location":
-					clean &&=
-						mutable.location.map((loc) => loc.name).join("/") ==
-						source.location.map((loc) => loc.name).join("/");
+					{
+						const mutableLocation = mutable.location.map((loc) => loc.name).join("/");
+						const sourceLocation = source.location?.map((loc) => loc.name).join("/");
+						const valueClean = mutableLocation === sourceLocation;
+						if (!valueClean) diff.push(key);
+						clean &&= valueClean;
+					}
+					break;
+				case "settings":
+					{
+						for (const setting of Object.keys(
+							mutable.settings
+						) as (keyof typeof mutable.settings)[]) {
+							const valueClean =
+								mutable.settings[setting] === source.settings?.[setting];
+							if (!valueClean) diff.push(key + "." + setting);
+							clean &&= valueClean;
+						}
+					}
+					break;
+				case "roles":
+					{
+						const valueClean = mutable.roles.length === source.roles.length;
+						if (!valueClean) diff.push(key + ".length");
+
+						clean &&= valueClean;
+						if (clean)
+							for (const role of mutable.roles) {
+								const sourceRole = source.roles.find((r) => r.id === role.id);
+								if (sourceRole) {
+									const nameClean = sourceRole.name === role.name;
+									const limitClean = sourceRole.limit === role.limit;
+
+									if (!nameClean) diff.push(key + "." + role.id + ".name");
+									if (!limitClean) diff.push(key + "." + role.id + ".limit");
+
+									clean &&= nameClean && limitClean;
+								} else {
+									diff.push(key + "." + role.id);
+									clean = false;
+								}
+							}
+					}
 					break;
 				default:
-					clean &&= mutable[key] == source[key];
+					{
+						const valueClean = mutable[key] == source[key];
+						if (!valueClean) diff.push(key);
+						clean &&= valueClean;
+					}
 					break;
 			}
 		}
+		console.log(clean, diff);
 		return !clean;
+	}
+
+	function save() {
+		data = { ...data, ...editData };
+		editData = cloneEventSettingsData(data);
 	}
 
 	let isDirty = false;
@@ -233,30 +284,30 @@
 				disabled={!isDirty}
 				on:click={() => {
 					if (!isDirty) return;
-
-					data = { ...data, ...editData };
+					save();
 				}}
 			>
 				<EditOutline class="me-2" /> Save
 			</Button>
 		{:else}
+			<Button color="alternative">
+				<CloseSolid class="me-2" /> Cancel
+			</Button>
 			<Button
-				color="alternative"
+				color="green"
 				disabled={!isDirty}
 				on:click={() => {
 					if (!isDirty) return;
-
-					data = { ...data, ...editData };
+					save();
 				}}
 			>
-				<CloseSolid class="me-2" /> Cancel
+				<EditOutline class="me-2" /> Save Draft
 			</Button>
 			<Button
 				disabled={!isDirty}
 				on:click={() => {
 					if (!isDirty) return;
-
-					data = { ...data, ...editData };
+					save();
 				}}
 			>
 				<CaretRightSolid class="me-2" /> Post
