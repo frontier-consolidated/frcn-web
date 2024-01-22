@@ -1,0 +1,16 @@
+overwrite: true
+schema: "../backend/src/graphql/schema/schema.generated.graphql"
+documents: "./src/lib/graphql/operations/**/*.ts"
+ignoreNoDocuments: true
+generates:
+    ./src/lib/graphql/__generated__/:
+        preset: "client"
+        presetConfig:
+            gqlTagName: "gql"
+            fragmentMasking: false
+        config:
+            useTypeImports: true
+            useIndexSignature: true
+            contextType: "../context#Context"
+config:
+    scalars: "@frcn/graphql-scalar-types"
