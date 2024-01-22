@@ -1,16 +1,15 @@
 <script lang="ts">
 	import { Avatar, Dropdown, DropdownDivider, DropdownItem } from "flowbite-svelte";
 	import { DotsVerticalOutline, UserRemoveSolid, UserGroupSolid } from "flowbite-svelte-icons";
-	import type { EventUser } from "$lib/data/types";
+	import type { PageData } from "./$types";
 
-	export let member: EventUser;
-	let name = "SyntheticDev";
+	export let member: PageData["members"][number];
 </script>
 
 <div class="flex items-center gap-2 p-1 dark:text-white cursor-pointer">
 	<Avatar rounded size="sm" />
 	<div class="flex-1 flex flex-col">
-		<span class="text-md font-semibold">{member.user.scName}</span>
+		<span class="text-md font-semibold">{member.user.name}</span>
 		<span class="text-sm font-semibold text-gray-400">Event Member</span>
 	</div>
 	<DotsVerticalOutline
@@ -23,7 +22,7 @@
 	<DropdownItem>User Details</DropdownItem>
 	<DropdownDivider />
 	<DropdownItem class="flex">
-		<UserGroupSolid class="me-2" /> Join {name}'s crew
+		<UserGroupSolid class="me-2" /> Join {member.user.name}'s crew
 	</DropdownItem>
 	<DropdownItem class="flex">
 		<UserGroupSolid class="me-2" /> Add to my crew

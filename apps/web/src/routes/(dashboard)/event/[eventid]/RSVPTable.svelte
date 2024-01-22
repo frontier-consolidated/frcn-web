@@ -1,10 +1,10 @@
 <script lang="ts">
 	import Tooltip from "$lib/components/Tooltip.svelte";
 	import { Table, TableBody, TableHead, TableHeadCell, Button } from "flowbite-svelte";
+	import type { PageData } from "./$types";
 	import RsvpItem from "./RSVPItem.svelte";
-	import type { RSVPRole } from "$lib/data/types";
 
-	export let value: RSVPRole[] = [];
+	export let value: PageData["roles"] = [];
 </script>
 
 <Table>
