@@ -4,7 +4,7 @@
 	import { isToday, isTomorrow, isYesterday, toDuration, toDurationComponents } from "./helpers";
 
 	export let id: string;
-	export let format: "duration" | "datetime" = "datetime";
+	export let format: "duration" | "datetime" | "datetime-relative" = "datetime";
 	export let value: number;
 
 	let datetime: string;
@@ -23,6 +23,7 @@
 			break;
 		case "datetime":
 			{
+				const now = new Date();
 				const date = new Date(value);
 
 				const hoursMinutes = new Intl.DateTimeFormat($locale!, {
@@ -30,18 +31,49 @@
 					minute: "2-digit",
 				}).format(date);
 
-				let duration = "";
-				const now = new Date();
-				if (now > date) {
-					duration = `${toDuration(now.getTime() - date.getTime())} ago`;
+				if (isToday(date)) {
+					text = `Today ${hoursMinutes}`;
+				} else if (isTomorrow(date)) {
+					text = `Tomorrow ${hoursMinutes}`;
+				} else if (isYesterday(date)) {
+					text = `Yesterday ${hoursMinutes}`;
+				} else if (now > date) {
+					text = new Intl.DateTimeFormat($locale!, {
+						dateStyle: "short",
+						timeStyle: "short",
+					}).format(date);
 				} else {
-					duration = `in ${toDuration(date.getTime() - now.getTime())}`;
+					text = new Intl.DateTimeFormat($locale!, {
+						dateStyle: "full",
+						timeStyle: "short",
+					}).format(date);
+				}
+
+				popoverText = date.toString();
+				datetime = date.toISOString();
+			}
+			break;
+		case "datetime-relative":
+			{
+				const now = new Date();
+				const date = new Date(value);
+
+				const hoursMinutes = new Intl.DateTimeFormat($locale!, {
+					hour: "2-digit",
+					minute: "2-digit",
+				}).format(date);
+
+				let relative = "";
+				if (now > date) {
+					relative = `${toDuration(now.getTime() - date.getTime())} ago`;
+				} else {
+					relative = `in ${toDuration(date.getTime() - now.getTime())}`;
 				}
 
 				if (isToday(date)) {
-					text = `Today ${hoursMinutes} (${duration})`;
+					text = `Today ${hoursMinutes} (${relative})`;
 				} else if (isTomorrow(date)) {
-					text = `Tomorrow ${hoursMinutes} (${duration})`;
+					text = `Tomorrow ${hoursMinutes} (${relative})`;
 				} else if (isYesterday(date)) {
 					text = `Yesterday ${hoursMinutes}`;
 				} else if (now > date) {
