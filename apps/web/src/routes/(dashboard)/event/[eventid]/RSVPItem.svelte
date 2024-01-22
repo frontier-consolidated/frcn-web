@@ -1,14 +1,23 @@
 <script lang="ts">
-	import type { RSVPRole } from "$lib/data/types";
 	import { Input, TableBodyCell, TableBodyRow } from "flowbite-svelte";
 	import { TrashBinSolid } from "flowbite-svelte-icons";
+	import type { PageData } from "./$types";
 
 	const INFINITY = "∞";
 
-	export let roles: RSVPRole[];
-	export let role: RSVPRole;
+	export let roles: PageData["roles"];
+	export let role: PageData["roles"][number];
 
-	let limitInput = role.limit == 0 ? INFINITY : `${role.limit}`;
+	let editRole = structuredClone(role);
+	$: {
+		if (role.name != editRole.name || role.limit != editRole.limit) {
+			roles = [...roles.filter((r) => r.id != role.id), editRole];
+			role = editRole;
+			editRole = structuredClone(role);
+		}
+	}
+
+	let limitInput = editRole.limit == 0 ? INFINITY : `${editRole.limit}`;
 </script>
 
 <TableBodyRow>
@@ -17,7 +26,7 @@
 		<Input
 			class="!bg-transparent !border-transparent !p-1 text-ellipsis"
 			placeholder="Role name"
-			bind:value={role.name}
+			bind:value={editRole.name}
 		/>
 	</TableBodyCell>
 	<TableBodyCell class="text-center">
@@ -27,21 +36,19 @@
 			class="!bg-transparent !border-transparent !p-1 no-inner-spin text-center"
 			bind:value={limitInput}
 			on:blur={() => {
-				console.log("blur");
 				let num = Number(limitInput);
 				if (isNaN(num)) num = 0;
 				num = Math.floor(Math.max(0, num));
 
 				if (num == 0) {
 					limitInput = INFINITY;
-					role.limit = 0;
+					editRole.limit = 0;
 				} else {
 					limitInput = `${num}`;
-					role.limit = num;
+					editRole.limit = num;
 				}
 			}}
 			on:keydown={(ev) => {
-				console.log("key", ev.key);
 				let num = Number(limitInput);
 				if (isNaN(num)) num = 0;
 
