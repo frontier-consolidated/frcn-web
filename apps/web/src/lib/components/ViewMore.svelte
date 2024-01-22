@@ -8,6 +8,7 @@
 		if (div) {
 			if (!observer) {
 				observer = new ResizeObserver(() => {
+					if (!div) return;
 					hasMore = more || div.scrollHeight > div.clientHeight;
 				});
 				observer.observe(div);
