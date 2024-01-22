@@ -18,30 +18,30 @@
 
 	let hoursDiv: HTMLElement | null = null;
 	let minutesDiv: HTMLElement | null = null;
-	function scrollToHour(hour: number) {
+	function scrollToHour(hour: number, instant?: boolean) {
 		const el = hoursDiv?.querySelector<HTMLElement>(`[data-hour="${hour}"]`);
 		if (el)
 			el.scrollIntoView({
-				behavior: "smooth",
+				behavior: instant ? "instant" : "smooth",
 				block: "center",
 			});
 	}
-	function scrollToMinute(minute: number) {
+	function scrollToMinute(minute: number, instant?: boolean) {
 		const el = minutesDiv?.querySelector<HTMLElement>(`[data-minute="${minute}"]`);
 		if (el)
 			el.scrollIntoView({
-				behavior: "smooth",
+				behavior: instant ? "instant" : "smooth",
 				block: "center",
 			});
 	}
 
 	function initHours(el: HTMLElement) {
 		hoursDiv = el;
-		scrollToHour(selectedHour);
+		scrollToHour(selectedHour, true);
 	}
 	function initMinutes(el: HTMLElement) {
 		minutesDiv = el;
-		scrollToMinute(selectedMinute);
+		scrollToMinute(selectedMinute, true);
 	}
 
 	function setHour(hour: number) {
