@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "web:dev": "cd apps/web && pnpm dev",
     "lint": "eslint ."
   },
   "devDependencies": {
