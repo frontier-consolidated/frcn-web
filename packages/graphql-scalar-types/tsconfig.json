@@ -6,10 +6,6 @@
 		"target": "es2020",
 		"module": "esnext",
 		"moduleResolution": "node",
-		"esModuleInterop": true,
-		"types": ["node"]
-	},
-	"ts-node": {
-		"transpileOnly": true
+		"esModuleInterop": true
 	}
 }

@@ -8,8 +8,5 @@
 		"moduleResolution": "node",
 		"esModuleInterop": true,
 		"types": ["node"]
-	},
-	"ts-node": {
-		"transpileOnly": true
 	}
 }

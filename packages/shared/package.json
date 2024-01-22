@@ -1,0 +1,11 @@
+{
+  "name": "@frcn/shared",
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5"
+  }
+}

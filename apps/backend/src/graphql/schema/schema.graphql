@@ -1,0 +1,299 @@
+# Scalars
+
+scalar Date
+
+# Enums
+
+enum CacheControlScope {
+	PUBLIC
+	PRIVATE
+}
+
+enum Permission {
+	CreateEvents
+	ManageRoles
+	ManageSystem
+}
+
+enum EventAccessType {
+	PRIMARY_ROLE
+	SELECT_ROLES
+	CHANNEL
+}
+
+# Directives
+
+directive @cacheControl(
+	maxAge: Int
+	scope: CacheControlScope
+	inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+"""
+Marks a field as only being readable by the object owner
+"""
+directive @private on FIELD_DEFINITION
+"""
+Marks a field as only being accessible when the user has the required permission
+"""
+directive @permission(name: Permission!) on FIELD_DEFINITION
+"""
+Marks a field as requiring atleast one 'manage' permission
+"""
+directive @manages on FIELD_DEFINITION
+
+# Types
+
+type SystemSettings {
+	discordGuildId: String!
+	defaultEventChannel: DiscordChannel!
+	roleOrder: [ID!]!
+}
+
+type UserRole {
+	id: ID!
+	name: String!
+	discordId: String!
+	primary: Boolean!
+	permissions: Int! @permission(name: ManageRoles)
+	users: [PartialUser!]! @permission(name: ManageRoles)
+	updatedAt: Date!
+	createdAt: Date!
+}
+
+type UserStatus {
+	activity: String
+	ship: String
+	updatedAt: Date!
+}
+
+type UserSettings {
+	updatedAt: Date!
+}
+
+interface UserBase {
+	id: ID!
+	name: String!
+	scName: String
+	discordName: String!
+	verified: Boolean!
+	avatarUrl: String!
+	updatedAt: Date!
+	createdAt: Date!
+}
+
+type PartialUser implements UserBase {
+	id: ID!
+	name: String!
+	scName: String
+	discordName: String!
+	verified: Boolean!
+	avatarUrl: String!
+	updatedAt: Date!
+	createdAt: Date!
+}
+
+type User implements UserBase {
+	id: ID!
+	name: String!
+	scName: String
+	discordName: String!
+	verified: Boolean!
+	avatarUrl: String!
+	updatedAt: Date!
+	createdAt: Date!
+
+	permissions: Int!
+	primaryRole: UserRole!
+	roles: [UserRole!]!
+	rsvps: [EventRsvp!]! @private
+	status: UserStatus!
+	settings: UserSettings! @private
+}
+
+interface EventRsvpRoleBase {
+	id: ID!
+	name: String!
+}
+
+type PartialEventRsvpRole implements EventRsvpRoleBase {
+	id: ID!
+	name: String!
+}
+
+type EventRsvpRole implements EventRsvpRoleBase {
+	id: ID!
+	name: String!
+	limit: Int!
+	members: [Int!]!
+}
+
+type EventRsvp {
+	invite: Boolean!
+	rsvp: PartialEventRsvpRole
+	event: PartialEvent!
+	rsvpAt: Date!
+}
+
+type EventMember {
+	id: Int!
+	pending: Boolean!
+	user: PartialUser!
+	rsvp: String!
+	rsvpAt: Date!
+}
+
+type EventSettings {
+	hideLocation: Boolean!
+	inviteOnly: Boolean!
+	openToJoinRequests: Boolean!
+	allowTeamSwitching: Boolean!
+	allowCrewSwitching: Boolean!
+}
+
+interface EventBase {
+	id: ID!
+	channel: DiscordChannel!
+	owner: PartialUser
+	name: String!
+	summary: String!
+	description: String!
+	imageUrl: String
+	eventType: String
+	location: [String!]!
+	startAt: Date
+	endedAt: Date
+	duration: Int
+	updatedAt: Date!
+	createdAt: Date!
+}
+
+type PartialEvent implements EventBase {
+	id: ID!
+	channel: DiscordChannel!
+	owner: PartialUser
+	name: String!
+	summary: String!
+	description: String!
+	imageUrl: String
+	eventType: String
+	location: [String!]!
+	startAt: Date
+	endedAt: Date
+	duration: Int
+	updatedAt: Date!
+	createdAt: Date!
+}
+
+type Event implements EventBase {
+	id: ID!
+	channel: DiscordChannel!
+	owner: PartialUser
+	name: String!
+	summary: String!
+	description: String!
+	imageUrl: String
+	eventType: String
+	location: [String!]!
+	startAt: Date
+	endedAt: Date
+	duration: Int
+	updatedAt: Date!
+	createdAt: Date!
+
+	roles: [EventRsvpRole!]!
+	members: [EventMember!]!
+	settings: EventSettings! @permission(name: CreateEvents)
+	accessType: EventAccessType! @permission(name: CreateEvents)
+	accessRoles: [UserRole!]! @permission(name: CreateEvents)
+	posted: Boolean!
+}
+
+type DiscordChannel {
+	id: ID!
+	name: String!
+	type: String
+}
+
+# Inputs:
+
+input UserStatusEditInput {
+	activity: String
+	ship: String
+}
+
+input EventFilterInput {
+	search: String
+}
+
+input EventSettingsInput {
+	hideLocation: Boolean!
+	inviteOnly: Boolean!
+	openToJoinRequests: Boolean!
+	allowTeamSwitching: Boolean!
+	allowCrewSwitching: Boolean!
+}
+
+input EventRoleInput {
+	id: ID!
+	name: String!
+	limit: Int!
+}
+
+input EventEditInput {
+	channel: ID!
+	name: String!
+	summary: String!
+	description: String!
+	imageUrl: String!
+	eventType: String!
+	location: [String!]!
+	roles: [EventRoleInput!]!
+	settings: EventSettingsInput!
+	startAt: Int!
+	duration: Int!
+}
+
+input SystemEditInput {
+	discordGuildId: String
+}
+
+# Root types:
+
+type Query {
+	# Users
+	getCurrentUser: User
+	getUser(id: ID!): User
+	getUserScVerifyCode: String
+
+	# Events
+	getEvent(id: ID!): Event
+	getEvents(filter: EventFilterInput, page: Int, limit: Int): PagedEvent
+
+	# Roles
+	getPrimaryRoles: [UserRole!]!
+	getAllRoles: [UserRole!]! @permission(name: ManageRoles)
+
+	# System
+	getAllEventChannels: [DiscordChannel!]!
+	getSystemSettings: SystemSettings! @manages
+	getAllDiscordChannels: [DiscordChannel!]! @permission(name: ManageSystem)
+}
+
+type Mutation {
+	# Users
+	setUserScName(name: String!): User!
+	verifyUserScName(code: String!): User!
+	editUserStatus(data: UserStatusEditInput!): UserStatus!
+
+	# Events
+	createEvent: ID! @permission(name: CreateEvents)
+	editEvent(id: ID!, data: EventEditInput!): Event!
+	postEvent(id: ID!): Boolean!
+
+	# Roles
+	reorderRoles(order: [ID!]!): SystemSettings! @permission(name: ManageRoles)
+
+	# System
+	editEventChannels(channels: [String!]!): [DiscordChannel!]! @permission(name: ManageSystem)
+	editSystem(data: SystemEditInput!): SystemSettings! @permission(name: ManageSystem)
+}
