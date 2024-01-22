@@ -1,6 +1,45 @@
-import { testEvents } from "$lib/data/testEvents";
+import { Queries, apollo } from "$lib/graphql";
+import { user, waitTillUserLoaded } from "$lib/stores/UserStore";
+import { get } from "svelte/store";
 import type { PageLoad } from "./$types";
+import { error } from "@sveltejs/kit";
+import { getLocations } from "$lib/data/locations";
 
-export const load = (async () => {
-	return testEvents[0];
+export const load = (async ({ params }) => {
+	const { data: eventData } = await apollo.query({
+		query: Queries.GET_EVENT,
+		variables: {
+			eventId: params.eventid,
+		},
+	});
+
+	if (!eventData.event) {
+		error(404, "Event not found");
+	}
+
+	const location = eventData.event.location ? getLocations(eventData.event.location) : null;
+
+	await waitTillUserLoaded();
+	const currentUser = get(user);
+	if (currentUser.data && currentUser.data.id == eventData.event.owner?.id) {
+		const { data: eventSettingsData } = await apollo.query({
+			query: Queries.GET_EVENT_SETTINGS,
+			variables: {
+				eventId: eventData.event.id,
+			},
+		});
+
+		return {
+			...eventData.event,
+			...eventSettingsData.event,
+			location,
+			canEdit: true,
+		};
+	}
+
+	return {
+		...eventData.event,
+		location,
+		canEdit: false,
+	};
 }) satisfies PageLoad;
