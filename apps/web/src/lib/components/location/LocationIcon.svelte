@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { AnyLocation } from "$lib/data/locations/types";
+	import type { AnyLocation } from "@frcn/shared/locations";
 	import SystemIcon from "./icons/System.svelte";
 	import PlanetIcon from "./icons/Planet.svelte";
 	import MoonIcon from "./icons/Moon.svelte";

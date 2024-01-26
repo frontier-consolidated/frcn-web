@@ -2,6 +2,11 @@
   "name": "@frcn/shared",
   "version": "0.0.1",
   "type": "module",
+  "exports": {
+    ".": "./index.ts",
+    "./locations": "./locations/index.ts",
+    "./ships.json": "./ships/ships.json"
+  },
   "scripts": {
     "build": "tsc"
   },

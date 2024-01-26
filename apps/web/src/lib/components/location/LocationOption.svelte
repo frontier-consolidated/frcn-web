@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { AnyLocation } from "$lib/data/locations/types";
+	import type { AnyLocation } from "@frcn/shared/locations";
 	import LocationIcon from "./LocationIcon.svelte";
 
 	export let value: AnyLocation;

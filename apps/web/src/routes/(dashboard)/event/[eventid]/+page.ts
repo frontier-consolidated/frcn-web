@@ -1,9 +1,9 @@
 import { get } from "svelte/store";
 import { error } from "@sveltejs/kit";
+import { getLocations } from "@frcn/shared/locations";
 import { Queries, apollo } from "$lib/graphql";
 import { user, waitTillUserLoaded } from "$lib/stores/UserStore";
 import type { PageLoad } from "./$types";
-import { getLocations } from "$lib/data/locations";
 
 export const load = (async ({ params }) => {
 	const { data: eventData } = await apollo.query({
