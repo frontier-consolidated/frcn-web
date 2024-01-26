@@ -12,11 +12,16 @@ const origins = (process.env.ORIGINS ?? "").split(",");
 
 const { server, discordClient } = await createApp({
 	origins,
-	cookieSecret: process.env.COOKIE_SECRET,
-	session: {
-		domain: process.env.DOMAIN,
-		cookie: process.env.SESSION_COOKIE,
-		secret: process.env.SESSION_SECRET,
+	sessionConfig: {
+		session: {
+			domain: process.env.DOMAIN,
+			cookie: process.env.SESSION_COOKIE,
+			secret: process.env.SESSION_SECRET,
+		},
+		deviceTrack: {
+			domain: process.env.DOMAIN,
+			cookie: process.env.DEVICE_TRACK_COOKIE,
+		},
 	},
 });
 
