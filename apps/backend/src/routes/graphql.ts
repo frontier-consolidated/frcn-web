@@ -11,7 +11,7 @@ export default async function route(context: Context) {
 			context: function ({ req }) {
 				return Promise.resolve({
 					user: req.user,
-					appContext: context,
+					app: context,
 				});
 			},
 		})
