@@ -1,7 +1,6 @@
 <script lang="ts">
+	import { data as defaultEmojis } from "@frcn/shared/emojis";
 	import { Button, Dropdown, Search } from "flowbite-svelte";
-
-	import defaultEmojis from "$lib/data/emojis/emojis.json";
 
 	import EmojiCategoryIcon from "./EmojiCategoryIcon.svelte";
 	import EmojiImage from "./EmojiImage.svelte";
