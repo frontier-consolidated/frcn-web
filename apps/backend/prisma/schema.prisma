@@ -24,9 +24,12 @@ model SystemSettings {
 model UserSession {
   sid       String   @id
   data      String   @db.VarChar(4096)
+  deviceId  String
   user      User?    @relation(fields: [userId], references: [id])
   userId    String?
   expiresAt DateTime
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }
 
 model UserSettings {
@@ -93,7 +96,9 @@ model UsersInUserRoles {
 model EventRsvpRole {
   id        String      @id @default(uuid())
   name      String
-  limit     Int
+  emoji     String
+  emojiId   String
+  limit     Int         @default(0)
   members   EventUser[]
   event     Event       @relation(fields: [eventId], references: [id])
   eventId   String
@@ -102,7 +107,7 @@ model EventRsvpRole {
 }
 
 model EventUser {
-  id        Int           @id @default(autoincrement())
+  id        String        @id @default(uuid())
   pending   Boolean
   user      User          @relation(fields: [userId], references: [id])
   userId    String
@@ -128,29 +133,33 @@ model EventSettings {
 }
 
 model Event {
-  id               String                        @id @default(uuid())
-  owner            User                          @relation(fields: [ownerId], references: [id])
-  ownerId          String
-  channel          EventChannel                  @relation(fields: [channelId], references: [id])
-  channelId        Int
-  discordMessageId String?
-  name             String
-  summary          String
-  description      String                        @db.VarChar(4096)
-  imageUrl         String?                       @db.VarChar(2048)
-  eventType        String?
-  location         String[]
-  roles            EventRsvpRole[]
-  members          EventUser[]
-  settings         EventSettings?
-  accessType       String
-  accessRoles      EventsWithUserRoleForAccess[]
-  startAt          Int?
-  endedAt          Int?
-  duration         Int?
-  posted           Boolean
-  updatedAt        DateTime                      @updatedAt
-  createdAt        DateTime                      @default(now())
+  id                    String                        @id @default(uuid())
+  owner                 User                          @relation(fields: [ownerId], references: [id])
+  ownerId               String
+  channel               EventChannel                  @relation(fields: [channelId], references: [id])
+  channelId             Int
+  discordThreadId       String?
+  discordRoleId         String?
+  discordEventMessageId String?
+  discordStartMessageId String?
+  discordMentions       String[]
+  name                  String
+  summary               String
+  description           String                        @db.VarChar(4096)
+  imageUrl              String?                       @db.VarChar(2084)
+  eventType             String?
+  location              String[]
+  roles                 EventRsvpRole[]
+  members               EventUser[]
+  settings              EventSettings?
+  accessType            String
+  accessRoles           EventsWithUserRoleForAccess[]
+  startAt               DateTime?
+  endedAt               DateTime?
+  duration              Int?
+  posted                Boolean
+  updatedAt             DateTime                      @updatedAt
+  createdAt             DateTime                      @default(now())
 }
 
 model EventsWithUserRoleForAccess {
@@ -168,4 +177,6 @@ model EventChannel {
   discordId      String          @unique
   events         Event[]
   systemSettings SystemSettings?
+  updatedAt      DateTime        @updatedAt
+  createdAt      DateTime        @default(now())
 }
