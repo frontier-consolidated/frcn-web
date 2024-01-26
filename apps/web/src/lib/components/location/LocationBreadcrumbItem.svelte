@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { AnyLocation } from "$lib/data/locations/types";
 	import { BreadcrumbItem } from "flowbite-svelte";
+	import type { AnyLocation } from "$lib/data/locations/types";
 	import LocationIcon from "./LocationIcon.svelte";
 
 	export let location: AnyLocation;

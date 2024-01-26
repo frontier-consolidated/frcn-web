@@ -1,3 +1,7 @@
 {
-	"ignorePatterns": ["**/__generated__"]
+	"ignorePatterns": ["**/__generated__"],
+	"rules": {
+		"import/no-named-as-default-member": "off",
+		"require-await": "error"
+	}
 }

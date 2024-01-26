@@ -19,5 +19,30 @@
 				"parser": "@typescript-eslint/parser"
 			}
 		}
-	]
+	],
+	"rules": {
+		"import/no-unresolved": [
+			"error",
+			{
+				"ignore": ["^\\$app/.+"]
+			}
+		],
+		"import/order": [
+			"warn",
+			{
+				"pathGroups": [
+					{
+						"pattern": "$app/**",
+						"group": "external"
+					},
+					{
+						"pattern": "$lib/**",
+						"group": "sibling"
+					}
+				]
+			}
+		],
+		"@typescript-eslint/no-explicit-any": "off",
+		"svelte/no-at-html-tags": "warn"
+	}
 }

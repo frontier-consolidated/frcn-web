@@ -1,6 +1,8 @@
 .DS_Store
 node_modules
 
+**/__generated__
+
 .env
 .env.*
 !.env.example

@@ -1,7 +1,8 @@
 import { REST, Routes, RESTPostOAuth2AccessTokenResult, APIUser } from "discord.js";
+
 import { RouteContext } from "../routeContext";
+import { $users } from "../services/users";
 import { getHostname } from "../utils/urls";
-import { users } from "../services/users";
 
 export default function route(context: RouteContext) {
 	const clientId = process.env.DISCORD_CLIENTID;
@@ -70,7 +71,7 @@ export default function route(context: RouteContext) {
 				authPrefix: "Bearer",
 			})) as APIUser;
 
-			const user = await users.getOrCreateUser(discordUser);
+			const user = await $users.getOrCreateUser(discordUser);
 			await req.login(user);
 		} catch (err) {
 			next(err);
