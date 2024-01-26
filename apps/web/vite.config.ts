@@ -3,6 +3,9 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
 	plugins: [sveltekit()],
+	resolve: {
+		mainFields: ["browser", "module", "jsnext:main", "jsnext"],
+	},
 	optimizeDeps: {
 		exclude: [
 			"codemirror",
