@@ -6,107 +6,111 @@
 		CaretRightSolid,
 		CloseSolid,
 	} from "flowbite-svelte-icons";
+	import { strings, EventTypeOptions } from "@frcn/shared";
 	import DatetimePicker from "$lib/components/datetime/DatetimePicker.svelte";
 	import DurationPicker from "$lib/components/datetime/DurationPicker.svelte";
 	import LocationSelectUl from "$lib/components/location/LocationSelectUl.svelte";
 	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
+	import MarkdownEditor from "$lib/components/markdown/MarkdownEditor.svelte";
 	import type { PageData } from "./$types";
 	import RsvpTable from "./RSVPTable.svelte";
-	import MarkdownEditor from "$lib/components/markdown/MarkdownEditor.svelte";
-	import { EventTypeOptions } from "$lib/data/enums";
+	import { Mutations, apollo } from "$lib/graphql";
+	import { checkIfDirty, cloneEventSettingsData } from "./settings";
+	import { getLocations } from "$lib/data/locations";
+	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
+
+	const urlPattern =
+		"[Hh][Tt][Tt][Pp][Ss]?://(?:(?:[a-zA-Z\u00a1-\uffff0-9]+-?)*[a-zA-Z\u00a1-\uffff0-9]+)(?:.(?:[a-zA-Z\u00a1-\uffff0-9]+-?)*[a-zA-Z\u00a1-\uffff0-9]+)*(?:.(?:[a-zA-Z\u00a1-\uffff]{2,}))(?::d{2,5})?(?:/[^s]*)?";
 
 	export let data: PageData;
-
-	function cloneEventSettingsData(data: PageData) {
-		return {
-			name: data.name,
-			summary: data.summary,
-			description: data.description,
-			eventType: data.eventType,
-			location: data.location ? [...data.location] : [],
-			roles: structuredClone(data.roles),
-			settings: structuredClone(data.settings)!,
-			startAt: data.startAt,
-			duration: data.duration,
-		};
-	}
-
-	type MutableData = ReturnType<typeof cloneEventSettingsData>;
 	let editData = cloneEventSettingsData(data);
-
-	function checkIfDirty(source: PageData, mutable: MutableData) {
-		let clean = true;
-		let diff: string[] = [];
-		for (const key of Object.keys(mutable) as (keyof typeof mutable)[]) {
-			switch (key) {
-				case "location":
-					{
-						const mutableLocation = mutable.location.map((loc) => loc.name).join("/");
-						const sourceLocation = source.location?.map((loc) => loc.name).join("/");
-						const valueClean = mutableLocation === sourceLocation;
-						if (!valueClean) diff.push(key);
-						clean &&= valueClean;
-					}
-					break;
-				case "settings":
-					{
-						for (const setting of Object.keys(
-							mutable.settings
-						) as (keyof typeof mutable.settings)[]) {
-							const valueClean =
-								mutable.settings[setting] === source.settings?.[setting];
-							if (!valueClean) diff.push(key + "." + setting);
-							clean &&= valueClean;
-						}
-					}
-					break;
-				case "roles":
-					{
-						const valueClean = mutable.roles.length === source.roles.length;
-						if (!valueClean) diff.push(key + ".length");
-
-						clean &&= valueClean;
-						if (clean)
-							for (const role of mutable.roles) {
-								const sourceRole = source.roles.find((r) => r.id === role.id);
-								if (sourceRole) {
-									const nameClean = sourceRole.name === role.name;
-									const limitClean = sourceRole.limit === role.limit;
-
-									if (!nameClean) diff.push(key + "." + role.id + ".name");
-									if (!limitClean) diff.push(key + "." + role.id + ".limit");
-
-									clean &&= nameClean && limitClean;
-								} else {
-									diff.push(key + "." + role.id);
-									clean = false;
-								}
-							}
-					}
-					break;
-				default:
-					{
-						const valueClean = mutable[key] == source[key];
-						if (!valueClean) diff.push(key);
-						clean &&= valueClean;
-					}
-					break;
-			}
-		}
-		console.log(clean, diff);
-		return !clean;
-	}
-
-	function save() {
-		data = { ...data, ...editData };
-		editData = cloneEventSettingsData(data);
-	}
 
 	let isDirty = false;
 	$: isDirty = checkIfDirty(data, editData);
 
 	let startDate: Date | null = editData.startAt ? new Date(editData.startAt) : null;
 	$: if (startDate) editData.startAt = startDate.getTime();
+
+	async function save() {
+		const { data: updatedData, errors } = await apollo.mutate({
+			mutation: Mutations.EDIT_EVENT,
+			variables: {
+				eventId: data.id,
+				data: {
+					channel: editData.channel.id,
+					name: editData.name,
+					summary: editData.summary,
+					description: editData.description,
+					imageUrl: editData.imageUrl,
+					eventType: editData.eventType!,
+					location: editData.location.map((loc) => loc.name),
+					startAt: editData.startAt!,
+					duration: editData.duration!,
+					roles: editData.roles.map((r) => ({
+						id: r.id,
+						name: r.name,
+						limit: r.limit,
+						emoji: r.emoji.name,
+						emojiId: r.emoji.id,
+					})),
+					mentions: editData.mentions.map((mention) => mention.id),
+					settings: {
+						hideLocation: editData.settings.hideLocation,
+						inviteOnly: editData.settings.inviteOnly,
+						openToJoinRequests: editData.settings.openToJoinRequests,
+						allowCrewSwitching: editData.settings.allowCrewSwitching,
+						allowTeamSwitching: editData.settings.allowTeamSwitching,
+					},
+					accessType: editData.accessType,
+					accessRoles: editData.accessRoles.map((role) => role.id),
+				},
+			},
+			errorPolicy: "all",
+		});
+
+		if (errors && errors.length > 0) {
+			pushNotification({
+				type: "error",
+				message: "Failed to save",
+			});
+			console.error(errors);
+			return false;
+		}
+
+		const location = updatedData?.event?.location
+			? getLocations(updatedData?.event?.location)
+			: null;
+		data = { ...data, ...updatedData?.event, location } as PageData;
+		editData = cloneEventSettingsData(data);
+		return true;
+	}
+
+	async function post() {
+		if (isDirty) {
+			if (!(await save())) return;
+		}
+
+		const { data: postData, errors } = await apollo.mutate({
+			mutation: Mutations.POST_EVENT,
+			variables: {
+				eventId: data.id,
+			},
+			errorPolicy: "all",
+		});
+
+		if (!postData?.success || (errors && errors.length > 0)) {
+			pushNotification({
+				type: "error",
+				message: "Failed to post",
+			});
+			console.error(errors);
+			return false;
+		}
+
+		window.location.reload();
+		return true;
+	}
 </script>
 
 <div>
@@ -120,7 +124,7 @@
 						<Label for="event-type" class="mb-2">Event Type</Label>
 						<BetterSelect
 							id="event-type"
-							name="type"
+							name="Event Type"
 							options={EventTypeOptions}
 							required
 							bind:value={editData.eventType}
@@ -130,7 +134,7 @@
 						<Label for="event-name" class="mb-2">Event Name</Label>
 						<Input
 							id="event-name"
-							name="name"
+							name="Event Name"
 							type="text"
 							placeholder="Event name"
 							required
@@ -141,7 +145,7 @@
 						<Label for="event-summary" class="mb-2">Event Summary</Label>
 						<Input
 							id="event-summary"
-							name="summary"
+							name="Event Summary"
 							type="text"
 							placeholder="Event summary"
 							required
@@ -151,19 +155,33 @@
 							This is used on the events page and as a description in link embeds
 						</Helper>
 					</div>
+					<div>
+						<Label for="event-image" class="mb-2">Event Image</Label>
+						<Input
+							id="event-image"
+							name="Event Image"
+							type="text"
+							placeholder="https://example.com/image.png"
+							pattern={urlPattern}
+							required
+							bind:value={editData.imageUrl}
+						/>
+					</div>
 					<Alert color="red" class="py-1">
 						<span slot="icon">
 							<InfoCircleSolid slot="icon" size="sm" />
 							<span class="sr-only">Info</span>
 						</span>
 						<p class="font-medium"
-							>NOTE: Event name and summary will be visible to anyone with a link to
-							the event</p
+							>NOTE: Event name, summary and image will be visible to anyone with a
+							link to the event</p
 						>
 					</Alert>
 					<div>
-						<Label class="mb-2">Event Description</Label>
+						<Label for="event-description" class="mb-2">Event Description</Label>
 						<MarkdownEditor
+							id="event-description"
+							name="Event Description"
 							placeholder="Describe the event"
 							bind:value={editData.description}
 						/>
@@ -176,13 +194,18 @@
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Label for="event-start" class="mb-2">Event Start</Label>
-						<DatetimePicker id="event-start" name="start" bind:value={startDate} />
+						<DatetimePicker
+							id="event-start"
+							name="Event Start Datetime"
+							disable="past"
+							bind:value={startDate}
+						/>
 					</div>
 					<div>
 						<Label for="event-duration" class="mb-2">Event Duration</Label>
 						<DurationPicker
 							id="event-duration"
-							name="duration"
+							name="Event Duration"
 							bind:value={editData.duration}
 						/>
 					</div>
@@ -217,12 +240,12 @@
 						<BetterSelect
 							id="event-access"
 							name="type"
-							options={[
-								{ value: "COMMUNITY", name: "Anyone" },
-								{ value: "ORG", name: "Org Members" },
-								{ value: "ROLES", name: "Roles" },
-							]}
+							options={Object.values(EventAccessType).map((type) => ({
+								value: type,
+								name: strings.toTitleCase(type),
+							}))}
 							required
+							bind:value={editData.accessType}
 						/>
 					</div>
 					<div>
@@ -275,7 +298,7 @@
 		<span class="text-lg font-semibold dark:text-primary-500">Event RSVPs</span>
 		<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
 		<div class="p-4">
-			<RsvpTable bind:value={editData.roles} />
+			<RsvpTable {data} bind:value={editData.roles} />
 		</div>
 	</section>
 	<div class="flex justify-end items-center gap-2">
@@ -304,10 +327,10 @@
 				<EditOutline class="me-2" /> Save Draft
 			</Button>
 			<Button
-				disabled={!isDirty}
+				disabled={data.posted}
 				on:click={() => {
-					if (!isDirty) return;
-					save();
+					if (data.posted) return;
+					post();
 				}}
 			>
 				<CaretRightSolid class="me-2" /> Post
