@@ -63,10 +63,6 @@
 	function init(el: HTMLElement) {
 		input = el;
 	}
-
-	function selectAll(target: EventTarget | null) {
-		// (target as HTMLInputElement | null)?.select();
-	}
 </script>
 
 <div id="{id}-ref" use:init>
@@ -75,7 +71,6 @@
 		{id}
 		placeholder="Select date and time"
 		bind:value={inputValue}
-		on:click={(ev) => selectAll(ev.target)}
 	>
 		<CalendarEditSolid slot="left" size="sm" class="ms-1" />
 	</Input>
