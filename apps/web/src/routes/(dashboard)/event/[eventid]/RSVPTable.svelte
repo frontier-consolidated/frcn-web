@@ -1,13 +1,14 @@
 <script lang="ts">
-	import Tooltip from "$lib/components/Tooltip.svelte";
 	import { Table, TableBody, TableHead, TableHeadCell, Button } from "flowbite-svelte";
+	import Tooltip from "$lib/components/Tooltip.svelte";
 	import type { PageData } from "./$types";
 	import RsvpItem from "./RSVPItem.svelte";
 
+	export let data: PageData;
 	export let value: PageData["roles"] = [];
 </script>
 
-<Table>
+<Table divClass="relative">
 	<TableHead>
 		<TableHeadCell class="w-16">
 			<div class="flex items-center">
@@ -29,7 +30,7 @@
 	<TableBody tableBodyClass="divide-y">
 		{#each value as role}
 			{#key role.id}
-				<RsvpItem bind:roles={value} {role} />
+				<RsvpItem {data} bind:roles={value} {role} />
 			{/key}
 		{/each}
 	</TableBody>
@@ -43,6 +44,10 @@
 				{
 					id,
 					name: "",
+					emoji: {
+						id: "white_check_mark",
+						name: "white_check_mark",
+					},
 					limit: 0,
 				},
 			];
