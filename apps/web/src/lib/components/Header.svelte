@@ -15,6 +15,8 @@
 		InfoCircleSolid,
 		ChevronDownOutline,
 		CalendarMonthSolid,
+		DiscordSolid,
+		BagSolid,
 	} from "flowbite-svelte-icons";
 
 	import logo from "$lib/images/logo.png";
@@ -74,7 +76,8 @@
 		</NavLi>
 		<Dropdown class="w-full lg:w-44 z-20">
 			<DropdownItem href="/about">About Us</DropdownItem>
-			<DropdownItem href="https://discord.com/invite/frcn">Join Our Discord</DropdownItem>
+			<DropdownItem href="https://loudguns.teemill.com/" class="flex items-center"><BagSolid size="sm" class="me-2" /> Merch Store</DropdownItem>
+			<DropdownItem href="https://discord.com/invite/frcn" class="flex items-center"><DiscordSolid size="sm" class="me-2" /> Join Our Discord</DropdownItem>
 		</Dropdown>
 	</NavUl>
 </Navbar>

@@ -132,6 +132,7 @@ type Event {
 	updatedAt: Timestamp!
 	createdAt: Timestamp!
 
+	rsvp: EventMember
 	roles: [EventRsvpRole!]!
 	members: [EventMember!]!
 	mentions: [ID!]! @permission(has: CreateEvents)

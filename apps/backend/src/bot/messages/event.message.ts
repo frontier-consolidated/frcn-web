@@ -68,8 +68,13 @@ export async function buildEventMessage(id: string, client: Client) {
 	const eventEmbed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
 		.setTitle(`:calendar_spiral: ${event.name}`)
-		.setDescription(event.description);
-
+		.setDescription(event.description)
+		.addFields({
+			name: "Event Type",
+			value: strings.toTitleCase(event.eventType)
+		})
+	
+	
 	if (!event.settings.hideLocation) {
 		const locations = getLocations(event.location)
 
@@ -78,6 +83,8 @@ export async function buildEventMessage(id: string, client: Client) {
 			value: locations.map((loc) => `${getLocationEmoji(loc)} **${strings.toTitleCase(loc.name)}**`.trim()).join(" > "),
 		});
 	}
+
+	event.roles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
 
 	eventEmbed
 		.addFields(

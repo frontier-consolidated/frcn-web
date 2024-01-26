@@ -120,8 +120,15 @@ export const eventResolvers: Resolvers = {
 
 			return source._model.location;
 		},
+		async rsvp(source: WithModel<GQLEvent, Event>, args, context) {
+			if (!context.user) return null;
+			const currentRsvp = await $events.getUserRsvp(source._model, context.user)
+			if (!currentRsvp) return null;
+			return resolveEventMember(currentRsvp)
+		},
 		async roles(source: WithModel<GQLEvent, Event>, args, context) {
 			const rsvpRoles = await database.event.getRoles(source._model);
+			rsvpRoles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
 			return rsvpRoles.map((role) => resolveEventRsvpRole(role, context));
 		},
 		async members(source: WithModel<GQLEvent, Event>) {

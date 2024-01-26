@@ -75,21 +75,53 @@ async function eventInteraction(interaction: ButtonInteraction | AnySelectMenuIn
 }
 
 async function eventDmInteraction(interaction: ButtonInteraction | AnySelectMenuInteraction) {
+    if (!interaction.customId.startsWith("unrsvp-")) return;
+        
+    await interaction.deferReply()
+    
+    const eventId = interaction.customId.substring(7)
+    
+    const event = await $events.getEvent(eventId)
+    if (!event) {
+        await interaction.editReply({
+            ...buildErrorMessage("Action failed! Could not find event in database"),
+        })
+        return;
+    }
 
+    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user))
+    await $events.unrsvpForEvent(event, user, interaction.client);
+
+    const payload = buildUnrsvpMessage()
+    await interaction.editReply({
+        ...payload,
+    })
 }
 
 export function load(client: Client) {
     client.on("interactionCreate", async (interaction) => {
         if (interaction.user.bot) return;
-
         
         if (interaction.type === InteractionType.MessageComponent) {
-            if (interaction.channel.isDMBased()) {
+            if (interaction.channel?.isDMBased()) {
                 await eventDmInteraction(interaction)
-                return;
+            } else {
+                await eventInteraction(interaction)
             }
 
-            await eventInteraction(interaction)
+            if (!interaction.replied) {
+                const payload = {
+                    ...buildErrorMessage("Unknown action"),
+                    ephemeral: true
+                }
+
+                if (interaction.deferred) {
+                    interaction.editReply(payload)
+                } else {
+                    interaction.reply(payload)
+                }
+            }
         }
+
     })
 }

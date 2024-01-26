@@ -9,8 +9,8 @@
 	import ViewMore from "$lib/components/ViewMore.svelte";
 
 	import type { PageData } from "./$types";
-	import EventMemberList from "./EventMemberList.svelte";
 	import EventSettings from "./EventSettings.svelte";
+	import EventSidebar from "./EventSidebar.svelte";
 
 	export let data: PageData;
 
@@ -28,12 +28,13 @@
 	/>
 </svelte:head>
 
-<section class="flex gap-8">
-	<EventMemberList bind:data />
+<section class="flex flex-col lg:flex-row gap-8">
+	<EventSidebar bind:data />
 
 	<section class="flex-1 flex flex-col gap-4 py-2">
-		<h1 class="text-2xl font-semibold dark:text-white">{data.name ? data.name : "New Event"}</h1
-		>
+		<h1 class="text-2xl font-semibold dark:text-white">
+			{data.name ? data.name : "New Event"}
+		</h1>
 		<Breadcrumb
 			ariaLabel="Event Type and Location"
 			olClass="inline-flex flex-wrap items-center space-x-1 md:space-x-3 rtl:space-x-reverse"
@@ -78,6 +79,9 @@
 				{/if}
 			</span>
 		</div>
+		{#if data.imageUrl}
+			<img src={data.imageUrl} alt="{data.name} thumbnail" class="rounded-lg max-w-[40rem]" />
+		{/if}
 		<div class="max-w-[60rem]">
 			<h2 class="text-lg font-semibold dark:text-white mt-4">Details</h2>
 			<ViewMore>

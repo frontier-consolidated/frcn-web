@@ -118,7 +118,7 @@
 </script>
 
 <div>
-	<div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-6">
+	<div class="flex flex-col md:grid md:grid-cols-2 md:gap-6">
 		<div>
 			<section>
 				<span class="text-lg font-semibold dark:text-primary-500"> General Settings </span>

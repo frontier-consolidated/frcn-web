@@ -68,6 +68,7 @@ export type Event = {
   owner: User;
   posted: Scalars['Boolean']['output'];
   roles: Array<EventRsvpRole>;
+  rsvp?: Maybe<EventMember>;
   settings: EventSettings;
   startAt?: Maybe<Scalars['Timestamp']['output']>;
   summary: Scalars['String']['output'];
@@ -517,6 +518,7 @@ export type EventResolvers<ContextType = Context, ParentType extends ResolversPa
   owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   posted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   roles?: Resolver<Array<ResolversTypes['EventRsvpRole']>, ParentType, ContextType>;
+  rsvp?: Resolver<Maybe<ResolversTypes['EventMember']>, ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['EventSettings'], ParentType, ContextType>;
   startAt?: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

@@ -1,3 +1,4 @@
+import { Permission, hasPermission } from "@frcn/shared";
 import { getLocations } from "@frcn/shared/locations";
 import { error } from "@sveltejs/kit";
 import { get } from "svelte/store";
@@ -8,6 +9,7 @@ import { user, waitTillUserLoaded } from "$lib/stores/UserStore";
 
 import type { PageLoad } from "./$types";
 
+const editingEnabled = true
 
 export const load = (async ({ params }) => {
 	const { data: eventData } = await apollo.query({
@@ -23,33 +25,35 @@ export const load = (async ({ params }) => {
 
 	const location = eventData.event.location ? getLocations(eventData.event.location) : null;
 
-	await waitTillUserLoaded();
-	const currentUser = get(user);
-	if (currentUser.data && currentUser.data.id == eventData.event.owner?.id) {
-		const { data: eventSettingsData, errors } = await apollo.query({
-			query: Queries.GET_EVENT_SETTINGS,
-			variables: {
-				eventId: eventData.event.id,
-			},
-			errorPolicy: "all",
-		});
-
-		if (!eventSettingsData) {
-			console.error(errors);
-			throw new Error("MISSING DATA");
+	if (editingEnabled) {
+		await waitTillUserLoaded();
+		const currentUser = get(user);
+		if (currentUser.data && (currentUser.data.id == eventData.event.owner?.id || hasPermission(currentUser.data.permissions, Permission.CreateEvents))) {
+			const { data: eventSettingsData, errors } = await apollo.query({
+				query: Queries.GET_EVENT_SETTINGS,
+				variables: {
+					eventId: eventData.event.id,
+				},
+				errorPolicy: "all",
+			});
+	
+			if (!eventSettingsData) {
+				console.error(errors);
+				throw new Error("MISSING DATA");
+			}
+	
+			return {
+				...eventData.event,
+				...eventSettingsData.event,
+				location,
+				canEdit: true,
+				options: {
+					channels: eventSettingsData.eventChannels.filter((channel): channel is DiscordChannel => !!channel),
+					emojis: eventSettingsData.customEmojis,
+					discordRoles: eventSettingsData.discordRoles
+				},
+			};
 		}
-
-		return {
-			...eventData.event,
-			...eventSettingsData.event,
-			location,
-			canEdit: true,
-			options: {
-				channels: eventSettingsData.eventChannels.filter((channel): channel is DiscordChannel => !!channel),
-				emojis: eventSettingsData.customEmojis,
-				discordRoles: eventSettingsData.discordRoles
-			},
-		};
 	}
 
 	return {

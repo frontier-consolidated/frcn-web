@@ -19,6 +19,10 @@ export const EVENT_FRAGMENT = gql(`
         imageUrl
         eventType
         location
+        rsvp {
+            pending
+            rsvp
+        }
         roles {
             id
             name
