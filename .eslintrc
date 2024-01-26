@@ -11,8 +11,8 @@
 	"plugins": ["@typescript-eslint", "import"],
 	"parserOptions": {
 		"sourceType": "module",
-		"ecmaVersion": 2020,
-		"project": ["./apps/*/tsconfig.json", "./packages/*/tsconfig.json"]
+		"ecmaVersion": 2020
+		// "project": ["./apps/*/tsconfig.json", "./packages/*/tsconfig.json"]
 	},
 	"env": {
 		"browser": true,
