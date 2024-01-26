@@ -1,44 +1,68 @@
-import { GraphQLError, GraphQLSchema, defaultFieldResolver } from "graphql";
+import { Permission, hasAllOfPermissions, hasOneOfPermissions, hasPermission } from "@frcn/shared";
 import { mapSchema, getDirective, MapperKind } from "@graphql-tools/utils";
+import { GraphQLSchema, defaultFieldResolver } from "graphql";
+
+import { database } from "../../../database";
+import { $roles } from "../../../services/roles";
 import { Context } from "../../context";
-import { Permission, hasPermission } from "@frcn/shared";
-import { users } from "../../../services/users";
+import { gqlErrorPermission, gqlErrorUnauthenticated } from "../gqlError";
 
 const directiveName = "permission";
 
 interface DirectiveArgs {
-	name: keyof typeof Permission;
+	has?: keyof typeof Permission;
+	one?: (keyof typeof Permission)[];
+	all?: (keyof typeof Permission)[];
 }
 
 export default function directive(schema: GraphQLSchema) {
 	return mapSchema(schema, {
 		[MapperKind.OBJECT_FIELD]: (fieldConfig) => {
-			const args = getDirective(schema, fieldConfig, directiveName)?.[0] as
+			const directiveArgs = getDirective(schema, fieldConfig, directiveName)?.[0] as
 				| DirectiveArgs
 				| undefined;
-			if (!args) return fieldConfig;
+			if (!directiveArgs) return fieldConfig;
 
 			let { resolve: originalResolver } = fieldConfig;
 			originalResolver ??= defaultFieldResolver;
 
-			const permission = Permission[args.name];
+			fieldConfig.resolve = async function (source, args, context: Context, info) {
+				if (!context.user) throw gqlErrorUnauthenticated();
 
-			fieldConfig.resolve = function (source, args, context: Context, info) {
-				if (!context.user)
-					throw new GraphQLError("Must be authenticated", {
-						extensions: {
-							code: "UNAUTHENTICATED",
-						},
-					});
+				const primaryRole = await database.user.getPrimaryRole(context.user);
+				const userRoles = await database.user.getRoles(context.user);
+				const permissions = await $roles.resolvePermissions(primaryRole, userRoles);
 
-				const permissions = users.resolveUserPermissions(context.user);
-				if (!hasPermission(permissions, permission))
-					throw new GraphQLError("Missing permission", {
-						extensions: {
-							code: "MISSING_PERMISSION",
-							missingPermission: args.name,
-						},
+				if (
+					directiveArgs.has &&
+					!hasPermission(permissions, Permission[directiveArgs.has])
+				) {
+					throw gqlErrorPermission(directiveArgs.has);
+				}
+
+				if (
+					directiveArgs.one &&
+					!hasOneOfPermissions(
+						permissions,
+						directiveArgs.one.map((k) => Permission[k])
+					)
+				) {
+					throw gqlErrorPermission({
+						oneOf: directiveArgs.one,
 					});
+				}
+
+				if (
+					directiveArgs.all &&
+					!hasAllOfPermissions(
+						permissions,
+						directiveArgs.all.map((k) => Permission[k])
+					)
+				) {
+					throw gqlErrorPermission({
+						allOf: directiveArgs.all,
+					});
+				}
 
 				return originalResolver(source, args, context, info);
 			};
