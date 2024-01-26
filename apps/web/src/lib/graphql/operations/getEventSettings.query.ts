@@ -5,5 +5,13 @@ export const GET_EVENT_SETTINGS = gql(`
 		event: getEvent(id: $eventId) {
 			...EventSettingsFragment
 		}
+		eventChannels: getAllEventChannels {
+			...ChannelFragment
+		}
+		customEmojis: getAllDiscordEmojis {
+			id
+			name
+			image
+		}
 	}
 `);

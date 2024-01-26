@@ -6,8 +6,9 @@ export const CURRENT_USER = gql(`
 			id
 			name
 			scName
-			avatarUrl
+			discordName
 			verified
+			avatarUrl
 			permissions
 			primaryRole {
 				id

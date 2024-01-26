@@ -12,11 +12,6 @@ export const CURRENT_RSVPS = gql(`
 				}
 				event {
 					id
-					name
-					summary
-					description
-					eventType
-					location
 					owner {
 						id
 						name
@@ -26,6 +21,12 @@ export const CURRENT_RSVPS = gql(`
 						updatedAt
 						createdAt
 					}
+					name
+					summary
+					description
+					imageUrl
+					eventType
+					location
 					duration
 					startAt
 					endedAt

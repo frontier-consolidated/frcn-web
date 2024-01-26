@@ -7,26 +7,30 @@ export const EVENT_FRAGMENT = gql(`
             ...ChannelFragment
         }
         owner {
-            ...EventUserFragment
+            id
+            name
+            discordName
+            avatarUrl
+            verified
         }
         name
         summary
         description
+        imageUrl
         eventType
         location
         roles {
             id
             name
+            emoji {
+                id
+                name
+                image
+            }
             limit
         }
         members {
-            id
-            pending
-            rsvp
-            user {
-                ...EventUserFragment
-            }
-            rsvpAt
+            ...EventMemberFragment
         }
         posted
         duration
