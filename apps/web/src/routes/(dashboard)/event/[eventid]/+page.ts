@@ -4,6 +4,7 @@ import { getLocations } from "@frcn/shared/locations";
 import { Queries, apollo } from "$lib/graphql";
 import { user, waitTillUserLoaded } from "$lib/stores/UserStore";
 import type { PageLoad } from "./$types";
+import type { DiscordChannel } from "$lib/graphql/__generated__/graphql";
 
 export const load = (async ({ params }) => {
 	const { data: eventData } = await apollo.query({
@@ -41,8 +42,9 @@ export const load = (async ({ params }) => {
 			location,
 			canEdit: true,
 			options: {
-				channels: eventSettingsData.eventChannels,
+				channels: eventSettingsData.eventChannels.filter((channel): channel is DiscordChannel => !!channel),
 				emojis: eventSettingsData.customEmojis,
+				discordRoles: eventSettingsData.discordRoles
 			},
 		};
 	}
