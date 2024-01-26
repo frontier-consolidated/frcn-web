@@ -20,7 +20,6 @@
   },
   "dependencies": {
     "@apollo/server": "^4.10.0",
-    "@discordjs/builders": "^1.7.0",
     "@frcn/shared": "workspace:^",
     "@graphql-tools/schema": "^10.0.2",
     "@graphql-tools/utils": "^10.0.12",

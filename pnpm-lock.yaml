@@ -38,9 +38,6 @@ importers:
       '@apollo/server':
         specifier: ^4.10.0
         version: 4.10.0(graphql@16.8.1)
-      '@discordjs/builders':
-        specifier: ^1.7.0
-        version: 1.7.0
       '@frcn/shared':
         specifier: workspace:^
         version: link:../../packages/shared
