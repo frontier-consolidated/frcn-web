@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 
 import { Event, User } from "@prisma/client";
-import { Client as DiscordClient } from "discord.js";
+import { Client as DiscordClient, ThreadAutoArchiveDuration } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
@@ -258,6 +258,7 @@ async function postEvent(id: string, discordClient: DiscordClient) {
 	const event = await database.event.findUnique({
 		where: { id },
 		select: {
+			name: true,
 			channel: true,
 		},
 	});
@@ -267,11 +268,17 @@ async function postEvent(id: string, discordClient: DiscordClient) {
 
 	const payload = await buildEventMessage(id);
 	const eventMessage = await channel.send(payload);
+	const thread = await eventMessage.startThread({
+		name: event.name,
+		reason: "Create thread for event: " + event.name,
+		autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays
+	})
 
 	await database.event.update({
 		where: { id },
 		data: {
 			discordEventMessageId: eventMessage.id,
+			discordThreadId: thread.id,
 			posted: true,
 		},
 	});
