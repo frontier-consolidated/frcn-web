@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import { ChannelType, Client } from "discord.js";
+import { APIUser, ChannelType, Client, User as DJSUser } from "discord.js";
 
 import { $system } from "./system";
 
@@ -24,15 +24,9 @@ async function getAllTextChannels(client: Client) {
 }
 
 async function getChannel(client: Client, id: string) {
-	try {
-		const guild = await getGuild(client);
-		const channel = await guild.channels.fetch(id);
-
-		return channel;
-	} catch (err) {
-		// console.error("Discord Error:", err);
-	}
-	return null;
+	const guild = await getGuild(client);
+	const channel = await guild.channels.fetch(id);
+	return channel;
 }
 
 async function canUserViewChannel(client: Client, user: User | undefined, channelId: string) {
@@ -107,6 +101,16 @@ async function getEmoji(client: Client, id: string) {
 	return null;
 }
 
+function convertDJSUserToAPIUser(user: DJSUser) {
+	return {
+		id: user.id,
+		avatar: user.avatar,
+		discriminator: user.discriminator,
+		global_name: user.globalName,
+		username: user.username,
+	} satisfies APIUser
+}
+
 export const $discord = {
 	getGuild,
 	getAllTextChannels,
@@ -116,4 +120,5 @@ export const $discord = {
 	getRole,
 	getAllEmojis,
 	getEmoji,
+	convertDJSUserToAPIUser
 };

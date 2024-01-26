@@ -21,15 +21,18 @@ export async function resolveDiscordChannel(
 	if (channel instanceof GuildChannel) {
 		guildChannel = channel;
 	} else {
-		guildChannel = (await $discord.getChannel(
-			context.app.discordClient,
-			channel.discordId
-		)) as GuildChannel;
+		try {
+			guildChannel = (await $discord.getChannel(
+				context.app.discordClient,
+				channel.discordId
+			)) as GuildChannel;
+		} catch (err) {
+			if (!guildChannel)
+				throw gqlErrorNotFound(`Discord channel not found: ${channel.discordId}`, {
+					channelId: channel.discordId,
+				}, err);
+		}
 
-		if (!guildChannel)
-			throw gqlErrorNotFound(`Discord channel not found: ${channel.discordId}`, {
-				channelId: channel.discordId,
-			});
 	}
 
 	return {
