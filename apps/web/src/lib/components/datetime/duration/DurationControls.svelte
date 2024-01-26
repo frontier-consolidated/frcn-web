@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Input } from "flowbite-svelte";
 	import { dates } from "@frcn/shared";
+	import { Input } from "flowbite-svelte";
 
 	const hours = new Array(24).fill(0).map((_, index) => index);
 	const minutesAndSeconds = new Array(60).fill(0).map((_, index) => index);

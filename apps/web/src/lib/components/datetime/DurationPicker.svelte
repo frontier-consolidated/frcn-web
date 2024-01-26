@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { dates } from "@frcn/shared";
 	import { Input, Dropdown, DropdownHeader } from "flowbite-svelte";
 	import { ClockSolid } from "flowbite-svelte-icons";
-	import { dates } from "@frcn/shared";
+
 	import DurationControls from "./duration/DurationControls.svelte";
 
 	export let id: string;

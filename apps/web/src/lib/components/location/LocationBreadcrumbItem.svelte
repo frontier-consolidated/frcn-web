@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { BreadcrumbItem } from "flowbite-svelte";
 	import type { AnyLocation } from "@frcn/shared/locations";
+	import { BreadcrumbItem } from "flowbite-svelte";
+
 	import LocationIcon from "./LocationIcon.svelte";
 
 	export let location: AnyLocation;

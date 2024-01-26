@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { Input, TableBodyCell, TableBodyRow } from "flowbite-svelte";
 	import { TrashBinSolid } from "flowbite-svelte-icons";
-	import type { PageData } from "./$types";
+
 	import EmojiPickerInput from "$lib/components/emoji/EmojiPickerInput.svelte";
 	import type { Emoji } from "$lib/components/emoji/types";
+
+	import type { PageData } from "./$types";
 
 	const INFINITY = "∞";
 

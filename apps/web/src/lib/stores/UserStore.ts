@@ -1,5 +1,6 @@
-import { writable, get } from "svelte/store";
 import { browser } from "$app/environment";
+import { writable, get } from "svelte/store";
+
 import { Routes, api } from "$lib/api";
 import { Queries, apollo } from "$lib/graphql";
 import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";

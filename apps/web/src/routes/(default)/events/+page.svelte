@@ -1,7 +1,8 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import { Button, Card, Heading, Timeline, TimelineItem } from "flowbite-svelte";
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
-	import { goto } from "$app/navigation";
+
 	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
 	import { Mutations, apollo } from "$lib/graphql";
 </script>

@@ -1,8 +1,8 @@
 <script lang="ts">
+	import { dates } from "@frcn/shared";
 	import { Button } from "flowbite-svelte";
 	import { ArrowLeftSolid, ArrowRightSolid } from "flowbite-svelte-icons";
 	import { locale } from "svelte-i18n";
-	import { dates } from "@frcn/shared";
 
 	export let viewDate: Date;
 	export let zoomLevel: number;

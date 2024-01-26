@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { Button, Dropdown, Search } from "flowbite-svelte";
+
 	import defaultEmojis from "$lib/data/emojis/emojis.json";
-	import type { Emoji } from "./types";
+
 	import EmojiCategoryIcon from "./EmojiCategoryIcon.svelte";
 	import EmojiImage from "./EmojiImage.svelte";
+	import type { Emoji } from "./types";
 
 	const buttonClass = "p-1 w-9 h-9 rounded hover:bg-gray-50 dark:hover:bg-gray-800";
 	const emojiClass = "w-8 h-8";

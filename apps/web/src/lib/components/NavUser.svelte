@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { createEventDispatcher } from "svelte";
 	import { Avatar, Dropdown, DropdownItem, DropdownDivider, Toggle } from "flowbite-svelte";
+	import { createEventDispatcher } from "svelte";
+
 	import { user } from "$lib/stores/UserStore";
 
 	const dispatch = createEventDispatcher();

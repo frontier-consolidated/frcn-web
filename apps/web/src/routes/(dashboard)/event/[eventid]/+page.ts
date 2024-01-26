@@ -1,10 +1,13 @@
-import { get } from "svelte/store";
-import { error } from "@sveltejs/kit";
 import { getLocations } from "@frcn/shared/locations";
+import { error } from "@sveltejs/kit";
+import { get } from "svelte/store";
+
 import { Queries, apollo } from "$lib/graphql";
-import { user, waitTillUserLoaded } from "$lib/stores/UserStore";
-import type { PageLoad } from "./$types";
 import type { DiscordChannel } from "$lib/graphql/__generated__/graphql";
+import { user, waitTillUserLoaded } from "$lib/stores/UserStore";
+
+import type { PageLoad } from "./$types";
+
 
 export const load = (async ({ params }) => {
 	const { data: eventData } = await apollo.query({

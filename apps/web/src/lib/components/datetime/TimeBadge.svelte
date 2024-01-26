@@ -1,7 +1,7 @@
 <script lang="ts">
+	import { dates } from "@frcn/shared";
 	import { Badge, Popover } from "flowbite-svelte";
 	import { locale } from "svelte-i18n";
-	import { dates } from "@frcn/shared";
 
 	export let id: string;
 	export let format: "duration" | "datetime" | "datetime-relative" = "datetime";

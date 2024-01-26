@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Toast } from "flowbite-svelte";
 	import { ExclamationCircleSolid } from "flowbite-svelte-icons";
+
 	import {
 		notifications,
 		type Notification,

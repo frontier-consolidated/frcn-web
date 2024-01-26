@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { Table, TableBody, TableHead, TableHeadCell, Button } from "flowbite-svelte";
+
 	import Tooltip from "$lib/components/Tooltip.svelte";
+
 	import type { PageData } from "./$types";
 	import RsvpItem from "./RSVPItem.svelte";
 

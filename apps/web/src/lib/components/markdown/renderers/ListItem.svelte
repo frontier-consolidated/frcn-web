@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Tokens } from "marked";
 	import { Li } from "flowbite-svelte";
+	import type { Tokens } from "marked";
 
 	export let token: Tokens.ListItem | Tokens.Generic;
 	token;

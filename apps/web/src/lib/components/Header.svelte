@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from "$app/stores";
 	import {
 		Navbar,
 		NavBrand,
@@ -15,11 +16,12 @@
 		ChevronDownOutline,
 		CalendarMonthSolid,
 	} from "flowbite-svelte-icons";
-	import { page } from "$app/stores";
+
 	import logo from "$lib/images/logo.png";
-	import ScreenQuery from "./ScreenQuery.svelte";
-	import NavUser from "./NavUser.svelte";
 	import { login, logout, user } from "$lib/stores/UserStore";
+
+	import NavUser from "./NavUser.svelte";
+	import ScreenQuery from "./ScreenQuery.svelte";
 
 	$: activeUrl = $page.url.pathname;
 	let activeClass =

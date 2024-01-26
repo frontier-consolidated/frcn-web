@@ -30,6 +30,7 @@
 		"import/order": [
 			"warn",
 			{
+				"groups": ["builtin", "external", "internal", ["parent", "sibling"], "index"],
 				"pathGroups": [
 					{
 						"pattern": "$app/**",
@@ -37,9 +38,14 @@
 					},
 					{
 						"pattern": "$lib/**",
-						"group": "sibling"
+						"group": "internal"
 					}
-				]
+				],
+				"alphabetize": {
+					"order": "asc",
+					"caseInsensitive": true
+				},
+				"newlines-between": "always"
 			}
 		],
 		"@typescript-eslint/no-explicit-any": "off",

@@ -1,14 +1,16 @@
 <script lang="ts">
+	import { strings } from "@frcn/shared";
 	import { Breadcrumb, BreadcrumbItem, Tabs, TabItem } from "flowbite-svelte";
 	import { CalendarMonthSolid } from "flowbite-svelte-icons";
-	import { strings } from "@frcn/shared";
+
 	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
 	import LocationBreadcrumbItem from "$lib/components/location/LocationBreadcrumbItem.svelte";
 	import Markdown from "$lib/components/markdown/Markdown.svelte";
 	import ViewMore from "$lib/components/ViewMore.svelte";
+
 	import type { PageData } from "./$types";
-	import EventSettings from "./EventSettings.svelte";
 	import EventMemberList from "./EventMemberList.svelte";
+	import EventSettings from "./EventSettings.svelte";
 
 	export let data: PageData;
 

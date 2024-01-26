@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { Tokens } from "marked";
 	import { List } from "flowbite-svelte";
+	import type { Tokens } from "marked";
 
 	export let token: Tokens.List | Tokens.Generic;
 	$: start = token.start as number;

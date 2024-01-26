@@ -1,10 +1,9 @@
-import { CURRENT_USER } from "./currentUser.query";
+import { CREATE_EVENT } from "./createEvent.mutation";
 import { CURRENT_RSVPS } from "./currentRsvps.query";
+import { CURRENT_USER } from "./currentUser.query";
+import { EDIT_EVENT } from "./editEvent.mutation";
 import { GET_EVENT } from "./getEvent.query";
 import { GET_EVENT_SETTINGS } from "./getEventSettings.query";
-
-import { CREATE_EVENT } from "./createEvent.mutation";
-import { EDIT_EVENT } from "./editEvent.mutation";
 import { POST_EVENT } from "./postEvent.mutation";
 
 export const Queries = {

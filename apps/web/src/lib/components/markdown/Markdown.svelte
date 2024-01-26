@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Lexer } from "marked";
 	import type { Token } from "marked";
+
 	import Renderer from "./Renderer.svelte";
 
 	export let source: string | Token[];

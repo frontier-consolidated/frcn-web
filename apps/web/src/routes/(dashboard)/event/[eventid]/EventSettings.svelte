@@ -1,12 +1,4 @@
 <script lang="ts">
-	import DatetimePicker from "$lib/components/datetime/DatetimePicker.svelte";
-	import DurationPicker from "$lib/components/datetime/DurationPicker.svelte";
-	import LocationSelectUl from "$lib/components/location/LocationSelectUl.svelte";
-	import MarkdownEditor from "$lib/components/markdown/MarkdownEditor.svelte";
-	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
-	import { Mutations, apollo } from "$lib/graphql";
-	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { strings, EventTypeOptions } from "@frcn/shared";
 	import { getLocations } from "@frcn/shared/locations";
 	import { Alert, Checkbox, Helper, Input, Label, Toggle, Button, } from "flowbite-svelte";
@@ -16,6 +8,15 @@
 		CaretRightSolid,
 		CloseSolid,
 	} from "flowbite-svelte-icons";
+
+	import DatetimePicker from "$lib/components/datetime/DatetimePicker.svelte";
+	import DurationPicker from "$lib/components/datetime/DurationPicker.svelte";
+	import LocationSelectUl from "$lib/components/location/LocationSelectUl.svelte";
+	import MarkdownEditor from "$lib/components/markdown/MarkdownEditor.svelte";
+	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
+	import { Mutations, apollo } from "$lib/graphql";
+	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
+	import { pushNotification } from "$lib/stores/NotificationStore";
 
 	import type { PageData } from "./$types";
 	import RsvpTable from "./RSVPTable.svelte";

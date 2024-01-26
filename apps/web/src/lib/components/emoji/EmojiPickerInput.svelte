@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Button } from "flowbite-svelte";
-	import EmojiPicker from "./EmojiPicker.svelte";
+
 	import EmojiImage from "./EmojiImage.svelte";
+	import EmojiPicker from "./EmojiPicker.svelte";
 	import type { Emoji } from "./types";
 
 	export let init: string = "white_check_mark";

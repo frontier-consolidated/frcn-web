@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Token } from "marked";
+
 	import { renderers } from "./renderers";
 
 	export let tokens: Token[] = [];

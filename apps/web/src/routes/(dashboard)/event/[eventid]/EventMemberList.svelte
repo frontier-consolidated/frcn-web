@@ -13,8 +13,9 @@
 		ArrowLeftToBracketOutline,
 		UsersSolid,
 	} from "flowbite-svelte-icons";
-	import EventMember from "./EventMember.svelte";
+
 	import type { PageData } from "./$types";
+	import EventMember from "./EventMember.svelte";
 
 	export let data: PageData;
 </script>

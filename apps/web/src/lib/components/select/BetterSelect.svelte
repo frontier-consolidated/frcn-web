@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Badge, Dropdown, DropdownItem } from "flowbite-svelte";
 	import { AngleDownSolid, CloseSolid } from "flowbite-svelte-icons";
+
 	import type { Option } from "./types";
 
 	const searchClass = "flex-1 bg-transparent border-transparent w-full text-sm focus:outline-none"

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Avatar, Dropdown, DropdownDivider, DropdownItem } from "flowbite-svelte";
 	import { DotsVerticalOutline, UserRemoveSolid, UserGroupSolid } from "flowbite-svelte-icons";
+
 	import type { PageData } from "./$types";
 
 	export let member: PageData["members"][number];
