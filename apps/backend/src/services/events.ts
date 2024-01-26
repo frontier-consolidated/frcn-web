@@ -4,9 +4,9 @@ import { Event, User } from "@prisma/client";
 import { Client as DiscordClient } from "discord.js";
 
 import { $discord } from "./discord";
-import { buildEventMessage } from "./messages/event.message";
 import { $roles } from "./roles";
 import { $system } from "./system";
+import { buildEventMessage } from "../bot/messages/event.message";
 import { database } from "../database";
 import { EventAccessType, EventEditInput } from "../graphql/__generated__/resolvers-types";
 
