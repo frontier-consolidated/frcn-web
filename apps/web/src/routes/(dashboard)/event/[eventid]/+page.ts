@@ -1,8 +1,8 @@
+import { get } from "svelte/store";
+import { error } from "@sveltejs/kit";
 import { Queries, apollo } from "$lib/graphql";
 import { user, waitTillUserLoaded } from "$lib/stores/UserStore";
-import { get } from "svelte/store";
 import type { PageLoad } from "./$types";
-import { error } from "@sveltejs/kit";
 import { getLocations } from "$lib/data/locations";
 
 export const load = (async ({ params }) => {
@@ -22,18 +22,28 @@ export const load = (async ({ params }) => {
 	await waitTillUserLoaded();
 	const currentUser = get(user);
 	if (currentUser.data && currentUser.data.id == eventData.event.owner?.id) {
-		const { data: eventSettingsData } = await apollo.query({
+		const { data: eventSettingsData, errors } = await apollo.query({
 			query: Queries.GET_EVENT_SETTINGS,
 			variables: {
 				eventId: eventData.event.id,
 			},
+			errorPolicy: "all",
 		});
+
+		if (!eventSettingsData) {
+			console.error(errors);
+			throw new Error("MISSING DATA");
+		}
 
 		return {
 			...eventData.event,
 			...eventSettingsData.event,
 			location,
 			canEdit: true,
+			options: {
+				channels: eventSettingsData.eventChannels,
+				emojis: eventSettingsData.customEmojis,
+			},
 		};
 	}
 
