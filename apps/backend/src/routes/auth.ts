@@ -1,8 +1,8 @@
 import { REST, Routes, RESTPostOAuth2AccessTokenResult, APIUser } from "discord.js";
 
 import { RouteContext } from "../routeContext";
+import { getHostname } from "../env";
 import { $users } from "../services/users";
-import { getHostname } from "../utils/urls";
 
 export default function route(context: RouteContext) {
 	const clientId = process.env.DISCORD_CLIENTID;

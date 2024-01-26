@@ -1,5 +1,5 @@
 import { createApp } from "./app";
-import { getHostname } from "./utils/urls";
+import { getHostname } from "./env";
 
 const origins = (process.env.ORIGINS ?? "").split(",");
 {
