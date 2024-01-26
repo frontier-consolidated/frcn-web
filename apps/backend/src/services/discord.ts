@@ -1,9 +1,10 @@
-import { ChannelType, Client } from "discord.js";
-import { system } from "./system";
 import { User } from "@prisma/client";
+import { ChannelType, Client } from "discord.js";
+
+import { $system } from "./system";
 
 async function getGuild(client: Client) {
-	const { discordGuildId } = await system.getSystemSettings();
+	const { discordGuildId } = await $system.getSystemSettings();
 
 	return await client.guilds.fetch(discordGuildId);
 }
@@ -17,7 +18,7 @@ async function getAllTextChannels(client: Client) {
 
 		return Array.from(textChannels.values());
 	} catch (err) {
-		console.error("Discord Error:", err);
+		// console.error("Discord Error:", err);
 	}
 	return [];
 }
@@ -29,7 +30,7 @@ async function getChannel(client: Client, id: string) {
 
 		return channel;
 	} catch (err) {
-		console.error("Discord Error:", err);
+		// console.error("Discord Error:", err);
 	}
 	return null;
 }
@@ -53,13 +54,66 @@ async function canUserViewChannel(client: Client, user: User | undefined, channe
 			return channel.members.has(guildMember.id);
 		}
 	} catch (err) {
-		console.error("Discord Error:", err);
+		// console.error("Discord Error:", err);
 	}
 	return false;
 }
 
-export const discord = {
+async function getAllRoles(client: Client) {
+	try {
+		const guild = await getGuild(client);
+		const roles = await guild.roles.fetch();
+
+		return Array.from(roles.values());
+	} catch (err) {
+		// console.error("Discord Error:", err);
+	}
+	return [];
+}
+
+async function getRole(client: Client, id: string) {
+	try {
+		const guild = await getGuild(client);
+		const role = await guild.roles.fetch(id);
+
+		return role;
+	} catch (err) {
+		// console.error("Discord Error:", err);
+	}
+	return null;
+}
+
+async function getAllEmojis(client: Client) {
+	try {
+		const guild = await getGuild(client);
+		const emojis = await guild.emojis.fetch();
+
+		return Array.from(emojis.values());
+	} catch (err) {
+		// console.error("Discord Error:", err);
+	}
+	return [];
+}
+
+async function getEmoji(client: Client, id: string) {
+	try {
+		const guild = await getGuild(client);
+		const emoji = await guild.emojis.fetch(id);
+
+		return emoji;
+	} catch (err) {
+		// console.error("Discord Error:", err);
+	}
+	return null;
+}
+
+export const $discord = {
+	getGuild,
 	getAllTextChannels,
 	getChannel,
 	canUserViewChannel,
+	getAllRoles,
+	getRole,
+	getAllEmojis,
+	getEmoji,
 };

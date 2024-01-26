@@ -8,6 +8,6 @@ async function getSystemSettings() {
 	});
 }
 
-export const system = {
+export const $system = {
 	getSystemSettings,
 };
