@@ -1,10 +1,10 @@
-import type { UserWithInclude } from "../src/services/users";
+import type { User as DatabaseUser } from "@prisma/client";
 
 export {};
 
 declare global {
 	namespace Express {
-		interface User extends UserWithInclude {}
+		interface User extends DatabaseUser {}
 
 		interface Request {
 			user?: User;
