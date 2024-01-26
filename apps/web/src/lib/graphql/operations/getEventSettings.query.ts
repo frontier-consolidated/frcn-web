@@ -13,5 +13,10 @@ export const GET_EVENT_SETTINGS = gql(`
 			name
 			image
 		}
+		discordRoles: getAllDiscordRoles {
+			id
+			name
+			color
+		}
 	}
 `);

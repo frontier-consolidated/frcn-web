@@ -2,11 +2,7 @@ import { gql } from "$lib/graphql/__generated__";
 
 export const EVENT_SETTINGS_FRAGMENT = gql(`
     fragment EventSettingsFragment on Event {
-        mentions {
-            id
-            name
-            color
-        }
+        mentions
         settings {
             hideLocation
             inviteOnly
