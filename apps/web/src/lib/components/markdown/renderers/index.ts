@@ -5,7 +5,6 @@ import Codespan from "./Codespan.svelte";
 import Em from "./Em.svelte";
 import Heading from "./Heading.svelte";
 import Hr from "./Hr.svelte";
-import Image from "./Image.svelte";
 import Link from "./Link.svelte";
 import List from "./List.svelte";
 import ListItem from "./ListItem.svelte";
@@ -22,7 +21,7 @@ export const renderers = {
 	em: Em,
 	heading: Heading,
 	hr: Hr,
-	image: Image,
+	// image: Image, don't support
 	link: Link,
 	list: List,
 	listitem: ListItem,
