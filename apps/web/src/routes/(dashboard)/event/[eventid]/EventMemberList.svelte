@@ -19,7 +19,7 @@
 	export let data: PageData;
 </script>
 
-<Sidebar asideClass="w-64 max-h-screen">
+<Sidebar asideClass="shrink-0 w-64 max-h-screen">
 	<SidebarWrapper>
 		<SidebarGroup>
 			<SidebarItem href="/events" label="Back To Events">
