@@ -24,3 +24,10 @@ export function hasOneOfPermissions(permissions: number, oneOf: Permission[]) {
 	}
 	return false;
 }
+
+export function hasAllOfPermissions(permissions: number, allOf: Permission[]) {
+	for (const permission of allOf) {
+		if (!hasPermission(permissions, permission)) return false;
+	}
+	return true;
+}
