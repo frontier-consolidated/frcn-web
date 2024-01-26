@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Breadcrumb, BreadcrumbItem, Tabs, TabItem } from "flowbite-svelte";
 	import { CalendarMonthSolid } from "flowbite-svelte-icons";
+	import { strings } from "@frcn/shared";
 	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
 	import LocationBreadcrumbItem from "$lib/components/location/LocationBreadcrumbItem.svelte";
 	import Markdown from "$lib/components/markdown/Markdown.svelte";
@@ -12,16 +13,7 @@
 	export let data: PageData;
 
 	let isFutureEvent = data.startAt ? new Date(data.startAt) >= new Date() : true;
-	$: eventType = data.eventType ? toTitleCase(data.eventType) : null;
-
-	function toTitleCase(str: string) {
-		return str
-			.toLowerCase()
-			.replaceAll("_", " ")
-			.split(" ")
-			.map((word) => word[0].toUpperCase() + word.slice(1))
-			.join(" ");
-	}
+	$: eventType = data.eventType ? strings.toTitleCase(data.eventType) : null;
 </script>
 
 <svelte:head>
@@ -34,7 +26,7 @@
 	/>
 </svelte:head>
 
-<section class="flex space-x-8">
+<section class="flex gap-8">
 	<EventMemberList bind:data />
 
 	<section class="flex-1 flex flex-col gap-4 py-2">
