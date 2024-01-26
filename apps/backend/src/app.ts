@@ -8,9 +8,9 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 
+import { Context } from "./context";
 import { createDiscordClient } from "./discordClient";
 import { createApolloServer } from "./graphql";
-import { RouteContext } from "./routeContext";
 import { SessionMiddlewareConfig, sessionMiddlewares } from "./session";
 
 interface CreateAppOptions {
@@ -57,8 +57,8 @@ export async function createApp(config: CreateAppOptions) {
 
   const { client: discordClient, rest: discordRest } = createDiscordClient();
 
-  const context: RouteContext = {
-    app,
+  const context: Context = {
+    expressApp: app,
     server,
     apolloServer,
     discordClient,
@@ -74,7 +74,7 @@ export async function createApp(config: CreateAppOptions) {
     if (!file.isFile()) continue;
 
     const module = (await import(path.join(file.path, file.name))) as {
-      default: (context: RouteContext) => void;
+      default: (context: Context) => void;
     };
     module.default(context);
   }

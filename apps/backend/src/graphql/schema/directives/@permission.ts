@@ -4,7 +4,7 @@ import { GraphQLSchema, defaultFieldResolver } from "graphql";
 
 import { database } from "../../../database";
 import { $roles } from "../../../services/roles";
-import { Context } from "../../context";
+import { GQLContext } from "../../context";
 import { gqlErrorPermission, gqlErrorUnauthenticated } from "../gqlError";
 
 const directiveName = "permission";
@@ -26,7 +26,7 @@ export default function directive(schema: GraphQLSchema) {
 			let { resolve: originalResolver } = fieldConfig;
 			originalResolver ??= defaultFieldResolver;
 
-			fieldConfig.resolve = async function (source, args, context: Context, info) {
+			fieldConfig.resolve = async function (source, args, context: GQLContext, info) {
 				if (!context.user) throw gqlErrorUnauthenticated();
 
 				const primaryRole = await database.user.getPrimaryRole(context.user);

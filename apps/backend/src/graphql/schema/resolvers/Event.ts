@@ -17,7 +17,7 @@ import {
 	Resolvers,
 	EventAccessType,
 } from "../../__generated__/resolvers-types";
-import { Context } from "../../context";
+import { GQLContext } from "../../context";
 import { gqlErrorBadInput, gqlErrorBadState } from "../gqlError";
 
 export function resolveEvent(event: Event) {
@@ -69,7 +69,7 @@ function resolveEventMember(member: EventUser) {
 	} satisfies WithModel<GQLEventMember, EventUser>;
 }
 
-async function resolveEventRsvpRole(role: EventRsvpRole, context: Context) {
+async function resolveEventRsvpRole(role: EventRsvpRole, context: GQLContext) {
 	return {
 		_model: role,
 		id: role.id,
@@ -175,7 +175,7 @@ export const eventResolvers: Resolvers = {
 			const event = await $events.getEvent(args.id);
 			if (!event) return null;
 
-			if (!$events.canSeeEvent(event, context.user, context.appContext.discordClient))
+			if (!$events.canSeeEvent(event, context.user, context.app.discordClient))
 				return null;
 			return resolveEvent(event);
 		},
@@ -195,7 +195,7 @@ export const eventResolvers: Resolvers = {
 				page,
 				limit,
 				context.user,
-				context.appContext.discordClient
+				context.app.discordClient
 			);
 
 			return {
@@ -212,7 +212,7 @@ export const eventResolvers: Resolvers = {
 		async createEvent(source, args, context) {
 			const event = await $events.createEvent(
 				context.user!,
-				context.appContext.discordClient
+				context.app.discordClient
 			);
 			return event.id;
 		},
@@ -248,7 +248,7 @@ export const eventResolvers: Resolvers = {
 			}
 
 			if (data.mentions) {
-				const discordRoles = await $discord.getAllRoles(context.appContext.discordClient);
+				const discordRoles = await $discord.getAllRoles(context.app.discordClient);
 				for (const roleId of data.mentions) {
 					const role = discordRoles.find((r) => r.id === roleId);
 					if (!role) {
@@ -301,7 +301,7 @@ export const eventResolvers: Resolvers = {
 			const updatedEvent = await $events.editEvent(
 				args.id,
 				data,
-				context.appContext.discordClient
+				context.app.discordClient
 			);
 			return resolveEvent(updatedEvent);
 		},
@@ -331,7 +331,7 @@ export const eventResolvers: Resolvers = {
 				throw gqlErrorBadState("Event expected atleast 1 role");
 			}
 
-			await $events.postEvent(args.id, context.appContext.discordClient);
+			await $events.postEvent(args.id, context.app.discordClient);
 
 			return true;
 		},

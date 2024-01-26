@@ -1,6 +1,6 @@
-import type { RouteContext } from "../routeContext";
+import type { Context } from "../context";
 
-export type Context = {
+export type GQLContext = {
 	user?: Express.User;
-	appContext: RouteContext;
+	app: Context;
 };

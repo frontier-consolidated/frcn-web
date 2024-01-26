@@ -1,11 +1,11 @@
 import { expressMiddleware } from "@apollo/server/express4";
 
-import { RouteContext } from "../routeContext";
+import { Context } from "../context";
 
-export default async function route(context: RouteContext) {
+export default async function route(context: Context) {
 	await context.apolloServer.start();
 
-	context.app.use(
+	context.expressApp.use(
 		"/graphql",
 		expressMiddleware(context.apolloServer, {
 			context: function ({ req }) {

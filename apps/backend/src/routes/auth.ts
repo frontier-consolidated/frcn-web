@@ -1,15 +1,15 @@
 import { REST, Routes, RESTPostOAuth2AccessTokenResult, APIUser } from "discord.js";
 
-import { RouteContext } from "../routeContext";
+import { Context } from "../context";
 import { getHostname } from "../env";
 import { $users } from "../services/users";
 
-export default function route(context: RouteContext) {
+export default function route(context: Context) {
 	const clientId = process.env.DISCORD_CLIENTID;
 	const clientSecret = process.env.DISCORD_SECRET;
 	const scope = ["identify"];
 
-	context.app.get("/oauth", (req, res) => {
+	context.expressApp.get("/oauth", (req, res) => {
 		const { success_uri, failed_uri } = req.query as {
 			failed_uri: string;
 			success_uri: string;
@@ -34,7 +34,7 @@ export default function route(context: RouteContext) {
 		res.redirect(redirectUrl);
 	});
 
-	context.app.get("/oauth/callback", async (req, res, next) => {
+	context.expressApp.get("/oauth/callback", async (req, res, next) => {
 		const { code, state } = req.query as { code?: string; state?: string };
 
 		const { success_uri, failed_uri } = JSON.parse(
@@ -81,7 +81,7 @@ export default function route(context: RouteContext) {
 		res.redirect(success_uri ?? "/");
 	});
 
-	context.app.get("/logout", async (req, res) => {
+	context.expressApp.get("/logout", async (req, res) => {
 		await req.logout();
 		res.sendStatus(200);
 	});

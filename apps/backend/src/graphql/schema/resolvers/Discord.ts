@@ -9,12 +9,12 @@ import {
 	DiscordRole,
 	Resolvers,
 } from "../../__generated__/resolvers-types";
-import { Context } from "../../context";
+import { GQLContext } from "../../context";
 import { gqlErrorNotFound } from "../gqlError";
 
 export async function resolveDiscordChannel(
 	channel: EventChannel | GuildChannel,
-	context: Context
+	context: GQLContext
 ) {
 	let guildChannel: GuildChannel;
 
@@ -22,7 +22,7 @@ export async function resolveDiscordChannel(
 		guildChannel = channel;
 	} else {
 		guildChannel = (await $discord.getChannel(
-			context.appContext.discordClient,
+			context.app.discordClient,
 			channel.discordId
 		)) as GuildChannel;
 
@@ -39,13 +39,13 @@ export async function resolveDiscordChannel(
 	} satisfies DiscordChannel;
 }
 
-export async function resolveDiscordRole(role: string | Role, context: Context) {
+export async function resolveDiscordRole(role: string | Role, context: GQLContext) {
 	let guildRole: Role;
 
 	if (role instanceof Role) {
 		guildRole = role;
 	} else {
-		guildRole = await $discord.getRole(context.appContext.discordClient, role);
+		guildRole = await $discord.getRole(context.app.discordClient, role);
 
 		if (!guildRole)
 			throw gqlErrorNotFound(`Discord role not found: ${role}`, {
@@ -60,13 +60,13 @@ export async function resolveDiscordRole(role: string | Role, context: Context) 
 	} satisfies DiscordRole;
 }
 
-export async function resolveDiscordEmoji(emoji: string | GuildEmoji, context: Context) {
+export async function resolveDiscordEmoji(emoji: string | GuildEmoji, context: GQLContext) {
 	let guildEmoji: GuildEmoji;
 
 	if (emoji instanceof GuildEmoji) {
 		guildEmoji = emoji;
 	} else {
-		guildEmoji = await $discord.getEmoji(context.appContext.discordClient, emoji);
+		guildEmoji = await $discord.getEmoji(context.app.discordClient, emoji);
 
 		if (!guildEmoji) {
 			throw gqlErrorNotFound(`Discord emoji not found: ${emoji}`, {
@@ -92,15 +92,15 @@ export const discordResolvers: Resolvers = {
 			return channels.map(async (channel) => await resolveDiscordChannel(channel, context));
 		},
 		async getAllDiscordChannels(source, args, context) {
-			const channels = await $discord.getAllTextChannels(context.appContext.discordClient);
+			const channels = await $discord.getAllTextChannels(context.app.discordClient);
 			return channels.map((channel) => resolveDiscordChannel(channel, context));
 		},
 		async getAllDiscordEmojis(source, args, context) {
-			const emojis = await $discord.getAllEmojis(context.appContext.discordClient);
+			const emojis = await $discord.getAllEmojis(context.app.discordClient);
 			return emojis.map((emoji) => resolveDiscordEmoji(emoji, context));
 		},
 		async getAllDiscordRoles(source, args, context) {
-			const roles = await $discord.getAllRoles(context.appContext.discordClient);
+			const roles = await $discord.getAllRoles(context.app.discordClient);
 			return roles.map((role) => resolveDiscordRole(role, context));
 		},
 	},

@@ -4,12 +4,12 @@ import type { ApolloServer } from "@apollo/server";
 import type { Client as DiscordClient, REST as DiscordREST } from "discord.js";
 import type { Express } from "express";
 
-import type { Context } from "./graphql/context";
+import type { GQLContext } from "./graphql/context";
 
-export type RouteContext = {
-	app: Express;
+export type Context = {
 	server: Server;
-	apolloServer: ApolloServer<Context>;
+	expressApp: Express;
+	apolloServer: ApolloServer<GQLContext>;
 	discordClient: DiscordClient;
 	discordRest: DiscordREST;
 };

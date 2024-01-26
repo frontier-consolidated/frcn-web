@@ -7,11 +7,11 @@ import { useServer } from "graphql-ws/lib/use/ws";
 import isUrl from "validator/lib/isURL";
 import { WebSocketServer } from "ws";
 
-import type { Context } from "./context";
+import type { GQLContext } from "./context";
 import { PluginDrainWebSocketServer } from "./plugins/drainWebSocketServer";
 import schema from "./schema";
 
-type CreateApolloServerOptions = Partial<Omit<ApolloServerOptionsWithSchema<Context>, "schema">>;
+type CreateApolloServerOptions = Partial<Omit<ApolloServerOptionsWithSchema<GQLContext>, "schema">>;
 
 export function createApolloServer(server: HttpServer, config: CreateApolloServerOptions = {}) {
 	const wsServer = new WebSocketServer({
@@ -21,7 +21,7 @@ export function createApolloServer(server: HttpServer, config: CreateApolloServe
 
 	const wsCleanup = useServer({ schema }, wsServer);
 
-	return new ApolloServer<Context>({
+	return new ApolloServer<GQLContext>({
 		schema,
 		...config,
 		plugins: [
