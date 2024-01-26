@@ -40,6 +40,7 @@
     "@apollo/client": "^3.8.10",
     "@codemirror/lang-markdown": "^6.2.4",
     "@codemirror/view": "^6.23.0",
+    "@frcn/shared": "workspace:^",
     "@uiw/codemirror-theme-github": "^4.21.21",
     "axios": "^1.6.5",
     "graphql": "^16.8.1",
