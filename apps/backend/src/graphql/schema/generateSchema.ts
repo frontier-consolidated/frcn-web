@@ -18,6 +18,7 @@ type ${match[0]} {
     page: Int!
     total: Int!
     nextPage: Int
+	prevPage: Int
 }`;
 	}
 
