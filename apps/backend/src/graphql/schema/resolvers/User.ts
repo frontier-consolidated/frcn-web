@@ -1,84 +1,104 @@
 import { User, UserSettings, UserStatus } from "@prisma/client";
-import { UserWithInclude, users } from "../../../services/users";
+
+import { resolveEventRsvp } from "./Event";
+import { resolveUserRole } from "./Roles";
+import { WithModel } from "./types";
+import { database } from "../../../database";
+import { $roles } from "../../../services/roles";
+import { $users } from "../../../services/users";
 import {
 	Resolvers,
 	User as GQLUser,
-	PartialUser as GQLPartialUser,
 	UserStatus as GQLUserStatus,
 	UserSettings as GQLUserSettings,
 } from "../../__generated__/resolvers-types";
-import { resolveEventRsvp } from "./Event";
-import { resolveUserRole } from "./Roles";
+import { gqlErrorOwnership, gqlErrorUnauthenticated } from "../gqlError";
 
-export function resolvePartialUser(user: User) {
+export function resolveUser(user: User) {
 	return {
+		_model: user,
 		id: user.id,
 		name: user.scVerified ? user.scName : user.discordName,
 		scName: user.scName,
 		discordName: user.discordName,
 		verified: user.scVerified,
 		avatarUrl: user.avatarUrl,
-		updatedAt: user.updatedAt.getTime(),
-		createdAt: user.createdAt.getTime(),
-	} satisfies GQLPartialUser;
-}
+		updatedAt: user.updatedAt,
+		createdAt: user.createdAt,
 
-export function resolveUser(user: Express.User) {
-	const partial = resolvePartialUser(user);
-
-	return {
-		...partial,
 		permissions: 0, // field-resolved
-		primaryRole: resolveUserRole(user.primaryRole),
-		roles: user.roles.map((r) => resolveUserRole(r.role)),
-		rsvps: [], // solo-resolved
-		status: resolveUserStatus(user.status),
-		settings: resolveUserSettings(user.settings),
-	} satisfies GQLUser;
+		primaryRole: null, // field-resolved
+		roles: [], // field-resolved
+		rsvps: [], // field-resolved
+		status: null, // field-resolved
+		settings: null, // field-resolved
+	} satisfies WithModel<GQLUser, User>;
 }
 
 export function resolveUserStatus(status: UserStatus) {
 	return {
 		activity: status.activity,
 		ship: status.ship,
-		updatedAt: status.updatedAt.getTime(),
+		updatedAt: status.updatedAt,
 	} satisfies GQLUserStatus;
 }
 
 export function resolveUserSettings(settings: UserSettings) {
 	return {
-		updatedAt: settings.updatedAt.getTime(),
+		updatedAt: settings.updatedAt,
 	} satisfies GQLUserSettings;
 }
 
 export const userResolvers: Resolvers = {
 	User: {
-		permissions(source: GQLUser & { _user: UserWithInclude }) {
-			return users.resolveUserPermissions(source._user);
+		async permissions(source: WithModel<GQLUser, User>) {
+			const primaryRole = await database.user.getPrimaryRole(source._model);
+			const userRoles = await database.user.getRoles(source._model);
+
+			return await $roles.resolvePermissions(primaryRole, userRoles);
 		},
-		async rsvps(source: GQLUser & { _user: UserWithInclude }, args, context) {
-			const rsvps = source._user.rsvps;
-			return await Promise.all(rsvps.map((rsvp) => resolveEventRsvp(rsvp, context)));
+		async primaryRole(source: WithModel<GQLUser, User>) {
+			const primaryRole = await database.user.getPrimaryRole(source._model);
+			return resolveUserRole(primaryRole);
+		},
+		async roles(source: WithModel<GQLUser, User>) {
+			const userRoles = await database.user.getRoles(source._model);
+			const roles = await Promise.all(
+				userRoles.map((r) => database.usersInUserRoles.getRole(r))
+			);
+			return roles.map(resolveUserRole);
+		},
+		async rsvps(source: WithModel<GQLUser, User>, args, context) {
+			if (!context.user) throw gqlErrorUnauthenticated();
+			if (source._model.id !== context.user.id) throw gqlErrorOwnership();
+
+			const rsvps = await database.user.getRSVPs(source._model);
+			return await Promise.all(rsvps.map((rsvp) => resolveEventRsvp(rsvp)));
+		},
+		async status(source: WithModel<GQLUser, User>) {
+			const status = await database.user.getStatus(source._model);
+			return resolveUserStatus(status);
+		},
+		async settings(source: WithModel<GQLUser, User>, args, context) {
+			if (!context.user) throw gqlErrorUnauthenticated();
+			if (source._model.id !== context.user.id) throw gqlErrorOwnership();
+
+			const settings = await database.user.getSettings(source._model);
+			return resolveUserSettings(settings);
 		},
 	},
 
 	Query: {
-		getCurrentUser(source, args, context): GQLUser & { _user: UserWithInclude } {
+		getCurrentUser(source, args, context): WithModel<GQLUser, User> {
 			if (!context.user) return null;
 
 			const user = context.user;
-			return {
-				_user: user,
-				...resolveUser(user),
-			};
+			return resolveUser(user);
 		},
-		async getUser(source, args, context): Promise<GQLUser & { _user: UserWithInclude }> {
-			const user = args.id == context.user?.id ? context.user : await users.getUser(args.id);
+		async getUser(source, args, context): Promise<WithModel<GQLUser, User>> {
+			const user = args.id == context.user?.id ? context.user : await $users.getUser(args.id);
 			if (!user) return null;
-			return {
-				_user: user,
-				...resolveUser(user),
-			};
+			return resolveUser(user);
 		},
 	},
 };

@@ -1,64 +1,51 @@
-import { Prisma, UserRole } from "@prisma/client";
-import {
-	UserRole as GQLUserRole,
-	Event as GQLEvent,
-	Resolvers,
-} from "../../__generated__/resolvers-types";
+import { UserRole } from "@prisma/client";
+
+import { WithModel } from "./types";
+import { resolveUser } from "./User";
 import { database } from "../../../database";
-import { resolvePartialUser } from "./User";
-import { EventWithInclude } from "../../../services/events";
+import { $roles } from "../../../services/roles";
+import { $system } from "../../../services/system";
+import { UserRole as GQLUserRole, Resolvers } from "../../__generated__/resolvers-types";
 
 export function resolveUserRole(role: UserRole) {
 	return {
+		_model: role,
 		id: role.id,
 		name: role.name,
 		discordId: role.discordId,
 		primary: role.primary,
 		permissions: role.permissions,
 		users: [], // field-resolved
-		updatedAt: role.updatedAt.getTime(),
-		createdAt: role.createdAt.getTime(),
-	} satisfies GQLUserRole;
+		updatedAt: role.updatedAt,
+		createdAt: role.createdAt,
+	} satisfies WithModel<GQLUserRole, UserRole>;
 }
 
 export const roleResolvers: Resolvers = {
-	Event: {
-		async accessRoles(source: GQLEvent & { _event: EventWithInclude }) {
-			const roles = await database.userRole.findMany({
-				where: {
-					id: {
-						in: source._event.accessRoles.map((accessRole) => accessRole.roleId),
-					},
-				},
-			});
-			return roles.map(resolveUserRole);
+	UserRole: {
+		async users(source: WithModel<GQLUserRole, UserRole>) {
+			if (source._model.primary) {
+				const primaryUsers = await database.userRole.getPrimaryUsers(source._model);
+				return primaryUsers.map(resolveUser);
+			}
+
+			const usersInRole = await database.userRole.getUsers(source._model);
+			const users = await Promise.all(
+				usersInRole.map((r) => database.usersInUserRoles.getUser(r))
+			);
+			return users.map((user) => resolveUser(user));
 		},
 	},
 
-	UserRole: {
-		async users(source) {
-			const role = await database.userRole.findUnique({
-				where: {
-					id: source.id,
-				},
-				include: {
-					primaryUsers: source.primary,
-					users: !source.primary
-						? {
-								include: {
-									user: true,
-								},
-						  }
-						: false,
-				},
-			});
-
-			if (role.primary) {
-				return role.primaryUsers.map(resolvePartialUser);
-			}
-			return (
-				role.users as Prisma.UsersInUserRolesGetPayload<{ include: { user: true } }>[]
-			).map((r) => resolvePartialUser(r.user));
+	Query: {
+		async getRoles() {
+			const roles = await database.userRole.findMany();
+			const sortedRoles = await $roles.sort(roles);
+			return sortedRoles.map(resolveUserRole);
+		},
+		async getRoleOrder() {
+			const settings = await $system.getSystemSettings();
+			return settings.roleOrder;
 		},
 	},
 };

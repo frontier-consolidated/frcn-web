@@ -1,5 +1,5 @@
-import { DateScalar } from "./Date";
+import { TimestampScalar } from "./Timestamp";
 
 export const scalarResolvers = {
-	Date: DateScalar,
+	Timestamp: TimestampScalar,
 };
