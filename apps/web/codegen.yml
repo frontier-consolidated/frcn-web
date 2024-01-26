@@ -13,4 +13,4 @@ generates:
             useIndexSignature: true
             contextType: "../context#Context"
 config:
-    scalars: "@frcn/graphql-scalar-types"
+    scalars: "@frcn/graphql-scalar-types/client"
