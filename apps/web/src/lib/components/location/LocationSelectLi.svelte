@@ -20,10 +20,13 @@
 		{options}
 		{disabled}
 		placeholder="Choose location ..."
-		component={LocationOption}
 		class="flex-1"
+		search
 		bind:value
-	/>
+		let:option
+	>
+		<LocationOption value={option.value} />
+	</BetterSelect>
 	{#if deletable}
 		<Button
 			on:click={(ev) => {
