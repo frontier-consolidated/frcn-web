@@ -8,6 +8,7 @@
 	export let id: string;
 	export let title: string | undefined = undefined;
 	export let value: Date | null = null;
+	export let disable: "past" | "future" | false = false;
 
 	let dropdownOpen = false;
 
@@ -90,6 +91,7 @@
 	{/if}
 	<div class="grid grid-flow-col auto-cols-max gap-2">
 		<DateControls
+			{disable}
 			bind:viewDate
 			bind:selectedDate
 			on:refocus={() => {

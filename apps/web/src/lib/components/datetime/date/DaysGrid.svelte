@@ -1,13 +1,6 @@
 <script lang="ts">
-	import {
-		daysPerMonth,
-		getDaysInMonth,
-		getPreviousMonth,
-		isCurrentMonth,
-		isSelected,
-		isToday,
-	} from "../helpers";
 	import { locale } from "svelte-i18n";
+	import { dates } from "@frcn/shared";
 
 	let weekdays: string[] = [];
 	$: {
@@ -26,9 +19,24 @@
 
 	export let viewDate: Date;
 	export let selectedDate: Date | null;
+	export let disable: "past" | "future" | false;
+
+	function isDisabled(month: Date, day: Date) {
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		let disabled = false;
+		if (disable) {
+			if (disable === "future") {
+				disabled ||= day > today;
+			} else if (disable === "past") {
+				disabled ||= day < today;
+			}
+		}
+		return disabled || !dates.isCurrentMonth(month, day);
+	}
 
 	function setDate(date: Date) {
-		if (!isCurrentMonth(viewDate, date)) return;
+		if (isDisabled(viewDate, date)) return;
 		const newSelectedDate = new Date(date);
 		if (selectedDate) {
 			newSelectedDate.setHours(
@@ -42,14 +50,14 @@
 
 	let days: Date[] = [];
 	$: {
-		const previousMonth = getPreviousMonth(viewDate);
-		const daysInMonth = getDaysInMonth(viewDate);
-		const daysInPreviousMonth = getDaysInMonth(previousMonth);
+		const previousMonth = dates.getPreviousMonth(viewDate);
+		const daysInMonth = dates.getDaysInMonth(viewDate);
+		const daysInPreviousMonth = dates.getDaysInMonth(previousMonth);
 
 		const firstDay = viewDate.getDay();
 
 		days = [];
-		for (let i = 0; i < daysPerMonth; i++) {
+		for (let i = 0; i < dates.daysPerMonth; i++) {
 			const relativeDay = i - firstDay;
 			const day =
 				(relativeDay < 0 ? daysInPreviousMonth + relativeDay : relativeDay % daysInMonth) +
@@ -80,18 +88,16 @@
 		<span
 			role="button"
 			tabindex="0"
-			aria-disabled={!isCurrentMonth(viewDate, day)}
+			aria-disabled={isDisabled(viewDate, day)}
 			data-timestamp={day.getTime()}
-			class="block rounded-lg text-center text-sm font-semibold p-2 {!isCurrentMonth(
-				viewDate,
-				day
-			)
-				? 'dark:text-gray-500 ' + (isSelected(selectedDate, day) ? 'bg-primary-800' : '')
+			class="block rounded-lg text-center text-sm font-semibold p-2 {isDisabled(viewDate, day)
+				? 'dark:text-gray-500 ' +
+					(dates.isSelected(selectedDate, day) ? 'bg-primary-800' : '')
 				: 'dark:text-white cursor-pointer ' +
-					(isSelected(selectedDate, day)
+					(dates.isSelected(selectedDate, day)
 						? 'bg-primary-600 dark:hover:bg-primary-700'
 						: 'dark:hover:bg-gray-600')} 
-			{isToday(day) ? 'bg-gray-500' : ''}"
+			{dates.isToday(day) ? 'bg-gray-500' : ''}"
 			on:click={() => setDate(day)}
 			on:keydown={(ev) => {
 				if (ev.key == "Enter") setDate(day);

@@ -8,6 +8,7 @@
 
 	export let viewDate: Date;
 	export let selectedDate: Date | null;
+	export let disable: "past" | "future" | false = false;
 
 	let zoomLevel = 3;
 	let previousZoomLevel = zoomLevel;
@@ -25,7 +26,7 @@
 <div>
 	<DateViewControls bind:viewDate bind:zoomLevel />
 	{#if zoomLevel == 3}
-		<DaysGrid {viewDate} bind:selectedDate />
+		<DaysGrid {disable} {viewDate} bind:selectedDate />
 	{:else if zoomLevel == 2}
 		<MonthsGrid bind:viewDate bind:zoomLevel />
 	{:else if zoomLevel == 1}

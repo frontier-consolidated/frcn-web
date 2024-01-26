@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Input, Dropdown, DropdownHeader } from "flowbite-svelte";
 	import { ClockSolid } from "flowbite-svelte-icons";
+	import { dates } from "@frcn/shared";
 	import DurationControls from "./duration/DurationControls.svelte";
-	import { toDuration } from "./helpers";
 
 	export let id: string;
 	export let title: string | undefined = undefined;
@@ -12,18 +12,18 @@
 
 	let inputValue: string = "";
 	$: {
-		if (inputValue && (!value || inputValue != toDuration(value))) {
+		if (inputValue && (!value || inputValue != dates.toDuration(value))) {
 			let duration = Number(inputValue);
 			if (isNaN(duration)) {
-				inputValue = toDuration(value ?? 0);
+				inputValue = dates.toDuration(value ?? 0);
 			} else {
 				if (duration < 1000) duration *= 1000;
 
 				value = duration;
-				inputValue = toDuration(duration);
+				inputValue = dates.toDuration(duration);
 			}
 		} else if (value) {
-			inputValue = toDuration(value);
+			inputValue = dates.toDuration(value);
 		}
 	}
 </script>

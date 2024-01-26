@@ -2,18 +2,7 @@
 	import { Button } from "flowbite-svelte";
 	import { ArrowLeftSolid, ArrowRightSolid } from "flowbite-svelte-icons";
 	import { locale } from "svelte-i18n";
-	import {
-		getCenturyStartYear,
-		getDecadeStartYear,
-		getNextCentury,
-		getNextDecade,
-		getNextMonth,
-		getNextYear,
-		getPreviousCentury,
-		getPreviousDecade,
-		getPreviousMonth,
-		getPreviousYear,
-	} from "../helpers";
+	import { dates } from "@frcn/shared";
 
 	export let viewDate: Date;
 	export let zoomLevel: number;
@@ -34,13 +23,13 @@
 				break;
 			case 1:
 				{
-					const startYear = getDecadeStartYear(viewDate);
+					const startYear = dates.getDecadeStartYear(viewDate);
 					zoomText = `${startYear.getFullYear()} - ${startYear.getFullYear() + 9}`;
 				}
 				break;
 			case 0:
 				{
-					const startYear = getCenturyStartYear(viewDate);
+					const startYear = dates.getCenturyStartYear(viewDate);
 					zoomText = `${startYear.getFullYear()} - ${startYear.getFullYear() + 90}`;
 				}
 				break;
@@ -54,16 +43,16 @@
 		on:click={() => {
 			switch (zoomLevel) {
 				case 3:
-					viewDate = getPreviousMonth(viewDate);
+					viewDate = dates.getPreviousMonth(viewDate);
 					break;
 				case 2:
-					viewDate = getPreviousYear(viewDate);
+					viewDate = dates.getPreviousYear(viewDate);
 					break;
 				case 1:
-					viewDate = getPreviousDecade(viewDate);
+					viewDate = dates.getPreviousDecade(viewDate);
 					break;
 				case 0:
-					viewDate = getPreviousCentury(viewDate);
+					viewDate = dates.getPreviousCentury(viewDate);
 					break;
 			}
 		}}
@@ -83,16 +72,16 @@
 		on:click={() => {
 			switch (zoomLevel) {
 				case 3:
-					viewDate = getNextMonth(viewDate);
+					viewDate = dates.getNextMonth(viewDate);
 					break;
 				case 2:
-					viewDate = getNextYear(viewDate);
+					viewDate = dates.getNextYear(viewDate);
 					break;
 				case 1:
-					viewDate = getNextDecade(viewDate);
+					viewDate = dates.getNextDecade(viewDate);
 					break;
 				case 0:
-					viewDate = getNextCentury(viewDate);
+					viewDate = dates.getNextCentury(viewDate);
 					break;
 			}
 		}}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getCenturyStartYear } from "../helpers";
+	import { dates } from "@frcn/shared";
 
 	export let viewDate: Date;
 	export let zoomLevel: number;
@@ -7,7 +7,7 @@
 	let years: Date[] = [];
 	$: {
 		years = [];
-		const decadeStart = getCenturyStartYear(viewDate);
+		const decadeStart = dates.getCenturyStartYear(viewDate);
 		for (let i = 0; i < 10; i++) {
 			const date = new Date(decadeStart.getFullYear() + i * 10, viewDate.getMonth());
 			years.push(date);
