@@ -1,7 +1,7 @@
 import { EventType } from "@frcn/shared";
 import { EventRsvpRole, EventSettings, EventUser, Event } from "@prisma/client";
 
-import { resolveDiscordChannel, resolveDiscordEmoji, resolveDiscordRole } from "./Discord";
+import { resolveDiscordChannel, resolveDiscordEmoji } from "./Discord";
 import { resolveUserRole } from "./Roles";
 import { WithModel } from "./types";
 import { resolveUser } from "./User";
@@ -41,7 +41,7 @@ export function resolveEvent(event: Event) {
 
 		roles: [], // field-resolved
 		members: [], // field-resolved
-		mentions: [], // field-resolved
+		mentions: event.discordMentions,
 		settings: null, // field-resolved
 		accessType: event.accessType as EventAccessType,
 		accessRoles: [], // field-resolved
@@ -127,10 +127,6 @@ export const eventResolvers: Resolvers = {
 		async members(source: WithModel<GQLEvent, Event>) {
 			const members = await database.event.getMembers(source._model);
 			return members.map(resolveEventMember);
-		},
-		mentions(source: WithModel<GQLEvent, Event>, args, context) {
-			const mentions = source._model.discordMentions;
-			return mentions.map((id) => resolveDiscordRole(id, context));
 		},
 		async settings(source: WithModel<GQLEvent, Event>) {
 			const settings = await database.event.getSettings(source._model);

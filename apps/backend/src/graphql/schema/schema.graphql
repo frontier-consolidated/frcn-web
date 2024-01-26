@@ -134,7 +134,7 @@ type Event {
 
 	roles: [EventRsvpRole!]!
 	members: [EventMember!]!
-	mentions: [DiscordRole!]! @permission(has: CreateEvents)
+	mentions: [ID!]! @permission(has: CreateEvents)
 	settings: EventSettings! @permission(has: CreateEvents)
 	accessType: EventAccessType! @permission(has: CreateEvents)
 	accessRoles: [UserRole!]! @permission(has: CreateEvents)
