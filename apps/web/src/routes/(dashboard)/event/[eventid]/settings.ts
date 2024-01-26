@@ -76,9 +76,9 @@ export function checkIfDirty(source: PageData, mutable: MutableData) {
 					clean &&= valueClean;
 
 					for (const mention of mutable.mentions) {
-						const sourceMention = source.mentions!.find((m) => m.id === mention.id);
+						const sourceMention = source.mentions!.find((m) => m === mention);
 						if (!sourceMention) {
-							diff.push(key + "." + mention.id);
+							diff.push(key + "." + mention);
 							clean = false;
 						}
 					}
@@ -121,6 +121,6 @@ export function checkIfDirty(source: PageData, mutable: MutableData) {
 				break;
 		}
 	}
-	console.log(diff, mutable);
+	// console.log(diff, mutable);
 	return !clean;
 }
