@@ -20,9 +20,10 @@ export function gqlError(type: GraphQLErrorType, message: string, options?: Grap
 	});
 }
 
-export function gqlErrorNotFound(message: string, extensions: Record<string, unknown>) {
+export function gqlErrorNotFound(message: string, extensions: Record<string, unknown>, originalError?: Error) {
 	return gqlError("NOT_FOUND", message, {
 		extensions,
+		originalError,
 	});
 }
 
