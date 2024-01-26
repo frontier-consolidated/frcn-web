@@ -6,7 +6,10 @@
 		"target": "es2020",
 		"module": "esnext",
 		"moduleResolution": "node",
+		"resolveJsonModule": true,
 		"esModuleInterop": true,
+		"declaration": true,
+		"declarationMap": true,
 		"types": ["node"]
 	}
 }
