@@ -145,7 +145,7 @@ model Event {
   discordMentions       String[]
   name                  String
   summary               String
-  description           String                        @db.VarChar(4096)
+  description           String                        @db.VarChar(2048)
   imageUrl              String?                       @db.VarChar(2084)
   eventType             String?
   location              String[]

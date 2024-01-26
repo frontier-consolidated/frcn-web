@@ -193,8 +193,8 @@ input EventEditInput {
 	channel: ID
 	name: String @constraint(minLength: 1, maxLength: 255)
 	summary: String @constraint(minLength: 1, maxLength: 255)
-	description: String @constraint(maxLength: 4096)
-	imageUrl: String @constraint(format: "url")
+	description: String @constraint(maxLength: 2048)
+	imageUrl: String @constraint(format: "url", maxLength: 2084)
 	eventType: String
 	location: [String!]
 	startAt: Timestamp
