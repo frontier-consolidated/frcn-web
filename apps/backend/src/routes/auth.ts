@@ -1,7 +1,9 @@
+import path from "path";
+
 import { REST, Routes, RESTPostOAuth2AccessTokenResult, APIUser } from "discord.js";
 
 import { Context } from "../context";
-import { getHostname } from "../env";
+import { getOrigin } from "../env";
 import { $users } from "../services/users";
 
 export default function route(context: Context) {
@@ -25,7 +27,7 @@ export default function route(context: Context) {
 
 		const params = new URLSearchParams({
 			client_id: clientId,
-			redirect_uri: `${getHostname(req.protocol)}/oauth/callback`,
+			redirect_uri: path.join(getOrigin(req.protocol), "/oauth/callback"),
 			response_type: "code",
 			scope,
 			state,
@@ -54,7 +56,7 @@ export default function route(context: Context) {
 				body: new URLSearchParams({
 					client_id: clientId,
 					client_secret: clientSecret,
-					redirect_uri: `${getHostname(req.protocol)}/oauth/callback`,
+					redirect_uri: path.join(getOrigin(req.protocol), "/oauth/callback"),
 					grant_type: "authorization_code",
 					scope,
 					code,

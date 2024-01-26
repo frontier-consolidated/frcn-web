@@ -9,6 +9,7 @@ declare global {
 			DOMAIN: string;
 			SUB_DOMAIN?: string;
 
+			WEB_ORIGIN: string;
 			ORIGINS: string;
 
 			DATABASE_URL: string;
