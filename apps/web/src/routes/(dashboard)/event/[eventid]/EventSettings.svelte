@@ -13,6 +13,7 @@
 	import DurationPicker from "$lib/components/datetime/DurationPicker.svelte";
 	import LocationSelectUl from "$lib/components/location/LocationSelectUl.svelte";
 	import MarkdownEditor from "$lib/components/markdown/MarkdownEditor.svelte";
+	import SectionHeading from "$lib/components/SectionHeading.svelte";
 	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
 	import { Mutations, apollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
@@ -121,8 +122,9 @@
 	<div class="flex flex-col md:grid md:grid-cols-2 md:gap-6">
 		<div>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500"> General Settings </span>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				<SectionHeading>
+					General Settings
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Label for="event-type" class="mb-2">Event Type</Label>
@@ -205,8 +207,9 @@
 				</div>
 			</section>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500"> Event Time </span>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				<SectionHeading>
+					Event Time
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Label for="event-start" class="mb-2">Event Start</Label>
@@ -230,8 +233,9 @@
 		</div>
 		<div>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500"> Event Location </span>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				<SectionHeading>
+					Event Location
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Checkbox bind:checked={editData.settings.hideLocation}
@@ -246,10 +250,9 @@
 				</div>
 			</section>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500">
+				<SectionHeading>
 					Join Permissions
-				</span>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Label for="event-access" class="mb-2">Event Access</Label>
@@ -285,10 +288,9 @@
 				</div>
 			</section>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500"
-					>Member Permissions</span
-				>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				<SectionHeading>
+					Member Permissions
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Toggle bind:checked={editData.settings.allowTeamSwitching}
@@ -309,10 +311,9 @@
 				</div>
 			</section>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500"
-					>Discord Settings</span
-				>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				<SectionHeading>
+					Discord Settings
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Label for="event-channel" class="mb-2">Events Channel</Label>
@@ -356,8 +357,9 @@
 		</div>
 	</div>
 	<section>
-		<span class="text-lg font-semibold dark:text-primary-500">Event RSVPs</span>
-		<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+		<SectionHeading>
+			Event RSVPs
+		</SectionHeading>
 		<div class="p-4">
 			<RsvpTable {data} bind:value={editData.roles} />
 		</div>
