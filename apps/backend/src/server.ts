@@ -23,5 +23,6 @@ server.listen(port, () => {
 	console.log(`\n\n  \x1b[32m\x1b[1mAPI ready\x1b[0m
 
   \x1b[32m➜\x1b[0m\x1b[1m  Local:  \x1b[0m\x1b[36mhttp://localhost:${port}/
-  \x1b[32m➜\x1b[0m\x1b[1m  Network:  \x1b[0m\x1b[36m${getOrigin("http")}/\x1b[0m`);
+  \x1b[32m➜\x1b[0m\x1b[1m  Network:  \x1b[0m\x1b[36m${getOrigin("http")}/
+  \x1b[32m➜\x1b[0m\x1b[1m  Env:  \x1b[0m\x1b[36m${process.env.NODE_ENV}\x1b[0m`);
 });
