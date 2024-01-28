@@ -3,8 +3,9 @@
 WORKING_DIR="$(pwd)"
 TEMP_DIR="$WORKING_DIR/temp"
 BUILD_NAME="build"
+APP_DIR="$WORKING_DIR/$1"
 GIT_URL="https://github.com/frontier-consolidated/frcn-events-app.git"
-GIT_BRANCH="main"
+GIT_BRANCH="$1"
 
 
 # Remove previous builds
@@ -25,10 +26,15 @@ sleep 2s
 source "build.sh"
 build
 
-copyFiles $WORKING_DIR
+copyFiles $APP_DIR
 
-cd "$WORKING_DIR" || exit
+cd "$APP_DIR" || exit
 
-# Stop current services and restart with new images
-docker compose down
-docker compose up -d
+if [ -f "$APP_DIR/docker-compose.yml" ]; then
+    # Stop current services and restart with new images
+    docker compose down
+    docker compose up -d
+else
+    printf "docker-compose.yml not found at $APP_DIR"
+    exit 1
+fi
