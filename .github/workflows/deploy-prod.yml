@@ -31,6 +31,6 @@ jobs:
                   SSH_PORT: ${{ secrets.SSH_PORT }}
 
             - name: Check out the source
-              run: ssh server "cd apps/events.frcn.space && ./deploy.sh \"$REPO_URL\" main"
-              env:
-                  REPO_URL: ${{ github.repositoryUrl }}
+              run:
+                  ssh server "cd apps/events.frcn.space && ./deploy.sh
+                  https://github.com/frontier-consolidated/frcn-events-app.git main"
