@@ -1,5 +1,6 @@
 import { browser } from "$app/environment";
 import { writable } from "svelte/store";
+import { v4 as uuidv4 } from 'uuid';
 
 export type Notification = {
 	type: "error";
@@ -37,7 +38,7 @@ export function pushNotification(notification: Omit<Notification, "id" | "exitAt
 			...value,
 			{
 				...notification,
-				id: crypto.randomUUID(),
+				id: uuidv4(),
 				exitAt: Date.now() + (notification.timeout ?? 30000),
 			},
 		];

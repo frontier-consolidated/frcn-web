@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Table, TableBody, TableHead, TableHeadCell, Button } from "flowbite-svelte";
+	import { v4 as uuidv4 } from 'uuid';
 
 	import Tooltip from "$lib/components/Tooltip.svelte";
 
@@ -40,11 +41,10 @@
 <div class="flex items-center justify-center p-2 w-full">
 	<Button
 		on:click={() => {
-			const id = crypto.randomUUID();
 			value = [
 				...value,
 				{
-					id,
+					id: uuidv4(),
 					name: "",
 					emoji: {
 						id: "white_check_mark",
