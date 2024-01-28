@@ -1,6 +1,6 @@
 services:
   backend:
-    container_name: frcn-backend
+    container_name: frcn-backend-$GIT_BRANCH
     image: events.frcn.space/backend
     restart: always
     environment:
@@ -22,7 +22,7 @@ services:
     depends_on:
       - database
   web:
-    container_name: frcn-web
+    container_name: frcn-web-$GIT_BRANCH
     image: events.frcn.space/web
     restart: always
     environment:
