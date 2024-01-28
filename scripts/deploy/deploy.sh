@@ -3,6 +3,8 @@
 GIT_URL="$1"
 GIT_BRANCH="$2"
 
+printf "Deploying from $GIT_URL $GIT_BRANCH"
+
 WORKING_DIR="$(pwd)"
 TEMP_DIR="$WORKING_DIR/temp"
 BUILD_NAME="build"
