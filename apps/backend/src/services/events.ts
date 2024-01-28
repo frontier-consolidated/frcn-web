@@ -112,6 +112,7 @@ async function getEvents(
 
 async function createEvent(owner: User, discordClient: DiscordClient) {
 	const { defaultEventChannel } = await $system.getSystemSettings();
+	if (!defaultEventChannel) throw new Error("No default event channel")
 	const guild = await $discord.getGuild(discordClient);
 
 	const event = await database.event.create({

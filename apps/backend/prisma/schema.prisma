@@ -11,14 +11,14 @@ datasource db {
 }
 
 model SystemSettings {
-  id                    Int          @id @default(autoincrement())
-  unique                Boolean      @unique @default(true)
+  id                    Int           @id @default(autoincrement())
+  unique                Boolean       @unique @default(true)
   discordGuildId        String
-  defaultEventChannel   EventChannel @relation(fields: [defaultEventChannelId], references: [id])
-  defaultEventChannelId Int          @unique
+  defaultEventChannel   EventChannel? @relation(fields: [defaultEventChannelId], references: [id])
+  defaultEventChannelId Int?          @unique
   roleOrder             String[]
-  updatedAt             DateTime     @updatedAt
-  createdAt             DateTime     @default(now())
+  updatedAt             DateTime      @updatedAt
+  createdAt             DateTime      @default(now())
 }
 
 model UserSession {

@@ -42,7 +42,7 @@ directive @permission(has: Permission, one: [Permission!], all: [Permission!]) o
 
 type SystemSettings {
 	discordGuildId: String!
-	defaultEventChannel: DiscordChannel!
+	defaultEventChannel: DiscordChannel
 }
 
 type UserRole {

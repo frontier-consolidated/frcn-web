@@ -27,6 +27,7 @@ export const systemResolvers: Resolvers = {
 			const eventChannel = await database.systemSettings.getDefaultEventChannel(
 				source._model
 			);
+			if (!eventChannel) return null;
 			return resolveDiscordChannel(eventChannel, context);
 		},
 	},
