@@ -124,7 +124,7 @@ type Event {
 	description: String!
 	imageUrl: String
 	eventType: String
-	location: [String!]!
+	location: [String!]
 	startAt: Timestamp
 	endedAt: Timestamp
 	duration: Int
