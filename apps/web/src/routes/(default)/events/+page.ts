@@ -20,6 +20,7 @@ export const load = (async () => {
     
         return {
             events,
+            itemsPerPage: data.events?.itemsPerPage ?? 1,
             page: data.events?.page ?? 0,
             nextPage: data.events?.nextPage,
             prevPage: data.events?.prevPage,
@@ -35,6 +36,7 @@ export const load = (async () => {
 
         return {
             events: [],
+            itemsPerPage: 1,
             page: 0,
             nextPage: null,
             prevPage: null,
