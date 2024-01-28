@@ -6,7 +6,7 @@ function copyFiles() {
     cp docker-compose.yml $1
 
     mkdir -p "$1/scripts"
-    cp -r ./scripts "$1/scripts"
+    cp -r ./scripts "$1"
     rm -rf "$1/scripts/deploy"
 
     mkdir -p "$1/env"
