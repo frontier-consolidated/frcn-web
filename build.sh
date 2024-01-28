@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-declare -a env_files=(".backend", ".web", ".database")
+declare -a env_files=(".backend" ".web" ".database")
 
 function copyFiles() {
     cp docker-compose.yml $1
