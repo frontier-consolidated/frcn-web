@@ -1,65 +1,124 @@
 <script lang="ts">
-	import { Alert, Checkbox, Helper, Input, Label, Toggle, Button } from "flowbite-svelte";
+	import { strings, EventTypeOptions } from "@frcn/shared";
+	import { getLocations } from "@frcn/shared/locations";
+	import { Alert, Checkbox, Helper, Input, Label, Toggle, Button, } from "flowbite-svelte";
 	import {
 		InfoCircleSolid,
 		EditOutline,
 		CaretRightSolid,
 		CloseSolid,
 	} from "flowbite-svelte-icons";
+
 	import DatetimePicker from "$lib/components/datetime/DatetimePicker.svelte";
 	import DurationPicker from "$lib/components/datetime/DurationPicker.svelte";
 	import LocationSelectUl from "$lib/components/location/LocationSelectUl.svelte";
+	import MarkdownEditor from "$lib/components/markdown/MarkdownEditor.svelte";
 	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
+	import { Mutations, apollo } from "$lib/graphql";
+	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
+	import { pushNotification } from "$lib/stores/NotificationStore";
+
 	import type { PageData } from "./$types";
 	import RsvpTable from "./RSVPTable.svelte";
-	import MarkdownEditor from "$lib/components/markdown/MarkdownEditor.svelte";
-	import { EventTypeOptions } from "$lib/data/enums";
+	import { checkIfDirty, cloneEventSettingsData } from "./settings";
+
+	const urlPattern =
+		"[Hh][Tt][Tt][Pp][Ss]?://(?:(?:[a-zA-Z\u00a1-\uffff0-9]+-?)*[a-zA-Z\u00a1-\uffff0-9]+)(?:.(?:[a-zA-Z\u00a1-\uffff0-9]+-?)*[a-zA-Z\u00a1-\uffff0-9]+)*(?:.(?:[a-zA-Z\u00a1-\uffff]{2,}))(?::d{2,5})?(?:/[^s]*)?";
 
 	export let data: PageData;
-
-	function cloneEventSettingsData(data: PageData) {
-		return {
-			name: data.name,
-			summary: data.summary,
-			description: data.description,
-			eventType: data.eventType,
-			location: [...data.location],
-			roles: structuredClone(data.roles),
-			settings: structuredClone(data.settings),
-			startAt: data.startAt,
-			duration: data.duration,
-		};
-	}
-
-	type MutableData = ReturnType<typeof cloneEventSettingsData>;
 	let editData = cloneEventSettingsData(data);
-
-	function checkIfDirty(source: PageData, mutable: MutableData) {
-		let clean = true;
-		for (const key of Object.keys(mutable) as (keyof typeof mutable)[]) {
-			switch (key) {
-				case "location":
-					clean &&=
-						mutable.location.map((loc) => loc.name).join("/") ==
-						source.location.map((loc) => loc.name).join("/");
-					break;
-				default:
-					clean &&= mutable[key] == source[key];
-					break;
-			}
-		}
-		return !clean;
-	}
 
 	let isDirty = false;
 	$: isDirty = checkIfDirty(data, editData);
 
 	let startDate: Date | null = editData.startAt ? new Date(editData.startAt) : null;
 	$: if (startDate) editData.startAt = startDate.getTime();
+
+	let imagePlaceholder = false
+
+	async function save() {
+		const { data: updatedData, errors } = await apollo.mutate({
+			mutation: Mutations.EDIT_EVENT,
+			variables: {
+				eventId: data.id,
+				data: {
+					channel: editData.channel.id,
+					name: editData.name,
+					summary: editData.summary,
+					description: editData.description,
+					imageUrl: editData.imageUrl,
+					eventType: editData.eventType!,
+					location: editData.location.map((loc) => loc.name),
+					startAt: editData.startAt!,
+					duration: editData.duration!,
+					roles: editData.roles.map((r) => ({
+						id: r.id,
+						name: r.name,
+						limit: r.limit,
+						emoji: r.emoji.name,
+						emojiId: r.emoji.id,
+					})),
+					mentions: editData.mentions,
+					settings: {
+						hideLocation: editData.settings.hideLocation,
+						inviteOnly: editData.settings.inviteOnly,
+						openToJoinRequests: editData.settings.openToJoinRequests,
+						allowCrewSwitching: editData.settings.allowCrewSwitching,
+						allowTeamSwitching: editData.settings.allowTeamSwitching,
+					},
+					accessType: editData.accessType,
+					accessRoles: editData.accessRoles.map((role) => role.id),
+				},
+			},
+			errorPolicy: "all",
+		});
+
+		if (errors && errors.length > 0) {
+			pushNotification({
+				type: "error",
+				message: "Failed to save",
+			});
+			console.error(errors);
+			return false;
+		}
+
+		const location = updatedData?.event?.location
+			? getLocations(updatedData?.event?.location)
+			: null;
+		data = { ...data, ...updatedData?.event, location } as PageData;
+		editData = cloneEventSettingsData(data);
+		return true;
+	}
+
+	async function post() {
+		if (isDirty) {
+			if (!(await save())) return;
+		}
+
+		const { data: postData, errors } = await apollo.mutate({
+			mutation: Mutations.POST_EVENT,
+			variables: {
+				eventId: data.id,
+			},
+			errorPolicy: "all",
+		});
+
+		if (!postData?.success || (errors && errors.length > 0)) {
+			pushNotification({
+				type: "error",
+				message: "Failed to post",
+			});
+			console.error(errors);
+			return false;
+		}
+
+		window.location.reload();
+		return true;
+	}
 </script>
 
 <div>
-	<div class="flex flex-col lg:grid lg:grid-cols-2 lg:gap-6">
+	<div class="flex flex-col md:grid md:grid-cols-2 md:gap-6">
 		<div>
 			<section>
 				<span class="text-lg font-semibold dark:text-primary-500"> General Settings </span>
@@ -69,7 +128,7 @@
 						<Label for="event-type" class="mb-2">Event Type</Label>
 						<BetterSelect
 							id="event-type"
-							name="type"
+							name="Event Type"
 							options={EventTypeOptions}
 							required
 							bind:value={editData.eventType}
@@ -79,7 +138,7 @@
 						<Label for="event-name" class="mb-2">Event Name</Label>
 						<Input
 							id="event-name"
-							name="name"
+							name="Event Name"
 							type="text"
 							placeholder="Event name"
 							required
@@ -90,7 +149,7 @@
 						<Label for="event-summary" class="mb-2">Event Summary</Label>
 						<Input
 							id="event-summary"
-							name="summary"
+							name="Event Summary"
 							type="text"
 							placeholder="Event summary"
 							required
@@ -100,18 +159,44 @@
 							This is used on the events page and as a description in link embeds
 						</Helper>
 					</div>
-					<Alert color="red" class="py-1">
+					<div>
+						<Label for="event-image" class="mb-2">Event Image</Label>
+						<Input
+							id="event-image"
+							name="Event Image"
+							type="text"
+							placeholder="https://example.com/image.png"
+							pattern={urlPattern}
+							required
+							bind:value={editData.imageUrl}
+						/>
+						{#if editData.imageUrl}
+						<div class="mt-2">
+							<img src={editData.imageUrl} alt="Event thumbnail" class="rounded {imagePlaceholder ? "hidden" : ""}" on:error={() => {
+								imagePlaceholder = true
+							}} on:load={() => {
+								imagePlaceholder = false
+							}} />
+							<div role="status" class="animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700 {imagePlaceholder ? "" : "hidden"}">
+								<svg width="48" height="48" class="text-gray-200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" viewBox="0 0 640 512">
+								  <path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2 160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 81.01C231.9 70.42 243.5 64 256 64C268.5 64 280.1 70.42 286.8 81.01L412.7 281.7L460.9 202.7C464.1 196.1 472.2 192 480 192C487.8 192 495 196.1 499.1 202.7L631.1 419.1C636.9 428.6 640 439.7 640 450.9C640 484.6 612.6 512 578.9 512H55.91C25.03 512 .0006 486.1 .0006 456.1L0 456.1z" />
+								</svg>
+							</div>
+						</div>
+						{/if}
+					</div>
+					<Alert color="red" class="dark:bg-gray-900">
 						<span slot="icon">
 							<InfoCircleSolid slot="icon" size="sm" />
 							<span class="sr-only">Info</span>
 						</span>
 						<p class="font-medium"
-							>NOTE: Event name and summary will be visible to anyone with a link to
-							the event</p
+							>NOTE: The above settings will be visible to anyone with a
+							link to the event</p
 						>
 					</Alert>
 					<div>
-						<Label class="mb-2">Event Description</Label>
+						<Label for="event-description" class="mb-2">Event Description</Label>
 						<MarkdownEditor
 							placeholder="Describe the event"
 							bind:value={editData.description}
@@ -125,13 +210,18 @@
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Label for="event-start" class="mb-2">Event Start</Label>
-						<DatetimePicker id="event-start" name="start" bind:value={startDate} />
+						<DatetimePicker
+							id="event-start"
+							name="Event Start Datetime"
+							disable="past"
+							bind:value={startDate}
+						/>
 					</div>
 					<div>
 						<Label for="event-duration" class="mb-2">Event Duration</Label>
 						<DurationPicker
 							id="event-duration"
-							name="duration"
+							name="Event Duration"
 							bind:value={editData.duration}
 						/>
 					</div>
@@ -157,7 +247,7 @@
 			</section>
 			<section>
 				<span class="text-lg font-semibold dark:text-primary-500">
-					Event Join Permissions
+					Join Permissions
 				</span>
 				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
 				<div class="flex flex-col gap-4 p-4">
@@ -165,13 +255,13 @@
 						<Label for="event-access" class="mb-2">Event Access</Label>
 						<BetterSelect
 							id="event-access"
-							name="type"
-							options={[
-								{ value: "COMMUNITY", name: "Anyone" },
-								{ value: "ORG", name: "Org Members" },
-								{ value: "ROLES", name: "Roles" },
-							]}
+							name="Event Access Type"
+							options={Object.values(EventAccessType).map((type) => ({
+								value: type,
+								name: strings.toTitleCase(type),
+							}))}
 							required
+							bind:value={editData.accessType}
 						/>
 					</div>
 					<div>
@@ -196,7 +286,7 @@
 			</section>
 			<section>
 				<span class="text-lg font-semibold dark:text-primary-500"
-					>Event Member Permissions</span
+					>Member Permissions</span
 				>
 				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
 				<div class="flex flex-col gap-4 p-4">
@@ -218,13 +308,58 @@
 					</div>
 				</div>
 			</section>
+			<section>
+				<span class="text-lg font-semibold dark:text-primary-500"
+					>Discord Settings</span
+				>
+				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				<div class="flex flex-col gap-4 p-4">
+					<div>
+						<Label for="event-channel" class="mb-2">Events Channel</Label>
+						<BetterSelect
+							id="event-channel"
+							name="Events Channel"
+							options={data.options?.channels.map((channel) => ({
+								value: channel.id,
+								name: channel.name,
+							})) ?? [{ value: editData.channel.id, name: editData.channel.name }]}
+							required
+							bind:value={editData.channel.id}
+						/>
+					</div>
+					<div>
+						<Label for="event-mentions" class="mb-2">Mentions</Label>
+						<BetterSelect
+							id="event-mentions"
+							name="Events Mentions"
+							options={data.options?.discordRoles.map(role => ({
+								value: role.id,
+								name: role.name,
+								style: {
+									color: role.color === "#000000" ? "#e5e7eb" : role.color
+								}
+							}))}
+							required
+							multi
+							search
+							bind:value={editData.mentions}
+							let:option
+						>
+							<div class="flex items-center">
+								<div class="rounded-full w-3 h-3 me-2" style="background-color:{option.style?.color}" />
+								<span>{option.name}</span>
+							</div>
+						</BetterSelect>
+					</div>
+				</div>
+			</section>
 		</div>
 	</div>
 	<section>
 		<span class="text-lg font-semibold dark:text-primary-500">Event RSVPs</span>
 		<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
 		<div class="p-4">
-			<RsvpTable bind:value={editData.roles} />
+			<RsvpTable {data} bind:value={editData.roles} />
 		</div>
 	</section>
 	<div class="flex justify-end items-center gap-2">
@@ -233,30 +368,30 @@
 				disabled={!isDirty}
 				on:click={() => {
 					if (!isDirty) return;
-
-					data = { ...data, ...editData };
+					save();
 				}}
 			>
 				<EditOutline class="me-2" /> Save
 			</Button>
 		{:else}
-			<Button
-				color="alternative"
-				disabled={!isDirty}
-				on:click={() => {
-					if (!isDirty) return;
-
-					data = { ...data, ...editData };
-				}}
-			>
+			<Button color="alternative">
 				<CloseSolid class="me-2" /> Cancel
 			</Button>
 			<Button
+				color="green"
 				disabled={!isDirty}
 				on:click={() => {
 					if (!isDirty) return;
-
-					data = { ...data, ...editData };
+					save();
+				}}
+			>
+				<EditOutline class="me-2" /> Save Draft
+			</Button>
+			<Button
+				disabled={data.posted}
+				on:click={() => {
+					if (data.posted) return;
+					post();
 				}}
 			>
 				<CaretRightSolid class="me-2" /> Post

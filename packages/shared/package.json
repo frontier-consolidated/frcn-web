@@ -1,0 +1,37 @@
+{
+  "name": "@frcn/shared",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./locations": {
+      "import": "./dist/locations/index.js",
+      "types": "./dist/locations/index.d.ts"
+    },
+    "./emojis": {
+      "import": "./dist/emojis/index.js",
+      "types": "./dist/emojis/index.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "locations": [
+        "dist/locations/index.d.ts"
+      ],
+      "emojis": [
+        "dist/emojis/index.d.ts"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5"
+  }
+}

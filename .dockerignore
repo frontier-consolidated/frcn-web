@@ -5,7 +5,3 @@
 **/.gitignore
 **/dist
 **/build
-
-.env
-**/.env
-**/.env.*

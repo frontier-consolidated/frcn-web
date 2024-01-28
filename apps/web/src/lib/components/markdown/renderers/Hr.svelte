@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Tokens } from "marked";
+
 	import BreakFix from "./BreakFix.svelte";
 
 	export let token: Tokens.Hr | Tokens.Generic;

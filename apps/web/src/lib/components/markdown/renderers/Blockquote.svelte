@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Blockquote } from "flowbite-svelte";
 	import type { Tokens } from "marked";
+
 	import BreakFix from "./BreakFix.svelte";
 
 	export let token: Tokens.Blockquote | Tokens.Generic;

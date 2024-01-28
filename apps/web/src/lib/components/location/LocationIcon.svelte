@@ -1,12 +1,13 @@
 <script lang="ts">
-	import type { AnyLocation } from "$lib/data/locations/types";
-	import SystemIcon from "./icons/System.svelte";
-	import PlanetIcon from "./icons/Planet.svelte";
-	import MoonIcon from "./icons/Moon.svelte";
-	import OutpostIcon from "./icons/Outpost.svelte";
+	import type { AnyLocation } from "@frcn/shared/locations";
+
 	import CityIcon from "./icons/City.svelte";
+	import MoonIcon from "./icons/Moon.svelte";
 	import OrbitalMarkerIcon from "./icons/OrbitalMarker.svelte";
+	import OutpostIcon from "./icons/Outpost.svelte";
+	import PlanetIcon from "./icons/Planet.svelte";
 	import StationIcon from "./icons/Station.svelte";
+	import SystemIcon from "./icons/System.svelte";
 
 	export let location: AnyLocation;
 

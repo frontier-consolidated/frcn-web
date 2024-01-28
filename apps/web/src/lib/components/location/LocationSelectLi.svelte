@@ -1,10 +1,12 @@
 <script lang="ts">
-	import { createEventDispatcher } from "svelte";
+	import type { AnyLocation } from "@frcn/shared/locations";
 	import { Button } from "flowbite-svelte";
 	import { TrashBinSolid } from "flowbite-svelte-icons";
-	import type { AnyLocation } from "$lib/data/locations/types";
+	import { createEventDispatcher } from "svelte";
+
 	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
 	import type { Option } from "$lib/components/select/types";
+
 	import LocationOption from "./LocationOption.svelte";
 
 	const dispatch = createEventDispatcher();
@@ -20,10 +22,13 @@
 		{options}
 		{disabled}
 		placeholder="Choose location ..."
-		component={LocationOption}
 		class="flex-1"
+		search
 		bind:value
-	/>
+		let:option
+	>
+		<LocationOption value={option.value} />
+	</BetterSelect>
 	{#if deletable}
 		<Button
 			on:click={(ev) => {

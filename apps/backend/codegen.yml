@@ -1,0 +1,14 @@
+overwrite: true
+schema: "./src/graphql/schema/schema.generated.graphql"
+documents: null
+generates:
+    ./src/graphql/__generated__/resolvers-types.ts:
+        plugins:
+            - "typescript"
+            - "typescript-resolvers"
+        config:
+            useTypeImports: true
+            useIndexSignature: true
+            contextType: "../context#GQLContext"
+config:
+    scalars: "@frcn/graphql-scalar-types/server"

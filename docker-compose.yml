@@ -1,0 +1,58 @@
+services:
+  backend:
+    container_name: frcn-backend
+    image: events.frcn.space/backend
+    restart: always
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - ./env/.backend
+    ports:
+      - "15401:80"
+    networks:
+      frcnnet:
+        aliases:
+          - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+    depends_on:
+      - database
+  web:
+    container_name: frcn-web
+    image: events.frcn.space/web
+    restart: always
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - env/.web
+    ports:
+      - "15396:80"
+    networks:
+      frcnnet:
+        aliases:
+          - web
+    depends_on:
+      - backend
+  database:
+    image: postgres:16-alpine
+    restart: always
+    env_file:
+      - ./env/.database
+    ports:
+      - "15402:5432"
+    volumes:
+    - postgres:/var/lib/postgresql/data
+    networks:
+      frcnnet:
+        aliases:
+          - database
+
+networks:
+  frcnnet:
+
+volumes:
+  postgres:

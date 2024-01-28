@@ -1,0 +1,260 @@
+# Scalars
+
+scalar Timestamp
+
+# Enums
+
+enum CacheControlScope {
+	PUBLIC
+	PRIVATE
+}
+
+enum Permission {
+	CreateEvents
+	ManageRoles
+	ManageSystem
+}
+
+enum EventAccessType {
+	EVERYONE
+	PRIMARY_ROLE
+	SELECT_ROLES
+	CHANNEL
+}
+
+# Directives
+
+directive @cacheControl(
+	maxAge: Int
+	scope: CacheControlScope
+	inheritMaxAge: Boolean
+) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+"""
+Marks a field as only accessible by the object owner
+"""
+directive @ownership on FIELD_DEFINITION
+"""
+Enforces a field as requiring the given permission
+"""
+directive @permission(has: Permission, one: [Permission!], all: [Permission!]) on FIELD_DEFINITION
+
+# Types
+
+type SystemSettings {
+	discordGuildId: String!
+	defaultEventChannel: DiscordChannel
+}
+
+type UserRole {
+	id: ID!
+	name: String!
+	discordId: String!
+	primary: Boolean!
+	permissions: Int! @permission(has: ManageRoles)
+	users: [User!]! @permission(has: ManageRoles)
+	updatedAt: Timestamp!
+	createdAt: Timestamp!
+}
+
+type UserStatus {
+	activity: String
+	ship: String
+	updatedAt: Timestamp!
+}
+
+type UserSettings {
+	updatedAt: Timestamp!
+}
+
+type User {
+	id: ID!
+	name: String!
+	scName: String
+	discordName: String!
+	verified: Boolean!
+	avatarUrl: String!
+	updatedAt: Timestamp!
+	createdAt: Timestamp!
+
+	permissions: Int!
+	primaryRole: UserRole!
+	roles: [UserRole!]!
+	rsvps: [EventRsvp!]! @ownership
+	status: UserStatus!
+	settings: UserSettings! @ownership
+}
+
+type EventRsvpRole {
+	id: ID!
+	name: String!
+	emoji: DiscordEmoji!
+	limit: Int!
+	members: [ID!]!
+}
+
+type EventRsvp {
+	invite: Boolean!
+	rsvp: EventRsvpRole
+	event: Event!
+	rsvpAt: Timestamp!
+}
+
+type EventMember {
+	id: ID!
+	pending: Boolean!
+	user: User!
+	rsvp: ID!
+	rsvpAt: Timestamp!
+}
+
+type EventSettings {
+	hideLocation: Boolean!
+	inviteOnly: Boolean!
+	openToJoinRequests: Boolean!
+	allowTeamSwitching: Boolean!
+	allowCrewSwitching: Boolean!
+}
+
+type Event {
+	id: ID!
+	channel: DiscordChannel!
+	owner: User!
+	name: String!
+	summary: String!
+	description: String!
+	imageUrl: String
+	eventType: String
+	location: [String!]
+	startAt: Timestamp
+	endedAt: Timestamp
+	duration: Int
+	posted: Boolean!
+	updatedAt: Timestamp!
+	createdAt: Timestamp!
+
+	rsvp: EventMember
+	roles: [EventRsvpRole!]!
+	members: [EventMember!]!
+	mentions: [ID!]! @permission(has: CreateEvents)
+	settings: EventSettings! @permission(has: CreateEvents)
+	accessType: EventAccessType! @permission(has: CreateEvents)
+	accessRoles: [UserRole!]! @permission(has: CreateEvents)
+}
+
+type DiscordChannel {
+	id: ID!
+	name: String!
+	type: String
+}
+
+type DiscordRole {
+	id: ID!
+	name: String!
+	color: String!
+}
+
+type DiscordEmoji {
+	id: ID!
+	name: String!
+	image: String
+}
+
+# Inputs:
+
+input UserStatusEditInput {
+	activity: String @constraint(maxLength: 255)
+	ship: String @constraint(maxLength: 255)
+}
+
+input EventFilterInput {
+	search: String @constraint(maxLength: 255)
+	startAt: Timestamp
+	minDuration: Int @constraint(min: 0)
+	maxDuration: Int @constraint(min: 0)
+	includeCompleted: Boolean
+}
+
+input EventSettingsInput {
+	hideLocation: Boolean!
+	inviteOnly: Boolean!
+	openToJoinRequests: Boolean!
+	allowTeamSwitching: Boolean!
+	allowCrewSwitching: Boolean!
+}
+
+input EventRoleInput {
+	id: ID!
+	name: String! @constraint(minLength: 1, maxLength: 128)
+	emoji: String!
+	emojiId: String!
+	limit: Int! @constraint(min: 0)
+}
+
+input EventEditInput {
+	channel: ID
+	name: String @constraint(minLength: 1, maxLength: 255)
+	summary: String @constraint(minLength: 1, maxLength: 255)
+	description: String @constraint(maxLength: 2048)
+	imageUrl: String @constraint(format: "url", maxLength: 2084)
+	eventType: String
+	location: [String!]
+	startAt: Timestamp
+	duration: Int @constraint(min: 0)
+	roles: [EventRoleInput!]
+	mentions: [ID!]
+	settings: EventSettingsInput
+	accessType: EventAccessType
+	accessRoles: [ID!]
+}
+
+input SystemEditInput {
+	discordGuildId: ID
+}
+
+# Root types:
+
+type Query {
+	# Users
+	getCurrentUser: User
+	getUser(id: ID!): User
+	getUserScVerifyCode: String
+
+	# Events
+	getEvent(id: ID!): Event
+	getEvents(
+		filter: EventFilterInput
+		page: Int @constraint(min: 0)
+		limit: Int @constraint(min: 1, max: 50)
+	): PagedEvent
+
+	# Roles
+	getRoles: [UserRole!]! @permission(one: [CreateEvents, ManageRoles])
+	getRoleOrder: [ID!]! @permission(has: ManageRoles)
+
+	# System
+	getAllEventChannels: [DiscordChannel]! @permission(one: [CreateEvents, ManageSystem])
+	getAllDiscordChannels: [DiscordChannel!]! @permission(has: ManageSystem)
+	getAllDiscordEmojis: [DiscordEmoji!]! @permission(has: CreateEvents)
+	getAllDiscordRoles: [DiscordRole!]! @permission(one: [CreateEvents, ManageRoles])
+	getSystemSettings: SystemSettings! @permission(has: ManageSystem)
+}
+
+type Mutation {
+	# Users
+	setUserScName(name: String!): User!
+	verifyUserScName(code: String!): User!
+	editUserStatus(data: UserStatusEditInput!): UserStatus!
+
+	# Events
+	createEvent: ID! @permission(has: CreateEvents)
+	editEvent(id: ID!, data: EventEditInput!): Event @permission(has: CreateEvents)
+	postEvent(id: ID!): Boolean! @permission(has: CreateEvents)
+	rsvpForEvent(id: ID!, rsvp: ID!): Boolean!
+
+	# Roles
+	reorderRoles(order: [ID!]!): [ID!]! @permission(has: ManageRoles)
+
+	# System
+	editEventChannels(channels: [ID!]!): [DiscordChannel!]! @permission(has: ManageSystem)
+	editSystemSettings(data: SystemEditInput!): SystemSettings! @permission(has: ManageSystem)
+}

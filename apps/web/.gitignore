@@ -5,3 +5,10 @@
 .output
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+regolith.rocks-*.*
+
+!.env
+!.env.*
+.env.local
+.env.*.local

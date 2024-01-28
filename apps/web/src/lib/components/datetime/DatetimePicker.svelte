@@ -2,12 +2,14 @@
 	import { Input, Dropdown, DropdownHeader } from "flowbite-svelte";
 	import { CalendarEditSolid } from "flowbite-svelte-icons";
 	import { locale } from "svelte-i18n";
+
 	import DateControls from "./date/DateControls.svelte";
 	import TimeControls from "./time/TimeControls.svelte";
 
 	export let id: string;
 	export let title: string | undefined = undefined;
 	export let value: Date | null = null;
+	export let disable: "past" | "future" | false = false;
 
 	let dropdownOpen = false;
 
@@ -61,10 +63,6 @@
 	function init(el: HTMLElement) {
 		input = el;
 	}
-
-	function selectAll(target: EventTarget | null) {
-		// (target as HTMLInputElement | null)?.select();
-	}
 </script>
 
 <div id="{id}-ref" use:init>
@@ -73,7 +71,6 @@
 		{id}
 		placeholder="Select date and time"
 		bind:value={inputValue}
-		on:click={(ev) => selectAll(ev.target)}
 	>
 		<CalendarEditSolid slot="left" size="sm" class="ms-1" />
 	</Input>
@@ -90,6 +87,7 @@
 	{/if}
 	<div class="grid grid-flow-col auto-cols-max gap-2">
 		<DateControls
+			{disable}
 			bind:viewDate
 			bind:selectedDate
 			on:refocus={() => {

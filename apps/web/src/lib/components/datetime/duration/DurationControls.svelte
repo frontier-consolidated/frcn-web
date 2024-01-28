@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { dates } from "@frcn/shared";
 	import { Input } from "flowbite-svelte";
-	import { toDurationComponents } from "../helpers";
 
 	const hours = new Array(24).fill(0).map((_, index) => index);
 	const minutesAndSeconds = new Array(60).fill(0).map((_, index) => index);
@@ -23,7 +23,7 @@
 			minutes: minutes_,
 			seconds: seconds_,
 			milliseconds: milliseconds_,
-		} = toDurationComponents(value);
+		} = dates.toDurationComponents(value);
 		hours ??= hours_;
 		minutes ??= minutes_;
 		seconds ??= seconds_;
@@ -35,49 +35,49 @@
 		return number.toString().padStart(2, "0");
 	}
 
-	let inputHours = pad(toDurationComponents(value).hours);
-	let inputMinutes = pad(toDurationComponents(value).minutes);
-	let inputSeconds = pad(toDurationComponents(value).seconds);
+	let inputHours = pad(dates.toDurationComponents(value).hours);
+	let inputMinutes = pad(dates.toDurationComponents(value).minutes);
+	let inputSeconds = pad(dates.toDurationComponents(value).seconds);
 
 	let hoursDiv: HTMLElement | null = null;
 	let minutesDiv: HTMLElement | null = null;
 	let secondsDiv: HTMLElement | null = null;
-	function scrollToHour(hour: number) {
+	function scrollToHour(hour: number, instant?: boolean) {
 		const el = hoursDiv?.querySelector<HTMLElement>(`[data-hour="${hour}"]`);
 		if (el)
 			el.scrollIntoView({
-				behavior: "smooth",
+				behavior: instant ? "instant" : "smooth",
 				block: "center",
 			});
 	}
-	function scrollToMinute(minute: number) {
+	function scrollToMinute(minute: number, instant?: boolean) {
 		const el = minutesDiv?.querySelector<HTMLElement>(`[data-minute="${minute}"]`);
 		if (el)
 			el.scrollIntoView({
-				behavior: "smooth",
+				behavior: instant ? "instant" : "smooth",
 				block: "center",
 			});
 	}
-	function scrollToSecond(second: number) {
+	function scrollToSecond(second: number, instant?: boolean) {
 		const el = secondsDiv?.querySelector<HTMLElement>(`[data-second="${second}"]`);
 		if (el)
 			el.scrollIntoView({
-				behavior: "smooth",
+				behavior: instant ? "instant" : "smooth",
 				block: "center",
 			});
 	}
 
 	function initHours(el: HTMLElement) {
 		hoursDiv = el;
-		scrollToHour(toDurationComponents(value).hours);
+		scrollToHour(dates.toDurationComponents(value).hours, true);
 	}
 	function initMinutes(el: HTMLElement) {
 		minutesDiv = el;
-		scrollToMinute(toDurationComponents(value).minutes);
+		scrollToMinute(dates.toDurationComponents(value).minutes, true);
 	}
 	function initSeconds(el: HTMLElement) {
 		secondsDiv = el;
-		scrollToSecond(toDurationComponents(value).seconds);
+		scrollToSecond(dates.toDurationComponents(value).seconds, true);
 	}
 
 	function setHours(hours: number) {
@@ -100,8 +100,8 @@
 
 	$: {
 		if (value) {
-			setHours(toDurationComponents(value).hours);
-			setMinutes(toDurationComponents(value).minutes);
+			setHours(dates.toDurationComponents(value).hours);
+			setMinutes(dates.toDurationComponents(value).minutes);
 		}
 	}
 
@@ -153,7 +153,7 @@
 					tabindex="0"
 					data-hour={hour}
 					class="block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer {hour ==
-					toDurationComponents(value).hours
+					dates.toDurationComponents(value).hours
 						? 'bg-primary-600 dark:hover:bg-primary-700'
 						: 'dark:hover:bg-gray-600'}"
 					on:click={() => setHours(hour)}
@@ -172,7 +172,7 @@
 					tabindex="0"
 					data-minute={minute}
 					class="block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer {minute ==
-					toDurationComponents(value).minutes
+					dates.toDurationComponents(value).minutes
 						? 'bg-primary-600 dark:hover:bg-primary-700'
 						: 'dark:hover:bg-gray-600'}"
 					on:click={() => setMinutes(minute)}
@@ -191,7 +191,7 @@
 					tabindex="0"
 					data-second={second}
 					class="block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer {second ==
-					toDurationComponents(value).seconds
+					dates.toDurationComponents(value).seconds
 						? 'bg-primary-600 dark:hover:bg-primary-700'
 						: 'dark:hover:bg-gray-600'}"
 					on:click={() => setSeconds(second)}

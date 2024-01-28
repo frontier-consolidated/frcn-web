@@ -6,7 +6,12 @@
 		"target": "es2020",
 		"module": "esnext",
 		"moduleResolution": "node",
+		"resolveJsonModule": true,
 		"esModuleInterop": true,
+		"verbatimModuleSyntax": true,
 		"types": ["node"]
+	},
+	"ts-node": {
+		"transpileOnly": true
 	}
 }

@@ -3,7 +3,15 @@
 	"parserOptions": {
 		"extraFileExtensions": [".svelte"]
 	},
-	"ignorePatterns": ["tailwind.config.cjs", "svelte.config.js", "postcss.config.cjs"],
+	"ignorePatterns": [
+		"tailwind.config.cjs",
+		"svelte.config.js",
+		"postcss.config.cjs",
+		"**/__generated__",
+		"/build",
+		"/.svelte-kit",
+		"/package"
+	],
 	"overrides": [
 		{
 			"files": ["*.svelte"],
@@ -12,5 +20,36 @@
 				"parser": "@typescript-eslint/parser"
 			}
 		}
-	]
+	],
+	"rules": {
+		"import/no-unresolved": [
+			"error",
+			{
+				"ignore": ["^\\$app/.+"]
+			}
+		],
+		"import/order": [
+			"warn",
+			{
+				"groups": ["builtin", "external", "internal", ["parent", "sibling"], "index"],
+				"pathGroups": [
+					{
+						"pattern": "$app/**",
+						"group": "external"
+					},
+					{
+						"pattern": "$lib/**",
+						"group": "internal"
+					}
+				],
+				"alphabetize": {
+					"order": "asc",
+					"caseInsensitive": true
+				},
+				"newlines-between": "always"
+			}
+		],
+		"@typescript-eslint/no-explicit-any": "off",
+		"svelte/no-at-html-tags": "warn"
+	}
 }

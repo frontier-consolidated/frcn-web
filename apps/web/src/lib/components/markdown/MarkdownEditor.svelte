@@ -1,8 +1,8 @@
 <script lang="ts">
 	import "./overrides.css";
-	import CodeMirror from "svelte-codemirror-editor";
 	import { markdown } from "@codemirror/lang-markdown";
 	import { githubDarkInit } from "@uiw/codemirror-theme-github";
+	import CodeMirror from "svelte-codemirror-editor";
 
 	export let value: string = "";
 </script>

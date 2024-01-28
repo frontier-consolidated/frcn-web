@@ -1,19 +1,47 @@
 {
 	"root": true,
-	"extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+	"extends": [
+		"eslint:recommended",
+		"plugin:@typescript-eslint/recommended",
+		"plugin:import/errors",
+		"plugin:import/warnings",
+		"plugin:import/typescript"
+	],
 	"parser": "@typescript-eslint/parser",
-	"plugins": ["@typescript-eslint"],
+	"plugins": ["@typescript-eslint", "import"],
 	"parserOptions": {
 		"sourceType": "module",
-		"ecmaVersion": 2020,
-		"project": ["./apps/*/tsconfig.json"]
+		"ecmaVersion": 2020
+		// "project": ["./apps/*/tsconfig.json", "./packages/*/tsconfig.json"]
 	},
 	"env": {
 		"browser": true,
 		"es2017": true,
 		"node": true
 	},
+	"settings": {
+		"import/parsers": {
+			"@typescript-eslint/parser": [".ts", ".tsx"]
+		},
+		"import/resolver": {
+			"typescript": {
+				"project": ["apps/*/tsconfig.json", "packages/*/tsconfig.json"]
+			}
+		}
+	},
 	"rules": {
+		"import/order": [
+			"warn",
+			{
+				"groups": ["builtin", "external", ["sibling", "parent"], "index"],
+				"alphabetize": {
+					"order": "asc",
+					"caseInsensitive": true
+				},
+				"newlines-between": "always"
+			}
+		],
+		"no-mixed-spaces-and-tabs": "off",
 		"@typescript-eslint/no-unused-vars": [
 			"warn", // or "error"
 			{

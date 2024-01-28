@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from "$app/stores";
 	import {
 		Navbar,
 		NavBrand,
@@ -14,12 +15,15 @@
 		InfoCircleSolid,
 		ChevronDownOutline,
 		CalendarMonthSolid,
+		DiscordSolid,
+		BagSolid,
 	} from "flowbite-svelte-icons";
-	import { page } from "$app/stores";
+
 	import logo from "$lib/images/logo.png";
-	import ScreenQuery from "./ScreenQuery.svelte";
+	import { login, logout, user } from "$lib/stores/UserStore";
+
 	import NavUser from "./NavUser.svelte";
-	import { login, user } from "$lib/stores/UserStore";
+	import ScreenQuery from "./ScreenQuery.svelte";
 
 	$: activeUrl = $page.url.pathname;
 	let activeClass =
@@ -41,10 +45,18 @@
 		<div class="ml-8 w-px h-8 md:bg-gray-700"></div>
 	</NavBrand>
 	<div class="ml-4 flex md:order-2">
-		{#if $user}
-			<NavUser on:logout={() => user.set(null)} />
+		{#if $user.data}
+			<NavUser
+				on:logout={() => {
+					logout().catch(console.error);
+				}}
+			/>
 		{:else}
-			<Button on:click={() => login()}>Login</Button>
+			<Button
+				on:click={() => {
+					login().catch(console.error);
+				}}>Login</Button
+			>
 		{/if}
 		<NavHamburger />
 	</div>
@@ -64,7 +76,8 @@
 		</NavLi>
 		<Dropdown class="w-full lg:w-44 z-20">
 			<DropdownItem href="/about">About Us</DropdownItem>
-			<DropdownItem href="https://discord.com/invite/frcn">Join Our Discord</DropdownItem>
+			<DropdownItem href="https://loudguns.teemill.com/" class="flex items-center"><BagSolid size="sm" class="me-2" /> Merch Store</DropdownItem>
+			<DropdownItem href="https://discord.com/invite/frcn" class="flex items-center"><DiscordSolid size="sm" class="me-2" /> Join Our Discord</DropdownItem>
 		</Dropdown>
 	</NavUl>
 </Navbar>
