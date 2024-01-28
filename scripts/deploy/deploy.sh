@@ -30,6 +30,9 @@ build
 # Copy necessary files e.g. docker-compose.yml to APP_DIR
 mkdir -p "$APP_DIR"
 copyFiles $APP_DIR
+
+# Check if files are ready to run app
+checkFiles $APP_DIR
 cd "$APP_DIR" || exit
 
 if [ -f "$APP_DIR/docker-compose.yml" ]; then
