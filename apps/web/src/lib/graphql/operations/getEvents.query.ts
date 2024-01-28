@@ -6,6 +6,7 @@ export const GET_EVENTS = gql(`
 			items {
 				...EventFragment
 			}
+			itemsPerPage
 			page
 			nextPage
 			prevPage
