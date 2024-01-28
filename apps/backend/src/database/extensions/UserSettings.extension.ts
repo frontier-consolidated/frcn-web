@@ -1,10 +1,10 @@
-import { Prisma, UserSettings, PrismaClient } from "@prisma/client";
+import type { Prisma, UserSettings, PrismaClient } from "@prisma/client";
 
 import { cacheGet } from "../helpers";
-import { FullModel } from "../types";
+import type { FullModel } from "../types";
 
-export function createUserSettingsExtension(client: PrismaClient) {
-	return Prisma.defineExtension({
+export function createUserSettingsExtension(define: typeof Prisma.defineExtension, client: PrismaClient) {
+	return define({
 		name: "UserSettingsExtension",
 		model: {
 			userSettings: {

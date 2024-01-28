@@ -1,6 +1,6 @@
 import { expressMiddleware } from "@apollo/server/express4";
 
-import { Context } from "../context";
+import type { Context } from "../context";
 
 export default async function route(context: Context) {
 	await context.apolloServer.start();

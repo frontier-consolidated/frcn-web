@@ -1,15 +1,15 @@
-import { EventChannel } from "@prisma/client";
+import type { EventChannel } from "@prisma/client";
 import { ChannelType, GuildChannel, GuildEmoji, Role } from "discord.js";
 
 import { database } from "../../../database";
 import { $discord } from "../../../services/discord";
-import {
+import type {
 	DiscordChannel,
 	DiscordEmoji,
 	DiscordRole,
 	Resolvers,
 } from "../../__generated__/resolvers-types";
-import { GQLContext } from "../../context";
+import type { GQLContext } from "../../context";
 import { gqlErrorNotFound } from "../gqlError";
 
 export async function resolveDiscordChannel(

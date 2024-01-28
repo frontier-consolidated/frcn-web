@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-import { Event, EventRsvpRole, EventUser, User } from "@prisma/client";
+import type { Event, EventRsvpRole, EventUser, User } from "@prisma/client";
 import { Client as DiscordClient, ThreadAutoArchiveDuration } from "discord.js";
 
 import { $discord } from "./discord";
@@ -8,7 +8,7 @@ import { $roles } from "./roles";
 import { $system } from "./system";
 import { buildEventMessage, updateEventMessage } from "../bot/messages/event.message";
 import { database } from "../database";
-import { EventAccessType, EventEditInput } from "../graphql/__generated__/resolvers-types";
+import { EventAccessType, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 
 async function eventExists(id: string) {
 	const exists = await database.event.findUnique({

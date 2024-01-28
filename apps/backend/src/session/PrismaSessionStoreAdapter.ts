@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { PrismaClient } from "@prisma/client";
-import { SessionData, Store } from "express-session";
+import type { PrismaClient } from "@prisma/client";
+import { type SessionData, Store } from "express-session";
 
 export interface PrismaSessionStoreAdapteOptions {
 	maxAge?: number;

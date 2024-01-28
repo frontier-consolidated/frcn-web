@@ -1,10 +1,10 @@
-import { Prisma, PrismaClient, EventChannel, Event } from "@prisma/client";
+import type { Prisma, PrismaClient, EventChannel, Event } from "@prisma/client";
 
 import { cacheGet, cacheGetMany } from "../helpers";
-import { FullModel } from "../types";
+import type { FullModel } from "../types";
 
-export function createEventChannelExtension(client: PrismaClient) {
-	return Prisma.defineExtension({
+export function createEventChannelExtension(define: typeof Prisma.defineExtension, client: PrismaClient) {
+	return define({
 		name: "EventChannelExtension",
 		model: {
 			eventChannel: {

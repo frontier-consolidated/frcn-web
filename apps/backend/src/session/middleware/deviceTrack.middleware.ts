@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-import { MiddlewareHandler } from "../types";
+import type { MiddlewareHandler } from "../types";
 
 function serialize(value: string) {
 	return `d:${Buffer.from(value, "utf-8").toString("base64")}`;

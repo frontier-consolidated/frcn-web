@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 
 export async function seed(db: PrismaClient) {
 	const orgMemberRole = await db.userRole.findUniqueOrThrow({

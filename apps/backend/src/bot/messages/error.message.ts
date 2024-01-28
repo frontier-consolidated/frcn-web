@@ -1,4 +1,4 @@
-import { BaseMessageOptions, EmbedBuilder } from "discord.js";
+import { type BaseMessageOptions, EmbedBuilder } from "discord.js";
 
 import { PRIMARY_COLOR } from "../constants";
 

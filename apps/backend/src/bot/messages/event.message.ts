@@ -1,8 +1,8 @@
 import { dates, strings } from "@frcn/shared";
 import { getEmojiByName } from "@frcn/shared/emojis";
-import { AnyLocation, getLocations } from "@frcn/shared/locations";
-import { Event } from "@prisma/client";
-import { BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder } from "discord.js";
+import { type AnyLocation, getLocations } from "@frcn/shared/locations";
+import type { Event } from "@prisma/client";
+import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder } from "discord.js";
 
 import { database } from "../../database";
 import { getWebOrigin } from "../../env";

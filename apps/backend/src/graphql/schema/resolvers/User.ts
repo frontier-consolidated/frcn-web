@@ -1,12 +1,12 @@
-import { User, UserSettings, UserStatus } from "@prisma/client";
+import type { User, UserSettings, UserStatus } from "@prisma/client";
 
 import { resolveEventRsvp } from "./Event";
 import { resolveUserRole } from "./Roles";
-import { WithModel } from "./types";
+import type { WithModel } from "./types";
 import { database } from "../../../database";
 import { $roles } from "../../../services/roles";
 import { $users } from "../../../services/users";
-import {
+import type {
 	Resolvers,
 	User as GQLUser,
 	UserStatus as GQLUserStatus,

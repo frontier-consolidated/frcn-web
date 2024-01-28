@@ -1,10 +1,10 @@
-import { Prisma, SystemSettings, PrismaClient } from "@prisma/client";
+import type { Prisma, SystemSettings, PrismaClient } from "@prisma/client";
 
 import { cacheGet } from "../helpers";
-import { FullModel } from "../types";
+import type { FullModel } from "../types";
 
-export function createSystemSettingsExtension(client: PrismaClient) {
-	return Prisma.defineExtension({
+export function createSystemSettingsExtension(define: typeof Prisma.defineExtension, client: PrismaClient) {
+	return define({
 		name: "SystemSettingsExtension",
 		model: {
 			systemSettings: {

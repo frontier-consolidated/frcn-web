@@ -1,6 +1,6 @@
 import { Permission } from "@frcn/shared";
 import { createGraphQLError } from "@graphql-tools/utils";
-import { GraphQLErrorOptions } from "graphql";
+import type { GraphQLErrorOptions } from "graphql";
 
 type GraphQLErrorType =
 	| "NOT_FOUND"

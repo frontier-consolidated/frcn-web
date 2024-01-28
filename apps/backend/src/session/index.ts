@@ -1,7 +1,7 @@
 import { middleware as authMiddleware } from "./middleware/auth.middleware";
 import { middleware as deviceTrackMiddleware } from "./middleware/deviceTrack.middleware";
 import { middleware as sessionMiddleware } from "./middleware/session.middleware";
-import { SessionMiddlewareConfig } from "./types";
+import type { SessionMiddlewareConfig } from "./types";
 
 export type * from "./types";
 

@@ -1,7 +1,7 @@
 
-import { REST, Routes, RESTPostOAuth2AccessTokenResult, APIUser } from "discord.js";
+import { REST, Routes, type RESTPostOAuth2AccessTokenResult, type APIUser } from "discord.js";
 
-import { Context } from "../context";
+import type { Context } from "../context";
 import { getOrigin } from "../env";
 import { $users } from "../services/users";
 

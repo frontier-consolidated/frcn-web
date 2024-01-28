@@ -1,10 +1,10 @@
-import { Prisma, UserSession, PrismaClient } from "@prisma/client";
+import type { Prisma, UserSession, PrismaClient } from "@prisma/client";
 
 import { cacheGet } from "../helpers";
-import { FullModel } from "../types";
+import type { FullModel } from "../types";
 
-export function createUserSessionExtension(client: PrismaClient) {
-	return Prisma.defineExtension({
+export function createUserSessionExtension(define: typeof Prisma.defineExtension, client: PrismaClient) {
+	return define({
 		name: "UserSessionExtension",
 		model: {
 			userSession: {

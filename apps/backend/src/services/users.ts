@@ -1,4 +1,4 @@
-import { APIUser, CDNRoutes, ImageFormat } from "discord.js";
+import { type APIUser, CDNRoutes, ImageFormat } from "discord.js";
 
 import { $roles } from "./roles";
 import { database } from "../database";

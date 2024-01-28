@@ -1,10 +1,10 @@
-import { Prisma, PrismaClient, EventRsvpRole, EventUser } from "@prisma/client";
+import type { Prisma, PrismaClient, EventRsvpRole, EventUser } from "@prisma/client";
 
 import { cacheGet, cacheGetMany } from "../helpers";
-import { FullModel } from "../types";
+import type { FullModel } from "../types";
 
-export function createEventRsvpRoleExtension(client: PrismaClient) {
-	return Prisma.defineExtension({
+export function createEventRsvpRoleExtension(define: typeof Prisma.defineExtension, client: PrismaClient) {
+	return define({
 		name: "EventRsvpRoleExtension",
 		model: {
 			eventRsvpRole: {

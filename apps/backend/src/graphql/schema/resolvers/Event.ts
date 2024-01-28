@@ -1,23 +1,23 @@
 import { EventType } from "@frcn/shared";
-import { EventRsvpRole, EventSettings, EventUser, Event } from "@prisma/client";
+import type { EventRsvpRole, EventSettings, EventUser, Event } from "@prisma/client";
 
 import { resolveDiscordChannel, resolveDiscordEmoji } from "./Discord";
 import { resolveUserRole } from "./Roles";
-import { WithModel } from "./types";
+import type { WithModel } from "./types";
 import { resolveUser } from "./User";
 import { database } from "../../../database";
 import { $discord } from "../../../services/discord";
 import { $events } from "../../../services/events";
-import {
+import type {
 	Event as GQLEvent,
 	EventRsvp as GQLEventRsvp,
 	EventRsvpRole as GQLEventRsvpRole,
 	EventMember as GQLEventMember,
 	EventSettings as GQLEventSettings,
 	Resolvers,
-	EventAccessType,
 } from "../../__generated__/resolvers-types";
-import { GQLContext } from "../../context";
+import { EventAccessType } from "../../__generated__/resolvers-types";
+import type { GQLContext } from "../../context";
 import { gqlErrorBadInput, gqlErrorBadState } from "../gqlError";
 
 export function resolveEvent(event: Event) {

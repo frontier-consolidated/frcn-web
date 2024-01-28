@@ -1,5 +1,5 @@
-import { User } from "@prisma/client";
-import { APIUser, ChannelType, Client, User as DJSUser } from "discord.js";
+import type { User } from "@prisma/client";
+import { type APIUser, ChannelType, Client, User as DJSUser } from "discord.js";
 
 import { $system } from "./system";
 

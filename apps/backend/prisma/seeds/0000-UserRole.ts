@@ -1,5 +1,5 @@
 import { Permission, permissions } from "@frcn/shared";
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 
 export async function seed(db: PrismaClient) {
 	await db.userRole.upsert({

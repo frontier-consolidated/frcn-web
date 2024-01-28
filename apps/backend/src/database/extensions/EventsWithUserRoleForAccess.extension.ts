@@ -1,10 +1,10 @@
-import { Prisma, PrismaClient, EventsWithUserRoleForAccess } from "@prisma/client";
+import type { Prisma, PrismaClient, EventsWithUserRoleForAccess } from "@prisma/client";
 
 import { cacheGet } from "../helpers";
-import { FullModel } from "../types";
+import type { FullModel } from "../types";
 
-export function createEventsWithUserRoleForAccessExtension(client: PrismaClient) {
-	return Prisma.defineExtension({
+export function createEventsWithUserRoleForAccessExtension(define: typeof Prisma.defineExtension, client: PrismaClient) {
+	return define({
 		name: "EventsWithUserRoleForAccessExtension",
 		model: {
 			eventsWithUserRoleForAccess: {

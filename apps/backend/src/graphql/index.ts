@@ -1,6 +1,6 @@
 import { Server as HttpServer } from "http";
 
-import { ApolloServer, ApolloServerOptionsWithSchema } from "@apollo/server";
+import { ApolloServer, type ApolloServerOptionsWithSchema } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { createApollo4QueryValidationPlugin } from "graphql-constraint-directive/apollo4";
 import { useServer } from "graphql-ws/lib/use/ws";

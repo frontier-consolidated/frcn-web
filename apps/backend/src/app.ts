@@ -8,10 +8,10 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 
-import { Context } from "./context";
+import type { Context } from "./context";
 import { createDiscordClient } from "./discordClient";
 import { createApolloServer } from "./graphql";
-import { SessionMiddlewareConfig, sessionMiddlewares } from "./session";
+import { type SessionMiddlewareConfig, sessionMiddlewares } from "./session";
 
 interface CreateAppOptions {
   origins: string[];

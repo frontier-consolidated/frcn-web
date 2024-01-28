@@ -1,10 +1,10 @@
-import { ID } from '@frcn/graphql-scalar-types/server';
-import { String } from '@frcn/graphql-scalar-types/server';
-import { Boolean } from '@frcn/graphql-scalar-types/server';
-import { Int } from '@frcn/graphql-scalar-types/server';
-import { Timestamp } from '@frcn/graphql-scalar-types/server';
-import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { Context } from '../context';
+import type { ID } from '@frcn/graphql-scalar-types/server';
+import type { String } from '@frcn/graphql-scalar-types/server';
+import type { Boolean } from '@frcn/graphql-scalar-types/server';
+import type { Int } from '@frcn/graphql-scalar-types/server';
+import type { Timestamp } from '@frcn/graphql-scalar-types/server';
+import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
+import type { GQLContext } from '../context';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -61,7 +61,7 @@ export type Event = {
   eventType?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   imageUrl?: Maybe<Scalars['String']['output']>;
-  location: Array<Scalars['String']['output']>;
+  location?: Maybe<Array<Scalars['String']['output']>>;
   members: Array<EventMember>;
   mentions: Array<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
@@ -273,7 +273,7 @@ export type SystemEditInput = {
 
 export type SystemSettings = {
   __typename?: 'SystemSettings';
-  defaultEventChannel: DiscordChannel;
+  defaultEventChannel?: Maybe<DiscordChannel>;
   discordGuildId: Scalars['String']['output'];
 };
 
@@ -465,11 +465,11 @@ export type CacheControlDirectiveArgs = {
   scope?: Maybe<CacheControlScope>;
 };
 
-export type CacheControlDirectiveResolver<Result, Parent, ContextType = Context, Args = CacheControlDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type CacheControlDirectiveResolver<Result, Parent, ContextType = GQLContext, Args = CacheControlDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type OwnershipDirectiveArgs = { };
 
-export type OwnershipDirectiveResolver<Result, Parent, ContextType = Context, Args = OwnershipDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type OwnershipDirectiveResolver<Result, Parent, ContextType = GQLContext, Args = OwnershipDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type PermissionDirectiveArgs = {
   all?: Maybe<Array<Permission>>;
@@ -477,30 +477,30 @@ export type PermissionDirectiveArgs = {
   one?: Maybe<Array<Permission>>;
 };
 
-export type PermissionDirectiveResolver<Result, Parent, ContextType = Context, Args = PermissionDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
+export type PermissionDirectiveResolver<Result, Parent, ContextType = GQLContext, Args = PermissionDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
-export type DiscordChannelResolvers<ContextType = Context, ParentType extends ResolversParentTypes['DiscordChannel'] = ResolversParentTypes['DiscordChannel']> = ResolversObject<{
+export type DiscordChannelResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DiscordChannel'] = ResolversParentTypes['DiscordChannel']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type DiscordEmojiResolvers<ContextType = Context, ParentType extends ResolversParentTypes['DiscordEmoji'] = ResolversParentTypes['DiscordEmoji']> = ResolversObject<{
+export type DiscordEmojiResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DiscordEmoji'] = ResolversParentTypes['DiscordEmoji']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type DiscordRoleResolvers<ContextType = Context, ParentType extends ResolversParentTypes['DiscordRole'] = ResolversParentTypes['DiscordRole']> = ResolversObject<{
+export type DiscordRoleResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DiscordRole'] = ResolversParentTypes['DiscordRole']> = ResolversObject<{
   color?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type EventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = ResolversObject<{
+export type EventResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = ResolversObject<{
   accessRoles?: Resolver<Array<ResolversTypes['UserRole']>, ParentType, ContextType>;
   accessType?: Resolver<ResolversTypes['EventAccessType'], ParentType, ContextType>;
   channel?: Resolver<ResolversTypes['DiscordChannel'], ParentType, ContextType>;
@@ -511,7 +511,7 @@ export type EventResolvers<ContextType = Context, ParentType extends ResolversPa
   eventType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   imageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  location?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  location?: Resolver<Maybe<Array<ResolversTypes['String']>>, ParentType, ContextType>;
   members?: Resolver<Array<ResolversTypes['EventMember']>, ParentType, ContextType>;
   mentions?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -526,7 +526,7 @@ export type EventResolvers<ContextType = Context, ParentType extends ResolversPa
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type EventMemberResolvers<ContextType = Context, ParentType extends ResolversParentTypes['EventMember'] = ResolversParentTypes['EventMember']> = ResolversObject<{
+export type EventMemberResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventMember'] = ResolversParentTypes['EventMember']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   pending?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   rsvp?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -535,7 +535,7 @@ export type EventMemberResolvers<ContextType = Context, ParentType extends Resol
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type EventRsvpResolvers<ContextType = Context, ParentType extends ResolversParentTypes['EventRsvp'] = ResolversParentTypes['EventRsvp']> = ResolversObject<{
+export type EventRsvpResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventRsvp'] = ResolversParentTypes['EventRsvp']> = ResolversObject<{
   event?: Resolver<ResolversTypes['Event'], ParentType, ContextType>;
   invite?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   rsvp?: Resolver<Maybe<ResolversTypes['EventRsvpRole']>, ParentType, ContextType>;
@@ -543,7 +543,7 @@ export type EventRsvpResolvers<ContextType = Context, ParentType extends Resolve
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type EventRsvpRoleResolvers<ContextType = Context, ParentType extends ResolversParentTypes['EventRsvpRole'] = ResolversParentTypes['EventRsvpRole']> = ResolversObject<{
+export type EventRsvpRoleResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventRsvpRole'] = ResolversParentTypes['EventRsvpRole']> = ResolversObject<{
   emoji?: Resolver<ResolversTypes['DiscordEmoji'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   limit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -552,7 +552,7 @@ export type EventRsvpRoleResolvers<ContextType = Context, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type EventSettingsResolvers<ContextType = Context, ParentType extends ResolversParentTypes['EventSettings'] = ResolversParentTypes['EventSettings']> = ResolversObject<{
+export type EventSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventSettings'] = ResolversParentTypes['EventSettings']> = ResolversObject<{
   allowCrewSwitching?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   allowTeamSwitching?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hideLocation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -561,7 +561,7 @@ export type EventSettingsResolvers<ContextType = Context, ParentType extends Res
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type MutationResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+export type MutationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createEvent?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   editEvent?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<MutationEditEventArgs, 'data' | 'id'>>;
   editEventChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType, RequireFields<MutationEditEventChannelsArgs, 'channels'>>;
@@ -574,7 +574,7 @@ export type MutationResolvers<ContextType = Context, ParentType extends Resolver
   verifyUserScName?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationVerifyUserScNameArgs, 'code'>>;
 }>;
 
-export type PagedEventResolvers<ContextType = Context, ParentType extends ResolversParentTypes['PagedEvent'] = ResolversParentTypes['PagedEvent']> = ResolversObject<{
+export type PagedEventResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PagedEvent'] = ResolversParentTypes['PagedEvent']> = ResolversObject<{
   items?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType>;
   nextPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   page?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -583,7 +583,7 @@ export type PagedEventResolvers<ContextType = Context, ParentType extends Resolv
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type QueryResolvers<ContextType = Context, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
+export type QueryResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   getAllDiscordChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
   getAllDiscordEmojis?: Resolver<Array<ResolversTypes['DiscordEmoji']>, ParentType, ContextType>;
   getAllDiscordRoles?: Resolver<Array<ResolversTypes['DiscordRole']>, ParentType, ContextType>;
@@ -598,8 +598,8 @@ export type QueryResolvers<ContextType = Context, ParentType extends ResolversPa
   getUserScVerifyCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
 }>;
 
-export type SystemSettingsResolvers<ContextType = Context, ParentType extends ResolversParentTypes['SystemSettings'] = ResolversParentTypes['SystemSettings']> = ResolversObject<{
-  defaultEventChannel?: Resolver<ResolversTypes['DiscordChannel'], ParentType, ContextType>;
+export type SystemSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SystemSettings'] = ResolversParentTypes['SystemSettings']> = ResolversObject<{
+  defaultEventChannel?: Resolver<Maybe<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
   discordGuildId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -608,7 +608,7 @@ export interface TimestampScalarConfig extends GraphQLScalarTypeConfig<Resolvers
   name: 'Timestamp';
 }
 
-export type UserResolvers<ContextType = Context, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
+export type UserResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   avatarUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   discordName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -626,7 +626,7 @@ export type UserResolvers<ContextType = Context, ParentType extends ResolversPar
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type UserRoleResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UserRole'] = ResolversParentTypes['UserRole']> = ResolversObject<{
+export type UserRoleResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['UserRole'] = ResolversParentTypes['UserRole']> = ResolversObject<{
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   discordId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -638,19 +638,19 @@ export type UserRoleResolvers<ContextType = Context, ParentType extends Resolver
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type UserSettingsResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UserSettings'] = ResolversParentTypes['UserSettings']> = ResolversObject<{
+export type UserSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['UserSettings'] = ResolversParentTypes['UserSettings']> = ResolversObject<{
   updatedAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type UserStatusResolvers<ContextType = Context, ParentType extends ResolversParentTypes['UserStatus'] = ResolversParentTypes['UserStatus']> = ResolversObject<{
+export type UserStatusResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['UserStatus'] = ResolversParentTypes['UserStatus']> = ResolversObject<{
   activity?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   ship?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
-export type Resolvers<ContextType = Context> = ResolversObject<{
+export type Resolvers<ContextType = GQLContext> = ResolversObject<{
   DiscordChannel?: DiscordChannelResolvers<ContextType>;
   DiscordEmoji?: DiscordEmojiResolvers<ContextType>;
   DiscordRole?: DiscordRoleResolvers<ContextType>;
@@ -670,7 +670,7 @@ export type Resolvers<ContextType = Context> = ResolversObject<{
   UserStatus?: UserStatusResolvers<ContextType>;
 }>;
 
-export type DirectiveResolvers<ContextType = Context> = ResolversObject<{
+export type DirectiveResolvers<ContextType = GQLContext> = ResolversObject<{
   cacheControl?: CacheControlDirectiveResolver<any, any, ContextType>;
   ownership?: OwnershipDirectiveResolver<any, any, ContextType>;
   permission?: PermissionDirectiveResolver<any, any, ContextType>;

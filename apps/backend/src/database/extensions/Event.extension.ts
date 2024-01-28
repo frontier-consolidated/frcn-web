@@ -1,4 +1,4 @@
-import {
+import type {
 	Prisma,
 	Event,
 	PrismaClient,
@@ -8,10 +8,10 @@ import {
 } from "@prisma/client";
 
 import { cacheGet, cacheGetMany } from "../helpers";
-import { FullModel } from "../types";
+import type { FullModel } from "../types";
 
-export function createEventExtension(client: PrismaClient) {
-	return Prisma.defineExtension({
+export function createEventExtension(define: typeof Prisma.defineExtension, client: PrismaClient) {
+	return define({
 		name: "EventExtension",
 		model: {
 			event: {

@@ -1,4 +1,4 @@
-import {
+import type {
 	Prisma,
 	PrismaClient,
 	UsersInUserRoles,
@@ -9,10 +9,10 @@ import {
 } from "@prisma/client";
 
 import { cacheGet, cacheGetMany } from "../helpers";
-import { FullModel } from "../types";
+import type { FullModel } from "../types";
 
-export function createUserExtension(client: PrismaClient) {
-	return Prisma.defineExtension({
+export function createUserExtension(define: typeof Prisma.defineExtension, client: PrismaClient) {
+	return define({
 		name: "UserExtension",
 		model: {
 			user: {

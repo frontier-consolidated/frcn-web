@@ -4,7 +4,7 @@ import { GraphQLSchema, defaultFieldResolver } from "graphql";
 
 import { database } from "../../../database";
 import { $roles } from "../../../services/roles";
-import { GQLContext } from "../../context";
+import type { GQLContext } from "../../context";
 import { gqlErrorPermission, gqlErrorUnauthenticated } from "../gqlError";
 
 const directiveName = "permission";

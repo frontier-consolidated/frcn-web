@@ -1,10 +1,10 @@
-import { Prisma, PrismaClient, EventUser } from "@prisma/client";
+import type { Prisma, PrismaClient, EventUser } from "@prisma/client";
 
 import { cacheGet } from "../helpers";
-import { FullModel } from "../types";
+import type { FullModel } from "../types";
 
-export function createEventUserExtension(client: PrismaClient) {
-	return Prisma.defineExtension({
+export function createEventUserExtension(define: typeof Prisma.defineExtension, client: PrismaClient) {
+	return define({
 		name: "EventUserExtension",
 		model: {
 			eventUser: {

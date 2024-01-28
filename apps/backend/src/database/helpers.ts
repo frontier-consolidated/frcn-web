@@ -1,4 +1,4 @@
-import { AnyModel, AnyModelWithCache, ModelWithCache } from "./types";
+import type { AnyModel, AnyModelWithCache, ModelWithCache } from "./types";
 
 function setCache(model: AnyModelWithCache, cache: AnyModelWithCache["__cache"]) {
 	if (model.__cache) {

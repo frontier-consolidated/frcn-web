@@ -1,6 +1,6 @@
 import { dates } from "@frcn/shared";
-import { Event, EventRsvpRole } from "@prisma/client";
-import { BaseMessageOptions, ButtonStyle, ButtonBuilder, ActionRowBuilder, EmbedBuilder } from "discord.js";
+import type { Event, EventRsvpRole } from "@prisma/client";
+import { type BaseMessageOptions, ButtonStyle, ButtonBuilder, ActionRowBuilder, EmbedBuilder } from "discord.js";
 
 import { getWebOrigin } from "../../env";
 import { PRIMARY_COLOR } from "../constants";

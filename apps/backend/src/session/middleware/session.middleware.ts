@@ -1,7 +1,7 @@
 import expressSession from "express-session";
 
 import { SESSION_MAX_AGE, sessionStore } from "../store";
-import { MiddlewareHandler } from "../types";
+import type { MiddlewareHandler } from "../types";
 
 export const middleware: MiddlewareHandler = function ({ session: config }) {
 	return expressSession({

@@ -1,11 +1,11 @@
-import { UserRole } from "@prisma/client";
+import type { UserRole } from "@prisma/client";
 
-import { WithModel } from "./types";
+import type { WithModel } from "./types";
 import { resolveUser } from "./User";
 import { database } from "../../../database";
 import { $roles } from "../../../services/roles";
 import { $system } from "../../../services/system";
-import { UserRole as GQLUserRole, Resolvers } from "../../__generated__/resolvers-types";
+import type { UserRole as GQLUserRole, Resolvers } from "../../__generated__/resolvers-types";
 
 export function resolveUserRole(role: UserRole) {
 	return {

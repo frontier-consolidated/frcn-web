@@ -8,6 +8,7 @@
 		"moduleResolution": "node",
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
+		"verbatimModuleSyntax": true,
 		"types": ["node"]
 	},
 	"ts-node": {

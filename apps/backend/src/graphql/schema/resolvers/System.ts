@@ -1,10 +1,10 @@
-import { SystemSettings } from "@prisma/client";
+import type { SystemSettings } from "@prisma/client";
 
 import { resolveDiscordChannel } from "./Discord";
-import { WithModel } from "./types";
+import type { WithModel } from "./types";
 import { database } from "../../../database";
 import { $system } from "../../../services/system";
-import {
+import type {
 	SystemSettings as GQLSystemSettings,
 	Resolvers,
 } from "../../__generated__/resolvers-types";

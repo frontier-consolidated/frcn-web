@@ -1,4 +1,4 @@
-import { AnySelectMenuInteraction, ButtonInteraction, Client, InteractionType } from "discord.js";
+import { type AnySelectMenuInteraction, ButtonInteraction, Client, InteractionType } from "discord.js";
 
 import { buildErrorMessage } from "./messages/error.message";
 import { buildRsvpDmMessage, buildRsvpMessage } from "./messages/rsvp.message";

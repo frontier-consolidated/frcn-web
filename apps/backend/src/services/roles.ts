@@ -1,4 +1,4 @@
-import { User, UserRole, UsersInUserRoles } from "@prisma/client";
+import type { User, UserRole, UsersInUserRoles } from "@prisma/client";
 
 import { $system } from "./system";
 import { database } from "../database";

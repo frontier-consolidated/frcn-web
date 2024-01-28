@@ -1,5 +1,5 @@
 import { $users } from "../../services/users";
-import { MiddlewareHandler } from "../types";
+import type { MiddlewareHandler } from "../types";
 
 export const middleware: MiddlewareHandler = function () {
 	return async function (req, res, next) {
