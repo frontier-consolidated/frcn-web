@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
+GIT_URL="https://github.com/frontier-consolidated/frcn-events-app.git"
+GIT_BRANCH="$1"
+
 WORKING_DIR="$(pwd)"
 TEMP_DIR="$WORKING_DIR/temp"
 BUILD_NAME="build"
-APP_DIR="$WORKING_DIR/$1"
-GIT_URL="https://github.com/frontier-consolidated/frcn-events-app.git"
-GIT_BRANCH="$1"
+APP_DIR="$WORKING_DIR/$GIT_BRANCH"
 
 
 # Remove previous builds
