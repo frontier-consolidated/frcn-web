@@ -45,6 +45,7 @@
     "axios": "^1.6.5",
     "graphql": "^16.8.1",
     "graphql-ws": "^5.14.3",
+    "svelte-agnostic-draggable": "^0.2.0",
     "svelte-codemirror-editor": "^1.2.0",
     "svelte-i18n": "^4.0.0",
     "uuid": "^9.0.1"
