@@ -3,7 +3,7 @@ name: Deploy to Prod
 on:
     push:
         branches:
-            - asdakhsdkahsd
+            - main
 
 jobs:
     deploy:
@@ -18,11 +18,11 @@ jobs:
                   chmod 600 ~/.ssh/id_rsa
                   cat >>~/.ssh/config <<END
                   Host server
-                    HostName $SSH_HOST
-                    User $SSH_USER
-                    Port $SSH_PORT
-                    IdentityFile ~/.ssh/id_rsa
-                    StrictHostKeyChecking no
+                      HostName $SSH_HOST
+                      User $SSH_USER
+                      Port $SSH_PORT
+                      IdentityFile ~/.ssh/id_rsa
+                      StrictHostKeyChecking no
                   END
               env:
                   SSH_USER: ${{ secrets.SSH_USER }}
@@ -31,4 +31,6 @@ jobs:
                   SSH_PORT: ${{ secrets.SSH_PORT }}
 
             - name: Check out the source
-              run: ssh server "cd apps/events.frcn.space && ./deploy.sh main"
+              run: ssh server "cd apps/events.frcn.space && ./deploy.sh $REPO_URL main"
+              env:
+                  REPO_URL: ${{ github.repositoryUrl }}
