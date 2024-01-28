@@ -13,23 +13,29 @@ async function getUser(id: string) {
 async function getOrCreateUser(discordUser: APIUser) {
 	const defaultPrimaryRole = await $roles.getDefaultPrimaryRole();
 
+	const username = discordUser.global_name
+		? discordUser.global_name
+		: discordUser.discriminator === "0"
+		? `@${discordUser.username}`
+			: `${discordUser.username}#${discordUser.discriminator}`
+	
+	const avatarUrl = "https://cdn.discordapp.com" +
+		CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP)
+
 	const user = await database.user.upsert({
 		where: {
 			discordId: discordUser.id,
 		},
-		update: {},
+		update: {
+			discordName: username,
+			avatarUrl
+		},
 		create: {
 			discordId: discordUser.id,
-			discordName: discordUser.global_name
-				? discordUser.global_name
-				: discordUser.discriminator === "0"
-				? `@${discordUser.username}`
-				: `${discordUser.username}#${discordUser.discriminator}`,
+			discordName: username,
 			scName: null,
 			scVerified: false,
-			avatarUrl:
-				"https://cdn.discordapp.com" +
-				CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP),
+			avatarUrl,
 			primaryRole: {
 				connect: {
 					id: defaultPrimaryRole.id,

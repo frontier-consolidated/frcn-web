@@ -59,7 +59,7 @@ async function seedProduction() {
 			update: {},
 			create: {
 				discordId: process.env.ADMIN_DISCORD_ID,
-				discordName: process.env.ADMIN_DISCORD_USERNAME,
+				discordName: "Admin",
 				scVerified: false,
 				avatarUrl: "",
 				primaryRole: {
