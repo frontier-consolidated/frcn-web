@@ -31,8 +31,6 @@ jobs:
                   SSH_PORT: ${{ secrets.SSH_PORT }}
 
             - name: Check out the source
-              run:
-                  ssh server "cd apps/events.frcn.space && chmod +x deploy.sh && ./deploy.sh
-                  $REPO_URL main"
+              run: ssh server "cd apps/events.frcn.space && ./deploy.sh $REPO_URL main"
               env:
                   REPO_URL: ${{ github.repositoryUrl }}
