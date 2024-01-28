@@ -12,6 +12,7 @@ GIT_BRANCH="$1"
 rm -rfv "$TEMP_DIR"
 
 # Clone repository
+mkdir -p "$TEMP_DIR"
 cd "$TEMP_DIR" || exit
 git clone "$GIT_URL" "$BUILD_NAME"
 
@@ -26,8 +27,9 @@ sleep 2s
 source "build.sh"
 build
 
+# Copy necessary files e.g. docker-compose.yml to APP_DIR
+mkdir -p "$APP_DIR"
 copyFiles $APP_DIR
-
 cd "$APP_DIR" || exit
 
 if [ -f "$APP_DIR/docker-compose.yml" ]; then
