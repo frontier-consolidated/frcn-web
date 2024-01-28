@@ -11,5 +11,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+/files
+
 scripts/deploy/*
 !scripts/deploy/deploy.sh
