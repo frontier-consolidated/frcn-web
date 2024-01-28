@@ -7,7 +7,8 @@ generates:
             - "typescript"
             - "typescript-resolvers"
         config:
+            useTypeImports: true
             useIndexSignature: true
-            contextType: "../context#Context"
+            contextType: "../context#GQLContext"
 config:
     scalars: "@frcn/graphql-scalar-types/server"
