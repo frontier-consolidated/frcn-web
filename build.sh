@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+declare -a env_files=(".backend", ".web", ".database")
+
 function copyFiles() {
     cp docker-compose.yml $1
 
@@ -8,9 +10,20 @@ function copyFiles() {
     rm "$1/scripts/deploy.sh"
 
     mkdir -p "$1/env"
-    touch "$1/env/.backend"
-    touch "$1/env/.web"
-    touch "$1/env/.database"
+    for f in "${env_files[@]}"
+    do
+        touch "$1/env/$f"
+    done
+}
+
+function checkFiles() {
+    for f in "${env_files[@]}"
+    do
+        if [[ -z $(grep '[^[:space:]]' "$1/env/$f") ]]; then
+            printf "Env file $1/env/$f is empty"
+            exit
+        fi
+    done
 }
 
 function build() {
