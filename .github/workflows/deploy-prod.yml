@@ -1,0 +1,34 @@
+name: Deploy to Prod
+
+on:
+    push:
+        branches:
+            - asdakhsdkahsd
+
+jobs:
+    deploy:
+        environment: events.frcn.space
+        name: Trigger server runner
+        runs-on: ubuntu-latest
+        steps:
+            - name: Configure SSH
+              run: |
+                  mkdir -p ~/.ssh/
+                  echo "$SSH_KEY" > ~/.ssh/id_rsa
+                  chmod 600 ~/.ssh/id_rsa
+                  cat >>~/.ssh/config <<END
+                  Host server
+                    HostName $SSH_HOST
+                    User $SSH_USER
+                    Port $SSH_PORT
+                    IdentityFile ~/.ssh/id_rsa
+                    StrictHostKeyChecking no
+                  END
+              env:
+                  SSH_USER: ${{ secrets.SSH_USER }}
+                  SSH_KEY: ${{ secrets.SSH_KEY }}
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
+                  SSH_PORT: ${{ secrets.SSH_PORT }}
+
+            - name: Check out the source
+              run: ssh server "cd apps/events.frcn.space && ./deploy.sh main"
