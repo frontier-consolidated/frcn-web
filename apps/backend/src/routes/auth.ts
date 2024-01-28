@@ -28,7 +28,7 @@ export default function route(context: Context) {
 			client_id: clientId,
 			redirect_uri: new URL("/oauth/callback", getOrigin(req.protocol)).href,
 			response_type: "code",
-			scope,
+			scope: scope.join(","),
 			state,
 		});
 		const redirectUrl = `https://discord.com/api/oauth2/authorize?${params.toString()}`;
@@ -57,7 +57,7 @@ export default function route(context: Context) {
 					client_secret: clientSecret,
 					redirect_uri: new URL("/oauth/callback", getOrigin(req.protocol)).href,
 					grant_type: "authorization_code",
-					scope,
+					scope: scope.join(","),
 					code,
 				}).toString(),
 				passThroughBody: true,
