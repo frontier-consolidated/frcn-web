@@ -15,6 +15,7 @@ function generatePagedTypes(typeDefs: string) {
 		extTypeDefs += `
 type ${match[0]} {
     items: [${type}!]!
+	itemsPerPage: Int!
     page: Int!
     total: Int!
     nextPage: Int

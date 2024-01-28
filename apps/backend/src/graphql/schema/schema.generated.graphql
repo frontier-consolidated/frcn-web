@@ -263,6 +263,7 @@ type Mutation {
 
 type PagedEvent {
     items: [Event!]!
+	itemsPerPage: Int!
     page: Int!
     total: Int!
     nextPage: Int

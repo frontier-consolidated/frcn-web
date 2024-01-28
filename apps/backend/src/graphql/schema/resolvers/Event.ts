@@ -203,6 +203,7 @@ export const eventResolvers: Resolvers = {
 
 			return {
 				items: await Promise.all(result.items.map((event) => resolveEvent(event))),
+				itemsPerPage: result.itemsPerPage,
 				page: result.page,
 				nextPage: result.nextPage,
 				prevPage: result.prevPage,

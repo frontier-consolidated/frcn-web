@@ -48,7 +48,7 @@ async function getEvents(
 ) {
 	const { search, startAt = new Date(), duration, includeCompleted } = filter;
 	page ??= 0;
-	limit ??= 30;
+	limit = Math.min(100, limit ?? 20);
 
 	const result = await database.event.findMany({
 		where: {
@@ -102,11 +102,12 @@ async function getEvents(
 	const pageItems = filteredResult.slice(page * limit, (page + 1) * limit);
 
 	return {
+		items: pageItems,
 		total: filteredResult.length,
+		itemsPerPage: limit,
 		page,
 		nextPage: (page + 1) * limit < filteredResult.length ? page + 1 : null,
 		prevPage: page > 0 ? page - 1 : null,
-		items: pageItems,
 	};
 }
 

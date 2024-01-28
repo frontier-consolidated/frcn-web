@@ -222,6 +222,7 @@ export type MutationVerifyUserScNameArgs = {
 export type PagedEvent = {
   __typename?: 'PagedEvent';
   items: Array<Event>;
+  itemsPerPage: Scalars['Int']['output'];
   nextPage?: Maybe<Scalars['Int']['output']>;
   page: Scalars['Int']['output'];
   prevPage?: Maybe<Scalars['Int']['output']>;
@@ -576,6 +577,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
 
 export type PagedEventResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PagedEvent'] = ResolversParentTypes['PagedEvent']> = ResolversObject<{
   items?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType>;
+  itemsPerPage?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   nextPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   page?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   prevPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
