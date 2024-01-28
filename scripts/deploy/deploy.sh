@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-GIT_URL="https://github.com/frontier-consolidated/frcn-events-app.git"
-GIT_BRANCH="$1"
+GIT_URL="$1"
+GIT_BRANCH="$2"
 
 WORKING_DIR="$(pwd)"
 TEMP_DIR="$WORKING_DIR/temp"
