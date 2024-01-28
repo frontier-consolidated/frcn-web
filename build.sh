@@ -27,8 +27,8 @@ function checkFiles() {
 }
 
 function build() {
-    docker build -t "events.frcn.space/backend" --target backend .
-    docker build -t "events.frcn.space/web" --target web .
+    docker build -t "events.frcn.space/$1/backend" --target backend .
+    docker build -t "events.frcn.space/$1/web" --target web .
 }
 
 if [ $1 = "run" ]; then
