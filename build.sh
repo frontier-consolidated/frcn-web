@@ -7,7 +7,7 @@ function copyFiles() {
 
     mkdir -p "$1/scripts"
     cp -r ./scripts "$1/scripts"
-    rm "$1/scripts/deploy.sh"
+    rm -rf "$1/scripts/deploy"
 
     mkdir -p "$1/env"
     for f in "${env_files[@]}"
