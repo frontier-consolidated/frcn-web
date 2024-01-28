@@ -4,7 +4,13 @@ function copyFiles() {
     cp docker-compose.yml $1
 
     mkdir -p "$1/scripts"
-    cp apps/backend/entrypoint.sh "$1/scripts"
+    cp -r ./scripts "$1/scripts"
+    rm "$1/scripts/deploy.sh"
+
+    mkdir -p "$1/env"
+    touch "$1/env/.backend"
+    touch "$1/env/.web"
+    touch "$1/env/.database"
 }
 
 function build() {
