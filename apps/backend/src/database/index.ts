@@ -38,4 +38,58 @@ const database = $prisma
 	.$extends(createUsersInUserRolesExtension(Prisma.defineExtension, $prisma))
 	.$extends(createUserStatusExtension(Prisma.defineExtension, $prisma));
 
+async function seedProduction() {
+	const roles = await database.userRole.findMany();
+
+	if (roles.length === 0) {
+		const adminRole = await database.userRole.upsert({
+			where: { name: "Admin" },
+			update: {},
+			create: {
+				name: "Admin",
+				primary: true,
+				permissions: permissions([Permission.Admin]),
+			},
+		});
+		roles.push(adminRole)
+		console.log("Created Admin role")
+
+		await database.user.upsert({
+			where: { discordId: process.env.ADMIN_DISCORD_ID },
+			update: {},
+			create: {
+				discordId: process.env.ADMIN_DISCORD_ID,
+				discordName: process.env.ADMIN_DISCORD_USERNAME,
+				scVerified: false,
+				avatarUrl: "",
+				primaryRole: {
+					connect: {
+						id: adminRole.id,
+					},
+				},
+				status: {
+					create: {},
+				},
+				settings: {
+					create: {},
+				},
+			},
+		});
+		console.log("Created Admin user")
+	}
+
+	const systemValues = {
+		discordGuildId: "1188196981508689950",
+		roleOrder: roles.map((role) => role.id),
+	}
+
+	await database.systemSettings.upsert({
+		where: { unique: true },
+		update: {},
+		create: systemValues,
+	});
+}
+
+if (isProd()) await seedProduction()
+
 export { database }
