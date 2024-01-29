@@ -3,6 +3,7 @@
 	import { Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
 	import { ArrowLeftSolid } from "flowbite-svelte-icons";
 
+	import Hr from "$lib/components/Hr.svelte";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
 	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
 
@@ -54,7 +55,7 @@
 					required
 				/>
 			</div>
-			<hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+			<Hr />
 			<div>
 				<Toggle>
 					Primary Role
@@ -63,7 +64,7 @@
 					Sets the role as a primary role, users must only have 1 primary role
 				</Helper>
 			</div>
-			<hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+			<Hr />
 			<div>
 				<Label for="system-roles-role-discord-role" class="mb-2">Discord Role</Label>
 				<BetterSelect
@@ -89,7 +90,7 @@
 					</Helper>
 				</div>
 				{#if i + 1 < Object.values(permissions).length}
-					<hr class="h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" />
+					<Hr />
 				{/if}
 			{/each}
 		</div>
