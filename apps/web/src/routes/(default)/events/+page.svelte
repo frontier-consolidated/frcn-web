@@ -6,7 +6,7 @@
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params"
 
-	import { Mutations, apollo } from "$lib/graphql";
+	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
@@ -33,7 +33,7 @@
 					class="self-end sm:shrink-0"
 					on:click={async () => {
 						try {
-							const { data: createData } = await apollo.mutate({
+							const { data: createData } = await getApollo().mutate({
 								mutation: Mutations.CREATE_EVENT,
 							});
 				
