@@ -6,11 +6,17 @@
 	import adminPermissions from "$lib/data/adminPermissions";
 	import { user } from "$lib/stores/UserStore";
 
+	import MediaQuery from "./MediaQuery.svelte";
+
 	const dispatch = createEventDispatcher();
 </script>
 
 <div class="flex items-center space-x-2 cursor-pointer">
-	<span class="text-md font-semibold">{$user.data?.name}</span>
+	<MediaQuery query="(min-width: 480px)" let:matches>
+		{#if matches}
+			<span class="text-md font-semibold">{$user.data?.name}</span>
+		{/if}
+	</MediaQuery>
 	<Avatar rounded size="sm" src={$user.data?.avatarUrl} />
 </div>
 <Dropdown class="w-44">
