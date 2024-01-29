@@ -1,16 +1,14 @@
 import { browser } from "$app/environment";
-import type { DefaultContext } from "@apollo/client";
 import { writable, get } from "svelte/store";
 
 import { Routes, api } from "$lib/api";
-import { Queries, apollo } from "$lib/graphql";
+import { Queries, getApollo } from "$lib/graphql";
 import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 
-async function getCurrentUser(cache = true, context?: DefaultContext) {
-	const { data } = await apollo.query({
+async function getCurrentUser(cache = true) {
+	const { data } = await getApollo().query({
 		query: Queries.CURRENT_USER,
 		fetchPolicy: cache ? undefined : "no-cache",
-		context
 	});
 	return data;
 }
@@ -34,15 +32,6 @@ export const user = writable<{ loading: boolean; data: GetCurrentUserQuery["user
 			.catch(console.error);
 	}
 );
-
-export async function getRequestUser(cookie: string) {
-	const { user } = await getCurrentUser(false, {
-		headers: {
-			cookie
-		}
-	})
-	return user
-}
 
 export async function login() {
 	const data = await getCurrentUser(false);
