@@ -28,15 +28,17 @@ export const middleware: MiddlewareHandler = function ({ deviceTrack }) {
 
 		if (deviceCookie) {
 			const deviceId = deserialize(deviceCookie);
-			if (deviceId && req.session.deviceId && req.session.deviceId === deviceId) {
-				next();
-				return;
-			}
-
-			if (!req.session.deviceId) {
-				req.session.deviceId = deviceId;
-				next();
-				return;
+			if (deviceId) {
+				if (req.session.deviceId && req.session.deviceId === deviceId) {
+					next();
+					return;
+				}
+	
+				if (!req.session.deviceId) {
+					req.session.deviceId = deviceId;
+					next();
+					return;
+				}
 			}
 		}
 

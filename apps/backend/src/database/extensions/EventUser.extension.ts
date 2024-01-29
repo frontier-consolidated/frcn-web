@@ -11,7 +11,7 @@ export function createEventUserExtension(define: typeof Prisma.defineExtension, 
 				async getUser(model: FullModel<EventUser>) {
 					if (model.user) return model.user;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.user.findUnique({
@@ -22,18 +22,19 @@ export function createEventUserExtension(define: typeof Prisma.defineExtension, 
 							prefix: "User",
 							id: model.userId,
 						}
-					);
+					))!;
 					model.user = value;
 					return value;
 				},
 				async getRsvp(model: FullModel<EventUser>) {
 					if (model.rsvp) return model.rsvp;
+					if (!model.rsvpId) return null;
 
 					const value = await cacheGet(
 						model,
 						() => {
 							return client.eventRsvpRole.findUnique({
-								where: { id: model.rsvpId },
+								where: { id: model.rsvpId! },
 							});
 						},
 						{
@@ -47,7 +48,7 @@ export function createEventUserExtension(define: typeof Prisma.defineExtension, 
 				async getEvent(model: FullModel<EventUser>) {
 					if (model.event) return model.event;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.event.findUnique({
@@ -58,7 +59,7 @@ export function createEventUserExtension(define: typeof Prisma.defineExtension, 
 							prefix: "Event",
 							id: model.eventId,
 						}
-					);
+					))!;
 					model.event = value;
 					return value;
 				},

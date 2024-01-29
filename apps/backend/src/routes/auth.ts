@@ -12,8 +12,8 @@ export default function route(context: Context) {
 
 	context.expressApp.get("/oauth", (req, res) => {
 		const { success_uri, failed_uri } = req.query as {
-			failed_uri: string;
-			success_uri: string;
+			failed_uri?: string;
+			success_uri?: string;
 		};
 
 		const state = Buffer.from(
@@ -38,11 +38,11 @@ export default function route(context: Context) {
 	context.expressApp.get("/oauth/callback", async (req, res, next) => {
 		const { code, state } = req.query as { code?: string; state?: string };
 
-		const { success_uri, failed_uri } = JSON.parse(
+		const { success_uri, failed_uri } = (state ? JSON.parse(
 			Buffer.from(state, "base64").toString("utf-8")
-		) as {
-			failed_uri: string;
-			success_uri: string;
+		) : {}) as {
+			failed_uri?: string;
+			success_uri?: string;
 		};
 
 		if (!code) {

@@ -11,7 +11,7 @@ export function createEventsWithUserRoleForAccessExtension(define: typeof Prisma
 				async getRole(model: FullModel<EventsWithUserRoleForAccess>) {
 					if (model.role) return model.role;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.userRole.findUnique({
@@ -22,14 +22,14 @@ export function createEventsWithUserRoleForAccessExtension(define: typeof Prisma
 							prefix: "UserRole",
 							id: model.roleId,
 						}
-					);
+					))!;
 					model.role = value;
 					return value;
 				},
 				async getEvent(model: FullModel<EventsWithUserRoleForAccess>) {
 					if (model.event) return model.event;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.event.findUnique({
@@ -40,7 +40,7 @@ export function createEventsWithUserRoleForAccessExtension(define: typeof Prisma
 							prefix: "Event",
 							id: model.eventId,
 						}
-					);
+					))!;
 					model.event = value;
 					return value;
 				},

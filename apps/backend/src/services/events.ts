@@ -2,12 +2,12 @@ import { randomUUID } from "crypto";
 
 import type { EventType } from "@frcn/shared";
 import type { Event, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
-import { Client as DiscordClient, ThreadAutoArchiveDuration } from "discord.js";
+import { Client as DiscordClient } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { $system } from "./system";
-import { buildEventMessage, updateEventMessage } from "../bot/messages/event.message";
+import { postEventMessage, updateEventMessage } from "../bot/messages/event.message";
 import { database } from "../database";
 import { EventAccessType, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 
@@ -45,7 +45,7 @@ async function getEvents(
 	filter: GetEventsFilter,
 	page: number = 0,
 	limit: number = -1,
-	user: User,
+	user: User | undefined,
 	discordClient: DiscordClient
 ) {
 	const { search, eventType, startAt = {}, duration, includeCompleted } = filter;
@@ -55,7 +55,7 @@ async function getEvents(
 	}
 
 	// If the date range is less than or equal to a calendar range then don't limit items
-	if (limit === -1 && startAt.max && new Date(startAt.min.getTime() + 45 * 24 * 3600 * 1000) >= startAt.max) {
+	if (limit === -1 && startAt.min && startAt.max && new Date(startAt.min.getTime() + 45 * 24 * 3600 * 1000) >= startAt.max) {
 		limit = -1;
 	} else {
 		if (limit === -1) limit = 20;
@@ -74,7 +74,7 @@ async function getEvents(
 	]
 
 	// Show live events if they haven't expired and are in our selected date range
-	if (expiredDate >= new Date(startAt.min.getTime() - expiredDuration) && (!startAt.max || startAt.max > new Date())) {
+	if (startAt.min && expiredDate >= new Date(startAt.min.getTime() - expiredDuration) && (!startAt.max || startAt.max > new Date())) {
 		startAtOr.push({
 			startAt: {
 				lt: startAt.min,
@@ -85,7 +85,6 @@ async function getEvents(
 	}
 
 	const result = await database.event.findMany({
-		take: 250, // for performance, a search shouldn't need more than this
 		where: {
 			name: search
 				? {
@@ -191,6 +190,8 @@ async function editEvent(id: string, data: EventEditInput, discordClient: Discor
 		},
 	});
 
+	if (!event) return null;
+
 	const updatedEvent = await database.event.update({
 		where: { id },
 		data: {
@@ -233,7 +234,7 @@ async function editEvent(id: string, data: EventEditInput, discordClient: Discor
 									limit: r.limit,
 								},
 							})),
-					deleteMany: event.roles.filter(r => !data.roles.find(r1 => r1.id === r.id)).map(r => ({
+					deleteMany: event.roles.filter(r => !data.roles!.find(r1 => r1.id === r.id)).map(r => ({
 							id: r.id
 						}))
 				  }
@@ -276,36 +277,18 @@ async function editEvent(id: string, data: EventEditInput, discordClient: Discor
 async function postEvent(id: string, discordClient: DiscordClient) {
 	const event = await database.event.findUnique({
 		where: { id },
-		select: {
-			name: true,
+		include: {
 			channel: true,
 		},
 	});
-
-	const channel = await $discord.getChannel(discordClient, event.channel.discordId);
-	if (!channel.isTextBased()) throw new Error();
-
-	const payload = await buildEventMessage(id, discordClient);
-	const eventMessage = await channel.send(payload);
-	const thread = await eventMessage.startThread({
-		name: event.name,
-		reason: "Create thread for event: " + event.name,
-		autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays
-	})
-
-	await database.event.update({
-		where: { id },
-		data: {
-			discordEventMessageId: eventMessage.id,
-			discordThreadId: thread.id,
-			posted: true,
-		},
-	});
+	if (!event) return;
+	
+	await postEventMessage(discordClient, event)
 }
 
 async function getUserRsvp(event: Event, user: User) {
 	const members = await database.event.getMembers(event)
-	return members.find(member => member.userId === user.id)
+	return members.find(member => member.userId === user.id) ?? null
 }
 
 async function canJoinRsvp(rsvp: EventRsvpRole) {
@@ -313,6 +296,13 @@ async function canJoinRsvp(rsvp: EventRsvpRole) {
 
 	const members = await database.eventRsvpRole.getMembers(rsvp)
 	return members.length < rsvp.limit 
+}
+
+async function getEventThread(event: Event, discordClient: DiscordClient) {
+	if (!event.discordThreadId) throw new Error("Event has no thread!")
+	const thread = await $discord.getChannel(discordClient, event.discordThreadId)
+	if (!thread?.isThread()) throw new Error("Could not find thread or channel is not a thread")
+	return thread;
 }
 
 async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, currentRsvp: EventUser | null, discordClient: DiscordClient) {
@@ -353,9 +343,7 @@ async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, curre
 	await updateEventMessage(discordClient, updatedEvent)
 
 	try {
-		const thread = await $discord.getChannel(discordClient, updatedEvent.discordThreadId)
-		if (!thread.isThread()) throw new Error("Thread not a thread?")
-		
+		const thread = await getEventThread(updatedEvent, discordClient)
 		await thread.members.add(user.discordId, "RSVPed")
 	} catch (err) {
 		console.error("Failed to add user to event thread")
@@ -381,9 +369,7 @@ async function unrsvpForEvent(event: Event, user: User, discordClient: DiscordCl
 	await updateEventMessage(discordClient, updatedEvent)
 
 	try {
-		const thread = await $discord.getChannel(discordClient, updatedEvent.discordThreadId)
-		if (!thread.isThread()) throw new Error("Thread not a thread?")
-		
+		const thread = await getEventThread(updatedEvent, discordClient)
 		await thread.members.remove(user.discordId, "UnRSVPed")
 	} catch (err) {
 		console.error("Failed to add user to event thread")
@@ -417,7 +403,7 @@ async function canSeeEvent(event: Event, user: User | undefined, discordClient: 
 			const roles = await Promise.all(
 				accessRoles.map((r) => database.eventsWithUserRoleForAccess.getRole(r))
 			);
-			return $roles.hasOneOfRoles(roles, user);
+			return await $roles.hasOneOfRoles(roles, user);
 		}
 		case EventAccessType.Channel: {
 			const channel = await database.event.getChannel(event);
@@ -446,6 +432,7 @@ export const $events = {
 	canSeeEvent,
 	getUserRsvp,
 	canJoinRsvp,
+	getEventThread,
 	rsvpForEvent,
 	unrsvpForEvent,
 	eventChannelExists,

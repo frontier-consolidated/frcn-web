@@ -29,7 +29,8 @@ export function createApolloServer(server: HttpServer, config: CreateApolloServe
 			PluginDrainWebSocketServer(wsCleanup),
 			createApollo4QueryValidationPlugin({
 				formats: {
-					url: (value: string) => {
+					url: (value) => {
+						if (typeof value !== "string") return false;
 						return isUrl(value, {
 							require_protocol: true,
 							require_valid_protocol: true,

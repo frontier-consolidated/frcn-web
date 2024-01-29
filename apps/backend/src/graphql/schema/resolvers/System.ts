@@ -19,13 +19,10 @@ export function resolveSystemSettings(settings: SystemSettings) {
 
 export const systemResolvers: Resolvers = {
 	SystemSettings: {
-		async defaultEventChannel(
-			source: WithModel<GQLSystemSettings, SystemSettings>,
-			args,
-			context
-		) {
+		async defaultEventChannel(source, args, context) {
+			const { _model } = source as WithModel<GQLSystemSettings, SystemSettings>;
 			const eventChannel = await database.systemSettings.getDefaultEventChannel(
-				source._model
+				_model
 			);
 			if (!eventChannel) return null;
 			return resolveDiscordChannel(eventChannel, context);

@@ -17,7 +17,7 @@ export const middleware: MiddlewareHandler = function () {
 
 		req.logout = async () => {
 			delete req.user;
-			req.session.user = null;
+			delete req.session.user;
 
 			await new Promise<void>((resolve, reject) => {
 				req.session.save((err) => {

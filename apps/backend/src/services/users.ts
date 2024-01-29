@@ -19,8 +19,8 @@ async function getOrCreateUser(discordUser: APIUser) {
 		? `@${discordUser.username}`
 			: `${discordUser.username}#${discordUser.discriminator}`
 	
-	const avatarUrl = "https://cdn.discordapp.com" +
-		CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP)
+	const avatarUrl = discordUser.avatar ? "https://cdn.discordapp.com" +
+		CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP) : ""
 
 	const user = await database.user.upsert({
 		where: {

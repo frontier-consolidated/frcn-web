@@ -41,7 +41,7 @@ const database = $prisma
 async function seedProduction() {
 	const roles = await database.userRole.findMany();
 
-	if (roles.length === 0) {
+	if (roles.length === 0 && process.env.ADMIN_DISCORD_ID) {
 		const adminRole = await database.userRole.upsert({
 			where: { name: "Admin" },
 			update: {},

@@ -41,7 +41,7 @@ export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | nu
 }
 
 export function buildRsvpDmMessage(event: Event, rsvp: EventRsvpRole, eventMessageLink: string) {
-	const startAtSeconds = Math.floor(event.startAt.getTime() / 1000);
+	const startAtSeconds = Math.floor(event.startAt!.getTime() / 1000);
 
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
@@ -52,7 +52,7 @@ export function buildRsvpDmMessage(event: Event, rsvp: EventRsvpRole, eventMessa
 				name: "Event Time (Your Timezone)",
 				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`,
 			},
-			{ name: "Duration", value: dates.toDuration(event.duration) },
+			{ name: "Duration", value: dates.toDuration(event.duration!) },
 		)
 	
 	const unrsvpButton = new ButtonBuilder()

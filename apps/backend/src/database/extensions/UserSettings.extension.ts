@@ -11,7 +11,7 @@ export function createUserSettingsExtension(define: typeof Prisma.defineExtensio
 				async getUser(model: FullModel<UserSettings>) {
 					if (model.user) return model.user;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.user.findUnique({
@@ -22,7 +22,7 @@ export function createUserSettingsExtension(define: typeof Prisma.defineExtensio
 							prefix: "User",
 							id: model.userId,
 						}
-					);
+					))!;
 					model.user = value;
 					return value;
 				},
