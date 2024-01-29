@@ -48,7 +48,7 @@ type SystemSettings {
 type UserRole {
 	id: ID!
 	name: String!
-	discordId: String!
+	discordId: String
 	primary: Boolean!
 	permissions: Int! @permission(has: ManageRoles)
 	users: [User!]! @permission(has: ManageRoles)
@@ -103,7 +103,7 @@ type EventMember {
 	id: ID!
 	pending: Boolean!
 	user: User!
-	rsvp: ID!
+	rsvp: ID
 	rsvpAt: Timestamp!
 }
 
