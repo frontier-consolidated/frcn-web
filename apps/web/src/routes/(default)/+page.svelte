@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { Carousel } from "flowbite-svelte";
+	import { BookSolid, BuildingSolid, CalendarMonthSolid, UsersSolid } from "flowbite-svelte-icons";
 	import type { HTMLImgAttributes } from "svelte/elements";
 
-	import calendarImage from "$lib/images/stock/calendar.png"
 	import image1 from "$lib/images/stock/carousel/1.png"
 	import image2 from "$lib/images/stock/carousel/2.png"
 	import image3 from "$lib/images/stock/carousel/3.png"
 	import image4 from "$lib/images/stock/carousel/4.png"
-	import eventsImage from "$lib/images/stock/events.png"
+	import activitiesImage from "$lib/images/stock/community/1.jpg"
+	import orgImage from "$lib/images/stock/community/5.png"
+	import communityImage from "$lib/images/stock/community.jpg"
+	import knowledgeImage from "$lib/images/stock/knowledge.png"
 
 	import PageCard from "./PageCard.svelte";
 
@@ -30,24 +33,42 @@
 <svelte:head>
 	<title>Frontier Consolidated Events</title>
 	<meta name="description" content="Get involved with the latest community events" />
-	<link rel="preload" href={eventsImage} as="image" />
+	<link rel="preload" href={activitiesImage} as="image" />
+	<link rel="preload" href={communityImage} as="image" />
+	<link rel="preload" href={orgImage} as="image" />
+	<link rel="preload" href={knowledgeImage} as="image" />
 </svelte:head>
 
-<Carousel {images} duration={7000} class="h-72 sm:h-80 md:h-96" let:Controls let:Indicators>
-	<Controls />
-	<Indicators  />
-</Carousel>
-<div class="grid min-[450px]:grid-cols-2 mt-4 gap-4">
+<div class="mt-8">
+	<!-- Must provide overrides for the sm, xl and 2xl breakpoints -->
+	<Carousel {images} duration={7000} class="h-72 sm:h-80 lg:h-96 xl:h-[28rem] 2xl:h-[28rem]" let:Controls let:Indicators>
+		<Controls />
+		<Indicators  />
+	</Carousel>
+</div>
+<div class="grid min-[480px]:grid-cols-2 lg:grid-cols-4 mt-12 gap-4">
 	<PageCard
-		src={eventsImage}
-		alt="Group of players gathered in a circle"
+		src={activitiesImage}
 		href="/events"
-		caption="Upcoming Events"
-	/>
+	>
+		<CalendarMonthSolid size="sm" class="me-2" /> Activities
+	</PageCard>
 	<PageCard
-		src={calendarImage}
-		alt="A ship flying over a planet towards the sun"
-		href="/events#calendar"
-		caption="Events Calendar"
-	/>
+		src={communityImage}
+		href="/about/community"
+	>
+		<UsersSolid size="sm" class="me-2" /> Community
+	</PageCard>
+	<PageCard
+		src={orgImage}
+		href="/about/org"
+	>
+		<BuildingSolid size="sm" class="me-2" /> Organisation
+	</PageCard>
+	<PageCard
+		src={knowledgeImage}
+		href="/knowledge"
+	>
+		<BookSolid size="sm" class="me-2" /> Guides & Resources
+	</PageCard>
 </div>
