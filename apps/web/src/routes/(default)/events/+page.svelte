@@ -6,6 +6,7 @@
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params"
 
+	import Hr from "$lib/components/Hr.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
@@ -23,7 +24,8 @@
 	<meta name="description" content="Frontier Consolidated - Search Events" />
 </svelte:head>
 
-<Heading tag="h3">Events</Heading>
+<Heading tag="h1" class="font-medium text-4xl">Events</Heading>
+<Hr />
 <section class="flex flex-col gap-2 mt-4">
 	<div>
 		<div class="flex flex-col sm:flex-row gap-2">
