@@ -16,7 +16,7 @@
 	import MarkdownEditor from "$lib/components/markdown/MarkdownEditor.svelte";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
 	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
-	import { Mutations, apollo } from "$lib/graphql";
+	import { Mutations, getApollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
@@ -39,7 +39,7 @@
 	let imagePlaceholder = false
 
 	async function save() {
-		const { data: updatedData, errors } = await apollo.mutate({
+		const { data: updatedData, errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_EVENT,
 			variables: {
 				eventId: data.id,
@@ -97,7 +97,7 @@
 			if (!(await save())) return;
 		}
 
-		const { data: postData, errors } = await apollo.mutate({
+		const { data: postData, errors } = await getApollo().mutate({
 			mutation: Mutations.POST_EVENT,
 			variables: {
 				eventId: data.id,
