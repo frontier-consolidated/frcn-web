@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Carousel, Img } from "flowbite-svelte";
+	import { Carousel } from "flowbite-svelte";
 	import type { HTMLImgAttributes } from "svelte/elements";
 
 	import calendarImage from "$lib/images/stock/calendar.png"
