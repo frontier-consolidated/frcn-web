@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Input } from "flowbite-svelte";
+	import { twMerge } from "tailwind-merge";
 
 	const hours = new Array(24).fill(0).map((_, index) => index);
 	const minutes = new Array(60).fill(0).map((_, index) => index);
@@ -80,6 +81,10 @@
 		const minute = Math.max(0, Math.min(59, Number(inputMinute)));
 		setMinute(minute.valueOf());
 	}
+
+	const spanClass = "block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer"
+	const activeClass = "bg-primary-600 dark:hover:bg-primary-700"
+	const inactiveClass = "dark:hover:bg-gray-600"
 </script>
 
 <div>
@@ -107,10 +112,7 @@
 					role="button"
 					tabindex="0"
 					data-hour={hour}
-					class="block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer {hour ==
-					selectedHour
-						? 'bg-primary-600 dark:hover:bg-primary-700'
-						: 'dark:hover:bg-gray-600'}"
+					class={twMerge(spanClass, hour === selectedHour ? activeClass : inactiveClass)}
 					on:click={() => setHour(hour)}
 					on:keydown={(ev) => {
 						if (ev.key == "Enter") setHour(hour);
@@ -126,10 +128,7 @@
 					role="button"
 					tabindex="0"
 					data-minute={minute}
-					class="block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer {minute ==
-					selectedMinute
-						? 'bg-primary-600 dark:hover:bg-primary-700'
-						: 'dark:hover:bg-gray-600'}"
+					class={twMerge(spanClass, minute === selectedMinute ? activeClass : inactiveClass)}
 					on:click={() => setMinute(minute)}
 					on:keydown={(ev) => {
 						if (ev.key == "Enter") setMinute(minute);

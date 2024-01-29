@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { data as defaultEmojis } from "@frcn/shared/emojis";
 	import { Button, Dropdown, Search } from "flowbite-svelte";
+	import { twMerge } from "tailwind-merge";
 
 	import EmojiCategoryIcon from "./EmojiCategoryIcon.svelte";
 	import EmojiImage from "./EmojiImage.svelte";
@@ -132,10 +133,7 @@
 							}
 						}}
 						type="button"
-						class="inline-block text-sm font-medium text-center disabled:cursor-not-allowed {category ===
-						currentCategory
-							? activeClass
-							: inactiveClass}"
+						class={twMerge("inline-block text-sm font-medium text-center disabled:cursor-not-allowed", category === currentCategory ? activeClass : inactiveClass)}
 					>
 						<EmojiCategoryIcon {category} tabindex={-1} class="w-4 h-4" />
 					</button>
@@ -144,12 +142,10 @@
 		</ul>
 		<div class="flex flex-col gap-1 max-h-72 h-full">
 			<div
-				class="flex-1 flex flex-col {search
-					? ''
-					: 'gap-3'} min-h-[16rem] h-64 max-h-64 overflow-y-auto no-scrollbar"
+				class={twMerge("flex-1 flex flex-col min-h-[16rem] h-64 max-h-64 overflow-y-auto no-scrollbar", search ? undefined : "gap-3")}
 				on:scroll={(ev) => calculateCurrent(ev.currentTarget)}
 			>
-				<div class="grid grid-cols-9 {!search ? 'hidden' : ''}">
+				<div class={twMerge("grid grid-cols-9", !search ? "hidden" : undefined)}>
 					{#each getEmojisInSearch(search) as emoji}
 						{#if emoji.svg || emoji.imageUrl}
 							<Button
@@ -167,7 +163,7 @@
 					{/each}
 				</div>
 				{#each categories as category}
-					<div data-category={category} use:initCategory class={search ? "hidden" : ""}>
+					<div data-category={category} use:initCategory class={search ? "hidden" : undefined}>
 						<div class="px-2 py-1 flex items-center font-medium text-xs text-gray-300">
 							<EmojiCategoryIcon {category} class="w-3 h-3 me-1" />
 							{category.toUpperCase()}

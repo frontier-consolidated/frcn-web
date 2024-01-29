@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Badge, Dropdown, DropdownItem } from "flowbite-svelte";
 	import { AngleDownSolid, CloseSolid } from "flowbite-svelte-icons";
+	import { twMerge } from "tailwind-merge";
 
 	import type { Option } from "./types";
 
@@ -18,6 +19,9 @@
 	export let options: Option<T, S>[] = [];
 	export let multi: Multi = false as Multi;
 	export let search: boolean = false
+
+	let clazz: string = ""
+	export { clazz as class }
 
 	let searchInput: string = ""
 	let lastSearchInput: string = searchInput
@@ -94,7 +98,7 @@
 	}
 </script>
 
-<div class="relative w-full {$$restProps.class ?? ''}">
+<div class={twMerge("relative w-full", clazz)}>
 	<select {disabled} hidden {...$$restProps}>
 		{#each options as option}
 			<option value={option.name}>{option.name}</option>
@@ -104,11 +108,7 @@
 		aria-disabled={disabled}
 		tabindex="-1"
 		role="listbox"
-		class="flex items-center w-full text-gray-900 bg-gray-50 border border-gray-300 rounded-lg {!disabled
-			? 'focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500'
-			: 'disabled:cursor-not-allowed'} dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:{disabled
-			? 'text-gray-400'
-			: 'text-white'} text-sm p-2.5 min-h-[3rem]"
+		class={twMerge("flex items-center w-full text-gray-900 bg-gray-50 border border-gray-300 rounded-lg text-sm p-2.5 min-h-[3rem] dark:bg-gray-700 dark:border-gray-600", disabled ? "cursor-not-allowed dark:text-gray-400" : "focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:text-white")}
 	>
 		<span class="flex flex-wrap gap-1 w-full">
 			{#if selectedOptions.length > 0}

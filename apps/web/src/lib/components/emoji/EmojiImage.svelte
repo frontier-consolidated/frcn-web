@@ -1,5 +1,7 @@
 <script lang="ts">
-	import type { Emoji } from "./types";
+	import { twMerge } from "tailwind-merge";
+
+import type { Emoji } from "./types";
 
 	export let emoji: Emoji;
 	let clazz: string | undefined = undefined;
@@ -13,7 +15,7 @@
 		src={emoji.imageUrl}
 		alt={emoji.name}
 		{...$$restProps}
-		class="aspect-square object-contain {clazz ?? ''}"
+		class={twMerge("aspect-square object-contain", clazz)}
 	/>
 {:else if emoji.svg}
 	<svg

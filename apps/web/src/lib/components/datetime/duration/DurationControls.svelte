@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { dates } from "@frcn/shared";
 	import { Input } from "flowbite-svelte";
+	import { twMerge } from "tailwind-merge";
 
 	const hours = new Array(24).fill(0).map((_, index) => index);
 	const minutesAndSeconds = new Array(60).fill(0).map((_, index) => index);
@@ -117,6 +118,10 @@
 		const seconds = Math.max(0, Math.min(59, Number(inputSeconds)));
 		setSeconds(seconds.valueOf());
 	}
+
+	const spanClass = "block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer"
+	const activeClass = "bg-primary-600 dark:hover:bg-primary-700"
+	const inactiveClass = "dark:hover:bg-gray-600"
 </script>
 
 <div>
@@ -152,10 +157,7 @@
 					role="button"
 					tabindex="0"
 					data-hour={hour}
-					class="block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer {hour ==
-					dates.toDurationComponents(value).hours
-						? 'bg-primary-600 dark:hover:bg-primary-700'
-						: 'dark:hover:bg-gray-600'}"
+					class={twMerge(spanClass, hour === dates.toDurationComponents(value).hours ? activeClass : inactiveClass)}
 					on:click={() => setHours(hour)}
 					on:keydown={(ev) => {
 						if (ev.key == "Enter") setHours(hour);
@@ -171,10 +173,7 @@
 					role="button"
 					tabindex="0"
 					data-minute={minute}
-					class="block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer {minute ==
-					dates.toDurationComponents(value).minutes
-						? 'bg-primary-600 dark:hover:bg-primary-700'
-						: 'dark:hover:bg-gray-600'}"
+					class={twMerge(spanClass, minute === dates.toDurationComponents(value).minutes ? activeClass : inactiveClass)}
 					on:click={() => setMinutes(minute)}
 					on:keydown={(ev) => {
 						if (ev.key == "Enter") setMinutes(minute);
@@ -190,10 +189,7 @@
 					role="button"
 					tabindex="0"
 					data-second={second}
-					class="block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer {second ==
-					dates.toDurationComponents(value).seconds
-						? 'bg-primary-600 dark:hover:bg-primary-700'
-						: 'dark:hover:bg-gray-600'}"
+					class={twMerge(spanClass, second === dates.toDurationComponents(value).seconds ? activeClass : inactiveClass)}
 					on:click={() => setSeconds(second)}
 					on:keydown={(ev) => {
 						if (ev.key == "Enter") setSeconds(second);
