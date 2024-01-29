@@ -1,14 +1,16 @@
 import { browser } from "$app/environment";
+import type { DefaultContext } from "@apollo/client";
 import { writable, get } from "svelte/store";
 
 import { Routes, api } from "$lib/api";
 import { Queries, apollo } from "$lib/graphql";
 import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 
-async function getCurrentUser(cache = true) {
+async function getCurrentUser(cache = true, context?: DefaultContext) {
 	const { data } = await apollo.query({
 		query: Queries.CURRENT_USER,
 		fetchPolicy: cache ? undefined : "no-cache",
+		context
 	});
 	return data;
 }
@@ -33,18 +35,13 @@ export const user = writable<{ loading: boolean; data: GetCurrentUserQuery["user
 	}
 );
 
-export async function waitTillUserLoaded() {
-	if (!get(user).loading) return;
-
-	await new Promise<void>((resolve) => {
-		if (!get(user).loading) return resolve();
-		const unsubscribe = user.subscribe(({ loading }) => {
-			if (!loading) {
-				unsubscribe();
-				resolve();
-			}
-		});
-	});
+export async function getRequestUser(cookie: string) {
+	const { user } = await getCurrentUser(false, {
+		headers: {
+			cookie
+		}
+	})
+	return user
 }
 
 export async function login() {
@@ -83,6 +80,10 @@ export async function logout() {
 
 	try {
 		await api.get(Routes.logout());
+
+		if (browser) {
+			window.location.reload()
+		}
 	} catch (err) {
 		user.set({
 			loading: false,
