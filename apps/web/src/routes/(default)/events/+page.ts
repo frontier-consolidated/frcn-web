@@ -7,10 +7,22 @@ import { pushNotification } from "$lib/stores/NotificationStore";
 import type { PageLoad } from "./$types";
 
 
-export const load = (async () => {
+export const load = (async ({ url }) => {
     try {
+        let page: number | null = null;
+        if (url.searchParams.has("page")) {
+            page = Number(url.searchParams.get("page"))
+            if (isNaN(page)) page = null
+        }
+
         const { data } = await apollo.query({
             query: Queries.GET_EVENTS,
+            variables: {
+                filter: {
+                    search: url.searchParams.get("q")
+                },
+                page
+            }
         });
     
         const events = (data.events?.items ?? []).map(event => ({
