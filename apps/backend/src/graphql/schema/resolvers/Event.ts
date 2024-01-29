@@ -183,17 +183,36 @@ export const eventResolvers: Resolvers = {
 			return resolveEvent(event);
 		},
 		async getEvents(source, { filter, page, limit }, context) {
-			const { search, startAt, minDuration, maxDuration, includeCompleted } = filter ?? {};
+			const { search, eventType, minStartAt, maxStartAt, minDuration, maxDuration, includeCompleted } = filter ?? {};
+
+			if (
+				eventType &&
+				!(Object.values(EventType) as string[]).includes(eventType)
+			) {
+				throw gqlErrorBadInput(`Event type not allowed: ${eventType}`);
+			}
+
+			if (minStartAt && maxStartAt && minStartAt > maxStartAt) {
+				throw gqlErrorBadInput("Range not allowed: `maxStartAt` must be greater than `minStartAt`")
+			}
+
+			if (minDuration && maxDuration && minDuration > maxDuration) {
+				throw gqlErrorBadInput("Range not allowed: `maxDuration` must be greater than `minDuration`")
+			}
 
 			const result = await $events.getEvents(
 				{
 					search,
-					startAt: startAt ? new Date(startAt) : undefined,
+					eventType: eventType as EventType,
+					startAt: {
+						min: minStartAt,
+						max: maxStartAt
+					},
 					duration: {
 						min: minDuration,
 						max: maxDuration,
 					},
-					includeCompleted,
+					includeCompleted
 				},
 				page,
 				limit,

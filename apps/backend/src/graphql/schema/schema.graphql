@@ -168,7 +168,9 @@ input UserStatusEditInput {
 
 input EventFilterInput {
 	search: String @constraint(maxLength: 255)
-	startAt: Timestamp
+	eventType: String
+	minStartAt: Timestamp
+	maxStartAt: Timestamp
 	minDuration: Int @constraint(min: 0)
 	maxDuration: Int @constraint(min: 0)
 	includeCompleted: Boolean

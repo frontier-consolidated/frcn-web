@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 
-import type { Event, EventRsvpRole, EventUser, User } from "@prisma/client";
+import type { EventType } from "@frcn/shared";
+import type { Event, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
 import { Client as DiscordClient, ThreadAutoArchiveDuration } from "discord.js";
 
 import { $discord } from "./discord";
@@ -34,49 +35,72 @@ async function getEventFromMessageId(id: string) {
 
 type GetEventsFilter = {
 	search?: string;
-	startAt?: Date;
+	eventType?: EventType,
+	startAt?: { min?: Date, max?: Date };
 	duration?: { min?: number; max?: number };
-	includeCompleted: boolean;
+	includeCompleted?: boolean
 };
 
 async function getEvents(
 	filter: GetEventsFilter,
-	page: number,
-	limit: number,
+	page: number = 0,
+	limit: number = -1,
 	user: User,
 	discordClient: DiscordClient
 ) {
-	const { search, startAt = new Date(), duration, includeCompleted } = filter;
-	page ??= 0;
-	limit = Math.min(100, limit ?? 20);
+	const { search, eventType, startAt = {}, duration, includeCompleted } = filter;
+
+	if (!includeCompleted) {
+		startAt.min ??= new Date()
+	}
+
+	// If the date range is less than or equal to a calendar range then don't limit items
+	if (limit === -1 && startAt.max && new Date(startAt.min.getTime() + 45 * 24 * 3600 * 1000) >= startAt.max) {
+		limit = -1;
+	} else {
+		if (limit === -1) limit = 20;
+		limit = Math.min(100, limit);
+	}
+	
+	const expiredDuration = 24 * 3600 * 1000
+	const expiredDate = new Date(Date.now() - expiredDuration)
+	const startAtOr: Prisma.EventWhereInput[] = [
+		{
+			startAt: {
+				gte: startAt.min,
+				lte: startAt.max
+			},
+		}
+	]
+
+	// Show live events if they haven't expired and are in our selected date range
+	if (expiredDate >= new Date(startAt.min.getTime() - expiredDuration) && (!startAt.max || startAt.max > new Date())) {
+		startAtOr.push({
+			startAt: {
+				lt: startAt.min,
+				gte: new Date(Date.now() - 24 * 3600 * 1000)
+			},
+			endedAt: null,
+		})
+	}
 
 	const result = await database.event.findMany({
+		take: 250, // for performance, a search shouldn't need more than this
 		where: {
 			name: search
 				? {
-						contains: search,
+					contains: search,
+					mode: "insensitive"
 				  }
 				: undefined,
+			eventType,
 			duration: duration
 				? {
 						gte: duration.min,
 						lte: duration.max,
 				  }
 				: undefined,
-			endedAt: includeCompleted ? undefined : null,
-			OR: [
-				{
-					startAt: {
-						gte: startAt,
-					},
-				},
-				{
-					startAt: {
-						lt: startAt,
-					},
-					endedAt: null,
-				},
-			],
+			OR: startAtOr,
 		},
 		orderBy: [
 			{
@@ -99,15 +123,15 @@ async function getEvents(
 		})
 	);
 	const filteredResult = result.filter((_, index) => predicate[index]);
-	const pageItems = filteredResult.slice(page * limit, (page + 1) * limit);
+	const pageItems = limit === -1 ? filteredResult : filteredResult.slice(page * limit, (page + 1) * limit);
 
 	return {
 		items: pageItems,
 		total: filteredResult.length,
 		itemsPerPage: limit,
 		page,
-		nextPage: (page + 1) * limit < filteredResult.length ? page + 1 : null,
-		prevPage: page > 0 ? page - 1 : null,
+		nextPage: limit > 0 && (page + 1) * limit < filteredResult.length ? page + 1 : null,
+		prevPage: limit > 0 && page > 0 ? page - 1 : null,
 	};
 }
 

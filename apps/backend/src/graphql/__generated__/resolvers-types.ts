@@ -100,11 +100,13 @@ export type EventEditInput = {
 };
 
 export type EventFilterInput = {
+  eventType?: InputMaybe<Scalars['String']['input']>;
   includeCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   maxDuration?: InputMaybe<Scalars['Int']['input']>;
+  maxStartAt?: InputMaybe<Scalars['Timestamp']['input']>;
   minDuration?: InputMaybe<Scalars['Int']['input']>;
+  minStartAt?: InputMaybe<Scalars['Timestamp']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
-  startAt?: InputMaybe<Scalars['Timestamp']['input']>;
 };
 
 export type EventMember = {
