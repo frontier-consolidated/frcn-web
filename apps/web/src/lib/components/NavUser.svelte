@@ -1,7 +1,9 @@
 <script lang="ts">
-	import { Avatar, Dropdown, DropdownItem, DropdownDivider, Toggle } from "flowbite-svelte";
+	import { hasOneOfPermissions } from "@frcn/shared";
+	import { Avatar, Dropdown, DropdownItem, DropdownDivider } from "flowbite-svelte";
 	import { createEventDispatcher } from "svelte";
 
+	import adminPermissions from "$lib/data/adminPermissions";
 	import { user } from "$lib/stores/UserStore";
 
 	const dispatch = createEventDispatcher();
@@ -14,10 +16,10 @@
 <Dropdown class="w-44">
 	<DropdownItem>My Profile</DropdownItem>
 	<DropdownItem>Settings</DropdownItem>
-	<DropdownDivider />
-	<li>
-		<Toggle class="rounded p-2 hover:bg-gray-100 dark:hover:bg-gray-600">Streamer Mode</Toggle>
-	</li>
+	{#if $user.data && hasOneOfPermissions($user.data?.permissions, adminPermissions)}
+		<DropdownDivider />
+		<DropdownItem href="/admin/general">System Settings</DropdownItem>
+	{/if}
 	<DropdownItem
 		slot="footer"
 		on:click={() => {

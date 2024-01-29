@@ -9,6 +9,10 @@
     // export let data: PageData;
 </script>
 
+<svelte:head>
+	<title>Admin - General Settings</title>
+</svelte:head>
+
 <SectionHeading>
     General Settings
 </SectionHeading>

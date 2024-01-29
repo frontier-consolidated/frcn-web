@@ -21,6 +21,7 @@
     "@sveltejs/adapter-node": "^4.0.0",
     "@sveltejs/kit": "^2.5.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@types/sortablejs": "^1.15.7",
     "@types/uuid": "^9.0.8",
     "autoprefixer": "^10.4.16",
     "eslint-plugin-svelte": "^2.35.1",
@@ -45,9 +46,10 @@
     "axios": "^1.6.5",
     "graphql": "^16.8.1",
     "graphql-ws": "^5.14.3",
-    "svelte-agnostic-draggable": "^0.2.0",
+    "sortablejs": "^1.15.2",
     "svelte-codemirror-editor": "^1.2.0",
     "svelte-i18n": "^4.0.0",
+    "tailwind-merge": "^2.2.1",
     "uuid": "^9.0.1"
   }
 }

@@ -7,9 +7,9 @@
 </script>
 
 <svelte:head>
-	<title>Admin - Event Channels</title>
+	<title>Admin - Manage Users</title>
 </svelte:head>
 
 <SectionHeading>
-    Event Channels
+    Users
 </SectionHeading>
