@@ -49,6 +49,7 @@
     "sortablejs": "^1.15.2",
     "svelte-codemirror-editor": "^1.2.0",
     "svelte-i18n": "^4.0.0",
+    "sveltekit-search-params": "^2.1.0",
     "tailwind-merge": "^2.2.1",
     "uuid": "^9.0.1"
   }
