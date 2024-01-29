@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from "$app/environment";
 	import { page } from "$app/stores";
 	import {
 		Navbar,
@@ -9,6 +10,7 @@
 		Button,
 		Dropdown,
 		DropdownItem,
+		Spinner,
 	} from "flowbite-svelte";
 	import {
 		HomeSolid,
@@ -52,12 +54,18 @@
 					logout().catch(console.error);
 				}}
 			/>
+		{:else if $user.loading || !browser}
+			<Button>
+				<Spinner class="me-2" size="4" color="white" /> Login
+			</Button>
 		{:else}
 			<Button
 				on:click={() => {
 					login().catch(console.error);
-				}}>Login</Button
+				}}
 			>
+				Login
+			</Button>
 		{/if}
 		<NavHamburger />
 	</div>
