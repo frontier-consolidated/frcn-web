@@ -1,43 +1,19 @@
 import { browser } from "$app/environment";
-import { getLocations } from "@frcn/shared/locations";
 
-import { Queries, apollo } from "$lib/graphql";
+import { getApollo } from "$lib/graphql";
 import { pushNotification } from "$lib/stores/NotificationStore";
 
 import type { PageLoad } from "./$types";
+import { getEvents } from "./helpers";
 
 
-export const load = (async ({ url }) => {
+export const load = (async ({ url, data }) => {
     try {
-        let page: number | null = null;
-        if (url.searchParams.has("page")) {
-            page = Number(url.searchParams.get("page"))
-            if (isNaN(page)) page = null
+        const { couldNotConnect, ...serverData } = data
+        if (!couldNotConnect) {
+            return serverData
         }
-
-        const { data } = await apollo.query({
-            query: Queries.GET_EVENTS,
-            variables: {
-                filter: {
-                    search: url.searchParams.get("q")
-                },
-                page
-            }
-        });
-    
-        const events = (data.events?.items ?? []).map(event => ({
-            ...event,
-            location: event.location ? getLocations(event.location) : null
-        }))
-    
-        return {
-            events,
-            itemsPerPage: data.events?.itemsPerPage ?? 1,
-            page: data.events?.page ?? 0,
-            nextPage: data.events?.nextPage,
-            prevPage: data.events?.prevPage,
-            total: data.events?.total ?? 0
-        };
+        return await getEvents(getApollo(), url)
     } catch (err) {
         if (browser) {
             pushNotification({
