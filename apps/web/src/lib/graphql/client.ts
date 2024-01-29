@@ -39,5 +39,10 @@ export const apollo = new ApolloClient({
 	link: linkChain,
 	cache: new InMemoryCache({
 		fragments,
+		typePolicies: {
+			Event: {
+				merge: true
+			}
+		}
 	}),
 });
