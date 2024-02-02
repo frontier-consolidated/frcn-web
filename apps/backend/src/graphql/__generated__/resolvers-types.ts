@@ -100,18 +100,20 @@ export type EventEditInput = {
 };
 
 export type EventFilterInput = {
+  eventType?: InputMaybe<Scalars['String']['input']>;
   includeCompleted?: InputMaybe<Scalars['Boolean']['input']>;
   maxDuration?: InputMaybe<Scalars['Int']['input']>;
+  maxStartAt?: InputMaybe<Scalars['Timestamp']['input']>;
   minDuration?: InputMaybe<Scalars['Int']['input']>;
+  minStartAt?: InputMaybe<Scalars['Timestamp']['input']>;
   search?: InputMaybe<Scalars['String']['input']>;
-  startAt?: InputMaybe<Scalars['Timestamp']['input']>;
 };
 
 export type EventMember = {
   __typename?: 'EventMember';
   id: Scalars['ID']['output'];
   pending: Scalars['Boolean']['output'];
-  rsvp: Scalars['ID']['output'];
+  rsvp?: Maybe<Scalars['ID']['output']>;
   rsvpAt: Scalars['Timestamp']['output'];
   user: User;
 };
@@ -222,6 +224,7 @@ export type MutationVerifyUserScNameArgs = {
 export type PagedEvent = {
   __typename?: 'PagedEvent';
   items: Array<Event>;
+  itemsPerPage: Scalars['Int']['output'];
   nextPage?: Maybe<Scalars['Int']['output']>;
   page: Scalars['Int']['output'];
   prevPage?: Maybe<Scalars['Int']['output']>;
@@ -298,7 +301,7 @@ export type User = {
 export type UserRole = {
   __typename?: 'UserRole';
   createdAt: Scalars['Timestamp']['output'];
-  discordId: Scalars['String']['output'];
+  discordId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   permissions: Scalars['Int']['output'];
@@ -529,7 +532,7 @@ export type EventResolvers<ContextType = GQLContext, ParentType extends Resolver
 export type EventMemberResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventMember'] = ResolversParentTypes['EventMember']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   pending?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
-  rsvp?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  rsvp?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   rsvpAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -576,6 +579,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
 
 export type PagedEventResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PagedEvent'] = ResolversParentTypes['PagedEvent']> = ResolversObject<{
   items?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType>;
+  itemsPerPage?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   nextPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   page?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   prevPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -628,7 +632,7 @@ export type UserResolvers<ContextType = GQLContext, ParentType extends Resolvers
 
 export type UserRoleResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['UserRole'] = ResolversParentTypes['UserRole']> = ResolversObject<{
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
-  discordId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  discordId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   permissions?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

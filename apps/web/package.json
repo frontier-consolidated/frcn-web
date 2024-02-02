@@ -13,16 +13,15 @@
     "gql-generate": "graphql-codegen --config codegen.yml"
   },
   "devDependencies": {
-    "@fontsource/fira-mono": "^4.5.10",
     "@frcn/graphql-scalar-types": "workspace:^",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@neoconfetti/svelte": "^1.0.0",
     "@sveltejs/adapter-auto": "^3.0.0",
     "@sveltejs/adapter-node": "^4.0.0",
-    "@sveltejs/kit": "^2.0.0",
+    "@sveltejs/kit": "^2.5.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
+    "@types/sortablejs": "^1.15.7",
     "@types/uuid": "^9.0.8",
     "autoprefixer": "^10.4.16",
     "eslint-plugin-svelte": "^2.35.1",
@@ -47,8 +46,12 @@
     "axios": "^1.6.5",
     "graphql": "^16.8.1",
     "graphql-ws": "^5.14.3",
+    "sortablejs": "^1.15.2",
     "svelte-codemirror-editor": "^1.2.0",
     "svelte-i18n": "^4.0.0",
-    "uuid": "^9.0.1"
+    "sveltekit-search-params": "^2.1.0",
+    "tailwind-merge": "^2.2.1",
+    "uuid": "^9.0.1",
+    "vite-imagetools": "^6.2.9"
   }
 }

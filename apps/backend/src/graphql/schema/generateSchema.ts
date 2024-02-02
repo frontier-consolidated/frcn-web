@@ -11,10 +11,13 @@ function generatePagedTypes(typeDefs: string) {
 		if (seen.includes(match[0])) continue;
 		seen.push(match[0]);
 
-		const type = match.groups.type;
+		const type = match.groups?.type;
+		if (!type) continue;
+		
 		extTypeDefs += `
 type ${match[0]} {
     items: [${type}!]!
+	itemsPerPage: Int!
     page: Int!
     total: Int!
     nextPage: Int

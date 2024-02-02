@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from "flowbite-svelte";
+	import { twMerge } from "tailwind-merge";
 
 	import EmojiImage from "./EmojiImage.svelte";
 	import EmojiPicker from "./EmojiPicker.svelte";
@@ -17,7 +18,7 @@
 	<Button
 		color="none"
 		{...$$restProps}
-		class="p-1 hover:dark:bg-gray-700 cursor-pointer {clazz ?? ''}"
+		class={twMerge("p-1 hover:dark:bg-gray-700 cursor-pointer", clazz)}
 	>
 		{#if value}
 			<EmojiImage emoji={value} class="w-6 h-6" />

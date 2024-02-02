@@ -103,5 +103,5 @@
 			// rsvp
 		}}>RSVP</Button>
 		<Button color="alternative" on:click={() => rsvpModal = false}>Cancel</Button>
-  </svelte:fragment>
+  	</svelte:fragment>
 </Modal>

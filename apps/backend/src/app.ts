@@ -8,13 +8,14 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 
-import type { Context } from "./context";
+import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
 import { createApolloServer } from "./graphql";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./session";
 
 interface CreateAppOptions {
   origins: string[];
+  routeConfig: RouteConfig;
   sessionConfig: SessionMiddlewareConfig;
 }
 
@@ -74,9 +75,9 @@ export async function createApp(config: CreateAppOptions) {
     if (!file.isFile()) continue;
 
     const module = (await import(path.join(file.path, file.name))) as {
-      default: (context: Context) => void;
+      default: (context: Context, config: RouteConfig) => void;
     };
-    module.default(context);
+    module.default(context, config.routeConfig);
   }
 
   return context;

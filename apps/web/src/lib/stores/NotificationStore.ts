@@ -19,16 +19,8 @@ export const notifications = writable<Notification[]>([], (set, update) => {
 		});
 	}, 500);
 
-	// const testInterval = setInterval(() => {
-	// 	pushNotification({
-	// 		type: "error",
-	// 		message: "test",
-	// 	});
-	// }, 5000);
-
 	return () => {
 		clearInterval(interval);
-		// clearInterval(testInterval);
 	};
 });
 

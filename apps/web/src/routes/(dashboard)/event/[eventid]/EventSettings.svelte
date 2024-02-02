@@ -8,13 +8,15 @@
 		CaretRightSolid,
 		CloseSolid,
 	} from "flowbite-svelte-icons";
+	import { twMerge } from "tailwind-merge";
 
 	import DatetimePicker from "$lib/components/datetime/DatetimePicker.svelte";
 	import DurationPicker from "$lib/components/datetime/DurationPicker.svelte";
 	import LocationSelectUl from "$lib/components/location/LocationSelectUl.svelte";
 	import MarkdownEditor from "$lib/components/markdown/MarkdownEditor.svelte";
+	import SectionHeading from "$lib/components/SectionHeading.svelte";
 	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
-	import { Mutations, apollo } from "$lib/graphql";
+	import { Mutations, getApollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
@@ -37,7 +39,7 @@
 	let imagePlaceholder = false
 
 	async function save() {
-		const { data: updatedData, errors } = await apollo.mutate({
+		const { data: updatedData, errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_EVENT,
 			variables: {
 				eventId: data.id,
@@ -95,7 +97,7 @@
 			if (!(await save())) return;
 		}
 
-		const { data: postData, errors } = await apollo.mutate({
+		const { data: postData, errors } = await getApollo().mutate({
 			mutation: Mutations.POST_EVENT,
 			variables: {
 				eventId: data.id,
@@ -121,8 +123,9 @@
 	<div class="flex flex-col md:grid md:grid-cols-2 md:gap-6">
 		<div>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500"> General Settings </span>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				<SectionHeading>
+					General Settings
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Label for="event-type" class="mb-2">Event Type</Label>
@@ -172,12 +175,12 @@
 						/>
 						{#if editData.imageUrl}
 						<div class="mt-2">
-							<img src={editData.imageUrl} alt="Event thumbnail" class="rounded {imagePlaceholder ? "hidden" : ""}" on:error={() => {
+							<img src={editData.imageUrl} alt="Event thumbnail" class={twMerge("rounded", imagePlaceholder ? "hidden" : undefined)} on:error={() => {
 								imagePlaceholder = true
 							}} on:load={() => {
 								imagePlaceholder = false
 							}} />
-							<div role="status" class="animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700 {imagePlaceholder ? "" : "hidden"}">
+							<div role="status" class={twMerge("animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700", imagePlaceholder ? undefined : "hidden")}>
 								<svg width="48" height="48" class="text-gray-200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" viewBox="0 0 640 512">
 								  <path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2 160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 81.01C231.9 70.42 243.5 64 256 64C268.5 64 280.1 70.42 286.8 81.01L412.7 281.7L460.9 202.7C464.1 196.1 472.2 192 480 192C487.8 192 495 196.1 499.1 202.7L631.1 419.1C636.9 428.6 640 439.7 640 450.9C640 484.6 612.6 512 578.9 512H55.91C25.03 512 .0006 486.1 .0006 456.1L0 456.1z" />
 								</svg>
@@ -205,8 +208,9 @@
 				</div>
 			</section>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500"> Event Time </span>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				<SectionHeading>
+					Event Time
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Label for="event-start" class="mb-2">Event Start</Label>
@@ -230,8 +234,9 @@
 		</div>
 		<div>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500"> Event Location </span>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				<SectionHeading>
+					Event Location
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Checkbox bind:checked={editData.settings.hideLocation}
@@ -246,10 +251,9 @@
 				</div>
 			</section>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500">
+				<SectionHeading>
 					Join Permissions
-				</span>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Label for="event-access" class="mb-2">Event Access</Label>
@@ -285,10 +289,9 @@
 				</div>
 			</section>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500"
-					>Member Permissions</span
-				>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				<SectionHeading>
+					Member Permissions
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Toggle bind:checked={editData.settings.allowTeamSwitching}
@@ -309,10 +312,9 @@
 				</div>
 			</section>
 			<section>
-				<span class="text-lg font-semibold dark:text-primary-500"
-					>Discord Settings</span
-				>
-				<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+				<SectionHeading>
+					Discord Settings
+				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
 					<div>
 						<Label for="event-channel" class="mb-2">Events Channel</Label>
@@ -356,13 +358,19 @@
 		</div>
 	</div>
 	<section>
-		<span class="text-lg font-semibold dark:text-primary-500">Event RSVPs</span>
-		<div class="w-full h-0.5 dark:bg-primary-500 mt-1"></div>
+		<SectionHeading>
+			Event RSVPs
+		</SectionHeading>
 		<div class="p-4">
 			<RsvpTable {data} bind:value={editData.roles} />
 		</div>
 	</section>
 	<div class="flex justify-end items-center gap-2">
+		<Button color="alternative" on:click={() => {
+			editData = cloneEventSettingsData(data);
+		}}>
+			<CloseSolid class="me-2" /> Cancel
+		</Button>
 		{#if data.posted}
 			<Button
 				disabled={!isDirty}
@@ -374,9 +382,6 @@
 				<EditOutline class="me-2" /> Save
 			</Button>
 		{:else}
-			<Button color="alternative">
-				<CloseSolid class="me-2" /> Cancel
-			</Button>
 			<Button
 				color="green"
 				disabled={!isDirty}

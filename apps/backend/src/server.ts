@@ -3,14 +3,19 @@ import { getDomain, getOrigin, getOrigins, getPort } from "./env";
 
 const { server, discordClient } = await createApp({
 	origins: getOrigins(),
+	routeConfig: {
+		consentCookie: process.env.CONSENT_COOKIE
+	},
 	sessionConfig: {
+		domain: getDomain(),
+		consent: {
+			cookie: process.env.CONSENT_COOKIE
+		},
 		session: {
-			domain: getDomain(),
 			cookie: process.env.SESSION_COOKIE,
 			secret: process.env.SESSION_SECRET,
 		},
 		deviceTrack: {
-			domain: getDomain(),
 			cookie: process.env.DEVICE_TRACK_COOKIE,
 		},
 	},

@@ -11,7 +11,7 @@ export function createEventSettingsExtension(define: typeof Prisma.defineExtensi
 				async getEvent(model: FullModel<EventSettings>) {
 					if (model.event) return model.event;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.event.findUnique({
@@ -22,7 +22,7 @@ export function createEventSettingsExtension(define: typeof Prisma.defineExtensi
 							prefix: "Event",
 							id: model.eventId,
 						}
-					);
+					))!;
 					model.event = value;
 					return value;
 				},

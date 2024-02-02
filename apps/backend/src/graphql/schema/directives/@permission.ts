@@ -23,8 +23,7 @@ export default function directive(schema: GraphQLSchema) {
 				| undefined;
 			if (!directiveArgs) return fieldConfig;
 
-			let { resolve: originalResolver } = fieldConfig;
-			originalResolver ??= defaultFieldResolver;
+			const { resolve: originalResolver } = fieldConfig;
 
 			fieldConfig.resolve = async function (source, args, context: GQLContext, info) {
 				if (!context.user) throw gqlErrorUnauthenticated();
@@ -64,7 +63,7 @@ export default function directive(schema: GraphQLSchema) {
 					});
 				}
 
-				return originalResolver(source, args, context, info);
+				return (originalResolver ?? defaultFieldResolver)(source, args, context, info);
 			};
 
 			return fieldConfig;

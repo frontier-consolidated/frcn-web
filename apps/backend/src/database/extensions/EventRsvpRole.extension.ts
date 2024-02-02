@@ -35,7 +35,7 @@ export function createEventRsvpRoleExtension(define: typeof Prisma.defineExtensi
 				async getEvent(model: FullModel<EventRsvpRole>) {
 					if (model.event) return model.event;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.event.findUnique({
@@ -46,7 +46,7 @@ export function createEventRsvpRoleExtension(define: typeof Prisma.defineExtensi
 							prefix: "Event",
 							id: model.eventId,
 						}
-					);
+					))!;
 					model.event = value;
 					return value;
 				},

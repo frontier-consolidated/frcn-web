@@ -10,12 +10,13 @@ export function createSystemSettingsExtension(define: typeof Prisma.defineExtens
 			systemSettings: {
 				async getDefaultEventChannel(model: FullModel<SystemSettings>) {
 					if (model.defaultEventChannel) return model.defaultEventChannel;
+					if (!model.defaultEventChannelId) return null;
 
 					const value = await cacheGet(
 						model,
 						() => {
 							return client.eventChannel.findUnique({
-								where: { id: model.defaultEventChannelId },
+								where: { id: model.defaultEventChannelId! },
 							});
 						},
 						{

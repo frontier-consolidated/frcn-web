@@ -3,7 +3,7 @@ import expressSession from "express-session";
 import { SESSION_MAX_AGE, sessionStore } from "../store";
 import type { MiddlewareHandler } from "../types";
 
-export const middleware: MiddlewareHandler = function ({ session: config }) {
+export const middleware: MiddlewareHandler = function ({ session: config, domain }) {
 	return expressSession({
 		secret: config.secret,
 		resave: false,
@@ -11,11 +11,11 @@ export const middleware: MiddlewareHandler = function ({ session: config }) {
 		store: sessionStore,
 		name: config.cookie,
 		cookie: {
-			domain: config.domain,
+			domain,
 			httpOnly: true,
 			sameSite: "lax",
 			secure: "auto",
 			maxAge: SESSION_MAX_AGE,
 		},
-	});
+	})
 };

@@ -2,8 +2,12 @@ export function getPort() {
 	return Number(process.env.PORT);
 }
 
+function hasExternalPort() {
+	return process.env.EXTERNAL_PORT && !isNaN(Number(process.env.EXTERNAL_PORT))
+}
+
 export function getExternalPort() {
-	if (process.env.EXTERNAL_PORT && !isNaN(Number(process.env.EXTERNAL_PORT))) {
+	if (hasExternalPort()) {
 		return Number(process.env.EXTERNAL_PORT)
 	}
 	return getPort()
@@ -16,7 +20,7 @@ export function getDomain() {
 export function getHost() {
 	const domain = getDomain()
 	const subDomain = process.env.SUB_DOMAIN;
-	return `${subDomain}${subDomain ? "." : ""}${domain}${domain === "localhost" ? `:${getExternalPort()}` : ""}`
+	return `${subDomain}${subDomain ? "." : ""}${domain}${domain === "localhost" || hasExternalPort() ? `:${getExternalPort()}` : ""}`
 }
 
 export function getOrigin(protocol: string = "") {

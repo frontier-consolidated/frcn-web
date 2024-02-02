@@ -16,7 +16,7 @@ export async function resolveDiscordChannel(
 	channel: EventChannel | GuildChannel,
 	context: GQLContext
 ) {
-	let guildChannel: GuildChannel;
+	let guildChannel: GuildChannel | null = null;
 
 	if (channel instanceof GuildChannel) {
 		guildChannel = channel;
@@ -30,7 +30,7 @@ export async function resolveDiscordChannel(
 			if (!guildChannel)
 				throw gqlErrorNotFound(`Discord channel not found: ${channel.discordId}`, {
 					channelId: channel.discordId,
-				}, err);
+				}, err as Error);
 		}
 
 	}
@@ -43,7 +43,7 @@ export async function resolveDiscordChannel(
 }
 
 export async function resolveDiscordRole(role: string | Role, context: GQLContext) {
-	let guildRole: Role;
+	let guildRole: Role | null;
 
 	if (role instanceof Role) {
 		guildRole = role;
@@ -64,7 +64,7 @@ export async function resolveDiscordRole(role: string | Role, context: GQLContex
 }
 
 export async function resolveDiscordEmoji(emoji: string | GuildEmoji, context: GQLContext) {
-	let guildEmoji: GuildEmoji;
+	let guildEmoji: GuildEmoji | null;
 
 	if (emoji instanceof GuildEmoji) {
 		guildEmoji = emoji;
@@ -80,7 +80,7 @@ export async function resolveDiscordEmoji(emoji: string | GuildEmoji, context: G
 
 	return {
 		id: guildEmoji.id,
-		name: guildEmoji.name,
+		name: guildEmoji.name ?? "",
 		image: guildEmoji.imageURL({
 			extension: "webp",
 			size: 64,

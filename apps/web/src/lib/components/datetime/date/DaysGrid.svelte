@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { dates } from "@frcn/shared";
 	import { locale } from "svelte-i18n";
+	import { twMerge } from "tailwind-merge";
 
 	let weekdays: string[] = [];
 	$: {
@@ -85,19 +86,17 @@
 </div>
 <div class="grid grid-cols-7 w-64">
 	{#each days as day}
+		{@const selected = dates.isSelected(selectedDate, day)}
+		{@const disabled = isDisabled(viewDate, day)}
+		{@const disabledClass = disabled ? "dark:text-gray-500" : "dark:text-white cursor-pointer"}
+		{@const selectedClass = disabled ? selected ? "bg-primary-800 dark:text-gray-200" : "" : selected ? "bg-primary-600 dark:hover:bg-primary-700" : "dark:hover:bg-gray-600"}
+		{@const todayClass = dates.isToday(day) ? twMerge("bg-gray-500", disabled ? "dark:text-gray-400" : undefined) : ""}
 		<span
 			role="button"
 			tabindex="0"
-			aria-disabled={isDisabled(viewDate, day)}
+			aria-disabled={disabled}
 			data-timestamp={day.getTime()}
-			class="block rounded-lg text-center text-sm font-semibold p-2 {isDisabled(viewDate, day)
-				? 'dark:text-gray-500 ' +
-					(dates.isSelected(selectedDate, day) ? 'bg-primary-800' : '')
-				: 'dark:text-white cursor-pointer ' +
-					(dates.isSelected(selectedDate, day)
-						? 'bg-primary-600 dark:hover:bg-primary-700'
-						: 'dark:hover:bg-gray-600')} 
-			{dates.isToday(day) ? 'bg-gray-500' : ''}"
+			class={twMerge("block rounded-lg text-center text-sm font-semibold p-2", disabledClass, selectedClass, todayClass)}
 			on:click={() => setDate(day)}
 			on:keydown={(ev) => {
 				if (ev.key == "Enter") setDate(day);

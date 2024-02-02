@@ -18,7 +18,7 @@ export function createEventExtension(define: typeof Prisma.defineExtension, clie
 				async getOwner(model: FullModel<Event>) {
 					if (model.owner) return model.owner;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.user.findUnique({
@@ -29,14 +29,14 @@ export function createEventExtension(define: typeof Prisma.defineExtension, clie
 							prefix: "User",
 							id: model.ownerId,
 						}
-					);
+					))!;
 					model.owner = value;
 					return value;
 				},
 				async getChannel(model: FullModel<Event>) {
 					if (model.channel) return model.channel;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.eventChannel.findUnique({
@@ -47,7 +47,7 @@ export function createEventExtension(define: typeof Prisma.defineExtension, clie
 							prefix: "EventChannel",
 							id: model.channelId,
 						}
-					);
+					))!;
 					model.channel = value;
 					return value;
 				},

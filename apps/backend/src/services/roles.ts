@@ -3,9 +3,9 @@ import type { User, UserRole, UsersInUserRoles } from "@prisma/client";
 import { $system } from "./system";
 import { database } from "../database";
 
-function getRoleOrder(id: string, order: string[]);
-function getRoleOrder(role: UserRole, order: string[]);
-function getRoleOrder(roleOrId: UserRole | string, order: string[]) {
+function getRoleOrder(id: string, order: string[]): number;
+function getRoleOrder(role: UserRole, order: string[]): number;
+function getRoleOrder(roleOrId: UserRole | string, order: string[]): number {
 	const roleId = typeof roleOrId === "string" ? roleOrId : roleOrId.id;
 	return order.findIndex((id) => roleId == id);
 }
@@ -57,9 +57,9 @@ async function hasRole(role: UserRole, user: User) {
 	return false;
 }
 
-function hasOneOfRoles(roles: UserRole[], user: User) {
+async function hasOneOfRoles(roles: UserRole[], user: User) {
 	for (const role of roles) {
-		if (hasRole(role, user)) return true;
+		if (await hasRole(role, user)) return true;
 	}
 	return false;
 }

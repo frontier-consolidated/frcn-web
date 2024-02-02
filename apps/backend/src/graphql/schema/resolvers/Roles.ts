@@ -23,13 +23,14 @@ export function resolveUserRole(role: UserRole) {
 
 export const roleResolvers: Resolvers = {
 	UserRole: {
-		async users(source: WithModel<GQLUserRole, UserRole>) {
-			if (source._model.primary) {
-				const primaryUsers = await database.userRole.getPrimaryUsers(source._model);
+		async users(source) {
+			const { _model } = source as WithModel<GQLUserRole, UserRole>;
+			if (_model.primary) {
+				const primaryUsers = await database.userRole.getPrimaryUsers(_model);
 				return primaryUsers.map(resolveUser);
 			}
 
-			const usersInRole = await database.userRole.getUsers(source._model);
+			const usersInRole = await database.userRole.getUsers(_model);
 			const users = await Promise.all(
 				usersInRole.map((r) => database.usersInUserRoles.getUser(r))
 			);
