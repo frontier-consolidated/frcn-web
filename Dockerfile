@@ -29,8 +29,12 @@ RUN pnpm deploy --filter=web --prod $PROD/web
 RUN find . -type d -name '.prisma' | xargs cp -rt $PROD/backend/node_modules
 
 # Delete environment files since we only needed them for building
-RUN find . -name ".env" -exec rm {} \;
-RUN find . -name ".env.*" -exec rm {} \;
+RUN find $PROD -name ".env" -exec rm {} \;
+RUN find $PROD -name ".env.*" -exec rm {} \;
+
+# Delete source files
+RUN rm -rf $PROD/backend/src
+RUN rm -rf $PROD/web/src
 
 
 # Backend App
