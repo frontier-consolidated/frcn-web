@@ -1,7 +1,7 @@
 services:
   backend:
     container_name: frcn-backend-$GIT_BRANCH
-    image: events.frcn.space/$GIT_BRANCH/backend
+    image: frcn.space/$GIT_BRANCH/backend
     restart: always
     environment:
       - NODE_ENV=production
@@ -23,7 +23,7 @@ services:
       - database
   web:
     container_name: frcn-web-$GIT_BRANCH
-    image: events.frcn.space/$GIT_BRANCH/web
+    image: frcn.space/$GIT_BRANCH/web
     restart: always
     environment:
       - NODE_ENV=production
