@@ -1,6 +1,6 @@
 <script lang="ts">
     import { page } from '$app/stores';
-import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from 'flowbite-svelte';
+    import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from 'flowbite-svelte';
 	import { GearSolid, TagSolid, UserGroupSolid, UserHeadsetSolid } from 'flowbite-svelte-icons';
 
     $: activeUrl = $page.url.pathname;

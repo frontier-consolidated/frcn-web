@@ -14,9 +14,14 @@ function logout(): "/logout" {
 	return "/logout";
 }
 
+function consent(): "/consent" {
+	return "/consent"
+}
+
 export const Routes = {
 	oauth,
 	logout,
+	consent,
 	graphql,
 	graphqlSubscriptions,
 };

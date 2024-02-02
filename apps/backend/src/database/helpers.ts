@@ -1,6 +1,6 @@
 import type { AnyModel, AnyModelWithCache, ModelWithCache } from "./types";
 
-function setCache(model: AnyModelWithCache, cache: AnyModelWithCache["__cache"]) {
+function setCache(model: AnyModelWithCache, cache: NonNullable<AnyModelWithCache["__cache"]>) {
 	if (model.__cache) {
 		for (const key of Object.keys(model.__cache)) {
 			cache[key] = model.__cache[key];
@@ -25,7 +25,7 @@ export async function cacheGet<M extends AnyModel>(
 	const cacheKey = `${cacheOptions.prefix}:${cacheOptions.id}`;
 	let child = cache[cacheKey] as ModelWithCache<M>;
 	if (!child) {
-		child = await getter();
+		child = (await getter()) as ModelWithCache<M>;
 	}
 
 	if (!child) return child as M;

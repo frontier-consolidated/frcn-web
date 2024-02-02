@@ -11,7 +11,7 @@ export function createUsersInUserRolesExtension(define: typeof Prisma.defineExte
 				async getRole(model: FullModel<UsersInUserRoles>) {
 					if (model.role) return model.role;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.userRole.findUnique({
@@ -22,14 +22,14 @@ export function createUsersInUserRolesExtension(define: typeof Prisma.defineExte
 							prefix: "UserRole",
 							id: model.roleId,
 						}
-					);
+					))!;
 					model.role = value;
 					return value;
 				},
 				async getUser(model: FullModel<UsersInUserRoles>) {
 					if (model.user) return model.user;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.user.findUnique({
@@ -40,7 +40,7 @@ export function createUsersInUserRolesExtension(define: typeof Prisma.defineExte
 							prefix: "User",
 							id: model.userId,
 						}
-					);
+					))!;
 					model.user = value;
 					return value;
 				},

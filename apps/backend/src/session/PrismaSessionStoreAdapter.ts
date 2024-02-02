@@ -22,7 +22,7 @@ export default class PrismaSessionStoreAdapter extends Store {
 		this.allowTouch = options?.allowTouch ?? true;
 		this.maxAge = options?.maxAge ?? 86400 * 1000;
 
-		const checkPeriod = options.checkPeriod ?? 3600;
+		const checkPeriod = options?.checkPeriod ?? 3600;
 		this.checkInterval = setInterval(() => {
 			this.clean();
 		}, checkPeriod * 1000);
@@ -61,7 +61,7 @@ export default class PrismaSessionStoreAdapter extends Store {
 		}
 
 		const userId = sessionData.user;
-		const deviceId = sessionData.deviceId;
+		const deviceId = sessionData.deviceId!;
 		const data = JSON.stringify(sessionData);
 
 		this.db.userSession

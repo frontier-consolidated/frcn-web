@@ -107,16 +107,16 @@ model EventRsvpRole {
 }
 
 model EventUser {
-  id        String        @id @default(uuid())
+  id        String         @id @default(uuid())
   pending   Boolean
-  user      User          @relation(fields: [userId], references: [id])
+  user      User           @relation(fields: [userId], references: [id])
   userId    String
-  rsvp      EventRsvpRole @relation(fields: [rsvpId], references: [id])
-  rsvpId    String
-  event     Event         @relation(fields: [eventId], references: [id])
+  rsvp      EventRsvpRole? @relation(fields: [rsvpId], references: [id])
+  rsvpId    String?
+  event     Event          @relation(fields: [eventId], references: [id])
   eventId   String
-  updatedAt DateTime      @updatedAt
-  createdAt DateTime      @default(now())
+  updatedAt DateTime       @updatedAt
+  createdAt DateTime       @default(now())
 }
 
 model EventSettings {

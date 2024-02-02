@@ -9,7 +9,8 @@
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"verbatimModuleSyntax": true,
-		"types": ["node"]
+		"types": ["node"],
+		"strict": true
 	},
 	"ts-node": {
 		"transpileOnly": true

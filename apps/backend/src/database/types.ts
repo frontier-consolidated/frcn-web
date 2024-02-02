@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import type { DefaultSelection, GetResult } from "@prisma/client/runtime/library";
 
 type ValueOf<T> = T[keyof T];
@@ -21,23 +21,29 @@ type PayloadMap<S extends string | number | symbol> = {
 	>;
 };
 
-export type AnyModel = ValueOf<ModelMap>;
-type RecurseModel<T, M extends AnyModel, R extends boolean = true> = {
+export type AnyModel = ValueOf<ModelMap> | null;
+type RecurseModelRelations<T, M extends NonNullable<AnyModel>, R extends boolean = true> = {
 	[K in Exclude<keyof T, "_count" | keyof ModelMap[KeyOfValue<ModelMap, M>]>]?: R extends true
-		? T[K] extends AnyModel
+		? T[K] extends NonNullable<AnyModel>
 			? FullModel<T[K], false>
-			: T[K] extends (infer I extends AnyModel)[]
+			: T[K] extends (infer I extends NonNullable<AnyModel>)[]
 			? FullModel<I, false>[]
 			: never
 		: T[K];
 };
-export type FullModel<
-	M extends AnyModel,
-	R extends boolean = false,
+
+type ModelWithRelations<
+	M extends NonNullable<AnyModel>,
 	N = KeyOfValue<ModelMap, M>,
-	S = Required<PickValueByKey<SelectMap, N>>
-> = M & RecurseModel<PickValueByKey<PayloadMap<keyof S>, N>, M, R>;
-export type AnyFullModel = FullModel<AnyModel>;
+	S = NonNullable<PickValueByKey<SelectMap, N>>
+	> = PickValueByKey<PayloadMap<keyof S>, N>
+
+export type FullModel<
+	M extends NonNullable<AnyModel>,
+	R extends boolean = false,
+	> = M & RecurseModelRelations<ModelWithRelations<M>, M, R>;
+
+export type AnyFullModel = FullModel<NonNullable<AnyModel>>;
 
 export type ModelWithCache<M extends AnyModel> = M & {
 	__cache?: Record<string, ModelWithCache<AnyFullModel>>;

@@ -11,6 +11,7 @@ import type {
 	User as GQLUser,
 	UserStatus as GQLUserStatus,
 	UserSettings as GQLUserSettings,
+	UserRole as GQLUserRole
 } from "../../__generated__/resolvers-types";
 import { gqlErrorOwnership, gqlErrorUnauthenticated } from "../gqlError";
 
@@ -18,7 +19,7 @@ export function resolveUser(user: User) {
 	return {
 		_model: user,
 		id: user.id,
-		name: user.scVerified ? user.scName : user.discordName,
+		name: user.scVerified ? user.scName! : user.discordName,
 		scName: user.scName,
 		discordName: user.discordName,
 		verified: user.scVerified,
@@ -27,11 +28,11 @@ export function resolveUser(user: User) {
 		createdAt: user.createdAt,
 
 		permissions: 0, // field-resolved
-		primaryRole: null, // field-resolved
+		primaryRole: null as unknown as GQLUserRole, // field-resolved
 		roles: [], // field-resolved
 		rsvps: [], // field-resolved
-		status: null, // field-resolved
-		settings: null, // field-resolved
+		status: null as unknown as GQLUserStatus, // field-resolved
+		settings: null as unknown as GQLUserSettings, // field-resolved
 	} satisfies WithModel<GQLUser, User>;
 }
 
@@ -51,51 +52,59 @@ export function resolveUserSettings(settings: UserSettings) {
 
 export const userResolvers: Resolvers = {
 	User: {
-		async permissions(source: WithModel<GQLUser, User>) {
-			const primaryRole = await database.user.getPrimaryRole(source._model);
-			const userRoles = await database.user.getRoles(source._model);
+		async permissions(source) {
+			const { _model } = source as WithModel<GQLUser, User>;
+			const primaryRole = await database.user.getPrimaryRole(_model);
+			const userRoles = await database.user.getRoles(_model);
 
 			return await $roles.resolvePermissions(primaryRole, userRoles);
 		},
-		async primaryRole(source: WithModel<GQLUser, User>) {
-			const primaryRole = await database.user.getPrimaryRole(source._model);
+		async primaryRole(source) {
+			const { _model } = source as WithModel<GQLUser, User>;
+			const primaryRole = await database.user.getPrimaryRole(_model);
 			return resolveUserRole(primaryRole);
 		},
-		async roles(source: WithModel<GQLUser, User>) {
-			const userRoles = await database.user.getRoles(source._model);
+		async roles(source) {
+			const { _model } = source as WithModel<GQLUser, User>;
+			const userRoles = await database.user.getRoles(_model);
 			const roles = await Promise.all(
 				userRoles.map((r) => database.usersInUserRoles.getRole(r))
 			);
 			return roles.map(resolveUserRole);
 		},
-		async rsvps(source: WithModel<GQLUser, User>, args, context) {
+		async rsvps(source, args, context) {
 			if (!context.user) throw gqlErrorUnauthenticated();
-			if (source._model.id !== context.user.id) throw gqlErrorOwnership();
 
-			const rsvps = await database.user.getRSVPs(source._model);
+			const { _model } = source as WithModel<GQLUser, User>;
+			if (_model.id !== context.user.id) throw gqlErrorOwnership();
+
+			const rsvps = await database.user.getRSVPs(_model);
 			return await Promise.all(rsvps.map((rsvp) => resolveEventRsvp(rsvp)));
 		},
-		async status(source: WithModel<GQLUser, User>) {
-			const status = await database.user.getStatus(source._model);
-			return resolveUserStatus(status);
+		async status(source) {
+			const { _model } = source as WithModel<GQLUser, User>;
+			const status = await database.user.getStatus(_model);
+			return resolveUserStatus(status!);
 		},
-		async settings(source: WithModel<GQLUser, User>, args, context) {
+		async settings(source, args, context) {
 			if (!context.user) throw gqlErrorUnauthenticated();
-			if (source._model.id !== context.user.id) throw gqlErrorOwnership();
 
-			const settings = await database.user.getSettings(source._model);
-			return resolveUserSettings(settings);
+			const { _model } = source as WithModel<GQLUser, User>;
+			if (_model.id !== context.user.id) throw gqlErrorOwnership();
+
+			const settings = await database.user.getSettings(_model);
+			return resolveUserSettings(settings!);
 		},
 	},
 
 	Query: {
-		getCurrentUser(source, args, context): WithModel<GQLUser, User> {
+		getCurrentUser(source, args, context): WithModel<GQLUser, User> | null {
 			if (!context.user) return null;
 
 			const user = context.user;
 			return resolveUser(user);
 		},
-		async getUser(source, args, context): Promise<WithModel<GQLUser, User>> {
+		async getUser(source, args, context): Promise<WithModel<GQLUser, User> | null> {
 			const user = args.id == context.user?.id ? context.user : await $users.getUser(args.id);
 			if (!user) return null;
 			return resolveUser(user);

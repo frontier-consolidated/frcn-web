@@ -3,6 +3,7 @@
 	import { Button } from "flowbite-svelte";
 	import { TrashBinSolid } from "flowbite-svelte-icons";
 	import { createEventDispatcher } from "svelte";
+	import { twMerge } from "tailwind-merge";
 
 	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
 	import type { Option } from "$lib/components/select/types";
@@ -34,9 +35,7 @@
 			on:click={(ev) => {
 				dispatch("delete", ev);
 			}}
-			class="aspect-square h-full {disabled
-				? 'dark:bg-gray-500'
-				: 'dark:bg-red-500'} dark:hover:bg-red-600"
+			class={twMerge("aspect-square h-full dark:hover:bg-red-600", disabled ? "dark:bg-gray-500" : "dark:bg-red-500")}
 			size="sm"
 			{disabled}
 		>

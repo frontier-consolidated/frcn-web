@@ -1,5 +1,5 @@
 import type { User } from "@prisma/client";
-import { type APIUser, ChannelType, Client, User as DJSUser } from "discord.js";
+import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuildBasedChannel } from "discord.js";
 
 import { $system } from "./system";
 
@@ -14,9 +14,8 @@ async function getAllTextChannels(client: Client) {
 	try {
 		const guild = await getGuild(client);
 		const channels = await guild.channels.fetch();
-		const textChannels = channels.filter((channel) => textChannelTypes.includes(channel.type));
 
-		return Array.from(textChannels.values());
+		return Array.from(channels.values()).filter((channel) => !!channel && textChannelTypes.includes(channel.type)) as NonThreadGuildBasedChannel[];
 	} catch (err) {
 		// console.error("Discord Error:", err);
 	}
@@ -34,7 +33,7 @@ async function canUserViewChannel(client: Client, user: User | undefined, channe
 		const guild = await getGuild(client);
 
 		const channel = await guild.channels.fetch(channelId);
-
+		if (!channel) return false;
 		if (!user) return channel.permissionsFor(guild.roles.everyone).has("ViewChannel");
 
 		const guildMember = await guild.members.fetch({

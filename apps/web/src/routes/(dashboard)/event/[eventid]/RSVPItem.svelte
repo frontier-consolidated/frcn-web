@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Input, TableBodyCell, TableBodyRow } from "flowbite-svelte";
 	import { TrashBinSolid } from "flowbite-svelte-icons";
+	import { twMerge } from "tailwind-merge";
 
 	import EmojiPickerInput from "$lib/components/emoji/EmojiPickerInput.svelte";
 	import type { Emoji } from "$lib/components/emoji/types";
@@ -110,9 +111,7 @@
 		<div class="flex items-center justify-center">
 			<TrashBinSolid
 				aria-disabled={roles.length <= 1}
-				class="{roles.length <= 1
-					? 'cursor-not-allowed opacity-50'
-					: 'cursor-pointer'} dark:text-white dark:hover:text-red-600"
+				class={twMerge("dark:text-white dark:hover:text-red-600", roles.length <= 1 ? "cursor-not-allowed opacity-50" : "cursor-pointer")}
 				on:click={() => {
 					if (roles.length <= 1) return;
 					roles = roles.filter((r) => r.id != role.id);

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { twMerge } from "tailwind-merge";
+
     let clazz: string = ""
     export { clazz as class }
 
@@ -6,7 +8,7 @@
     export let divClass = "w-full h-0.5 dark:bg-primary-500 mt-1"
 </script>
 
-<span class="{spanClass} {clazz}">
+<span class={twMerge(spanClass, clazz)}>
     <slot />
 </span>
 <div class={divClass}></div>

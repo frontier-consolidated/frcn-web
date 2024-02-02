@@ -6,6 +6,10 @@
     // export let data: PageData;
 </script>
 
+<svelte:head>
+	<title>Admin - Event Channels</title>
+</svelte:head>
+
 <SectionHeading>
     Event Channels
 </SectionHeading>

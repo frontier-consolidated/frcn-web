@@ -1,4 +1,3 @@
-import type { Timestamp } from "@frcn/graphql-scalar-types/server";
 import { GraphQLError, GraphQLScalarType, Kind } from "graphql";
 
 export const TimestampScalar = new GraphQLScalarType<Date, number>({
@@ -10,7 +9,7 @@ export const TimestampScalar = new GraphQLScalarType<Date, number>({
 			type: "number",
 		},
 	},
-	serialize(value: Timestamp["output"]) {
+	serialize(value) {
 		if (value instanceof Date) {
 			const time = value.getTime();
 			if (time === time) {
@@ -31,7 +30,7 @@ export const TimestampScalar = new GraphQLScalarType<Date, number>({
 			);
 		}
 	},
-	parseValue(value: Timestamp["input"]) {
+	parseValue(value) {
 		if (typeof value === "number") {
 			if (value % 1 === 0) {
 				return new Date(value);

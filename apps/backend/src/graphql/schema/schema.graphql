@@ -13,6 +13,7 @@ enum Permission {
 	CreateEvents
 	ManageRoles
 	ManageSystem
+	ManageUsers
 }
 
 enum EventAccessType {
@@ -48,7 +49,7 @@ type SystemSettings {
 type UserRole {
 	id: ID!
 	name: String!
-	discordId: String!
+	discordId: String
 	primary: Boolean!
 	permissions: Int! @permission(has: ManageRoles)
 	users: [User!]! @permission(has: ManageRoles)
@@ -103,7 +104,7 @@ type EventMember {
 	id: ID!
 	pending: Boolean!
 	user: User!
-	rsvp: ID!
+	rsvp: ID
 	rsvpAt: Timestamp!
 }
 
@@ -168,7 +169,9 @@ input UserStatusEditInput {
 
 input EventFilterInput {
 	search: String @constraint(maxLength: 255)
-	startAt: Timestamp
+	eventType: String
+	minStartAt: Timestamp
+	maxStartAt: Timestamp
 	minDuration: Int @constraint(min: 0)
 	maxDuration: Int @constraint(min: 0)
 	includeCompleted: Boolean

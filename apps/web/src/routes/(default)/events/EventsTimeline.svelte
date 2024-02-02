@@ -18,7 +18,7 @@
 		return pageNum - 1
 	}
 
-	function getPages(path: string, currentPage: number, itemsPerPage: number, total: number) {
+	function getPages(path: string, query: URLSearchParams, currentPage: number, itemsPerPage: number, total: number) {
 		const pages: LinkType[] = []
 
 		const lastPage = Math.ceil(total / itemsPerPage) - 1
@@ -29,10 +29,13 @@
 
 		for (let p = 0; p < (endPage - startPage + 1); p++) {
 			const page = startPage + p;
+            const pageQuery = new URLSearchParams(query)
+            pageQuery.set("page", `${page + 1}`)
+
 			pages.push({
 				name: `${page + 1}`,
-				href: `${path}?page=${page + 1}`,
-				active: page === currentPage
+				href: `${path}?${pageQuery.toString()}`,
+				active: page === currentPage,
 			})
 		}
 
@@ -40,8 +43,17 @@
 	}
 	
 	$: currentPage = getCurrentPage($page.url.searchParams);
-	$: pages = getPages("/events", currentPage, data.itemsPerPage, data.total);
+	$: pages = getPages("/events", $page.url.searchParams, currentPage, data.itemsPerPage, data.total);
 </script>
+
+<svelte:head>
+    {#each data.events as event}
+        {#if event.imageUrl}
+            <link rel="preload" href={event.imageUrl} as="image" />
+        {/if}
+    {/each}
+</svelte:head>
+
 <div class="flex flex-col items-center">
     <Timeline class="w-full">
         {#each data.events as event}

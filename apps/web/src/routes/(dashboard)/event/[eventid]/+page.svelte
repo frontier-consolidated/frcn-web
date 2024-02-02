@@ -26,6 +26,10 @@
 			? `Name: ${data.name}\nType: ${eventType}\nSummary: ${data.summary}`
 			: "*Unposted Event*"}
 	/>
+	<!-- Preload image for improved responsivity -->
+	{#if data.imageUrl}
+		<link rel="preload" href={data.imageUrl} as="image" />
+	{/if}
 </svelte:head>
 
 <section class="flex flex-col lg:flex-row gap-8">

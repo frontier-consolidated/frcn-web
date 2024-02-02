@@ -19,7 +19,7 @@ export function createUserExtension(define: typeof Prisma.defineExtension, clien
 				async getPrimaryRole(model: FullModel<User>) {
 					if (model.primaryRole) return model.primaryRole;
 
-					const value = await cacheGet(
+					const value = (await cacheGet(
 						model,
 						() => {
 							return client.userRole.findUnique({
@@ -30,7 +30,7 @@ export function createUserExtension(define: typeof Prisma.defineExtension, clien
 							prefix: "UserRole",
 							id: model.primaryRoleId,
 						}
-					);
+					))!;
 					model.primaryRole = value;
 					return value;
 				},

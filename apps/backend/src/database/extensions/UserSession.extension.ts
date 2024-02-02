@@ -10,12 +10,13 @@ export function createUserSessionExtension(define: typeof Prisma.defineExtension
 			userSession: {
 				async getUser(model: FullModel<UserSession>) {
 					if (model.user) return model.user;
+					if (!model.userId) return null;
 
 					const value = await cacheGet(
 						model,
 						() => {
 							return client.user.findUnique({
-								where: { id: model.userId },
+								where: { id: model.userId! },
 							});
 						},
 						{

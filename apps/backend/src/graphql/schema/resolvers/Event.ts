@@ -1,5 +1,5 @@
 import { EventType } from "@frcn/shared";
-import type { EventRsvpRole, EventSettings, EventUser, Event } from "@prisma/client";
+import type { EventRsvpRole, EventSettings, EventUser, Event, User } from "@prisma/client";
 
 import { resolveDiscordChannel, resolveDiscordEmoji } from "./Discord";
 import { resolveUserRole } from "./Roles";
@@ -9,12 +9,14 @@ import { database } from "../../../database";
 import { $discord } from "../../../services/discord";
 import { $events } from "../../../services/events";
 import type {
+	User as GQLUser,
 	Event as GQLEvent,
 	EventRsvp as GQLEventRsvp,
 	EventRsvpRole as GQLEventRsvpRole,
 	EventMember as GQLEventMember,
 	EventSettings as GQLEventSettings,
 	Resolvers,
+	DiscordChannel,
 } from "../../__generated__/resolvers-types";
 import { EventAccessType } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
@@ -24,8 +26,8 @@ export function resolveEvent(event: Event) {
 	return {
 		_model: event,
 		id: event.id,
-		channel: null, // field-resolved
-		owner: null, // field-resolved
+		channel: null as unknown as DiscordChannel, // field-resolved
+		owner: null as unknown as GQLUser, // field-resolved
 		name: event.name,
 		summary: event.summary,
 		description: event.description,
@@ -42,7 +44,7 @@ export function resolveEvent(event: Event) {
 		roles: [], // field-resolved
 		members: [], // field-resolved
 		mentions: event.discordMentions,
-		settings: null, // field-resolved
+		settings: null as unknown as GQLEventSettings, // field-resolved
 		accessType: event.accessType as EventAccessType,
 		accessRoles: [], // field-resolved
 	} satisfies WithModel<GQLEvent, Event>;
@@ -63,7 +65,7 @@ function resolveEventMember(member: EventUser) {
 		_model: member,
 		id: member.id,
 		pending: member.pending,
-		user: null, // field-resolved
+		user: null as unknown as GQLUser, // field-resolved
 		rsvp: member.rsvpId,
 		rsvpAt: member.createdAt.getTime(),
 	} satisfies WithModel<GQLEventMember, EventUser>;
@@ -90,7 +92,7 @@ export function resolveEventRsvp(rsvp: EventUser) {
 	return {
 		_model: rsvp,
 		invite: rsvp.pending,
-		event: null, // field-resolved
+		event: null as unknown as GQLEvent, // field-resolved
 		rsvp: null, // field-resolved
 		rsvpAt: rsvp.createdAt.getTime(),
 	} satisfies WithModel<GQLEventRsvp, EventUser>;
@@ -98,49 +100,57 @@ export function resolveEventRsvp(rsvp: EventUser) {
 
 export const eventResolvers: Resolvers = {
 	Event: {
-		async channel(source: WithModel<GQLEvent, Event>, args, context) {
-			const channel = await database.event.getChannel(source._model);
+		async channel(source, args, context) {
+			const { _model } = source as WithModel<GQLEvent, Event>;
+			const channel = await database.event.getChannel(_model);
 			return await resolveDiscordChannel(channel, context);
 		},
-		async owner(source: WithModel<GQLEvent, Event>) {
-			const owner = await database.event.getOwner(source._model);
-			return await resolveUser(owner);
+		async owner(source): Promise<WithModel<GQLUser, User>> {
+			const { _model } = source as WithModel<GQLEvent, Event>;
+			const owner = await database.event.getOwner(_model);
+			return resolveUser(owner);
 		},
-		async location(source: WithModel<GQLEvent, Event>, args, context) {
-			const owner = await database.event.getOwner(source._model);
-			const settings = await database.event.getSettings(source._model);
+		async location(source, args, context) {
+			const { _model } = source as WithModel<GQLEvent, Event>;
+			const owner = await database.event.getOwner(_model);
+			const settings = await database.event.getSettings(_model);
 
 			if (
-				settings.hideLocation &&
+				settings!.hideLocation &&
 				context.user?.id !== owner?.id &&
-				source._model.startAt > new Date()
+				(!_model.startAt || _model.startAt > new Date())
 			) {
 				return null;
 			}
 
-			return source._model.location;
+			return _model.location;
 		},
-		async rsvp(source: WithModel<GQLEvent, Event>, args, context) {
+		async rsvp(source, args, context) {
 			if (!context.user) return null;
-			const currentRsvp = await $events.getUserRsvp(source._model, context.user)
+			const { _model } = source as WithModel<GQLEvent, Event>;
+			const currentRsvp = await $events.getUserRsvp(_model, context.user)
 			if (!currentRsvp) return null;
 			return resolveEventMember(currentRsvp)
 		},
-		async roles(source: WithModel<GQLEvent, Event>, args, context) {
-			const rsvpRoles = await database.event.getRoles(source._model);
+		async roles(source, args, context) {
+			const { _model } = source as WithModel<GQLEvent, Event>;
+			const rsvpRoles = await database.event.getRoles(_model);
 			rsvpRoles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
 			return rsvpRoles.map((role) => resolveEventRsvpRole(role, context));
 		},
-		async members(source: WithModel<GQLEvent, Event>) {
-			const members = await database.event.getMembers(source._model);
+		async members(source) {
+			const { _model } = source as WithModel<GQLEvent, Event>;
+			const members = await database.event.getMembers(_model);
 			return members.map(resolveEventMember);
 		},
-		async settings(source: WithModel<GQLEvent, Event>) {
-			const settings = await database.event.getSettings(source._model);
-			return resolveEventSettings(settings);
+		async settings(source) {
+			const { _model } = source as WithModel<GQLEvent, Event>;
+			const settings = await database.event.getSettings(_model);
+			return resolveEventSettings(settings!);
 		},
-		async accessRoles(source: WithModel<GQLEvent, Event>) {
-			const accessRoles = await database.event.getAccessRoles(source._model);
+		async accessRoles(source) {
+			const { _model } = source as WithModel<GQLEvent, Event>;
+			const accessRoles = await database.event.getAccessRoles(_model);
 			const roles = await Promise.all(
 				accessRoles.map((r) => database.eventsWithUserRoleForAccess.getRole(r))
 			);
@@ -149,32 +159,37 @@ export const eventResolvers: Resolvers = {
 	},
 
 	EventRsvpRole: {
-		async members(source: WithModel<GQLEventRsvpRole, EventRsvpRole>) {
-			const members = await database.eventRsvpRole.getMembers(source._model);
+		async members(source) {
+			const { _model } = source as WithModel<GQLEventRsvpRole, EventRsvpRole>;
+			const members = await database.eventRsvpRole.getMembers(_model);
 			return members.map((member) => member.id);
 		},
 	},
 
 	EventMember: {
-		async user(source: WithModel<GQLEventMember, EventUser>) {
-			const user = await database.eventUser.getUser(source._model);
+		async user(source) {
+			const { _model } = source as WithModel<GQLEventMember, EventUser>;
+			const user = await database.eventUser.getUser(_model);
 			return resolveUser(user);
 		},
 	},
 
 	EventRsvp: {
-		async event(source: WithModel<GQLEventRsvp, EventUser>) {
-			const event = await database.eventUser.getEvent(source._model);
+		async event(source) {
+			const { _model } = source as WithModel<GQLEventRsvp, EventUser>;
+			const event = await database.eventUser.getEvent(_model);
 			return resolveEvent(event);
 		},
-		async rsvp(source: WithModel<GQLEventRsvp, EventUser>, args, context) {
-			const rsvp = await database.eventUser.getRsvp(source._model);
+		async rsvp(source, args, context) {
+			const { _model } = source as WithModel<GQLEventRsvp, EventUser>;
+			const rsvp = await database.eventUser.getRsvp(_model);
+			if (!rsvp) return null;
 			return resolveEventRsvpRole(rsvp, context);
 		},
 	},
 
 	Query: {
-		async getEvent(source, args, context): Promise<WithModel<GQLEvent, Event>> {
+		async getEvent(source, args, context): Promise<WithModel<GQLEvent, Event> | null> {
 			const event = await $events.getEvent(args.id);
 			if (!event) return null;
 
@@ -183,20 +198,39 @@ export const eventResolvers: Resolvers = {
 			return resolveEvent(event);
 		},
 		async getEvents(source, { filter, page, limit }, context) {
-			const { search, startAt, minDuration, maxDuration, includeCompleted } = filter ?? {};
+			const { search, eventType, minStartAt, maxStartAt, minDuration, maxDuration, includeCompleted } = filter ?? {};
+
+			if (
+				eventType &&
+				!(Object.values(EventType) as string[]).includes(eventType)
+			) {
+				throw gqlErrorBadInput(`Event type not allowed: ${eventType}`);
+			}
+
+			if (minStartAt && maxStartAt && minStartAt > maxStartAt) {
+				throw gqlErrorBadInput("Range not allowed: `maxStartAt` must be greater than `minStartAt`")
+			}
+
+			if (minDuration && maxDuration && minDuration > maxDuration) {
+				throw gqlErrorBadInput("Range not allowed: `maxDuration` must be greater than `minDuration`")
+			}
 
 			const result = await $events.getEvents(
 				{
-					search,
-					startAt: startAt ? new Date(startAt) : undefined,
-					duration: {
-						min: minDuration,
-						max: maxDuration,
+					search: search ?? undefined,
+					eventType: eventType as EventType,
+					startAt: {
+						min: minStartAt ?? undefined,
+						max: maxStartAt ?? undefined,
 					},
-					includeCompleted,
+					duration: {
+						min: minDuration ?? undefined,
+						max: maxDuration ?? undefined,
+					},
+					includeCompleted: includeCompleted ?? false
 				},
-				page,
-				limit,
+				page ?? undefined,
+				limit ?? undefined,
 				context.user,
 				context.app.discordClient
 			);
@@ -220,7 +254,7 @@ export const eventResolvers: Resolvers = {
 			);
 			return event.id;
 		},
-		async editEvent(source, args, context) {
+		async editEvent(source, args, context): Promise<WithModel<GQLEvent, Event> | null> {
 			if (!(await $events.eventExists(args.id))) return null;
 
 			const data = args.data;
@@ -288,7 +322,7 @@ export const eventResolvers: Resolvers = {
 						select: { id: true, primary: true },
 					});
 
-					for (const roleId of data.accessRoles) {
+					for (const roleId of data.accessRoles ?? []) {
 						const role = roles.find((r) => r.id === roleId);
 						if (!role) {
 							throw gqlErrorBadInput(`Access role not found: ${roleId}`);
@@ -307,7 +341,7 @@ export const eventResolvers: Resolvers = {
 				data,
 				context.app.discordClient
 			);
-			return resolveEvent(updatedEvent);
+			return updatedEvent && resolveEvent(updatedEvent);
 		},
 		async postEvent(source, args, context) {
 			const event = await $events.getEvent(args.id);
