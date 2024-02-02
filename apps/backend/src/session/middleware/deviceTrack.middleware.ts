@@ -1,5 +1,6 @@
 import { randomUUID } from "crypto";
 
+import { getConsent } from "./consent.middleware";
 import type { MiddlewareHandler } from "../types";
 
 function serialize(value: string) {
@@ -12,11 +13,17 @@ function deserialize(cookie: string) {
 	return Buffer.from(value, "base64").toString("utf-8");
 }
 
-export const middleware: MiddlewareHandler = function ({ deviceTrack }) {
+export const middleware: MiddlewareHandler = function ({ deviceTrack, consent, domain }) {
 	return function (req, res, next) {
+		const consentValue = getConsent(req, consent.cookie)
+		if (consentValue === "reject") {
+			res.clearCookie(deviceTrack.cookie);
+			return next()
+		}
+
 		function setCookie(value: string) {
 			res.cookie(deviceTrack.cookie, serialize(value), {
-				domain: deviceTrack.domain,
+				domain,
 				maxAge: 365 * 24 * 3600 * 1000,
 				httpOnly: true,
 				secure: req.secure,

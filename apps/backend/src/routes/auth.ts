@@ -1,28 +1,39 @@
 
 import { REST, Routes, type RESTPostOAuth2AccessTokenResult, type APIUser } from "discord.js";
 
-import type { Context } from "../context";
+import type { Context, RouteConfig } from "../context";
 import { getOrigin } from "../env";
 import { $users } from "../services/users";
+import { getConsent } from "../session/middleware/consent.middleware";
 
-export default function route(context: Context) {
+export default function route(context: Context, config: RouteConfig) {
 	const clientId = process.env.DISCORD_CLIENTID;
 	const clientSecret = process.env.DISCORD_SECRET;
 	const scope = ["identify"];
 
 	context.expressApp.get("/oauth", (req, res) => {
-		const { success_uri, failed_uri } = req.query as {
-			failed_uri?: string;
-			success_uri?: string;
+		const { redirect_uri } = req.query as {
+			redirect_uri?: string;
 		};
+
+		const consentValue = getConsent(req, config.consentCookie)
+		if (consentValue === "reject") {
+			if (!redirect_uri) {
+				return res.status(400).send({
+					message: "Missing consent"
+				})
+			}
+			const url = new URL(redirect_uri)
+			url.searchParams.set("missing_consent", "true")
+			return res.redirect(url.toString())
+		}
 
 		const state = Buffer.from(
 			JSON.stringify({
-				success_uri,
-				failed_uri,
+				redirect_uri,
 			}),
 			"utf-8"
-		).toString("base64");
+		).toString("base64url");
 
 		const params = new URLSearchParams({
 			client_id: clientId,
@@ -38,16 +49,23 @@ export default function route(context: Context) {
 	context.expressApp.get("/oauth/callback", async (req, res, next) => {
 		const { code, state } = req.query as { code?: string; state?: string };
 
-		const { success_uri, failed_uri } = (state ? JSON.parse(
-			Buffer.from(state, "base64").toString("utf-8")
+		const { redirect_uri } = (state ? JSON.parse(
+			Buffer.from(state, "base64url").toString("utf-8")
 		) : {}) as {
-			failed_uri?: string;
-			success_uri?: string;
+			redirect_uri?: string;
 		};
 
 		if (!code) {
-			res.redirect(failed_uri ?? "/");
-			return;
+			if (!redirect_uri) {
+				return res.status(400).send({
+					message: "Missing oauth code"
+				})
+			}
+			const url = new URL(redirect_uri)
+			url.searchParams.set("login_err", Buffer.from(JSON.stringify({
+				error: "Missing oauth code"
+			})).toString("base64url"))
+			return res.redirect(url.toString())
 		}
 
 		try {
@@ -75,11 +93,19 @@ export default function route(context: Context) {
 			const user = await $users.getOrCreateUser(discordUser);
 			await req.login(user);
 		} catch (err) {
-			next(err);
-			return;
+			if (!redirect_uri) {
+				return res.status(400).send({
+					message: (err as Error).message
+				})
+			}
+			const url = new URL(redirect_uri)
+			url.searchParams.set("login_err", Buffer.from(JSON.stringify({
+				error: (err as Error).message
+			})).toString("base64url"))
+			return res.redirect(url.toString())
 		}
 
-		res.redirect(success_uri ?? "/");
+		res.redirect(redirect_uri ?? "/");
 	});
 
 	context.expressApp.get("/logout", async (req, res) => {

@@ -1,7 +1,8 @@
+import { getConsent } from "./consent.middleware";
 import { $users } from "../../services/users";
 import type { MiddlewareHandler } from "../types";
 
-export const middleware: MiddlewareHandler = function () {
+export const middleware: MiddlewareHandler = function ({ consent }) {
 	return async function (req, res, next) {
 		req.login = async (user) => {
 			req.user = user;
@@ -27,7 +28,9 @@ export const middleware: MiddlewareHandler = function () {
 			});
 		};
 
-		if (req.session.user) {
+		const consentValue = getConsent(req, consent.cookie)
+		
+		if (req.session.user && consentValue !== "reject") {
 			const user = await $users.getUser(req.session.user);
 			if (!user) {
 				delete req.session.user;

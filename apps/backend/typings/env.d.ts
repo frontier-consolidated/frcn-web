@@ -14,6 +14,8 @@ declare global {
 
 			DATABASE_URL: string;
 
+			CONSENT_COOKIE: string;
+
 			SESSION_COOKIE: string;
 			SESSION_SECRET: string;
 

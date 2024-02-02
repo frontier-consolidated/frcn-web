@@ -13,3 +13,7 @@ export type Context = {
 	discordClient: DiscordClient;
 	discordRest: DiscordREST;
 };
+
+export type RouteConfig = {
+	consentCookie: string;
+}
