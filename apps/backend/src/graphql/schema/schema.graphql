@@ -13,6 +13,7 @@ enum Permission {
 	CreateEvents
 	ManageRoles
 	ManageSystem
+	ManageUsers
 }
 
 enum EventAccessType {
