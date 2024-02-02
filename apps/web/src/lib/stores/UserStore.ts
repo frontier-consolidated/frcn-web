@@ -38,14 +38,13 @@ export async function login() {
 	if (!data.user) {
 		if (!browser) return;
 
-		const failUri = new URL(window.location.href);
-		failUri.searchParams.append("login_fail", "true");
+		const redirectUri = new URL(window.location.href);
+		redirectUri.searchParams.delete("login_err");
+		redirectUri.searchParams.delete("missing_consent");
 
 		const params = new URLSearchParams({
-			success_uri: window.location.href,
-			failure_uri: failUri.toString(),
+			redirect_uri: redirectUri.toString(),
 		});
-		console.log(failUri.toString());
 
 		window.location.href = `${import.meta.env.VITE_API_BASEURL}/oauth?${params.toString()}`;
 		return;

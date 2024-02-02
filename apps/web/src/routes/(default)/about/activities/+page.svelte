@@ -2,7 +2,6 @@
 	import { Heading } from "flowbite-svelte";
 
 	import Hr from "$lib/components/Hr.svelte";
-	import image1 from "$lib/images/stock/carousel/1.png"
 	import placeholder from "$lib/images/stock/placeholder.jpg"
 
 	import HeroImg from "../HeroImg.svelte";
@@ -10,15 +9,15 @@
 </script>
 
 <svelte:head>
-	<title>About - Our Organisation</title>
+	<title>About - Our Activities</title>
 </svelte:head>
 
-<Heading tag="h1" class="font-medium text-4xl">Frontier Organisation</Heading>
+<Heading tag="h1" class="font-medium text-4xl">Frontier Activities</Heading>
 <p class="text-gray-400">Be a part of something great</p>
 <Hr />
 <section class="mt-2 flex flex-col gap-8">
 	<HeroImg
-		src={image1}
+		src={placeholder}
 		position="bottom-left"
 	>
 		<HeroTitle>Welcome to the Org!</HeroTitle>

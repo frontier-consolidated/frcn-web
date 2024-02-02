@@ -366,6 +366,11 @@
 		</div>
 	</section>
 	<div class="flex justify-end items-center gap-2">
+		<Button color="alternative" on:click={() => {
+			editData = cloneEventSettingsData(data);
+		}}>
+			<CloseSolid class="me-2" /> Cancel
+		</Button>
 		{#if data.posted}
 			<Button
 				disabled={!isDirty}
@@ -377,9 +382,6 @@
 				<EditOutline class="me-2" /> Save
 			</Button>
 		{:else}
-			<Button color="alternative">
-				<CloseSolid class="me-2" /> Cancel
-			</Button>
 			<Button
 				color="green"
 				disabled={!isDirty}

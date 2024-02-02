@@ -11,7 +11,7 @@
 	const dispatch = createEventDispatcher();
 </script>
 
-<div class="flex items-center space-x-2 cursor-pointer">
+<div class="shrink-0 flex items-center space-x-2 cursor-pointer">
 	<MediaQuery query="(min-width: 480px)" let:matches>
 		{#if matches}
 			<span class="text-md font-semibold">{$user.data?.name}</span>
@@ -21,7 +21,7 @@
 </div>
 <Dropdown class="w-44">
 	<DropdownItem>My Profile</DropdownItem>
-	<DropdownItem>Settings</DropdownItem>
+	<DropdownItem href="/account">Settings</DropdownItem>
 	{#if $user.data && hasOneOfPermissions($user.data?.permissions, adminPermissions)}
 		<DropdownDivider />
 		<DropdownItem href="/admin/general">System Settings</DropdownItem>
