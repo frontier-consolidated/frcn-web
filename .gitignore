@@ -13,5 +13,6 @@ yarn-error.log*
 
 /files
 
+scripts/local
 scripts/deploy/*
 !scripts/deploy/deploy.sh
