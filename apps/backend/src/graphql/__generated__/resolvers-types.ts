@@ -163,11 +163,14 @@ export type EventSettingsInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   createEvent: Scalars['ID']['output'];
+  createResource: Resource;
   createRole: Scalars['ID']['output'];
   deleteEvent: Scalars['Boolean']['output'];
+  deleteResource: Scalars['Boolean']['output'];
   deleteRole: Scalars['Boolean']['output'];
   editEvent?: Maybe<Event>;
   editEventChannels: Array<DiscordChannel>;
+  editResource?: Maybe<Resource>;
   editRole?: Maybe<UserRole>;
   editSystemSettings: SystemSettings;
   editUserStatus: UserStatus;
@@ -177,12 +180,23 @@ export type Mutation = {
   reorderRoles: Array<Scalars['ID']['output']>;
   rsvpForEvent: Scalars['Boolean']['output'];
   setUserScName: User;
+  syncRole?: Maybe<UserRole>;
   unrsvpForEvent: Scalars['Boolean']['output'];
   verifyUserScName: User;
 };
 
 
+export type MutationCreateResourceArgs = {
+  data: ResourceCreateInput;
+};
+
+
 export type MutationDeleteEventArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteResourceArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -200,6 +214,12 @@ export type MutationEditEventArgs = {
 
 export type MutationEditEventChannelsArgs = {
   channels: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationEditResourceArgs = {
+  data: ResourceEditInput;
+  id: Scalars['ID']['input'];
 };
 
 
@@ -252,6 +272,11 @@ export type MutationSetUserScNameArgs = {
 };
 
 
+export type MutationSyncRoleArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
 export type MutationUnrsvpForEventArgs = {
   id: Scalars['ID']['input'];
 };
@@ -271,12 +296,23 @@ export type PagedEvent = {
   total: Scalars['Int']['output'];
 };
 
+export type PagedResource = {
+  __typename?: 'PagedResource';
+  items: Array<Resource>;
+  itemsPerPage: Scalars['Int']['output'];
+  nextPage?: Maybe<Scalars['Int']['output']>;
+  page: Scalars['Int']['output'];
+  prevPage?: Maybe<Scalars['Int']['output']>;
+  total: Scalars['Int']['output'];
+};
+
 export enum Permission {
   Admin = 'Admin',
   CreateEvents = 'CreateEvents',
   ManageRoles = 'ManageRoles',
   ManageSystem = 'ManageSystem',
-  ManageUsers = 'ManageUsers',
+  Unassigned2 = 'Unassigned2',
+  Unassigned3 = 'Unassigned3',
   Unassigned4 = 'Unassigned4',
   Unassigned5 = 'Unassigned5',
   Unassigned6 = 'Unassigned6',
@@ -301,8 +337,7 @@ export enum Permission {
   Unassigned25 = 'Unassigned25',
   Unassigned26 = 'Unassigned26',
   Unassigned27 = 'Unassigned27',
-  Unassigned28 = 'Unassigned28',
-  Unassigned29 = 'Unassigned29'
+  UploadResources = 'UploadResources'
 }
 
 export type Query = {
@@ -314,6 +349,7 @@ export type Query = {
   getCurrentUser?: Maybe<User>;
   getEvent?: Maybe<Event>;
   getEvents?: Maybe<PagedEvent>;
+  getResources?: Maybe<PagedResource>;
   getRole?: Maybe<UserRole>;
   getRoleOrder: Array<Scalars['ID']['output']>;
   getRoles: Array<UserRole>;
@@ -340,6 +376,13 @@ export type QueryGetEventsArgs = {
 };
 
 
+export type QueryGetResourcesArgs = {
+  filter?: InputMaybe<ResourceFilterInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryGetRoleArgs = {
   id: Scalars['ID']['input'];
 };
@@ -347,6 +390,37 @@ export type QueryGetRoleArgs = {
 
 export type QueryGetUserArgs = {
   id: Scalars['ID']['input'];
+};
+
+export type Resource = {
+  __typename?: 'Resource';
+  createdAt: Scalars['Timestamp']['output'];
+  downloadUrl?: Maybe<Scalars['String']['output']>;
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+  owner: User;
+  previewUrl?: Maybe<Scalars['String']['output']>;
+  shortDescription: Scalars['String']['output'];
+  sizeKb: Scalars['Int']['output'];
+  tags: Array<Scalars['String']['output']>;
+  updatedAt: Scalars['Timestamp']['output'];
+};
+
+export type ResourceCreateInput = {
+  name: Scalars['String']['input'];
+  shortDescription: Scalars['String']['input'];
+  tags: Array<Scalars['String']['input']>;
+};
+
+export type ResourceEditInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  shortDescription?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+export type ResourceFilterInput = {
+  search?: InputMaybe<Scalars['String']['input']>;
+  tags?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type RoleEditInput = {
@@ -523,8 +597,13 @@ export type ResolversTypes = ResolversObject<{
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
   PagedEvent: ResolverTypeWrapper<PagedEvent>;
+  PagedResource: ResolverTypeWrapper<PagedResource>;
   Permission: Permission;
   Query: ResolverTypeWrapper<{}>;
+  Resource: ResolverTypeWrapper<Resource>;
+  ResourceCreateInput: ResourceCreateInput;
+  ResourceEditInput: ResourceEditInput;
+  ResourceFilterInput: ResourceFilterInput;
   RoleEditInput: RoleEditInput;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   Subscription: ResolverTypeWrapper<{}>;
@@ -558,7 +637,12 @@ export type ResolversParentTypes = ResolversObject<{
   Int: Scalars['Int']['output'];
   Mutation: {};
   PagedEvent: PagedEvent;
+  PagedResource: PagedResource;
   Query: {};
+  Resource: Resource;
+  ResourceCreateInput: ResourceCreateInput;
+  ResourceEditInput: ResourceEditInput;
+  ResourceFilterInput: ResourceFilterInput;
   RoleEditInput: RoleEditInput;
   String: Scalars['String']['output'];
   Subscription: {};
@@ -677,11 +761,14 @@ export type EventSettingsResolvers<ContextType = GQLContext, ParentType extends 
 
 export type MutationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   createEvent?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  createResource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType, RequireFields<MutationCreateResourceArgs, 'data'>>;
   createRole?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   deleteEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteEventArgs, 'id'>>;
+  deleteResource?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteResourceArgs, 'id'>>;
   deleteRole?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteRoleArgs, 'id'>>;
   editEvent?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<MutationEditEventArgs, 'data' | 'id'>>;
   editEventChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType, RequireFields<MutationEditEventChannelsArgs, 'channels'>>;
+  editResource?: Resolver<Maybe<ResolversTypes['Resource']>, ParentType, ContextType, RequireFields<MutationEditResourceArgs, 'data' | 'id'>>;
   editRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<MutationEditRoleArgs, 'data' | 'id'>>;
   editSystemSettings?: Resolver<ResolversTypes['SystemSettings'], ParentType, ContextType, RequireFields<MutationEditSystemSettingsArgs, 'data'>>;
   editUserStatus?: Resolver<ResolversTypes['UserStatus'], ParentType, ContextType, RequireFields<MutationEditUserStatusArgs, 'data'>>;
@@ -691,12 +778,23 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   reorderRoles?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<MutationReorderRolesArgs, 'order'>>;
   rsvpForEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRsvpForEventArgs, 'id' | 'rsvp'>>;
   setUserScName?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationSetUserScNameArgs, 'name'>>;
+  syncRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<MutationSyncRoleArgs, 'id'>>;
   unrsvpForEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUnrsvpForEventArgs, 'id'>>;
   verifyUserScName?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationVerifyUserScNameArgs, 'code'>>;
 }>;
 
 export type PagedEventResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PagedEvent'] = ResolversParentTypes['PagedEvent']> = ResolversObject<{
   items?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType>;
+  itemsPerPage?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  nextPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  page?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  prevPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type PagedResourceResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PagedResource'] = ResolversParentTypes['PagedResource']> = ResolversObject<{
+  items?: Resolver<Array<ResolversTypes['Resource']>, ParentType, ContextType>;
   itemsPerPage?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   nextPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   page?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -713,12 +811,27 @@ export type QueryResolvers<ContextType = GQLContext, ParentType extends Resolver
   getCurrentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   getEvent?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<QueryGetEventArgs, 'id'>>;
   getEvents?: Resolver<Maybe<ResolversTypes['PagedEvent']>, ParentType, ContextType, Partial<QueryGetEventsArgs>>;
+  getResources?: Resolver<Maybe<ResolversTypes['PagedResource']>, ParentType, ContextType, Partial<QueryGetResourcesArgs>>;
   getRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<QueryGetRoleArgs, 'id'>>;
   getRoleOrder?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
   getRoles?: Resolver<Array<ResolversTypes['UserRole']>, ParentType, ContextType>;
   getSystemSettings?: Resolver<ResolversTypes['SystemSettings'], ParentType, ContextType>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'id'>>;
   getUserScVerifyCode?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+}>;
+
+export type ResourceResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Resource'] = ResolversParentTypes['Resource']> = ResolversObject<{
+  createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  downloadUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  previewUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  shortDescription?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sizeKb?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  tags?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
+  updatedAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
 export type SubscriptionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
@@ -796,7 +909,9 @@ export type Resolvers<ContextType = GQLContext> = ResolversObject<{
   EventSettings?: EventSettingsResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   PagedEvent?: PagedEventResolvers<ContextType>;
+  PagedResource?: PagedResourceResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Resource?: ResourceResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;
   SystemSettings?: SystemSettingsResolvers<ContextType>;
   Timestamp?: GraphQLScalarType;

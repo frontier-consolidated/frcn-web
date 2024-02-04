@@ -153,6 +153,19 @@ type DiscordEmoji {
 	image: String
 }
 
+type Resource {
+	id: ID!
+	owner: User!
+	name: String!
+	sizeKb: Int!
+	shortDescription: String!
+	previewUrl: String
+	downloadUrl: String
+	tags: [String!]!
+	updatedAt: Timestamp!
+	createdAt: Timestamp!
+}
+
 # Inputs:
 
 input UserStatusEditInput {
@@ -216,6 +229,23 @@ input RoleEditInput {
 	permissions: Int @constraint(min: 0, max: 2147483647)
 }
 
+input ResourceFilterInput {
+	search: String @constraint(maxLength: 255)
+	tags: [String!]
+}
+
+input ResourceCreateInput {
+	name: String! @constraint(maxLength: 255)
+	shortDescription: String! @constraint(maxLength: 512)
+	tags: [String!]!
+}
+
+input ResourceEditInput {
+	name: String @constraint(maxLength: 255)
+	shortDescription: String @constraint(maxLength: 512)
+	tags: [String!]
+}
+
 # Root types:
 
 type Query {
@@ -231,6 +261,13 @@ type Query {
 		page: Int @constraint(min: 0)
 		limit: Int @constraint(min: 1, max: 50)
 	): PagedEvent
+
+	# Resources
+	getResources(
+		filter: ResourceFilterInput
+		page: Int @constraint(min: 0)
+		limit: Int @constraint(min: 1, max: 50)
+	): PagedResource
 
 	# Roles
 	getRoles: [UserRole!]! @permission(one: [CreateEvents, ManageRoles])
@@ -261,10 +298,16 @@ type Mutation {
 	rsvpForEvent(id: ID!, rsvp: ID!): Boolean!
 	unrsvpForEvent(id: ID!): Boolean!
 
+	# Resources
+	createResource(data: ResourceCreateInput!): Resource! @permission(has: UploadResources)
+	editResource(id: ID!, data: ResourceEditInput!): Resource @permission(has: UploadResources)
+	deleteResource(id: ID!): Boolean! @permission(has: UploadResources)
+
 	# Roles
 	createRole: ID! @permission(has: ManageRoles)
 	editRole(id: ID!, data: RoleEditInput!): UserRole @permission(has: ManageRoles)
 	deleteRole(id: ID!): Boolean! @permission(has: ManageRoles)
+	syncRole(id: ID!): UserRole @permission(has: ManageRoles)
 	reorderRoles(order: [ID!]!): [ID!]! @permission(has: ManageRoles)
 
 	giveUserRole(userId: ID!, roleId: ID!): Boolean! @permission(has: ManageRoles)
@@ -296,11 +339,19 @@ type PagedEvent {
     nextPage: Int
 	prevPage: Int
 }
+type PagedResource {
+    items: [Resource!]!
+	itemsPerPage: Int!
+    page: Int!
+    total: Int!
+    nextPage: Int
+	prevPage: Int
+}
 enum Permission {
 	CreateEvents
-	ManageRoles
-	ManageSystem
-	ManageUsers
+	UploadResources
+	Unassigned2
+	Unassigned3
 	Unassigned4
 	Unassigned5
 	Unassigned6
@@ -325,7 +376,7 @@ enum Permission {
 	Unassigned25
 	Unassigned26
 	Unassigned27
-	Unassigned28
-	Unassigned29
+	ManageRoles
+	ManageSystem
 	Admin
 }
