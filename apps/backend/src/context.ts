@@ -15,5 +15,17 @@ export type Context = {
 };
 
 export type RouteConfig = {
-	consentCookie: string;
+	auth: {
+		clientId: string;
+		clientSecret: string;
+	},
+	consent: {
+		cookie: string;
+	},
+	files: {
+		bucketName: string;
+		bucketRegion: string;
+		clientKey: string;
+		clientSecret: string;
+	}
 }

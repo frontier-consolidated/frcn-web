@@ -9,13 +9,13 @@ export default function route(context: Context, config: RouteConfig) {
 
 		action ??= "reject"
 		if (action === "reject") {
-			res.clearCookie(config.consentCookie)
+			res.clearCookie(config.consent.cookie)
 		} else {
 			const trimmedAction = action.toLowerCase().trim()
 			if (!["necessary", "all"].includes(trimmedAction)) {
 				return res.sendStatus(400)
 			}
-			res.cookie(config.consentCookie, trimmedAction, {
+			res.cookie(config.consent.cookie, trimmedAction, {
                 maxAge: 400 * 24 * 3600 * 1000,
                 domain: getDomain(),
                 sameSite: "lax",
