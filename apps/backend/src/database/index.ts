@@ -40,6 +40,15 @@ const database = $prisma
 	.$extends(createUsersInUserRolesExtension(Prisma.defineExtension, $prisma))
 	.$extends(createUserStatusExtension(Prisma.defineExtension, $prisma));
 
+export function transaction<R>(fn: (tx: typeof database) => Promise<R>): Promise<R> {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	return database.$transaction((_tx) => {
+		const tx = _tx as typeof database
+		return fn(tx)
+	})
+}
+
 async function seedProduction() {
 	const roles = await database.userRole.findMany();
 
