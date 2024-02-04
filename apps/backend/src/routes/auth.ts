@@ -8,8 +8,8 @@ import { $users } from "../services/users";
 import { getConsent } from "../session/middleware/consent.middleware";
 
 export default function route(context: Context, config: RouteConfig) {
-	const clientId = process.env.DISCORD_CLIENTID;
-	const clientSecret = process.env.DISCORD_SECRET;
+	const clientId = config.auth.clientId;
+	const clientSecret = config.auth.clientSecret;
 	const scope = ["identify"];
 
 	context.expressApp.get("/oauth", (req, res) => {
@@ -17,7 +17,7 @@ export default function route(context: Context, config: RouteConfig) {
 			redirect_uri?: string;
 		};
 
-		const consentValue = getConsent(req, config.consentCookie)
+		const consentValue = getConsent(req, config.consent.cookie)
 		if (consentValue === "reject") {
 			if (!redirect_uri) {
 				return res.status(400).send({

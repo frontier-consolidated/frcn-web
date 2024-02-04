@@ -13,31 +13,37 @@ datasource db {
 model SystemSettings {
   id                    Int           @id @default(autoincrement())
   unique                Boolean       @unique @default(true)
-  discordGuildId        String
+  discordGuildId        String        @map("discord_guild_id")
   defaultEventChannel   EventChannel? @relation(fields: [defaultEventChannelId], references: [id])
-  defaultEventChannelId Int?          @unique
-  roleOrder             String[]
-  updatedAt             DateTime      @updatedAt
-  createdAt             DateTime      @default(now())
+  defaultEventChannelId Int?          @unique @map("default_event_channel_id")
+  roleOrder             String[]      @map("role_order")
+  updatedAt             DateTime      @updatedAt @map("updated_at")
+  createdAt             DateTime      @default(now()) @map("created_at")
+
+  @@map("system_settings")
 }
 
 model UserSession {
   sid       String   @id
   data      String   @db.VarChar(4096)
-  deviceId  String
+  deviceId  String   @map("device_id")
   user      User?    @relation(fields: [userId], references: [id])
-  userId    String?
-  expiresAt DateTime
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  userId    String?  @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("user_sessions")
 }
 
 model UserSettings {
   id        Int      @id @default(autoincrement())
   user      User     @relation(fields: [userId], references: [id])
-  userId    String   @unique
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  userId    String   @unique @map("user_id")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("user_settings")
 }
 
 model UserStatus {
@@ -45,138 +51,174 @@ model UserStatus {
   activity  String?
   ship      String?
   user      User     @relation(fields: [userId], references: [id])
-  userId    String   @unique
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+  userId    String   @unique @map("user_id")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("user_statuses")
 }
 
 model UserRole {
   id                       String                        @id @default(uuid())
   name                     String
-  discordId                String?                       @unique
+  discordId                String?                       @unique @map("discord_id")
   primary                  Boolean                       @default(false)
   permissions              Int
   users                    UsersInUserRoles[]
   primaryUsers             User[]
   eventsUsingRoleForAccess EventsWithUserRoleForAccess[]
-  updatedAt                DateTime                      @updatedAt
-  createdAt                DateTime                      @default(now())
+  updatedAt                DateTime                      @updatedAt @map("updated_at")
+  createdAt                DateTime                      @default(now()) @map("created_at")
+
+  @@map("user_roles")
 }
 
 model User {
   id            String             @id @default(uuid())
-  discordId     String             @unique
-  discordName   String
-  scName        String?
-  scVerified    Boolean
-  scVerifyCode  String?
-  avatarUrl     String
+  discordId     String             @unique @map("discord_id")
+  discordName   String             @map("discord_name")
+  scName        String?            @map("sc_name")
+  scVerified    Boolean            @map("sc_verified")
+  scVerifyCode  String?            @map("sc_verify_code")
+  avatarUrl     String             @map("avatar_url")
   primaryRole   UserRole           @relation(fields: [primaryRoleId], references: [id])
-  primaryRoleId String
+  primaryRoleId String             @map("primary_role_id")
   roles         UsersInUserRoles[]
   rsvps         EventUser[]
   events        Event[]
+  resources     Resource[]
   sessions      UserSession[]
   status        UserStatus?
   settings      UserSettings?
-  updatedAt     DateTime           @updatedAt
-  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt @map("updated_at")
+  createdAt     DateTime           @default(now()) @map("created_at")
+
+  @@map("users")
 }
 
 model UsersInUserRoles {
   role       UserRole @relation(fields: [roleId], references: [id])
-  roleId     String
+  roleId     String   @map("role_id")
   user       User     @relation(fields: [userId], references: [id])
-  userId     String
-  assignedAt DateTime @default(now())
+  userId     String   @map("user_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
 
   @@id([roleId, userId])
+  @@map("users__user_roles")
 }
 
 model EventRsvpRole {
   id        String      @id @default(uuid())
   name      String
   emoji     String
-  emojiId   String
+  emojiId   String      @map("emoji_id")
   limit     Int         @default(0)
   members   EventUser[]
   event     Event       @relation(fields: [eventId], references: [id])
-  eventId   String
-  updatedAt DateTime    @updatedAt
-  createdAt DateTime    @default(now())
+  eventId   String      @map("event_id")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  @@map("event_rsvp_roles")
 }
 
 model EventUser {
   id        String         @id @default(uuid())
   pending   Boolean
   user      User           @relation(fields: [userId], references: [id])
-  userId    String
+  userId    String         @map("user_id")
   rsvp      EventRsvpRole? @relation(fields: [rsvpId], references: [id])
-  rsvpId    String?
+  rsvpId    String?        @map("rsvp_id")
   event     Event          @relation(fields: [eventId], references: [id])
-  eventId   String
-  updatedAt DateTime       @updatedAt
-  createdAt DateTime       @default(now())
+  eventId   String         @map("event_id")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+  createdAt DateTime       @default(now()) @map("created_at")
+
+  @@map("event_users")
 }
 
 model EventSettings {
   id                 Int      @id @default(autoincrement())
-  hideLocation       Boolean
-  inviteOnly         Boolean
-  openToJoinRequests Boolean
-  allowTeamSwitching Boolean
-  allowCrewSwitching Boolean
+  hideLocation       Boolean  @map("hide_location")
+  inviteOnly         Boolean  @map("invite_only")
+  openToJoinRequests Boolean  @map("open_to_join_requests")
+  allowTeamSwitching Boolean  @map("allow_team_switching")
+  allowCrewSwitching Boolean  @map("allow_crew_switching")
   event              Event    @relation(fields: [eventId], references: [id])
-  eventId            String   @unique
-  updatedAt          DateTime @updatedAt
-  createdAt          DateTime @default(now())
+  eventId            String   @unique @map("event_id")
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  @@map("event_settings")
 }
 
 model Event {
   id                    String                        @id @default(uuid())
   owner                 User                          @relation(fields: [ownerId], references: [id])
-  ownerId               String
+  ownerId               String                        @map("owner_id")
   channel               EventChannel                  @relation(fields: [channelId], references: [id])
-  channelId             Int
-  discordThreadId       String?
-  discordRoleId         String?
-  discordEventMessageId String?
-  discordStartMessageId String?
-  discordMentions       String[]
+  channelId             Int                           @map("channel_id")
+  discordThreadId       String?                       @map("discord_thread_id")
+  discordRoleId         String?                       @map("discord_role_id")
+  discordEventMessageId String?                       @map("discord_event_message_id")
+  discordStartMessageId String?                       @map("discord_start_message_id")
+  discordMentions       String[]                      @map("discord_mentions")
   name                  String
   summary               String
   description           String                        @db.VarChar(2048)
-  imageUrl              String?                       @db.VarChar(2084)
-  eventType             String?
+  imageUrl              String?                       @map("image_url") @db.VarChar(2084)
+  eventType             String?                       @map("event_type")
   location              String[]
   roles                 EventRsvpRole[]
   members               EventUser[]
   settings              EventSettings?
-  accessType            String
+  accessType            String                        @map("access_type")
   accessRoles           EventsWithUserRoleForAccess[]
-  startAt               DateTime?
-  endedAt               DateTime?
+  startAt               DateTime?                     @map("start_at")
+  endedAt               DateTime?                     @map("ended_at")
   duration              Int?
   posted                Boolean
-  updatedAt             DateTime                      @updatedAt
-  createdAt             DateTime                      @default(now())
+  updatedAt             DateTime                      @updatedAt @map("updated_at")
+  createdAt             DateTime                      @default(now()) @map("created_at")
+
+  @@map("events")
 }
 
 model EventsWithUserRoleForAccess {
   role       UserRole @relation(fields: [roleId], references: [id])
-  roleId     String
+  roleId     String   @map("role_id")
   event      Event    @relation(fields: [eventId], references: [id])
-  eventId    String
-  assignedAt DateTime @default(now())
+  eventId    String   @map("event_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
 
   @@id([roleId, eventId])
+  @@map("events__user_roles")
 }
 
 model EventChannel {
   id             Int             @id @default(autoincrement())
-  discordId      String          @unique
+  discordId      String          @unique @map("discord_id")
   events         Event[]
   systemSettings SystemSettings?
-  updatedAt      DateTime        @updatedAt
-  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  createdAt      DateTime        @default(now()) @map("created_at")
+
+  @@map("event_channels")
+}
+
+model Resource {
+  id               String   @id @default(uuid())
+  owner            User     @relation(fields: [ownerId], references: [id])
+  ownerId          String   @map("owner_id")
+  name             String
+  shortDescription String   @map("short_description") @db.VarChar(512)
+  tags             String[]
+  canPreview       Boolean  @default(false) @map("can_preview")
+  fileAttached     Boolean  @map("file_attached")
+  fileName         String?  @map("file_name")
+  fileSizeKb       Int?     @map("file_size_kb")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@map("resources")
 }

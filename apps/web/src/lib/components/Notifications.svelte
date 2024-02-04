@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Toast } from "flowbite-svelte";
-	import { ExclamationCircleSolid } from "flowbite-svelte-icons";
+	import { ExclamationCircleSolid, FaceGrinSolid, InfoCircleSolid } from "flowbite-svelte-icons";
 
 	import {
 		notifications,
@@ -24,6 +24,10 @@
 		switch (type) {
 			case "error":
 				return "red";
+			case "info":
+				return "blue"
+			case "success":
+				return "green"
 		}
 	}
 
@@ -31,11 +35,15 @@
 		switch (type) {
 			case "error":
 				return ExclamationCircleSolid;
+			case "info":
+				return InfoCircleSolid;
+			case "success":
+				return FaceGrinSolid;
 		}
 	}
 </script>
 
-<div id="notifications" class="fixed flex flex-col-reverse gap-2 bottom-0 left-0 w-64 m-8">
+<div id="notifications" class="fixed flex flex-col-reverse gap-2 bottom-0 left-0 w-64 m-8 z-100">
 	{#each $notifications as notification}
 		<Toast
 			color={getColor(notification.type)}

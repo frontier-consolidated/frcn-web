@@ -8,6 +8,7 @@ import { createEventRsvpRoleExtension } from "./extensions/EventRsvpRole.extensi
 import { createEventSettingsExtension } from "./extensions/EventSettings.extension";
 import { createEventsWithUserRoleForAccessExtension } from "./extensions/EventsWithUserRoleForAccess.extension";
 import { createEventUserExtension } from "./extensions/EventUser.extension";
+import { createResourceExtension } from "./extensions/Resource.extension";
 import { createSystemSettingsExtension } from "./extensions/SystemSettings.extension";
 import { createUserExtension } from "./extensions/User.extension";
 import { createUserRoleExtension } from "./extensions/UserRole.extension";
@@ -30,6 +31,7 @@ const database = $prisma
 	.$extends(createEventSettingsExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventsWithUserRoleForAccessExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventUserExtension(Prisma.defineExtension, $prisma))
+	.$extends(createResourceExtension(Prisma.defineExtension, $prisma))
 	.$extends(createSystemSettingsExtension(Prisma.defineExtension, $prisma))
 	.$extends(createUserExtension(Prisma.defineExtension, $prisma))
 	.$extends(createUserRoleExtension(Prisma.defineExtension, $prisma))
@@ -37,6 +39,15 @@ const database = $prisma
 	.$extends(createUserSettingsExtension(Prisma.defineExtension, $prisma))
 	.$extends(createUsersInUserRolesExtension(Prisma.defineExtension, $prisma))
 	.$extends(createUserStatusExtension(Prisma.defineExtension, $prisma));
+
+export function transaction<R>(fn: (tx: typeof database) => Promise<R>): Promise<R> {
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore
+	return database.$transaction((_tx) => {
+		const tx = _tx as typeof database
+		return fn(tx)
+	})
+}
 
 async function seedProduction() {
 	const roles = await database.userRole.findMany();

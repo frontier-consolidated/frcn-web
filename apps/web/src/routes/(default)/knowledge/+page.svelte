@@ -1,49 +1,21 @@
 <script lang="ts">
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Button, Heading, Input, Label, Modal, Search } from "flowbite-svelte";
-	import { CirclePlusSolid, UploadSolid } from "flowbite-svelte-icons";
+	import { Avatar, Badge, Button, Card, Heading, Search } from "flowbite-svelte";
+	import { CirclePlusSolid, DownloadSolid, FileSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params"
 
+	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
 	import Hr from "$lib/components/Hr.svelte";
 	import { user } from "$lib/stores/UserStore";
 
+	import type { PageData } from "./$types";
+	import ResourceModal from "./ResourceModal.svelte";
+
 	const search = queryParam("q")
 
-	let uploadModal = false;
-	let uploadInput: HTMLInputElement | null = null;
-	let uploadFiles: FileList;
+	export let data: PageData;
 
-	function handleFileKeydown(ev: KeyboardEvent) {
-		if (uploadInput && [' ', 'Enter'].includes(ev.key)) {
-			ev.preventDefault();
-			uploadInput.click();
-		}
-	}
-
-	// function handleFileDrop(event: DragEvent) {
-	// 	event.preventDefault()
-	// 	uploadFile = null
-
-	// 	if (event.dataTransfer?.items) {
-	// 		[...event.dataTransfer.items].forEach((item) => {
-	// 			if (item.kind === "file") {
-	// 				const file = item.getAsFile()
-	// 				uploadFile = file;
-	// 			}
-	// 		})
-	// 	} else if (event.dataTransfer?.files) {
-	// 		[...event.dataTransfer.files].forEach((file) => {
-	// 			uploadFile = file
-	// 		})
-	// 	}
-	// }
-
-	// function handleFileChange(event: Event) {
-	// 	const files = (event.target as HTMLInputElement | null)?.files
-	// 	if (files && files.length > 0) {
-	// 		uploadFile = files[0]
-	// 	}
-	// }
+	let fileModal = { open: false, edit: null };
 </script>
 
 <svelte:head>
@@ -60,55 +32,65 @@
 			{#if hasPermission($user.data?.permissions ?? 0, Permission.UploadResources)}
 				<Button
 					class="self-end sm:shrink-0"
-					on:click={() => (uploadModal = true)}
+					on:click={() => {
+						fileModal.edit = null;
+						fileModal.open = true;
+					}}
 				>
 					<CirclePlusSolid class="me-2" /> Upload File
 				</Button>
 			{/if}
 		</div>
 	</div>
-</section>
-<Modal title="Upload file" bind:open={uploadModal} dismissable>
-	<div class="flex flex-col gap-4 p-4">
-		<div>
-			<Label for="file-upload-name" class="mb-2">File Name</Label>
-			<Input
-				id="file-upload-name"
-				name="File Upload Name"
-				type="text"
-				placeholder="File name"
-				required
-			/>
-		</div>
-		<div>
-			<Label for="file-upload" class="mb-2">Files</Label>
-			<button
-				type="button"
-				class="relative flex justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600" 
-				on:keydown={handleFileKeydown}
-			>
-				{#if uploadFiles?.length > 0}
-					<p class="text-md text-gray-500 dark:text-gray-400">{uploadFiles[0].name}</p>
+	<div class="grid min-[480px]:grid-cols-2 md:grid-cols-3 gap-2">
+		{#each data.resources as resource}
+			<Card padding="none" size="md">
+				{#if resource.previewUrl}
+					<a href={resource.previewUrl} target="_blank">
+						<img class="rounded-t-lg hover:brightness-110" src={resource.previewUrl} alt="{resource.name} preview" />
+					</a>
 				{:else}
-					<div class="flex flex-col items-center w-full h-full">
-						<UploadSolid class="mb-3" size="lg" />
-						<p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-						<p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF or PDF</p>
+					<div class="flex flex-col items-center justify-center rounded-t-lg w-full aspect-video bg-gray-900">
+						<FileSolid class="w-16 h-16" />
 					</div>
 				{/if}
-				<input 
-					type="file"
-					id="file-upload"
-					name="File Upload"
-					class="absolute cursor-pointer top-0 left-0 h-full w-full z-0 opacity-0" 
-					bind:this={uploadInput} 
-					bind:files={uploadFiles}
-				/>
-			</button>
-		</div>
+				<div class="px-4 py-2">
+					<div class="flex flex-wrap gap-1">
+						<TimeBadge id="time-{resource.id}" format="datetime" value={resource.createdAt} class="dark:bg-gray-900" />
+						{#each resource.tags as tag}
+						<Badge>
+							{tag}
+						</Badge>
+						{/each}
+					</div>
+					<span class="block mt-2 text-xl font-semibold dark:text-white">
+						{resource.name}
+					</span>
+					<div class="flex items-center gap-2 mt-1">
+						<span class="text-sm">By</span>
+						<Avatar rounded size="xs" src={resource.owner.avatarUrl} />
+						<span class="text-sm font-semibold text-gray-200">{resource.owner.name}</span>
+					</div>
+					<span class="block text-sm font-semibold dark:text-white mt-3">
+						Description
+					</span>
+					<p class="text-sm dark:text-gray-400">
+						{resource.shortDescription}
+					</p>
+					<div class="flex mt-4">
+						<Button class="flex-1" on:click={() => {
+							if (!resource.downloadUrl) return;
+							const link = document.createElement("a")
+							link.href = resource.downloadUrl
+							link.click()
+							URL.revokeObjectURL(link.href)
+						}}>
+							<DownloadSolid class="me-2" /> Download
+						</Button>
+					</div>
+				</div>
+			</Card>
+		{/each}
 	</div>
-	<svelte:fragment slot="footer">
-		<Button>Upload</Button>
-		<Button color="alternative" on:click={() => uploadModal = false}>Cancel</Button>
-  	</svelte:fragment>
-</Modal>
+</section>
+<ResourceModal open={fileModal.open} />

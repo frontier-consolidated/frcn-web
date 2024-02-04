@@ -3,6 +3,7 @@
 	import { Badge, Popover } from "flowbite-svelte";
 	import { onMount } from "svelte";
 	import { locale } from "svelte-i18n";
+	import { twMerge } from "tailwind-merge";
 
 	export let id: string;
 	export let format: "duration" | "datetime" | "datetime-relative" = "datetime";
@@ -117,7 +118,7 @@
 	})
 </script>
 
-<Badge {id} color="none" class="tabular-nums dark:text-gray-300" {...$$restProps}>
+<Badge {id} color="none" {...$$restProps} class={twMerge("tabular-nums dark:text-gray-300", $$restProps.class)}>
 	<time {datetime}>{text}</time>
 </Badge>
 <Popover defaultClass="px-2 py-1 text-xs" triggeredBy="#{id}">{popoverText}</Popover>

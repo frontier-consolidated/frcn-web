@@ -1,10 +1,22 @@
 import { createApp } from "./app";
-import { getDomain, getOrigin, getOrigins, getPort } from "./env";
+import { getDomain, getOrigin, getOrigins, getPort, validateEnvironment } from "./env";
+
+process.env.NODE_ENV ??= "development"
+validateEnvironment()
 
 const { server, discordClient } = await createApp({
 	origins: getOrigins(),
 	routeConfig: {
-		consentCookie: process.env.CONSENT_COOKIE
+		auth: {
+			clientId: process.env.DISCORD_CLIENTID,
+			clientSecret: process.env.DISCORD_SECRET
+		},
+		consent: {
+			cookie: process.env.CONSENT_COOKIE
+		},
+		files: {
+			bucketName: process.env.AWS_S3_BUCKET,
+		}
 	},
 	sessionConfig: {
 		domain: getDomain(),
@@ -19,6 +31,15 @@ const { server, discordClient } = await createApp({
 			cookie: process.env.DEVICE_TRACK_COOKIE,
 		},
 	},
+	discordConfig: {
+		token: process.env.DISCORD_TOKEN
+	},
+	s3Config: {
+		bucketName: process.env.AWS_S3_BUCKET,
+		region: process.env.AWS_S3_REGION,
+		clientKey: process.env.AWS_S3_KEY,
+		clientSecret: process.env.AWS_S3_SECRET
+	}
 });
 
 discordClient.login(process.env.DISCORD_TOKEN);

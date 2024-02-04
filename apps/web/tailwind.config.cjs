@@ -11,6 +11,9 @@ const config = {
 
 	theme: {
 		extend: {
+			zIndex: {
+				"100": "100"
+			},
 			colors: {
 				// colors: https://flowbite-svelte.com/docs/pages/colors
 				// primary: {
