@@ -45,7 +45,7 @@
             </SidebarGroup>
         </SidebarWrapper>
     </Sidebar>
-    <div class="flex-1 overflow-y-auto min-h-[80vh] py-4 px-3 bg-gray-50 rounded dark:bg-gray-900">
+    <div class="flex-1 flex flex-col overflow-y-auto min-h-[80vh] py-4 px-3 bg-gray-50 rounded dark:bg-gray-900">
         <slot />
     </div>
 </section>

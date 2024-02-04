@@ -1,9 +1,11 @@
 import { browser } from "$app/environment";
+import type { FetchResult, Observable } from "@apollo/client";
 import { writable, get } from "svelte/store";
+import type { Subscription } from "zen-observable-ts";
 
 import { Routes, api } from "$lib/api";
-import { Queries, getApollo } from "$lib/graphql";
-import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
+import { Queries, Subscriptions, getApollo } from "$lib/graphql";
+import type { GetCurrentUserQuery, OnRolesUpdatedSubscription } from "$lib/graphql/__generated__/graphql";
 
 async function getCurrentUser(cache = true) {
 	const { data } = await getApollo().query({
@@ -30,8 +32,48 @@ export const user = writable<{ loading: boolean; data: GetCurrentUserQuery["user
 				});
 			})
 			.catch(console.error);
+		
 	}
 );
+
+if (browser) {
+	let observer: Observable<FetchResult<OnRolesUpdatedSubscription>> | null = null;
+	let subscription: Subscription | null = null;
+	user.subscribe((data) => {
+		if (data.loading || !data.data) {
+			observer = null;
+			if (subscription) subscription.unsubscribe();
+			return;
+		}
+
+		if (!data.loading && data.data) {
+			if (!observer) {
+				observer = getApollo().subscribe({
+					query: Subscriptions.USER_ROLES_UPDATED,
+					variables: {
+						userId: data.data.id
+					}
+				})
+			}
+			if (!subscription) {
+				subscription = observer.subscribe(({ data, errors }) => {
+					if (!data) return;
+					user.update((value) => {
+						return {
+							loading: value.loading,
+							data: {
+								...value.data!,
+								permissions: data.roles.permissions,
+								primaryRole: data.roles.primaryRole,
+								roles: data.roles.roles
+							}
+						}
+					})
+				})
+			}
+		}
+	})
+}
 
 export async function login() {
 	const data = await getCurrentUser(false);

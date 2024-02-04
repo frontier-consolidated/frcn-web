@@ -52,7 +52,7 @@ model UserStatus {
 
 model UserRole {
   id                       String                        @id @default(uuid())
-  name                     String                        @unique
+  name                     String
   discordId                String?                       @unique
   primary                  Boolean                       @default(false)
   permissions              Int

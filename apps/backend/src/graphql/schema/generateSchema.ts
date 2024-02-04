@@ -2,6 +2,8 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import { Permission } from "@frcn/shared";
+
 function generatePagedTypes(typeDefs: string) {
 	let extTypeDefs = typeDefs;
 	const seen: string[] = [];
@@ -28,12 +30,29 @@ type ${match[0]} {
 	return extTypeDefs;
 }
 
+function generateEnumTypes(typeDefs: string) {
+	const enums = {
+		Permission
+	}
+	let extTypeDefs = typeDefs;
+
+	for (const [name, obj] of Object.entries(enums)) {
+		const keys = Object.keys(obj).filter(key => !(Number(key) >= 0))
+
+		extTypeDefs += `
+enum ${name} {
+	${keys.join("\n\t")}
+}`
+	}
+	return extTypeDefs
+}
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const inputTypeDefs = fs.readFileSync(path.join(__dirname, "schema.graphql"), {
 	encoding: "utf-8",
 });
 
-const typeDefs = generatePagedTypes(inputTypeDefs + "\n# GENERATED TYPES:\n");
+const typeDefs = generateEnumTypes(generatePagedTypes(inputTypeDefs + "\n# GENERATED TYPES:\n"));
 
 fs.writeFileSync(path.join(__dirname, "schema.generated.graphql"), typeDefs, {
 	encoding: "utf-8",

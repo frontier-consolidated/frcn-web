@@ -10,7 +10,6 @@
 </script>
 
 <svelte:head>
-	<title>Frontier Consolidated</title>
 	<meta name="theme-color" content="#1784F2">
 </svelte:head>
 

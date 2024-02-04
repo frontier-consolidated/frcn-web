@@ -390,20 +390,17 @@ async function canSeeEvent(event: Event, user: User | undefined, discordClient: 
 		case EventAccessType.PrimaryRole: {
 			if (!user) return false;
 
-			const accessRoles = await database.event.getAccessRoles(event);
-			if (accessRoles.length === 0) return false;
+			const accessThroughRoles = await database.event.getAccessThroughRoles(event);
+			if (accessThroughRoles.length === 0) return false;
 
-			const primaryRole = await database.eventsWithUserRoleForAccess.getRole(accessRoles[0]);
+			const primaryRole = await database.eventsWithUserRoleForAccess.getRole(accessThroughRoles[0]);
 			return $roles.hasPrimaryRolePrivileges(primaryRole, user);
 		}
 		case EventAccessType.SelectRoles: {
 			if (!user) return false;
 
 			const accessRoles = await database.event.getAccessRoles(event);
-			const roles = await Promise.all(
-				accessRoles.map((r) => database.eventsWithUserRoleForAccess.getRole(r))
-			);
-			return await $roles.hasOneOfRoles(roles, user);
+			return await $roles.hasOneOfRoles(accessRoles, user);
 		}
 		case EventAccessType.Channel: {
 			const channel = await database.event.getChannel(event);

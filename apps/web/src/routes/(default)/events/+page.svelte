@@ -47,7 +47,7 @@
 								type: "error",
 								message: "Failed to create event"
 							})
-							console.log(err)
+							console.error(err)
 						}
 					}}
 				>

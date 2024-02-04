@@ -2,8 +2,7 @@ import { Permission, hasAllOfPermissions, hasOneOfPermissions, hasPermission } f
 import { mapSchema, getDirective, MapperKind } from "@graphql-tools/utils";
 import { GraphQLSchema, defaultFieldResolver } from "graphql";
 
-import { database } from "../../../database";
-import { $roles } from "../../../services/roles";
+import { $users } from "../../../services/users";
 import type { GQLContext } from "../../context";
 import { gqlErrorPermission, gqlErrorUnauthenticated } from "../gqlError";
 
@@ -28,9 +27,7 @@ export default function directive(schema: GraphQLSchema) {
 			fieldConfig.resolve = async function (source, args, context: GQLContext, info) {
 				if (!context.user) throw gqlErrorUnauthenticated();
 
-				const primaryRole = await database.user.getPrimaryRole(context.user);
-				const userRoles = await database.user.getRoles(context.user);
-				const permissions = await $roles.resolvePermissions(primaryRole, userRoles);
+				const permissions = await $users.getPermissions(context.user);
 
 				if (
 					directiveArgs.has &&

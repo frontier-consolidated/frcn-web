@@ -3,6 +3,7 @@ import { REST, Routes, type RESTPostOAuth2AccessTokenResult, type APIUser } from
 
 import type { Context, RouteConfig } from "../context";
 import { getOrigin } from "../env";
+import { $discord } from "../services/discord";
 import { $users } from "../services/users";
 import { getConsent } from "../session/middleware/consent.middleware";
 
@@ -46,7 +47,7 @@ export default function route(context: Context, config: RouteConfig) {
 		res.redirect(redirectUrl);
 	});
 
-	context.expressApp.get("/oauth/callback", async (req, res, next) => {
+	context.expressApp.get("/oauth/callback", async (req, res) => {
 		const { code, state } = req.query as { code?: string; state?: string };
 
 		const { redirect_uri } = (state ? JSON.parse(
@@ -89,6 +90,17 @@ export default function route(context: Context, config: RouteConfig) {
 				auth: true,
 				authPrefix: "Bearer",
 			})) as APIUser;
+
+			if (!(await $discord.isInGuild(context.discordClient, discordUser.id))) {
+				if (!redirect_uri) {
+					return res.status(400).send({
+						message: "Not in guild"
+					})
+				}
+				const url = new URL(redirect_uri)
+				url.searchParams.set("not_in_guild", "true")
+				return res.redirect(url.toString())
+			}
 
 			const user = await $users.getOrCreateUser(discordUser);
 			await req.login(user);

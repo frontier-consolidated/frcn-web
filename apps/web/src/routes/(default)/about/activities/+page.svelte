@@ -2,6 +2,7 @@
 	import { Heading } from "flowbite-svelte";
 
 	import Hr from "$lib/components/Hr.svelte";
+	import miningImage from "$lib/images/stock/activities/mining.jpg"
 	import placeholder from "$lib/images/stock/placeholder.jpg"
 
 	import HeroImg from "../HeroImg.svelte";
@@ -18,69 +19,51 @@
 <section class="mt-2 flex flex-col gap-8">
 	<HeroImg
 		src={placeholder}
-		position="bottom-left"
-	>
-		<HeroTitle>Welcome to the Org!</HeroTitle>
-		<p>
-			Frontier Consolidated is our SC Organisation and we are actively recruiting new members. We cover nearly all areas of the game and are open to everyone once you’ve got the basics of the game down (the community is here to help you get to that point)!
-		</p>
-	</HeroImg>
-	<HeroImg
-		src={placeholder}
-	>
-		<HeroTitle>What areas of the game do you cover?</HeroTitle>
-		<p>
-			Much like in the Frontier Community – Frontier Consolidated aims to be a broad church covering a wide array of gameplay. We think that by mixing players who love different areas of the game – Industry, Combat, Logistics, Support, Exploration, Racing etc – that we can create an Org which supports and compliments one another.
-		</p>
-		<p>
-			Just like in the Community though we don’t do piracy – it’s still early days for SC but we think that already player Orgs are developing reputations, and we don’t want ours to be interwoven with holding other players up at gunpoint!
-		</p>
-	</HeroImg>
-	<HeroImg
-		src={placeholder}
-		position="bottom-left"
-	>
-		<HeroTitle>How do I join?</HeroTitle>
-		<p>
-			While we have grown to a decent size our goal has always been to keep a small org feel, the most important thing for us is that our members actually know each other and play together.
-		</p>
-		<p>
-			Frontier Community members can flag themselves as a Prospect in the discord, and from that point you’ll just need to get 2 references from Org Members – you can hop into a VC and say hi at any time but we have plenty of events where we’ll specifically pair up Prospects with Org Members to help you out!
-		</p>
-	</HeroImg>
-	<HeroImg
-		src={placeholder}
-	>
-		<HeroTitle>How seriously do you take the game?</HeroTitle>
-		<p>
-			Overall we would describe ourselves as “Filthy Casuals” or “Semi-Casual”. We don’t take things super seriously and strongly believe that real life comes first. There are no expectations of x amount of hours or days you must log in on.
-		</p>
-		<p>
-			But when we do get together we’re aiming to get better at the game, so if we’re doing a mission or an operation we’ll try to work on things like comms discipline and skilling up in our chosen game areas.
-		</p>
-	</HeroImg>
-	<HeroImg
-		src={placeholder}
 		position="top-left"
 	>
-		<HeroTitle>How is the Org Structured?</HeroTitle>
-		<p>
-			We don’t want people to feel too wedded to a specific area of the game at this point, so when we run org-wide ops or events with the community, any member is free to sign-up for any type of gameplay.
-		</p>
-		<p>
-			However, we also have “Wings” which members are free to sign up for. The Wings are usually more specific and will focus on a particular area of gameplay like Industry or Combat. Some of the Wings are also a little more hardcore allowing us to cater to those players who want to take things a bit more seriously!
-		</p>
+		<HeroTitle>Better together</HeroTitle>
 	</HeroImg>
 	<HeroImg
 		src={placeholder}
 		position="top-right"
 	>
-		<HeroTitle>What are your goals?</HeroTitle>
+		<HeroTitle>Combined Ops</HeroTitle>
+	</HeroImg>
+	<HeroImg
+		src={miningImage}
+		position="bottom-left"
+	>
+		<HeroTitle>Community Mining Events</HeroTitle>
 		<p>
-			Right now we are just trying to get better at the game, and develop good ways to coordinate large groups of players in the verse. We’re also focussed on the most important things – having a tonne of fun!
+			We run community mining events, where we train you how to mine in Star Citizen. Our Casual Midweek Mining events are exactly as the name implies. Casual mining together, in a group.
 		</p>
 		<p>
-			Long term we want to be a force helping to shape Star Citizen’s end game, building a powerhouse of an Organisation that can achieve world firsts, protect one another and carve out our own territory in the verse – all without ever stomping on the little guys!
+			The focus is on enjoying our time, while at the same time learning to be a part of a team and a larger group. There's roles from captaining a ship, piloting, mining turret operator to scout pilot and security and all are equally important during the event.
 		</p>
+		<p>
+			All earnings made during the community events are split equally between all participants since all participants are investing their time into the event equally.
+		</p>
+	</HeroImg>
+	<HeroImg
+		src={placeholder}
+	>
+		<HeroTitle>Combat Events</HeroTitle>
+	</HeroImg>
+	<HeroImg
+		src={placeholder}
+	>
+		<HeroTitle>Multi Crew</HeroTitle>
+	</HeroImg>
+	<HeroImg
+		src={placeholder}
+		position="top-left"
+	>
+		<HeroTitle>Sample Op 1</HeroTitle>
+	</HeroImg>
+	<HeroImg
+		src={placeholder}
+		position="top-right"
+	>
+		<HeroTitle>Sample Op 2</HeroTitle>
 	</HeroImg>
 </section>

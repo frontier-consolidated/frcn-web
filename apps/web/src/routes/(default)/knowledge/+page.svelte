@@ -57,7 +57,7 @@
 	<div>
 		<div class="flex flex-col sm:flex-row gap-2">
 			<Search size="md" placeholder="Search by name" class="flex-1 sm:w-96" bind:value={$search} />
-			{#if hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
+			{#if hasPermission($user.data?.permissions ?? 0, Permission.UploadResources)}
 				<Button
 					class="self-end sm:shrink-0"
 					on:click={() => (uploadModal = true)}
