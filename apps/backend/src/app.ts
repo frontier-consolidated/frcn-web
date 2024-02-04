@@ -11,12 +11,22 @@ import express from "express";
 import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
 import { createApolloServer } from "./graphql";
+import { createS3Client } from "./s3Client";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./session";
 
 interface CreateAppOptions {
   origins: string[];
   routeConfig: RouteConfig;
   sessionConfig: SessionMiddlewareConfig;
+  discordConfig: {
+    token: string;
+  },
+  s3Config: {
+    bucketName: string;
+    region: string;
+		clientKey: string;
+		clientSecret: string;
+  }
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -56,7 +66,9 @@ export async function createApp(config: CreateAppOptions) {
     introspection: true,
   });
 
-  const { client: discordClient, rest: discordRest } = createDiscordClient();
+  const { client: discordClient, rest: discordRest } = createDiscordClient(config.discordConfig.token);
+
+  const s3Client = createS3Client(config.s3Config.region, config.s3Config.clientKey, config.s3Config.clientSecret)
 
   const context: Context = {
     expressApp: app,
@@ -64,6 +76,8 @@ export async function createApp(config: CreateAppOptions) {
     apolloServer,
     discordClient,
     discordRest,
+    s3Client,
+    s3Bucket: config.s3Config.bucketName
   };
 
   const files = fs.readdirSync(path.join(__dirname, "routes"), {

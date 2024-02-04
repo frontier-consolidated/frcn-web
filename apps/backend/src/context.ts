@@ -1,6 +1,7 @@
 import type { Server } from "http";
 
 import type { ApolloServer } from "@apollo/server";
+import type { S3Client } from "@aws-sdk/client-s3";
 import type { Client as DiscordClient, REST as DiscordREST } from "discord.js";
 import type { Express } from "express";
 
@@ -12,6 +13,8 @@ export type Context = {
 	apolloServer: ApolloServer<GQLContext>;
 	discordClient: DiscordClient;
 	discordRest: DiscordREST;
+	s3Client: S3Client;
+	s3Bucket: string;
 };
 
 export type RouteConfig = {
@@ -24,8 +27,5 @@ export type RouteConfig = {
 	},
 	files: {
 		bucketName: string;
-		bucketRegion: string;
-		clientKey: string;
-		clientSecret: string;
 	}
 }

@@ -16,9 +16,6 @@ const { server, discordClient } = await createApp({
 		},
 		files: {
 			bucketName: process.env.AWS_S3_BUCKET,
-			bucketRegion: process.env.AWS_S3_REGION,
-			clientKey: process.env.AWS_S3_KEY,
-			clientSecret: process.env.AWS_S3_SECRET
 		}
 	},
 	sessionConfig: {
@@ -34,6 +31,15 @@ const { server, discordClient } = await createApp({
 			cookie: process.env.DEVICE_TRACK_COOKIE,
 		},
 	},
+	discordConfig: {
+		token: process.env.DISCORD_TOKEN
+	},
+	s3Config: {
+		bucketName: process.env.AWS_S3_BUCKET,
+		region: process.env.AWS_S3_REGION,
+		clientKey: process.env.AWS_S3_KEY,
+		clientSecret: process.env.AWS_S3_SECRET
+	}
 });
 
 discordClient.login(process.env.DISCORD_TOKEN);
