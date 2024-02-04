@@ -76,6 +76,7 @@ model User {
   roles         UsersInUserRoles[]
   rsvps         EventUser[]
   events        Event[]
+  resources     Resource[]
   sessions      UserSession[]
   status        UserStatus?
   settings      UserSettings?
@@ -179,4 +180,18 @@ model EventChannel {
   systemSettings SystemSettings?
   updatedAt      DateTime        @updatedAt
   createdAt      DateTime        @default(now())
+}
+
+model Resource {
+  id               String   @id @default(uuid())
+  owner            User     @relation(fields: [ownerId], references: [id])
+  ownerId          String
+  name             String
+  shortDescription String
+  tags             String[]
+  fileAttached     Boolean
+  fileName         String?
+  sizeKb           Int?
+  updatedAt        DateTime @updatedAt
+  createdAt        DateTime @default(now())
 }
