@@ -1,8 +1,8 @@
 export enum Permission {
 	CreateEvents = 1 << 0,
-	ManageRoles = 1 << 1,
-	ManageSystem = 1 << 2,
-	ManageUsers = 1 << 3,
+	UploadResources = 1 << 1,
+	Unassigned2 = 1 << 2,
+	Unassigned3 = 1 << 3,
 	Unassigned4 = 1 << 4,
 	Unassigned5 = 1 << 5,
 	Unassigned6 = 1 << 6,
@@ -27,8 +27,8 @@ export enum Permission {
 	Unassigned25 = 1 << 25,
 	Unassigned26 = 1 << 26,
 	Unassigned27 = 1 << 27,
-	Unassigned28 = 1 << 28,
-	Unassigned29 = 1 << 29,
+	ManageRoles = 1 << 28,
+	ManageSystem = 1 << 29,
 	Admin = 1 << 30,
 }
 
@@ -40,8 +40,12 @@ export function permissions(masks: Permission[] = []) {
 	return permission;
 }
 
+export function hasAdmin(permissions: number) {
+	return (permissions & Permission.Admin) > 0;
+}
+
 export function hasPermission(permissions: number, permission: Permission) {
-	if ((permissions & Permission.Admin) > 0) return true;
+	if (hasAdmin(permissions)) return true;
 	return (permissions & permission) > 0;
 }
 
