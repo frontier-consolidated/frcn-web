@@ -9,6 +9,17 @@ async function getGuild(client: Client) {
 	return await client.guilds.fetch(discordGuildId);
 }
 
+async function isInGuild(client: Client, userId: string) {
+	try {
+		const guild = await getGuild(client);
+		await guild.members.fetch(userId);
+
+		return true;
+	} catch (err) {
+		return false;
+	}
+}
+
 const textChannelTypes: ChannelType[] = [ChannelType.GuildAnnouncement, ChannelType.GuildText];
 async function getAllTextChannels(client: Client) {
 	try {
@@ -117,6 +128,7 @@ function convertDJSUserToAPIUser(user: DJSUser) {
 
 export const $discord = {
 	getGuild,
+	isInGuild,
 	getAllTextChannels,
 	getChannel,
 	canUserViewChannel,
