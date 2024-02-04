@@ -24,7 +24,6 @@
 		});
 
 		tokens = isInline ? lexer.inlineTokens(source as string) : lexer.lex(source as string);
-		// console.log(source, tokens);
 	}
 </script>
 
