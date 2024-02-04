@@ -1,8 +1,7 @@
-import { getLocations } from "@frcn/shared/locations";
 
 import { Queries, type TypedApolloClient } from "$lib/graphql";
 
-export async function getEvents(apollo: TypedApolloClient, url: URL) {
+export async function getResources(apollo: TypedApolloClient, url: URL) {
     let page: number | null = null;
     if (url.searchParams.has("page")) {
         page = Number(url.searchParams.get("page"))
@@ -10,7 +9,7 @@ export async function getEvents(apollo: TypedApolloClient, url: URL) {
     }
 
     const { data } = await apollo.query({
-        query: Queries.GET_EVENTS,
+        query: Queries.GET_RESOURCES,
         variables: {
             filter: {
                 search: url.searchParams.get("q")
@@ -19,17 +18,14 @@ export async function getEvents(apollo: TypedApolloClient, url: URL) {
         }
     });
 
-    const events = (data.events?.items ?? []).map(event => ({
-        ...event,
-        location: event.location ? getLocations(event.location) : null
-    }))
+    const resources = (data.resources?.items ?? [])
 
     return {
-        events,
-        itemsPerPage: data.events?.itemsPerPage ?? 1,
-        page: data.events?.page ?? 0,
-        nextPage: data.events?.nextPage,
-        prevPage: data.events?.prevPage,
-        total: data.events?.total ?? 0
+        resources,
+        itemsPerPage: data.resources?.itemsPerPage ?? 1,
+        page: data.resources?.page ?? 0,
+        nextPage: data.resources?.nextPage,
+        prevPage: data.resources?.prevPage,
+        total: data.resources?.total ?? 0
     };
 }

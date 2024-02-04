@@ -1,0 +1,194 @@
+<script lang="ts">
+	import { invalidateAll } from "$app/navigation";
+    import { Modal, Label, Input, Button, Textarea } from "flowbite-svelte"
+    import { UploadSolid, FileSolid } from "flowbite-svelte-icons"
+
+	import { Routes, api } from "$lib/api";
+    import BetterSelect from "$lib/components/select/BetterSelect.svelte";
+	import { Mutations, getApollo } from "$lib/graphql";
+	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
+	import { pushNotification } from "$lib/stores/NotificationStore";
+
+    const tags = [
+        "Mining",
+        "Salvage",
+        "Cargo",
+        "Combat",
+        "Racing",
+        "Illegal",
+        "Misc",
+        "Medical",
+		"Support",
+		"Trading",
+    ]
+
+	function cloneResourceData(data?: ResourceFragmentFragment) {
+		return {
+			name: data?.name ?? "",
+			shortDescription: data?.shortDescription ?? "",
+			tags: data?.tags ?? []
+		}
+	}
+
+    export let open: boolean = false;
+	export let data: ResourceFragmentFragment | undefined = undefined;
+	let editData = cloneResourceData(data)
+
+    let uploadInput: HTMLInputElement | null = null;
+	let uploadFiles: FileList;
+
+	function handleFileKeydown(ev: KeyboardEvent) {
+		if (uploadInput && [' ', 'Enter'].includes(ev.key)) {
+			ev.preventDefault();
+			uploadInput.click();
+		}
+	}
+
+	async function upload() {
+		const { data: createData, errors } = await getApollo().mutate({
+			mutation: Mutations.CREATE_RESOURCE,
+			variables: {
+				data: {
+					name: editData.name,
+					shortDescription: editData.shortDescription,
+					tags: editData.tags
+				}
+			},
+			errorPolicy: "all",
+		});
+
+		if (errors && errors.length > 0) {
+			pushNotification({
+				type: "error",
+				message: "Failed to create resource",
+			});
+			console.error(errors);
+			return;
+		}
+
+		pushNotification({
+			type: "info",
+			message: "Uploading file...",
+		});
+
+		const formData = new FormData()
+		formData.append("file", uploadFiles[0])
+		try {
+			await api.post(Routes.resource(createData!.resource.id), formData, {
+				headers: {
+					"Content-Type": "multipart/form-data"
+				},
+			})
+		} catch (err) {
+			pushNotification({
+				type: "error",
+				message: "Failed to upload file for resource",
+			});
+			console.error(err);
+			return;
+		}
+
+		pushNotification({
+			type: "success",
+			message: "Resource created!",
+		});
+
+		await invalidateAll()
+		open = false;
+	}
+
+	function save() {
+
+	}
+</script>
+
+<Modal title="Upload file" bind:open dismissable>
+	<div class="flex flex-col gap-4 p-4">
+		<div>
+			<Label for="file-upload-name" class="mb-2">Name</Label>
+			<Input
+				id="file-upload-name"
+				name="File Upload Name"
+				type="text"
+				placeholder="File name"
+				required
+                maxlength="255"
+				bind:value={editData.name}
+			/>
+		</div>
+        <div>
+			<Label for="file-upload-description" class="mb-2">Description</Label>
+			<Textarea
+                class="bg-gray-50 text-gray-900 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 border-gray-300 dark:border-gray-500"
+				id="file-upload-description"
+				name="File Upload Description"
+				type="text"
+				placeholder="File description"
+				required
+                maxlength="512"
+				bind:value={editData.shortDescription}
+			/>
+		</div>
+        <div>
+			<Label for="file-upload-tags" class="mb-2">Tags</Label>
+            <BetterSelect
+                id="file-upload-tags"
+                name="File Upload Tags"
+                options={tags.map(tag => ({
+                    value: tag,
+                    name: tag,
+                }))}
+                required
+                multi
+                search
+				bind:value={editData.tags}
+            />
+		</div>
+		<div>
+			<Label for="file-upload" class="mb-2">Files</Label>
+			<button
+				type="button"
+				class="relative flex justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600" 
+				on:keydown={handleFileKeydown}
+			>
+				{#if uploadFiles?.length > 0}
+                    <div class="flex flex-col items-center">
+                        <FileSolid class="text-white" size="xl" />
+                        <p class="text-md text-gray-500 dark:text-gray-400">{uploadFiles[0].name}</p>
+                    </div>
+				{:else}
+					<div class="flex flex-col items-center w-full flex-1">
+						<UploadSolid class="mb-3" size="lg" />
+						<p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+						<p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF or PDF</p>
+					</div>
+				{/if}
+				<input 
+					type="file"
+					id="file-upload"
+					name="File Upload"
+					class="absolute cursor-pointer top-0 left-0 h-full w-full z-0 opacity-0" 
+					bind:this={uploadInput} 
+					bind:files={uploadFiles}
+				/>
+			</button>
+		</div>
+	</div>
+	<svelte:fragment slot="footer">
+		{#if data}
+			<Button>
+				Save
+			</Button>
+		{:else}
+			<Button on:click={() => {
+				upload().catch(console.error)
+			}}>
+				Upload
+			</Button>
+		{/if}
+			<Button color="alternative" on:click={() => {
+			open = false
+			editData = cloneResourceData(data)
+		}}>Cancel</Button>
+  	</svelte:fragment>
+</Modal>
