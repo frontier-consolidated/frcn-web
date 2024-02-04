@@ -52,12 +52,17 @@ async function canUserViewChannel(client: Client, user: User | undefined, channe
 	return false;
 }
 
-async function getAllRoles(client: Client) {
+async function getAllRoles(client: Client, includeEveryone?: boolean) {
 	try {
 		const guild = await getGuild(client);
 		const roles = await guild.roles.fetch();
 
-		return Array.from(roles.values());
+		let arr = Array.from(roles.values());
+		if (includeEveryone === false) {
+			arr = arr.filter(role => role.id !== guild.roles.everyone.id)
+		}
+
+		return arr;
 	} catch (err) {
 		// console.error("Discord Error:", err);
 	}
