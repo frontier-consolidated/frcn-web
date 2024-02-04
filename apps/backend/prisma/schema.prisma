@@ -213,6 +213,7 @@ model Resource {
   name             String
   shortDescription String   @map("short_description") @db.VarChar(512)
   tags             String[]
+  canPreview       Boolean  @default(false) @map("can_preview")
   fileAttached     Boolean  @map("file_attached")
   fileName         String?  @map("file_name")
   fileSizeKb       Int?     @map("file_size_kb")
