@@ -43,9 +43,10 @@ async function seedProduction() {
 
 	if (roles.length === 0 && process.env.ADMIN_DISCORD_ID) {
 		const adminRole = await database.userRole.upsert({
-			where: { name: "Admin" },
+			where: { id: "5740e3a4-20cd-43eb-b583-029cef2646a0" },
 			update: {},
 			create: {
+				id: "5740e3a4-20cd-43eb-b583-029cef2646a0",
 				name: "Admin",
 				primary: true,
 				permissions: permissions([Permission.Admin]),

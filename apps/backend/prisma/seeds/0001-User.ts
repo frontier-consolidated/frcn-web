@@ -1,12 +1,8 @@
 import type { PrismaClient } from "@prisma/client";
 
 export async function seed(db: PrismaClient) {
-	const orgMemberRole = await db.userRole.findUniqueOrThrow({
-		where: { name: "Org Member" },
-	});
-
 	const developerRole = await db.userRole.findUniqueOrThrow({
-		where: { name: "Developer" },
+		where: { id: "5ea9732c-7604-4c01-9ac9-303d4f4fa2f9" },
 	});
 
 	await db.user.upsert({
@@ -20,19 +16,8 @@ export async function seed(db: PrismaClient) {
 				"https://cdn.discordapp.com/avatars/255733848162304002/1a3ec4f7f63ed9b224f98fbeb1047e6e.webp",
 			primaryRole: {
 				connect: {
-					id: orgMemberRole.id,
+					id: developerRole.id,
 				},
-			},
-			roles: {
-				create: [
-					{
-						role: {
-							connect: {
-								id: developerRole.id,
-							},
-						},
-					},
-				],
 			},
 			status: {
 				create: {},
