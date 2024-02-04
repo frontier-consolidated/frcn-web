@@ -9,12 +9,6 @@ enum CacheControlScope {
 	PRIVATE
 }
 
-enum Permission {
-	CreateEvents
-	ManageRoles
-	ManageSystem
-}
-
 enum EventAccessType {
 	EVERYONE
 	PRIMARY_ROLE
@@ -213,6 +207,15 @@ input SystemEditInput {
 	discordGuildId: ID
 }
 
+input RoleEditInput {
+	name: String @constraint(minLength: 1, maxLength: 128)
+	primary: Boolean
+	newPrimaryRole: ID
+
+	discordId: ID
+	permissions: Int @constraint(min: 0, max: 2147483647)
+}
+
 # Root types:
 
 type Query {
@@ -231,13 +234,15 @@ type Query {
 
 	# Roles
 	getRoles: [UserRole!]! @permission(one: [CreateEvents, ManageRoles])
+	getRole(id: ID!): UserRole @permission(has: ManageRoles)
 	getRoleOrder: [ID!]! @permission(has: ManageRoles)
 
 	# System
 	getAllEventChannels: [DiscordChannel]! @permission(one: [CreateEvents, ManageSystem])
 	getAllDiscordChannels: [DiscordChannel!]! @permission(has: ManageSystem)
 	getAllDiscordEmojis: [DiscordEmoji!]! @permission(has: CreateEvents)
-	getAllDiscordRoles: [DiscordRole!]! @permission(one: [CreateEvents, ManageRoles])
+	getAllDiscordRoles(everyone: Boolean): [DiscordRole!]!
+		@permission(one: [CreateEvents, ManageRoles])
 	getSystemSettings: SystemSettings! @permission(has: ManageSystem)
 }
 
@@ -251,14 +256,34 @@ type Mutation {
 	createEvent: ID! @permission(has: CreateEvents)
 	editEvent(id: ID!, data: EventEditInput!): Event @permission(has: CreateEvents)
 	postEvent(id: ID!): Boolean! @permission(has: CreateEvents)
+	deleteEvent(id: ID!): Boolean! @permission(has: CreateEvents)
+
 	rsvpForEvent(id: ID!, rsvp: ID!): Boolean!
+	unrsvpForEvent(id: ID!): Boolean!
 
 	# Roles
+	createRole: ID! @permission(has: ManageRoles)
+	editRole(id: ID!, data: RoleEditInput!): UserRole @permission(has: ManageRoles)
+	deleteRole(id: ID!): Boolean! @permission(has: ManageRoles)
 	reorderRoles(order: [ID!]!): [ID!]! @permission(has: ManageRoles)
+
+	giveUserRole(userId: ID!, roleId: ID!): Boolean! @permission(has: ManageRoles)
+	removeUserRole(userId: ID!, roleId: ID!): Boolean! @permission(has: ManageRoles)
 
 	# System
 	editEventChannels(channels: [ID!]!): [DiscordChannel!]! @permission(has: ManageSystem)
 	editSystemSettings(data: SystemEditInput!): SystemSettings! @permission(has: ManageSystem)
+}
+
+type UpdatedUserRoles {
+	userId: ID!
+	permissions: Int!
+	primaryRole: UserRole!
+	roles: [UserRole!]!
+}
+
+type Subscription {
+	userRolesUpdated(userId: ID!): UpdatedUserRoles!
 }
 
 # GENERATED TYPES:
@@ -270,4 +295,37 @@ type PagedEvent {
     total: Int!
     nextPage: Int
 	prevPage: Int
+}
+enum Permission {
+	CreateEvents
+	ManageRoles
+	ManageSystem
+	ManageUsers
+	Unassigned4
+	Unassigned5
+	Unassigned6
+	Unassigned7
+	Unassigned8
+	Unassigned9
+	Unassigned10
+	Unassigned11
+	Unassigned12
+	Unassigned13
+	Unassigned14
+	Unassigned15
+	Unassigned16
+	Unassigned17
+	Unassigned18
+	Unassigned19
+	Unassigned20
+	Unassigned21
+	Unassigned22
+	Unassigned23
+	Unassigned24
+	Unassigned25
+	Unassigned26
+	Unassigned27
+	Unassigned28
+	Unassigned29
+	Admin
 }

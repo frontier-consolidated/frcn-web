@@ -6,6 +6,7 @@ import type {
 	EventUser,
 	Event,
 	UserSession,
+	UserRole,
 } from "@prisma/client";
 
 import { cacheGet, cacheGetMany } from "../helpers";
@@ -34,9 +35,9 @@ export function createUserExtension(define: typeof Prisma.defineExtension, clien
 					model.primaryRole = value;
 					return value;
 				},
-				async getRoles(model: FullModel<User>) {
+				async getThroughRoles(model: FullModel<User>) {
 					if (model.roles) return model.roles;
-
+					
 					const value = await cacheGetMany<UsersInUserRoles>(
 						model,
 						(cached) => {
@@ -56,6 +57,30 @@ export function createUserExtension(define: typeof Prisma.defineExtension, clien
 						}
 					);
 					model.roles = value;
+					return value;
+				},
+				async getRoles(model: FullModel<User>) {
+					const throughRoles = await this.getThroughRoles(model)
+					const roleIds = throughRoles.map(r => r.roleId)
+
+					const value = await cacheGetMany<UserRole>(
+						model,
+						(cached) => {
+							return client.userRole.findMany({
+								where: {
+									id: {
+										in: roleIds.filter(id => !cached.find(r => id === r.id))
+									},
+								},
+							});
+						},
+						{
+							prefix: "UserRole",
+							getId: (m) => m.id,
+							filterCached: (m) => roleIds.includes(m.id),
+						}
+					);
+
 					return value;
 				},
 				async getRSVPs(model: FullModel<User>) {

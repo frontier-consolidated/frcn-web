@@ -4,7 +4,6 @@ import { resolveEventRsvp } from "./Event";
 import { resolveUserRole } from "./Roles";
 import type { WithModel } from "./types";
 import { database } from "../../../database";
-import { $roles } from "../../../services/roles";
 import { $users } from "../../../services/users";
 import type {
 	Resolvers,
@@ -54,10 +53,8 @@ export const userResolvers: Resolvers = {
 	User: {
 		async permissions(source) {
 			const { _model } = source as WithModel<GQLUser, User>;
-			const primaryRole = await database.user.getPrimaryRole(_model);
-			const userRoles = await database.user.getRoles(_model);
-
-			return await $roles.resolvePermissions(primaryRole, userRoles);
+			const permissions = await $users.getPermissions(_model);
+			return permissions;
 		},
 		async primaryRole(source) {
 			const { _model } = source as WithModel<GQLUser, User>;
@@ -66,10 +63,7 @@ export const userResolvers: Resolvers = {
 		},
 		async roles(source) {
 			const { _model } = source as WithModel<GQLUser, User>;
-			const userRoles = await database.user.getRoles(_model);
-			const roles = await Promise.all(
-				userRoles.map((r) => database.usersInUserRoles.getRole(r))
-			);
+			const roles = await database.user.getRoles(_model);
 			return roles.map(resolveUserRole);
 		},
 		async rsvps(source, args, context) {

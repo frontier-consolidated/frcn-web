@@ -1,3 +1,4 @@
+import type { User } from "@prisma/client";
 import { type APIUser, CDNRoutes, ImageFormat } from "discord.js";
 
 import { $roles } from "./roles";
@@ -53,7 +54,21 @@ async function getOrCreateUser(discordUser: APIUser) {
 	return user;
 }
 
+async function getAllRoles(user: User) {
+	const primaryRole = await database.user.getPrimaryRole(user);
+	const roles = await database.user.getRoles(user);
+	return [primaryRole, ...roles]
+}
+
+async function getPermissions(user: User) {
+	const roles = await getAllRoles(user);
+	const permissions = await $roles.resolvePermissions(roles);
+	return permissions
+}
+
 export const $users = {
 	getUser,
 	getOrCreateUser,
+	getAllRoles,
+	getPermissions,
 };

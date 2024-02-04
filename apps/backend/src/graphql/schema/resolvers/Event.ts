@@ -151,10 +151,7 @@ export const eventResolvers: Resolvers = {
 		async accessRoles(source) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const accessRoles = await database.event.getAccessRoles(_model);
-			const roles = await Promise.all(
-				accessRoles.map((r) => database.eventsWithUserRoleForAccess.getRole(r))
-			);
-			return roles.map(resolveUserRole);
+			return accessRoles.map(resolveUserRole);
 		},
 	},
 
@@ -358,7 +355,7 @@ export const eventResolvers: Resolvers = {
 				event.accessType === EventAccessType.PrimaryRole ||
 				event.accessType === EventAccessType.SelectRoles
 			) {
-				const accessRoles = await database.event.getAccessRoles(event);
+				const accessRoles = await database.event.getAccessThroughRoles(event);
 				if (accessRoles.length < 1) {
 					throw gqlErrorBadState("Event expected an access role");
 				}
