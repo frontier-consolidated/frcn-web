@@ -22,7 +22,7 @@
 		"Trading",
     ]
 
-	function cloneResourceData(data?: ResourceFragmentFragment) {
+	function cloneResourceData(data?: ResourceFragmentFragment | null) {
 		return {
 			name: data?.name ?? "",
 			shortDescription: data?.shortDescription ?? "",
@@ -31,8 +31,17 @@
 	}
 
     export let open: boolean = false;
-	export let data: ResourceFragmentFragment | undefined = undefined;
+	export let data: ResourceFragmentFragment | null = null;
 	let editData = cloneResourceData(data)
+
+	let lastData = data;
+
+	$: {
+		if (lastData !== data) {
+			editData = cloneResourceData(data)
+		}
+		lastData = data
+	}
 
     let uploadInput: HTMLInputElement | null = null;
 	let uploadFiles: FileList;
@@ -102,38 +111,38 @@
 	}
 </script>
 
-<Modal title="Upload file" bind:open dismissable>
+<Modal title={data ? `Edit - ${data.name}` : "Upload resource"} bind:open dismissable>
 	<div class="flex flex-col gap-4 p-4">
 		<div>
-			<Label for="file-upload-name" class="mb-2">Name</Label>
+			<Label for="resource-upload-name" class="mb-2">Name</Label>
 			<Input
-				id="file-upload-name"
-				name="File Upload Name"
+				id="resource-upload-name"
+				name="Resource Upload Name"
 				type="text"
-				placeholder="File name"
+				placeholder="Resource name"
 				required
                 maxlength="255"
 				bind:value={editData.name}
 			/>
 		</div>
         <div>
-			<Label for="file-upload-description" class="mb-2">Description</Label>
+			<Label for="resource-upload-description" class="mb-2">Description</Label>
 			<Textarea
                 class="bg-gray-50 text-gray-900 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 border-gray-300 dark:border-gray-500"
-				id="file-upload-description"
-				name="File Upload Description"
+				id="resource-upload-description"
+				name="Resource Upload Description"
 				type="text"
-				placeholder="File description"
+				placeholder="Resource description"
 				required
                 maxlength="512"
 				bind:value={editData.shortDescription}
 			/>
 		</div>
         <div>
-			<Label for="file-upload-tags" class="mb-2">Tags</Label>
+			<Label for="resource-upload-tags" class="mb-2">Tags</Label>
             <BetterSelect
-                id="file-upload-tags"
-                name="File Upload Tags"
+                id="resource-upload-tags"
+                name="Resource Upload Tags"
                 options={tags.map(tag => ({
                     value: tag,
                     name: tag,
@@ -144,35 +153,37 @@
 				bind:value={editData.tags}
             />
 		</div>
-		<div>
-			<Label for="file-upload" class="mb-2">Files</Label>
-			<button
-				type="button"
-				class="relative flex justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600" 
-				on:keydown={handleFileKeydown}
-			>
-				{#if uploadFiles?.length > 0}
-                    <div class="flex flex-col items-center">
-                        <FileSolid class="text-white" size="xl" />
-                        <p class="text-md text-gray-500 dark:text-gray-400">{uploadFiles[0].name}</p>
-                    </div>
-				{:else}
-					<div class="flex flex-col items-center w-full flex-1">
-						<UploadSolid class="mb-3" size="lg" />
-						<p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-						<p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF or PDF</p>
-					</div>
-				{/if}
-				<input 
-					type="file"
-					id="file-upload"
-					name="File Upload"
-					class="absolute cursor-pointer top-0 left-0 h-full w-full z-0 opacity-0" 
-					bind:this={uploadInput} 
-					bind:files={uploadFiles}
-				/>
-			</button>
-		</div>
+		{#if !data}
+			<div>
+				<Label for="resource-upload" class="mb-2">Files</Label>
+				<button
+					type="button"
+					class="relative flex justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600" 
+					on:keydown={handleFileKeydown}
+				>
+					{#if uploadFiles?.length > 0}
+						<div class="flex flex-col items-center">
+							<FileSolid class="text-white" size="xl" />
+							<p class="text-md text-gray-500 dark:text-gray-400">{uploadFiles[0].name}</p>
+						</div>
+					{:else}
+						<div class="flex flex-col items-center w-full flex-1">
+							<UploadSolid class="mb-3" size="lg" />
+							<p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+							<p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF or PDF</p>
+						</div>
+					{/if}
+					<input 
+						type="file"
+						id="resource-upload"
+						name="File Upload"
+						class="absolute cursor-pointer top-0 left-0 h-full w-full z-0 opacity-0" 
+						bind:this={uploadInput} 
+						bind:files={uploadFiles}
+					/>
+				</button>
+			</div>
+		{/if}
 	</div>
 	<svelte:fragment slot="footer">
 		{#if data}
