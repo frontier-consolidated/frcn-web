@@ -98,7 +98,7 @@
 		Frontier Consolidated is a growing Star Citizen organisation and we want to bring the joy of multiplayer action to as many people as we can.
 	</p>
 	<p>
-		Check out our community and org pages to see what we're about and come say hi over on discord if you want to get involved.
+		Check out our community and org pages to see what we're about and come say hi over on Discord if you want to get involved.
 	</p>
 	<div class="flex-1 flex items-end justify-center">
 		<Button size="lg" class="text-white bg-discord-500 dark:bg-discord-500 dark:hover:bg-discord-200" href={DISCORD_URL}>
