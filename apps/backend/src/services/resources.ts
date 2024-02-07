@@ -48,7 +48,7 @@ async function getResources(
 		where,
 		orderBy: [
 			{
-				createdAt: "asc",
+				updatedAt: "desc",
 			},
 		]
 	});

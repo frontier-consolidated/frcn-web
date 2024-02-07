@@ -1,21 +1,31 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
+	import { page } from "$app/stores";
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Avatar, Badge, Button, Card, Heading, Search } from "flowbite-svelte";
-	import { CirclePlusSolid, DownloadSolid, FileSolid } from "flowbite-svelte-icons";
+	import { Button, Heading, Pagination, Search } from "flowbite-svelte";
+	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params"
 
-	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
 	import Hr from "$lib/components/Hr.svelte";
+	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
+	import { getCurrentPage, getPageUrl, getPages } from "$lib/pageHelpers";
 	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
+	import ResourceCard from "./ResourceCard.svelte";
 	import ResourceModal from "./ResourceModal.svelte";
 
 	const search = queryParam("q")
 
 	export let data: PageData;
 
-	let fileModal = { open: false, edit: null };
+	let fileModal = { open: false, edit: null } as {
+		open: boolean;
+		edit: ResourceFragmentFragment | null
+	};
+
+	$: currentPage = getCurrentPage($page.url.searchParams);
+	$: pages = getPages("/knowledge", $page.url.searchParams, currentPage, data.itemsPerPage, data.total);
 </script>
 
 <svelte:head>
@@ -37,60 +47,25 @@
 						fileModal.open = true;
 					}}
 				>
-					<CirclePlusSolid class="me-2" /> Upload File
+					<CirclePlusSolid class="me-2" /> Upload Resource
 				</Button>
 			{/if}
 		</div>
 	</div>
-	<div class="grid min-[480px]:grid-cols-2 md:grid-cols-3 gap-2">
-		{#each data.resources as resource}
-			<Card padding="none" size="md">
-				{#if resource.previewUrl}
-					<a href={resource.previewUrl} target="_blank">
-						<img class="rounded-t-lg hover:brightness-110" src={resource.previewUrl} alt="{resource.name} preview" />
-					</a>
-				{:else}
-					<div class="flex flex-col items-center justify-center rounded-t-lg w-full aspect-video bg-gray-900">
-						<FileSolid class="w-16 h-16" />
-					</div>
-				{/if}
-				<div class="px-4 py-2">
-					<div class="flex flex-wrap gap-1">
-						<TimeBadge id="time-{resource.id}" format="datetime" value={resource.createdAt} class="dark:bg-gray-900" />
-						{#each resource.tags as tag}
-						<Badge>
-							{tag}
-						</Badge>
-						{/each}
-					</div>
-					<span class="block mt-2 text-xl font-semibold dark:text-white">
-						{resource.name}
-					</span>
-					<div class="flex items-center gap-2 mt-1">
-						<span class="text-sm">By</span>
-						<Avatar rounded size="xs" src={resource.owner.avatarUrl} />
-						<span class="text-sm font-semibold text-gray-200">{resource.owner.name}</span>
-					</div>
-					<span class="block text-sm font-semibold dark:text-white mt-3">
-						Description
-					</span>
-					<p class="text-sm dark:text-gray-400">
-						{resource.shortDescription}
-					</p>
-					<div class="flex mt-4">
-						<Button class="flex-1" on:click={() => {
-							if (!resource.downloadUrl) return;
-							const link = document.createElement("a")
-							link.href = resource.downloadUrl
-							link.click()
-							URL.revokeObjectURL(link.href)
-						}}>
-							<DownloadSolid class="me-2" /> Download
-						</Button>
-					</div>
-				</div>
-			</Card>
-		{/each}
+	<div class="flex flex-col items-center self-start">
+		<div class="grid min-[580px]:grid-cols-2 lg:grid-cols-3 gap-2 p-4">
+			{#each data.resources as resource}
+				<ResourceCard {resource} on:edit={(ev) => {
+					fileModal.edit = ev.detail
+					fileModal.open = true
+				}} />
+			{/each}
+		</div>
+		<Pagination
+			{pages}
+			on:previous={() => {if (data.prevPage != null) goto(getPageUrl("/knowledge", $page.url.searchParams, data.prevPage + 1))}}
+			on:next={() => {if (data.nextPage != null) goto(getPageUrl("/knowledge", $page.url.searchParams, data.nextPage + 1))}}
+		/>
 	</div>
 </section>
-<ResourceModal open={fileModal.open} />
+<ResourceModal open={fileModal.open} data={fileModal.edit} />

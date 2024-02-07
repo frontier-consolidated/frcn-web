@@ -1,7 +1,9 @@
 import type { PageServerLoad } from './$types';
 import { getResources } from './helpers';
 
-export const load = (async ({ locals, url }) => {
+export const load = (async ({ locals, url, depends }) => {
+    depends("app:resources")
+
     try {
         return await getResources(locals.apollo, url)
     } catch (err) {

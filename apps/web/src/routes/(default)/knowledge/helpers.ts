@@ -1,12 +1,9 @@
 
 import { Queries, type TypedApolloClient } from "$lib/graphql";
+import { getPageVars } from "$lib/pageHelpers";
 
 export async function getResources(apollo: TypedApolloClient, url: URL) {
-    let page: number | null = null;
-    if (url.searchParams.has("page")) {
-        page = Number(url.searchParams.get("page"))
-        if (isNaN(page)) page = null
-    }
+    const { page, limit } = getPageVars(url.searchParams)
 
     const { data } = await apollo.query({
         query: Queries.GET_RESOURCES,
@@ -14,7 +11,8 @@ export async function getResources(apollo: TypedApolloClient, url: URL) {
             filter: {
                 search: url.searchParams.get("q")
             },
-            page
+            page,
+            limit
         }
     });
 
