@@ -106,8 +106,33 @@
 		open = false;
 	}
 
-	function save() {
+	async function save() {
+		if (!data) return;
 
+		const { errors } = await getApollo().mutate({
+			mutation: Mutations.EDIT_RESOURCE,
+			variables: {
+				id: data.id,
+				data: {
+					name: editData.name,
+					shortDescription: editData.shortDescription,
+					tags: editData.tags
+				}
+			},
+			errorPolicy: "all",
+		});
+
+		if (errors && errors.length > 0) {
+			pushNotification({
+				type: "error",
+				message: "Failed to save resource",
+			});
+			console.error(errors);
+			return;
+		}
+
+		await invalidateAll()
+		open = false;
 	}
 </script>
 
@@ -187,7 +212,9 @@
 	</div>
 	<svelte:fragment slot="footer">
 		{#if data}
-			<Button>
+			<Button on:click={() => {
+				save().catch(console.error)
+			}}>
 				Save
 			</Button>
 		{:else}
