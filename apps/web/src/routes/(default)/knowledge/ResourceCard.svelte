@@ -30,7 +30,7 @@
     {/if}
     <div class="flex-1 flex flex-col px-4 py-2">
         <div class="flex flex-wrap gap-1">
-            <TimeBadge id="time-{resource.id}" format="datetime" value={resource.createdAt} class="dark:bg-gray-900" />
+            <TimeBadge id="time-{resource.id}" format="datetime" value={resource.updatedAt} class="dark:bg-gray-900" />
             {#each resource.tags as tag}
             <Badge>
                 {tag}
