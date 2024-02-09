@@ -8,12 +8,21 @@
 
 	import Hr from "$lib/components/Hr.svelte";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
+	import ccugameIcon from "$lib/images/tool-icons/ccugame.png"
+	import cstoneIcon from "$lib/images/tool-icons/cornerstone.png"
+	import erkulIcon from "$lib/images/tool-icons/erkul.png"
+	import hangarLinkIcon from "$lib/images/tool-icons/hangarlink.png"
+	import rsiIcon from "$lib/images/tool-icons/rsi.svg"
+	import tradeToolsIcon from "$lib/images/tool-icons/sc-trade-tools.webp"
+	import scorgToolsIcon from "$lib/images/tool-icons/scorgtools.svg"
+	import verseGuideIcon from "$lib/images/tool-icons/verseguide.svg"
 	import { getCurrentPage, getPageUrl, getPages } from "$lib/pageHelpers";
 	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
 	import ResourceCard from "./ResourceCard.svelte";
 	import ResourceModal from "./ResourceModal.svelte";
+	import ToolButton from "./ToolButton.svelte";
 
 	const search = queryParam("q")
 
@@ -29,12 +38,27 @@
 </script>
 
 <svelte:head>
-	<title>Knowledge</title>
+	<title>Resources</title>
 	<meta name="description" content="Frontier Consolidated - Search for Guides & Resources" />
 </svelte:head>
 
-<Heading tag="h1" class="font-medium text-4xl">Knowledge</Heading>
+<Heading tag="h1" class="font-medium text-4xl">Resources</Heading>
 <Hr />
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mt-2 px-4">
+	<ToolButton name="SC Trade Tools" img={tradeToolsIcon} href="https://sc-trade.tools/" />
+	<ToolButton name="Erkul" img={erkulIcon} href="https://www.erkul.games/" />
+	<ToolButton name="Cornerstone" img={cstoneIcon} href="https://finder.cstone.space/" />
+	<ToolButton name="CCU Game" img={ccugameIcon} href="https://ccugame.app/your-items/fleet" />
+	<ToolButton name="RSI Status" img={rsiIcon} href="https://status.robertsspaceindustries.com/" />
+	<ToolButton name="Hangar Link" href="https://hangar.link/" hideName>
+		<img slot="icon" src={hangarLinkIcon} alt="Hangar Link" class="h-6 object-contain" />
+	</ToolButton>
+	<ToolButton name="VerseGuide" href="https://verseguide.com/" hideName>
+		<img slot="icon" src={verseGuideIcon} alt="VerseGuide" class="h-6 object-contain" />
+	</ToolButton>
+	<ToolButton name="SC Org Tools" img={scorgToolsIcon} href="https://scorg.tools/" />
+</section>
+<Hr class="mt-4" />
 <section class="flex flex-col gap-2 mt-4">
 	<div>
 		<div class="flex flex-col sm:flex-row gap-2">

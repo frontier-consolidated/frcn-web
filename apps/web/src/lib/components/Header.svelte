@@ -76,7 +76,7 @@
 				</Button>
 			{/if}
 			<Button href={DISCORD_URL} color="none" class="shrink-0 ms-5 xl:ms-10 p-0 text-discord-500 hover:text-discord-200" size="lg">
-				<MediaQuery query="(min-width: 360px)" let:matches>
+				<MediaQuery query="(min-width: 410px)" let:matches>
 					{#if matches}
 						<DiscordSolid size="lg" class="me-2" />Discord
 					{:else}
@@ -101,11 +101,13 @@
 				<DropdownItem href="/about/org" class="flex items-center font-normal text-md lg:font-medium lg:text-sm"><BuildingSolid size="sm" class="me-2" /> Organisation</DropdownItem>
 				<DropdownItem href={MERCH_URL} class="flex items-center font-normal text-md lg:font-medium lg:text-sm"><BagSolid size="sm" class="me-2" /> Merch Store</DropdownItem>
 			</Dropdown>
-			<NavLi href="/events" class="flex gap-2 items-center"
-				><CalendarMonthSolid size="sm" />Events</NavLi
-			>
+			{#if !!$user.data}
+				<NavLi href="/events" class="flex gap-2 items-center">
+					<CalendarMonthSolid size="sm" />Events
+				</NavLi>
+			{/if}
 			<NavLi href="/knowledge" class="flex gap-2 items-center">
-				<BookSolid size="sm" />Knowledge
+				<BookSolid size="sm" />Resources
 			</NavLi>
 		</NavUl>
 	</NavContainer>
