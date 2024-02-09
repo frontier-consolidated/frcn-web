@@ -7,6 +7,7 @@
 	import Footer from "$lib/components/Footer.svelte";
 	import Header from "$lib/components/Header.svelte";
 	import Notifications from "$lib/components/Notifications.svelte";
+	import UserProfileModal from "$lib/components/UserProfileModal.svelte";
 </script>
 
 <svelte:head>
@@ -20,6 +21,7 @@
 	</Banner>
 	<slot />
 	<Footer />
+	<UserProfileModal />
 	<CookieConsentModal />
 	<Notifications />
 </div>

@@ -3,21 +3,8 @@ import { gql } from "../__generated__";
 export const CURRENT_USER = gql(`
 	query GetCurrentUser {
 		user: getCurrentUser {
-			id
-			name
-			scName
-			discordName
-			verified
-			avatarUrl
+			...UserFragment
 			permissions
-			primaryRole {
-				id
-				name
-			}
-			roles {
-				id
-				name
-			}
 			settings {
 				updatedAt
 			}
@@ -26,8 +13,6 @@ export const CURRENT_USER = gql(`
 				ship
 				updatedAt
 			}
-			updatedAt
-			createdAt
 		}
 	}
 `);
