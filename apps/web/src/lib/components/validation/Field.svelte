@@ -3,7 +3,6 @@
 	import { Frame } from 'flowbite-svelte';
 	import { CheckCircleSolid, ExclamationCircleSolid } from "flowbite-svelte-icons";
     import { onMount } from 'svelte';
-	import { twJoin } from "tailwind-merge";
 
 	import type { FieldValidator, ValidateFn } from "./FieldValidator";
 
@@ -62,15 +61,14 @@
     let arrowEl: Element | null = null;
     let referenceEl: Element | null = null;
 
-    $: middleware = [dom.shift(), dom.offset(+offset), dom.arrow({ element: arrowEl!, padding: 10 })];
+    $: middleware = [dom.shift(), dom.offset(+offset)];
     function updatePosition() {
-        dom.computePosition(referenceEl!, floatingEl, { placement: "top-end", strategy: "absolute", middleware }).then(({ x, y, middlewareData, placement, strategy }) => {
+        dom.computePosition(referenceEl!, floatingEl, { placement: "top-start", strategy: "absolute", middleware }).then(({ x, y, strategy }) => {
             floatingEl.style.position = strategy;
             floatingEl.style.left = px(x);
             floatingEl.style.top = px(y);
-            if (middlewareData.arrow && arrowEl instanceof HTMLDivElement) {
-                arrowEl.style.left = px(middlewareData.arrow.x);
-                arrowEl.style.top = px(middlewareData.arrow.y);
+            if (arrowEl instanceof HTMLDivElement) {
+                arrowEl.style.left = px((floatingEl.offsetWidth / 2 - 1) - (arrowEl.offsetWidth / 2 - 1));
                 arrowEl.style.bottom = px(-arrowEl.offsetWidth / 2 - 1);
             }
         });
@@ -98,20 +96,11 @@
             }
         };
     }
-
+    
     onMount(() => {
-        if (reference) {
-            referenceEl = document.querySelector(`#${reference}`) ?? document.body;
-            if (referenceEl === document.body) {
-                console.error(`Popup reference not found: '#${reference}'`);
-            }
-        }
-        else {
-            if (!contentEl.previousElementSibling) {
-                console.error('No triggers found.');
-            } else {
-                referenceEl = contentEl!.previousElementSibling
-            }
+        referenceEl = document.querySelector(`#${reference}`) ?? contentEl!.previousElementSibling;
+        if (!referenceEl) {
+            console.error(`Popup reference not found: '#${reference}'`);
         }
 
         return () => {
