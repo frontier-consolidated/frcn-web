@@ -5,6 +5,8 @@
 
 	import EmojiPickerInput from "$lib/components/emoji/EmojiPickerInput.svelte";
 	import type { Emoji } from "$lib/components/emoji/types";
+	import Field from "$lib/components/validation/Field.svelte";
+	import type { FieldValidator } from "$lib/components/validation/FieldValidator";
 
 	import type { PageData } from "./$types";
 
@@ -13,6 +15,8 @@
 	export let data: PageData;
 	export let roles: PageData["roles"];
 	export let role: PageData["roles"][number];
+	export let validator: FieldValidator;
+
 	let editRole = structuredClone(role);
 
 	function updateRole(edit: PageData["roles"][number]) {
@@ -63,12 +67,15 @@
 		<EmojiPickerInput init={editRole.emoji.id} {additionalEmojis} bind:value={emojiInput} />
 	</TableBodyCell>
 	<TableBodyCell>
-		<Input
-			name="Event Role Name"
-			class="!bg-transparent !border-transparent !p-1 text-ellipsis"
-			placeholder="Role name"
-			bind:value={editRole.name}
-		/>
+		<Field {validator} for="{role.id}-role-name" value={editRole.name} required>
+			<Input
+				id="{role.id}-role-name"
+				name="Event Role Name"
+				class="!bg-transparent !border-transparent !p-1 text-ellipsis"
+				placeholder="Role name"
+				bind:value={editRole.name}
+			/>
+		</Field>
 	</TableBodyCell>
 	<TableBodyCell class="text-center">
 		<Input

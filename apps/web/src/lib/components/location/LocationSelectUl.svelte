@@ -45,7 +45,7 @@
 	}
 </script>
 
-<ul class="flex flex-col gap-2">
+<ul class="flex flex-col gap-2" {...$$restProps}>
 	{#each liOptions as options, i}
 		<LocationSelectLi
 			{options}

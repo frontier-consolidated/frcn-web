@@ -9,6 +9,7 @@
 		CloseSolid,
 	} from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
+	import isURL from "validator/lib/isURL"
 
 	import DatetimePicker from "$lib/components/datetime/DatetimePicker.svelte";
 	import DurationPicker from "$lib/components/datetime/DurationPicker.svelte";
@@ -16,6 +17,8 @@
 	import MarkdownEditor from "$lib/components/markdown/MarkdownEditor.svelte";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
 	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
+	import Field from "$lib/components/validation/Field.svelte";
+	import { FieldValidator } from "$lib/components/validation/FieldValidator";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -37,8 +40,11 @@
 	$: if (startDate) editData.startAt = startDate.getTime();
 
 	let imagePlaceholder = false
+	let validator = new FieldValidator()
 
 	async function save() {
+		if (!validator.validate()) return false;
+		
 		const { data: updatedData, errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_EVENT,
 			variables: {
@@ -93,6 +99,7 @@
 	}
 
 	async function post() {
+		if (!validator.validate()) return false;
 		if (isDirty) {
 			if (!(await save())) return;
 		}
@@ -127,7 +134,7 @@
 					General Settings
 				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
-					<div>
+					<Field {validator} for="event-type" value={editData.eventType} required>
 						<Label for="event-type" class="mb-2">Event Type</Label>
 						<BetterSelect
 							id="event-type"
@@ -136,8 +143,8 @@
 							required
 							bind:value={editData.eventType}
 						/>
-					</div>
-					<div>
+					</Field>
+					<Field {validator} for="event-name" value={editData.name} required>
 						<Label for="event-name" class="mb-2">Event Name</Label>
 						<Input
 							id="event-name"
@@ -147,8 +154,8 @@
 							required
 							bind:value={editData.name}
 						/>
-					</div>
-					<div>
+					</Field>
+					<Field {validator} for="event-summary" value={editData.summary} required>
 						<Label for="event-summary" class="mb-2">Event Summary</Label>
 						<Input
 							id="event-summary"
@@ -161,8 +168,18 @@
 						<Helper class="mt-1">
 							This is used on the events page and as a description in link embeds
 						</Helper>
-					</div>
-					<div>
+					</Field>
+					<Field {validator} for="event-image" value={editData.imageUrl} validate={(value) => {
+						if (!value) return [true, null];
+						const valid = isURL(value, {
+							require_protocol: true,
+							require_valid_protocol: true,
+							protocols: ["https"],
+							validate_length: true,
+						})
+						if (valid) return [true, null];
+						return [false, "Not a valid or allowed image url"]
+					}}>
 						<Label for="event-image" class="mb-2">Event Image</Label>
 						<Input
 							id="event-image"
@@ -187,7 +204,7 @@
 							</div>
 						</div>
 						{/if}
-					</div>
+					</Field>
 					<Alert color="red" class="dark:bg-gray-900">
 						<span slot="icon">
 							<InfoCircleSolid slot="icon" size="sm" />
@@ -198,13 +215,13 @@
 							link to the event</p
 						>
 					</Alert>
-					<div>
+					<Field {validator} for="event-description" value={editData.description}>
 						<Label for="event-description" class="mb-2">Event Description</Label>
 						<MarkdownEditor
 							placeholder="Describe the event"
 							bind:value={editData.description}
 						/>
-					</div>
+					</Field>
 				</div>
 			</section>
 			<section>
@@ -212,7 +229,7 @@
 					Event Time
 				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
-					<div>
+					<Field {validator} for="event-start" value={startDate} required>
 						<Label for="event-start" class="mb-2">Event Start</Label>
 						<DatetimePicker
 							id="event-start"
@@ -220,15 +237,15 @@
 							disable="past"
 							bind:value={startDate}
 						/>
-					</div>
-					<div>
+					</Field>
+					<Field {validator} for="event-duration" value={editData.duration} required>
 						<Label for="event-duration" class="mb-2">Event Duration</Label>
 						<DurationPicker
 							id="event-duration"
 							name="Event Duration"
 							bind:value={editData.duration}
 						/>
-					</div>
+					</Field>
 				</div>
 			</section>
 		</div>
@@ -238,16 +255,18 @@
 					Event Location
 				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
-					<div>
-						<Checkbox bind:checked={editData.settings.hideLocation}
-							>Hide Location</Checkbox
-						>
+					<Field {validator} for="event-hide-location" value={editData.settings.hideLocation}>
+						<Checkbox id="event-hide-location" bind:checked={editData.settings.hideLocation}>
+							Hide Location
+						</Checkbox>
 						<Helper
 							>If enabled, the event location will only be shown to users once they
 							join the event</Helper
 						>
-					</div>
-					<LocationSelectUl bind:value={editData.location} />
+					</Field>
+					<Field {validator} for="event-location" value={editData.location}>
+						<LocationSelectUl id="event-location" bind:value={editData.location} />
+					</Field>
 				</div>
 			</section>
 			<section>
@@ -255,7 +274,7 @@
 					Join Permissions
 				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
-					<div>
+					<Field {validator} for="event-access" value={editData.accessType}>
 						<Label for="event-access" class="mb-2">Event Access</Label>
 						<BetterSelect
 							id="event-access"
@@ -267,25 +286,27 @@
 							required
 							bind:value={editData.accessType}
 						/>
-					</div>
-					<div>
-						<Toggle bind:checked={editData.settings.inviteOnly}
+					</Field>
+					<Field {validator} for="event-require-invite" value={editData.settings.inviteOnly}>
+						<Toggle id="event-require-invite" bind:checked={editData.settings.inviteOnly}
 							>Require Invite to Join</Toggle
 						>
 						<Helper class="mt-1">
 							Selected users will have to request an invitation to join
 						</Helper>
-					</div>
-					<div>
+					</Field>
+					<Field {validator} for="event-open-to-requests" value={editData.settings.openToJoinRequests}>
 						{#key editData.settings.inviteOnly}
 							<Toggle
+								id="event-open-to-requests"
 								disabled={!editData.settings.inviteOnly}
 								bind:checked={editData.settings.openToJoinRequests}
-								>Open to Join Requests</Toggle
 							>
+							Open to Join Requests
+							</Toggle>
 						{/key}
 						<Helper class="mt-1">Selected users can request to join the event</Helper>
-					</div>
+					</Field>
 				</div>
 			</section>
 			<section>
@@ -293,22 +314,22 @@
 					Member Permissions
 				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
-					<div>
-						<Toggle bind:checked={editData.settings.allowTeamSwitching}
-							>Allow Team Switching</Toggle
-						>
+					<Field {validator} for="event-allow-team-switching" value={editData.settings.allowTeamSwitching}>
+						<Toggle id="event-allow-team-switching" bind:checked={editData.settings.allowTeamSwitching}>
+							Allow Team Switching
+						</Toggle>
 						<Helper class="mt-1">
 							Users will be able to switch teams once the event has started
 						</Helper>
-					</div>
-					<div>
-						<Toggle bind:checked={editData.settings.allowCrewSwitching}
-							>Allow Crew Switching</Toggle
-						>
+					</Field>
+					<Field {validator} for="event-allow-crew-switching" value={editData.settings.allowCrewSwitching}>
+						<Toggle id="event-allow-crew-switching" bind:checked={editData.settings.allowCrewSwitching}>
+							Allow Crew Switching
+						</Toggle>
 						<Helper class="mt-1">
 							Users will be able to switch crews once the event has started
 						</Helper>
-					</div>
+					</Field>
 				</div>
 			</section>
 			<section>
@@ -316,7 +337,7 @@
 					Discord Settings
 				</SectionHeading>
 				<div class="flex flex-col gap-4 p-4">
-					<div>
+					<Field {validator} for="event-channel" value={editData.channel.id} required>
 						<Label for="event-channel" class="mb-2">Events Channel</Label>
 						<BetterSelect
 							id="event-channel"
@@ -328,8 +349,8 @@
 							required
 							bind:value={editData.channel.id}
 						/>
-					</div>
-					<div>
+					</Field>
+					<Field {validator} for="event-mentions" value={editData.mentions}>
 						<Label for="event-mentions" class="mb-2">Mentions</Label>
 						<BetterSelect
 							id="event-mentions"
@@ -352,7 +373,7 @@
 								<span>{option.name}</span>
 							</div>
 						</BetterSelect>
-					</div>
+					</Field>
 				</div>
 			</section>
 		</div>
@@ -361,11 +382,11 @@
 		<SectionHeading>
 			Event RSVPs
 		</SectionHeading>
-		<div class="p-4">
-			<RsvpTable {data} bind:value={editData.roles} />
+		<div class="py-4 sm:px-4">
+			<RsvpTable id="event-rsvps" {validator} {data} bind:value={editData.roles} />
 		</div>
 	</section>
-	<div class="flex justify-end items-center gap-2">
+	<div class="flex flex-wrap justify-end items-center gap-2">
 		<Button color="alternative" on:click={() => {
 			editData = cloneEventSettingsData(data);
 		}}>
