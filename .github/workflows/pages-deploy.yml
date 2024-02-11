@@ -45,7 +45,7 @@ jobs:
                   bundler-cache: true
 
             - name: Install dependencies
-              run: cd docs && bundle install"
+              run: cd docs && bundle install
 
             - name: Build site
               run: cd docs && bundle exec jekyll b -d "_site${{ steps.pages.outputs.base_path }}"
