@@ -5,6 +5,8 @@
 
 	import { Routes, api } from "$lib/api";
     import BetterSelect from "$lib/components/select/BetterSelect.svelte";
+	import Field from "$lib/components/validation/Field.svelte";
+	import { FieldValidator } from "$lib/components/validation/FieldValidator";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -34,6 +36,8 @@
 	export let data: ResourceFragmentFragment | null = null;
 	let editData = cloneResourceData(data)
 
+	$: isDirty = !!data && (data.name !== editData.name || data.shortDescription !== editData.shortDescription || data.tags.length !== editData.tags.length || data.tags.some(tag => !editData.tags.find(t => t === tag)))
+
 	let lastData = data;
 
 	$: {
@@ -53,7 +57,21 @@
 		}
 	}
 
+	const validator = new FieldValidator()
+
 	async function upload() {
+		const valid = validator.validate()
+		console.log(valid)
+		if (!valid) return;
+
+		if (!uploadFiles || uploadFiles.length < 1) {
+			pushNotification({
+				type: "error",
+				message: "No file found",
+			});
+			return 
+		}
+
 		const { data: createData, errors } = await getApollo().mutate({
 			mutation: Mutations.CREATE_RESOURCE,
 			variables: {
@@ -108,6 +126,7 @@
 
 	async function save() {
 		if (!data) return;
+		if (!validator.validate()) return;
 
 		const { errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_RESOURCE,
@@ -138,7 +157,12 @@
 
 <Modal title={data ? `Edit - ${data.name}` : "Upload resource"} bind:open dismissable>
 	<div class="flex flex-col gap-4 p-4">
-		<div>
+		<Field 
+			{validator}
+			for="resource-upload-name"
+			value={editData.name}
+			required
+		>
 			<Label for="resource-upload-name" class="mb-2">Name</Label>
 			<Input
 				id="resource-upload-name"
@@ -149,8 +173,13 @@
                 maxlength="255"
 				bind:value={editData.name}
 			/>
-		</div>
-        <div>
+		</Field>
+        <Field 
+			{validator}
+			for="resource-upload-description"
+			value={editData.shortDescription}
+			required
+		>
 			<Label for="resource-upload-description" class="mb-2">Description</Label>
 			<Textarea
                 class="bg-gray-50 text-gray-900 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 border-gray-300 dark:border-gray-500"
@@ -162,8 +191,13 @@
                 maxlength="512"
 				bind:value={editData.shortDescription}
 			/>
-		</div>
-        <div>
+		</Field>
+        <Field 
+			{validator}
+			for="resource-upload-tags"
+			value={editData.tags}
+			required
+		>
 			<Label for="resource-upload-tags" class="mb-2">Tags</Label>
             <BetterSelect
                 id="resource-upload-tags"
@@ -177,9 +211,9 @@
                 search
 				bind:value={editData.tags}
             />
-		</div>
+		</Field>
 		{#if !data}
-			<div>
+			<Field {validator} for="resource-upload" value={uploadFiles} required>
 				<Label for="resource-upload" class="mb-2">Files</Label>
 				<button
 					type="button"
@@ -195,24 +229,25 @@
 						<div class="flex flex-col items-center w-full flex-1">
 							<UploadSolid class="mb-3" size="lg" />
 							<p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-							<p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF or PDF</p>
+							<p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF, SVG or PDF</p>
 						</div>
 					{/if}
 					<input 
 						type="file"
 						id="resource-upload"
 						name="File Upload"
+						accept="image/*,.pdf"
 						class="absolute cursor-pointer top-0 left-0 h-full w-full z-0 opacity-0" 
 						bind:this={uploadInput} 
 						bind:files={uploadFiles}
 					/>
 				</button>
-			</div>
+			</Field>
 		{/if}
 	</div>
 	<svelte:fragment slot="footer">
 		{#if data}
-			<Button on:click={() => {
+			<Button disabled={!isDirty} on:click={() => {
 				save().catch(console.error)
 			}}>
 				Save

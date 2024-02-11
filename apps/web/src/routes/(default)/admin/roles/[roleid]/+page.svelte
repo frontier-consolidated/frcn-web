@@ -9,6 +9,8 @@
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
 	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
 	import Tooltip from "$lib/components/Tooltip.svelte";
+	import Field from "$lib/components/validation/Field.svelte";
+	import { FieldValidator } from "$lib/components/validation/FieldValidator";
 	import { getApollo, Mutations } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
@@ -72,6 +74,8 @@
 		}
 	}
 
+	let validator = new FieldValidator();
+
 	async function save() {
 		const { data: updatedData, errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_ROLE,
@@ -123,7 +127,7 @@
 		<Tabs style="underline" class="mt-2" contentClass="">
 			<TabItem title="General" open={$page.url.hash === "#general" || !$page.url.hash} on:click={() => window.location.hash = "#general"}>
 				<div class="flex flex-col gap-4 p-4">
-					<div>
+					<Field {validator} for="system-roles-role-name" value={editData.name} required>
 						<Label for="system-roles-role-name" class="mb-2">Role Name</Label>
 						<Input
 							id="system-roles-role-name"
@@ -134,18 +138,18 @@
 							required
 							bind:value={editData.name}
 						/>
-					</div>
+					</Field>
 					<Hr />
-					<div>
-						<Toggle bind:checked={editData.primary}>
+					<Field {validator} for="system-roles-role-primary" value={editData.primary} required>
+						<Toggle id="system-roles-role-primary" bind:checked={editData.primary}>
 							Primary Role
 						</Toggle>
 						<Helper class="mt-1">
 							Sets the role as a primary role, users must only have 1 primary role
 						</Helper>
-					</div>
+					</Field>
 					<Hr />
-					<div>
+					<Field {validator} for="system-roles-role-discord-role" value={editData.discordId}>
 						<Label for="system-roles-role-discord-role" class="mb-2 flex items-center">
 							Discord Role
 							{#if data.role.discordId && !data.options.discordRoles.find(r => r.id === data.role.discordId)}
@@ -168,7 +172,6 @@
 									color: role.color === "#000000" ? "#e5e7eb" : role.color
 								}
 							}))]}
-							required
 							search
 							bind:value={editData.discordId}
 							let:option
@@ -183,7 +186,7 @@
 						<Helper class="mt-1">
 							The discord guild role that this role is linked to, users will receive this role if they have the selected discord role
 						</Helper>
-					</div>
+					</Field>
 				</div>
 			</TabItem>
 			<TabItem title="Permissions" open={$page.url.hash === "#permissions"} on:click={() => window.location.hash = "#permissions"}>

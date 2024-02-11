@@ -3,15 +3,17 @@
 	import { v4 as uuidv4 } from 'uuid';
 
 	import Tooltip from "$lib/components/Tooltip.svelte";
+	import type { FieldValidator } from "$lib/components/validation/FieldValidator";
 
 	import type { PageData } from "./$types";
 	import RsvpItem from "./RSVPItem.svelte";
 
 	export let data: PageData;
 	export let value: PageData["roles"] = [];
+	export let validator: FieldValidator;
 </script>
 
-<Table divClass="relative">
+<Table divClass="relative" {...$$restProps}>
 	<TableHead>
 		<TableHeadCell class="w-16">
 			<div class="flex items-center">
@@ -33,7 +35,7 @@
 	<TableBody tableBodyClass="divide-y">
 		{#each value as role}
 			{#key role.id}
-				<RsvpItem {data} bind:roles={value} {role} />
+				<RsvpItem {validator} {data} bind:roles={value} {role} />
 			{/key}
 		{/each}
 	</TableBody>
