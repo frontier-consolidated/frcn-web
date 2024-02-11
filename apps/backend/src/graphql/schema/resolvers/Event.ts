@@ -151,10 +151,7 @@ export const eventResolvers: Resolvers = {
 		async accessRoles(source) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const accessRoles = await database.event.getAccessRoles(_model);
-			const roles = await Promise.all(
-				accessRoles.map((r) => database.eventsWithUserRoleForAccess.getRole(r))
-			);
-			return roles.map(resolveUserRole);
+			return accessRoles.map(resolveUserRole);
 		},
 	},
 
@@ -270,10 +267,6 @@ export const eventResolvers: Resolvers = {
 				throw gqlErrorBadInput(`Event type not allowed: ${data.eventType}`);
 			}
 
-			if (data.location && data.location.length < 1) {
-				throw gqlErrorBadInput(`Expected location to have atleast 1 item`);
-			}
-
 			if (data.roles) {
 				if (data.roles.length < 1) {
 					throw gqlErrorBadInput(`Expected atleast 1 role`);
@@ -350,7 +343,6 @@ export const eventResolvers: Resolvers = {
 
 			if (!event.name) throw gqlErrorBadState("Event is missing name");
 			if (!event.eventType) throw gqlErrorBadState("Event is missing type");
-			if (event.location.length < 1) throw gqlErrorBadState("Event is missing location");
 			if (!event.startAt) throw gqlErrorBadState("Event is missing start date");
 			if (!event.duration) throw gqlErrorBadState("Event is missing duration");
 
@@ -358,7 +350,7 @@ export const eventResolvers: Resolvers = {
 				event.accessType === EventAccessType.PrimaryRole ||
 				event.accessType === EventAccessType.SelectRoles
 			) {
-				const accessRoles = await database.event.getAccessRoles(event);
+				const accessRoles = await database.event.getAccessThroughRoles(event);
 				if (accessRoles.length < 1) {
 					throw gqlErrorBadState("Event expected an access role");
 				}

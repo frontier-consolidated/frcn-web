@@ -1,114 +1,95 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
+	import { page } from "$app/stores";
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Button, Heading, Input, Label, Modal, Search } from "flowbite-svelte";
-	import { CirclePlusSolid, UploadSolid } from "flowbite-svelte-icons";
+	import { Button, Heading, Pagination, Search } from "flowbite-svelte";
+	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params"
 
 	import Hr from "$lib/components/Hr.svelte";
+	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
+	import ccugameIcon from "$lib/images/tool-icons/ccugame.png"
+	import cstoneIcon from "$lib/images/tool-icons/cornerstone.png"
+	import erkulIcon from "$lib/images/tool-icons/erkul.png"
+	import hangarLinkIcon from "$lib/images/tool-icons/hangarlink.png"
+	import rsiIcon from "$lib/images/tool-icons/rsi.svg"
+	import tradeToolsIcon from "$lib/images/tool-icons/sc-trade-tools.webp"
+	import scorgToolsIcon from "$lib/images/tool-icons/scorgtools.svg"
+	import verseGuideIcon from "$lib/images/tool-icons/verseguide.svg"
+	import { getCurrentPage, getPageUrl, getPages } from "$lib/pageHelpers";
 	import { user } from "$lib/stores/UserStore";
+
+	import type { PageData } from "./$types";
+	import ResourceCard from "./ResourceCard.svelte";
+	import ResourceModal from "./ResourceModal.svelte";
+	import ToolButton from "./ToolButton.svelte";
 
 	const search = queryParam("q")
 
-	let uploadModal = false;
-	let uploadInput: HTMLInputElement | null = null;
-	let uploadFiles: FileList;
+	export let data: PageData;
 
-	function handleFileKeydown(ev: KeyboardEvent) {
-		if (uploadInput && [' ', 'Enter'].includes(ev.key)) {
-			ev.preventDefault();
-			uploadInput.click();
-		}
-	}
+	let fileModal = { open: false, edit: null } as {
+		open: boolean;
+		edit: ResourceFragmentFragment | null
+	};
 
-	// function handleFileDrop(event: DragEvent) {
-	// 	event.preventDefault()
-	// 	uploadFile = null
-
-	// 	if (event.dataTransfer?.items) {
-	// 		[...event.dataTransfer.items].forEach((item) => {
-	// 			if (item.kind === "file") {
-	// 				const file = item.getAsFile()
-	// 				uploadFile = file;
-	// 			}
-	// 		})
-	// 	} else if (event.dataTransfer?.files) {
-	// 		[...event.dataTransfer.files].forEach((file) => {
-	// 			uploadFile = file
-	// 		})
-	// 	}
-	// }
-
-	// function handleFileChange(event: Event) {
-	// 	const files = (event.target as HTMLInputElement | null)?.files
-	// 	if (files && files.length > 0) {
-	// 		uploadFile = files[0]
-	// 	}
-	// }
+	$: currentPage = getCurrentPage($page.url.searchParams);
+	$: pages = getPages("/knowledge", $page.url.searchParams, currentPage, data.itemsPerPage, data.total);
 </script>
 
 <svelte:head>
-	<title>Knowledge</title>
+	<title>Resources</title>
 	<meta name="description" content="Frontier Consolidated - Search for Guides & Resources" />
 </svelte:head>
 
-<Heading tag="h1" class="font-medium text-4xl">Knowledge</Heading>
+<Heading tag="h1" class="font-medium text-4xl">Resources</Heading>
 <Hr />
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mt-2 px-4">
+	<ToolButton name="SC Trade Tools" img={tradeToolsIcon} href="https://sc-trade.tools/" />
+	<ToolButton name="Erkul" img={erkulIcon} href="https://www.erkul.games/" />
+	<ToolButton name="Cornerstone" img={cstoneIcon} href="https://finder.cstone.space/" />
+	<ToolButton name="CCU Game" img={ccugameIcon} href="https://ccugame.app/your-items/fleet" />
+	<ToolButton name="RSI Status" img={rsiIcon} href="https://status.robertsspaceindustries.com/" />
+	<ToolButton name="Hangar Link" href="https://hangar.link/" hideName>
+		<img slot="icon" src={hangarLinkIcon} alt="Hangar Link" class="h-6 object-contain" />
+	</ToolButton>
+	<ToolButton name="VerseGuide" href="https://verseguide.com/" hideName>
+		<img slot="icon" src={verseGuideIcon} alt="VerseGuide" class="h-6 object-contain" />
+	</ToolButton>
+	<ToolButton name="SC Org Tools" img={scorgToolsIcon} href="https://scorg.tools/" />
+</section>
+<Hr class="mt-4" />
 <section class="flex flex-col gap-2 mt-4">
 	<div>
 		<div class="flex flex-col sm:flex-row gap-2">
 			<Search size="md" placeholder="Search by name" class="flex-1 sm:w-96" bind:value={$search} />
-			{#if hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
+			{#if hasPermission($user.data?.permissions ?? 0, Permission.UploadResources)}
 				<Button
 					class="self-end sm:shrink-0"
-					on:click={() => (uploadModal = true)}
+					on:click={() => {
+						fileModal.edit = null;
+						fileModal.open = true;
+					}}
 				>
-					<CirclePlusSolid class="me-2" /> Upload File
+					<CirclePlusSolid class="me-2" /> Upload Resource
 				</Button>
 			{/if}
 		</div>
 	</div>
-</section>
-<Modal title="Upload file" bind:open={uploadModal} dismissable>
-	<div class="flex flex-col gap-4 p-4">
-		<div>
-			<Label for="file-upload-name" class="mb-2">File Name</Label>
-			<Input
-				id="file-upload-name"
-				name="File Upload Name"
-				type="text"
-				placeholder="File name"
-				required
-			/>
+	<div class="flex flex-col items-center self-start">
+		<div class="grid min-[580px]:grid-cols-2 lg:grid-cols-3 gap-2 p-4">
+			{#each data.resources as resource}
+				<ResourceCard {resource} on:edit={(ev) => {
+					fileModal.edit = ev.detail
+					fileModal.open = true
+				}} />
+			{/each}
 		</div>
-		<div>
-			<Label for="file-upload" class="mb-2">Files</Label>
-			<button
-				type="button"
-				class="relative flex justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600" 
-				on:keydown={handleFileKeydown}
-			>
-				{#if uploadFiles?.length > 0}
-					<p class="text-md text-gray-500 dark:text-gray-400">{uploadFiles[0].name}</p>
-				{:else}
-					<div class="flex flex-col items-center w-full h-full">
-						<UploadSolid class="mb-3" size="lg" />
-						<p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-						<p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF or PDF</p>
-					</div>
-				{/if}
-				<input 
-					type="file"
-					id="file-upload"
-					name="File Upload"
-					class="absolute cursor-pointer top-0 left-0 h-full w-full z-0 opacity-0" 
-					bind:this={uploadInput} 
-					bind:files={uploadFiles}
-				/>
-			</button>
-		</div>
+		<Pagination
+			{pages}
+			on:previous={() => {if (data.prevPage != null) goto(getPageUrl("/knowledge", $page.url.searchParams, data.prevPage + 1))}}
+			on:next={() => {if (data.nextPage != null) goto(getPageUrl("/knowledge", $page.url.searchParams, data.nextPage + 1))}}
+		/>
 	</div>
-	<svelte:fragment slot="footer">
-		<Button>Upload</Button>
-		<Button color="alternative" on:click={() => uploadModal = false}>Cancel</Button>
-  	</svelte:fragment>
-</Modal>
+</section>
+<ResourceModal open={fileModal.open} data={fileModal.edit} />

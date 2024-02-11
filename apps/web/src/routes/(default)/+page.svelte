@@ -1,15 +1,10 @@
 <script lang="ts">
-	import { Button, Carousel, Gallery, Heading, type ImgType } from "flowbite-svelte";
+	import { Button, Heading } from "flowbite-svelte";
 	import { BookSolid, BuildingSolid, CalendarMonthSolid, DiscordSolid, UsersSolid } from "flowbite-svelte-icons";
-	import type { HTMLImgAttributes } from "svelte/elements";
 	import { twMerge } from "tailwind-merge";
 
 	import Hr from "$lib/components/Hr.svelte";
 	import { DISCORD_URL } from "$lib/constants";
-	import image1 from "$lib/images/stock/carousel/1.png"
-	import image2 from "$lib/images/stock/carousel/2.png"
-	import image3 from "$lib/images/stock/carousel/3.png"
-	import image4 from "$lib/images/stock/carousel/4.png"
 	import activitiesImage from "$lib/images/stock/community/1.jpg"
 	import orgImage from "$lib/images/stock/community/5.png"
 	import communityImage from "$lib/images/stock/community.jpg"
@@ -30,21 +25,6 @@
 	import HeroImg from "./about/HeroImg.svelte";
 	import HeroTitle from "./about/HeroTitle.svelte";
 	import PageCard from "./PageCard.svelte";
-
-	const carouselImages: HTMLImgAttributes[] = [
-		{
-			src: image1,
-		},
-		{
-			src: image2,
-		},
-		{
-			src: image3,
-		},
-		{
-			src: image4,
-		}
-	]
 
 	const galleryImages = [
 		{
@@ -107,7 +87,26 @@
 	<link rel="preload" href={knowledgeImage} as="image" />
 </svelte:head>
 
-<div class="grid min-[480px]:grid-cols-2 lg:grid-cols-4 mt-4 gap-4">
+<HeroImg 
+	src={gallery7}
+	class="mt-4"
+	imgClass="rounded-t-lg sm:rounded-lg object-cover w-full h-72 sm:h-96 md:h-96 lg:h-[30rem]"
+	captionClass="sm:absolute rounded-b-lg sm:rounded flex flex-col gap-3 sm:m-8 p-6 sm:max-w-[24rem] bg-gray-800 sm:bg-black sm:bg-opacity-70 text-white"
+>
+	<HeroTitle>Welcome to the Frontier!</HeroTitle>
+	<p>
+		Frontier Consolidated is a growing Star Citizen organisation and we want to bring the joy of multiplayer action to as many people as we can.
+	</p>
+	<p>
+		Check out our community and org pages to see what we're about and come say hi over on Discord if you want to get involved.
+	</p>
+	<div class="flex-1 flex items-end justify-center">
+		<Button size="lg" class="text-white bg-discord-500 dark:bg-discord-500 dark:hover:bg-discord-200" href={DISCORD_URL}>
+			<DiscordSolid class="me-2" /> Join Our Discord
+		</Button>
+	</div>
+</HeroImg>
+<div class="grid min-[480px]:grid-cols-2 lg:grid-cols-4 mt-8 gap-4">
 	<PageCard
 		src={communityImage}
 		href="/about/community"
@@ -133,29 +132,6 @@
 		<BookSolid size="sm" class="me-2" /> Guides & Resources
 	</PageCard>
 </div>
-<!-- <div class="mt-8">
-	Must provide overrides for the sm, xl and 2xl breakpoints
-	<Carousel images={carouselImages} duration={7000} class="h-72 sm:h-80 lg:h-96 xl:h-[28rem] 2xl:h-[28rem]" let:Controls let:Indicators>
-		<Controls />
-		<Indicators  />
-	</Carousel>
-</div> -->
-<HeroImg 
-	src={gallery7}
-	class="mt-8"
-	imgClass="rounded-lg object-cover w-full h-72 md:h-96 lg:h-[30rem]"
-	captionClass="absolute rounded flex flex-col gap-3 m-8 p-6 max-w-[24rem] bg-black bg-opacity-70 text-white"
->
-	<HeroTitle>Come join us!</HeroTitle>
-	<p>
-		The 'verse is dark and full of dangers, but you don't have to face the void alone.
-	</p>
-	<div class="flex-1 flex items-end justify-center">
-		<Button size="lg" class="text-white bg-discord-500 dark:bg-discord-500 dark:hover:bg-discord-200" href={DISCORD_URL}>
-			<DiscordSolid class="me-2" /> Join Our Discord
-		</Button>
-	</div>
-</HeroImg>
 <section class="mt-8">
 	<Heading tag="h2" class="font-medium text-2xl">
 		Gallery

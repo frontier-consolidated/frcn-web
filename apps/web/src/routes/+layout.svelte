@@ -7,10 +7,10 @@
 	import Footer from "$lib/components/Footer.svelte";
 	import Header from "$lib/components/Header.svelte";
 	import Notifications from "$lib/components/Notifications.svelte";
+	import UserProfileModal from "$lib/components/UserProfileModal.svelte";
 </script>
 
 <svelte:head>
-	<title>Frontier Consolidated</title>
 	<meta name="theme-color" content="#1784F2">
 </svelte:head>
 
@@ -21,6 +21,7 @@
 	</Banner>
 	<slot />
 	<Footer />
+	<UserProfileModal />
 	<CookieConsentModal />
 	<Notifications />
 </div>

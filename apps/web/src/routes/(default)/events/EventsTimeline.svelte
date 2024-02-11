@@ -2,45 +2,16 @@
 	import { goto } from "$app/navigation";
     import { page } from "$app/stores";
 	import { strings } from "@frcn/shared";
-	import { Timeline, type LinkType, TimelineItem, Card, Breadcrumb, BreadcrumbItem, Pagination } from "flowbite-svelte";
+	import { Timeline, TimelineItem, Card, Breadcrumb, BreadcrumbItem, Pagination } from "flowbite-svelte";
 	import { CalendarMonthSolid } from "flowbite-svelte-icons";
 
 	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
 	import LocationBreadcrumbItem from "$lib/components/location/LocationBreadcrumbItem.svelte";
+	import { getCurrentPage, getPageUrl, getPages } from "$lib/pageHelpers";
 
     import type { PageData } from "./$types";
 
 	export let data: PageData;
-
-    function getCurrentPage(query: URLSearchParams) {
-		let pageNum = Number(query.get("page") ?? "1")
-		if (isNaN(pageNum)) return 0;
-		return pageNum - 1
-	}
-
-	function getPages(path: string, query: URLSearchParams, currentPage: number, itemsPerPage: number, total: number) {
-		const pages: LinkType[] = []
-
-		const lastPage = Math.ceil(total / itemsPerPage) - 1
-
-		let startPage = Math.max(0, currentPage - 2)
-		const endPage = Math.max(0, Math.min(lastPage, startPage + 4))
-		startPage = Math.max(0, Math.min(startPage, endPage - 4))
-
-		for (let p = 0; p < (endPage - startPage + 1); p++) {
-			const page = startPage + p;
-            const pageQuery = new URLSearchParams(query)
-            pageQuery.set("page", `${page + 1}`)
-
-			pages.push({
-				name: `${page + 1}`,
-				href: `${path}?${pageQuery.toString()}`,
-				active: page === currentPage,
-			})
-		}
-
-		return pages;
-	}
 	
 	$: currentPage = getCurrentPage($page.url.searchParams);
 	$: pages = getPages("/events", $page.url.searchParams, currentPage, data.itemsPerPage, data.total);
@@ -84,9 +55,13 @@
                                     </BreadcrumbItem>
                                 {/if}
                                 {#if event.location}
-                                    {#each event.location as item}
-                                        <LocationBreadcrumbItem location={item} />
-                                    {/each}
+                                    {#if event.location.length > 0}
+                                        {#each event.location as item}
+                                            <LocationBreadcrumbItem location={item} />
+                                        {/each}
+                                    {:else}
+                                        <BreadcrumbItem>Anywhere</BreadcrumbItem>
+                                    {/if}
                                 {:else}
                                     <BreadcrumbItem>???</BreadcrumbItem>
                                 {/if}
@@ -107,7 +82,7 @@
     </Timeline>
     <Pagination 
         {pages}
-        on:previous={() => {if (data.prevPage) goto(`/events?page=${data.prevPage + 1}`)}}
-        on:next={() => {if (data.nextPage) goto(`/events?page=${data.nextPage + 1}`)}}
+        on:previous={() => {if (data.prevPage != null) goto(getPageUrl("/events", $page.url.searchParams, data.prevPage + 1))}}
+			on:next={() => {if (data.nextPage != null) goto(getPageUrl("/events", $page.url.searchParams, data.nextPage + 1))}}
     />
 </div>

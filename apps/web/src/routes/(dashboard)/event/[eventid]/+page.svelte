@@ -52,9 +52,13 @@
 				</BreadcrumbItem>
 			{/if}
 			{#if data.location}
-				{#each data.location as item}
-					<LocationBreadcrumbItem location={item} />
-				{/each}
+				{#if data.location.length > 0}
+					{#each data.location as item}
+						<LocationBreadcrumbItem location={item} />
+					{/each}
+				{:else}
+					<BreadcrumbItem>Anywhere</BreadcrumbItem>
+				{/if}
 			{:else}
 				<BreadcrumbItem>???</BreadcrumbItem>
 			{/if}

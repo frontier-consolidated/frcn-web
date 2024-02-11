@@ -11,8 +11,8 @@
     export let src: string;
     export let alt: string = "";
     export let position: keyof typeof positions = "bottom-right"
-    export let captionClass = "absolute rounded flex flex-col gap-3 m-8 max-w-[60%] p-6 bg-black bg-opacity-70 text-white"
-    export let imgClass = "rounded-lg object-cover w-full h-[36rem]"
+    export let captionClass = "sm:absolute rounded-b-lg sm:rounded flex flex-col gap-3 sm:m-8 sm:max-w-[60%] p-6 bg-gray-800 sm:bg-black sm:bg-opacity-70 text-white"
+    export let imgClass = "rounded-t-lg sm:rounded-lg object-cover w-full h-96 sm:h-[36rem]"
 </script>
 
 <figure class={twMerge("relative", $$restProps.class)}>

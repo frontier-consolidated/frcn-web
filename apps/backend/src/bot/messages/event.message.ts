@@ -79,11 +79,17 @@ export async function buildEventMessage(id: string, client: Client) {
 	
 	
 	if (!event.settings!.hideLocation) {
-		const locations = getLocations(event.location)
+		let value = ""
+		if (event.location.length > 0) {
+			const locations = getLocations(event.location)
+			value = locations.map((loc) => `${getLocationEmoji(loc)} **${strings.toTitleCase(loc.name)}**`.trim()).join(" > ")
+		} else {
+			value = "Anywhere"
+		}
 
 		eventEmbed.addFields({
 			name: "Location",
-			value: locations.map((loc) => `${getLocationEmoji(loc)} **${strings.toTitleCase(loc.name)}**`.trim()).join(" > "),
+			value
 		});
 	}
 

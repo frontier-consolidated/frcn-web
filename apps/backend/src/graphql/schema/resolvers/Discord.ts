@@ -103,7 +103,7 @@ export const discordResolvers: Resolvers = {
 			return emojis.map((emoji) => resolveDiscordEmoji(emoji, context));
 		},
 		async getAllDiscordRoles(source, args, context) {
-			const roles = await $discord.getAllRoles(context.app.discordClient);
+			const roles = await $discord.getAllRoles(context.app.discordClient, args.everyone ?? undefined);
 			return roles.map((role) => resolveDiscordRole(role, context));
 		},
 	},

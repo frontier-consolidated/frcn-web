@@ -11,6 +11,9 @@ const config = {
 
 	theme: {
 		extend: {
+			zIndex: {
+				"100": "100"
+			},
 			colors: {
 				// colors: https://flowbite-svelte.com/docs/pages/colors
 				// primary: {
@@ -42,6 +45,38 @@ const config = {
 				discord: {
 					200: "#97a9e8",
 					500: "#7289da",
+				},
+
+				erkul: {
+					color: "#ffa537"
+				},
+
+				tradetools: {
+					color: "#df691a"
+				},
+
+				cstone: {
+					color: "#dddddd"
+				},
+
+				ccugame: {
+					color: "#ea7187"
+				},
+
+				sc: {
+					color: "#00e7ff"
+				},
+
+				scorgtools: {
+					color: "#8fdf14"
+				},
+
+				hangarlink: {
+					color: "#97CBF8"
+				},
+
+				verseguide: {
+					color: "#46A0D0"
 				}
 			},
 		},
