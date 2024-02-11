@@ -44,6 +44,11 @@ jobs:
                   ruby-version: 3.2
                   bundler-cache: true
 
+            - name: Install dependencies
+              run: |
+                  cd docs
+                  bundle install"
+
             - name: Build site
               run: |
                   cd docs
