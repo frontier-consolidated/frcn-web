@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Avatar, Badge, Modal } from "flowbite-svelte";
-	import { CirclePlusSolid, PlusSolid, StarSolid } from "flowbite-svelte-icons";
+	import { Avatar, Badge, Dropdown, Modal } from "flowbite-svelte";
+	import { AngleDownSolid, CirclePlusSolid, CloseSolid, StarSolid } from "flowbite-svelte-icons";
     import { locale } from "svelte-i18n";
 
 	import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";
@@ -26,6 +26,7 @@
     }
 
     $: allRoles = $userProfileView ? getAllRoles($userProfileView) : []
+    $: canEdit = hasPermission($user.data?.permissions ?? 0, Permission.ManageRoles)
 </script>
 
 <Modal size="sm" bodyClass="space-y-0" open={!!$userProfileView} dismissable outsideclose on:close={() => {
@@ -50,9 +51,22 @@
                             <StarSolid size="xs" class="me-1" />
                         {/if}
                         {role.name}
+                        {#if canEdit}
+                            {#if primaryRole}
+                                <AngleDownSolid class="w-2 h-2 ms-2 cursor-pointer" />
+                                <Dropdown>
+
+                                </Dropdown>
+                            {:else}
+                                <button class="focus:outline-none whitespace-normal m-0.5 rounded-sm focus:ring-1 p-0.5 ms-1.5 -me-1.5">
+                                    <span class="sr-only">Remove {role.name}</span>
+                                    <CloseSolid class="w-2.5 h-2.5" />
+                                </button>
+                            {/if}
+                        {/if}
                     </Badge>
                 {/each}
-                {#if hasPermission($user.data?.permissions ?? 0, Permission.ManageRoles)}
+                {#if canEdit}
                     <CirclePlusSolid size="sm" class="cursor-pointer hover:text-white" />
                 {/if}
             </div>
