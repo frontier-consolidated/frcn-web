@@ -5,77 +5,17 @@
 
 	import Hr from "$lib/components/Hr.svelte";
 	import { DISCORD_URL } from "$lib/constants";
-	import activitiesImage from "$lib/images/stock/community/1.jpg"
-	import orgImage from "$lib/images/stock/community/5.png"
-	import communityImage from "$lib/images/stock/community.jpg"
-	import gallery1 from "$lib/images/stock/gallery/1.jpg"
-	import gallery10 from "$lib/images/stock/gallery/10.jpg"
-	import gallery11 from "$lib/images/stock/gallery/11.jpg"
-	import gallery12 from "$lib/images/stock/gallery/12.jpg"
-	import gallery2 from "$lib/images/stock/gallery/2.jpg"
-	import gallery3 from "$lib/images/stock/gallery/3.jpg"
-	import gallery4 from "$lib/images/stock/gallery/4.jpg"
-	import gallery5 from "$lib/images/stock/gallery/5.jpg"
-	import gallery6 from "$lib/images/stock/gallery/6.jpg"
-	import gallery7 from "$lib/images/stock/gallery/7.jpg"
-	import gallery8 from "$lib/images/stock/gallery/8.jpg"
-	import gallery9 from "$lib/images/stock/gallery/9.jpg"
+	import communityImage from "$lib/images/stock/activities.jpg"
+	import activitiesImage from "$lib/images/stock/community.jpg"
+	import joinusImage from "$lib/images/stock/joinus.jpg"
 	import knowledgeImage from "$lib/images/stock/knowledge.png"
+	import orgImage from "$lib/images/stock/org.jpg"
 
 	import HeroImg from "./about/HeroImg.svelte";
 	import HeroTitle from "./about/HeroTitle.svelte";
+	import { galleryImages } from "./galleryImages";
 	import PageCard from "./PageCard.svelte";
 
-	const galleryImages = [
-		{
-			src: gallery1,
-			height: 40
-		},
-		{
-			src: gallery2,
-			height: 80
-		},
-		{
-			src: gallery3,
-			height: 52
-		},
-		{
-			src: gallery4,
-			height: 96
-		},
-		{
-			src: gallery5,
-			height: 44
-		},
-		{
-			src: gallery6,
-			height: 48
-		},
-		{
-			src: gallery7,
-			height: 96
-		},
-		{
-			src: gallery8,
-			height: 40
-		},
-		{
-			src: gallery9,
-			height: 64
-		},
-		{
-			src: gallery10,
-			height: 72
-		},
-		{
-			src: gallery11,
-			height: 48
-		},
-		{
-			src: gallery12,
-			height: 40
-		}
-	]
 </script>
 
 <svelte:head>
@@ -85,10 +25,13 @@
 	<link rel="preload" href={communityImage} as="image" />
 	<link rel="preload" href={orgImage} as="image" />
 	<link rel="preload" href={knowledgeImage} as="image" />
+	{#each galleryImages as image}
+		<link rel="preload" href={image.src} as="image" />
+	{/each}
 </svelte:head>
 
 <HeroImg 
-	src={gallery7}
+	src={joinusImage}
 	class="mt-4"
 	imgClass="rounded-t-lg sm:rounded-lg object-cover w-full h-72 sm:h-96 md:h-96 lg:h-[30rem]"
 	captionClass="sm:absolute rounded-b-lg sm:rounded flex flex-col gap-3 sm:m-8 p-6 sm:max-w-[24rem] bg-gray-800 sm:bg-black sm:bg-opacity-70 text-white"
@@ -102,7 +45,7 @@
 	</p>
 	<div class="flex-1 flex items-end justify-center">
 		<Button size="lg" class="text-white bg-discord-500 dark:bg-discord-500 dark:hover:bg-discord-200" href={DISCORD_URL}>
-			<DiscordSolid class="me-2" /> Join Our Discord
+			<DiscordSolid class="me-2" /> Join our Discord
 		</Button>
 	</div>
 </HeroImg>
@@ -149,8 +92,4 @@
 			{/each}
 		</div>
 	</div>
-	<!-- <Gallery class="gap-2 grid-cols-2">
-		<Gallery items={galleryImages.slice(0, 6)} class="" />
-		<Gallery items={galleryImages.slice(6)} class="" />
-	</Gallery> -->
 </section>
