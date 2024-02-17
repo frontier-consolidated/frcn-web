@@ -27,4 +27,26 @@ export async function seed(db: PrismaClient) {
 			},
 		},
 	});
+	await db.user.upsert({
+		where: { discordId: "286793905054285824" },
+		update: {},
+		create: {
+			discordId: "286793905054285824",
+			discordName: "ekkhysis",
+			scVerified: false,
+			avatarUrl:
+				"https://cdn.discordapp.com/avatars/255733848162304002/1a3ec4f7f63ed9b224f98fbeb1047e6e.webp",
+			primaryRole: {
+				connect: {
+					id: developerRole.id,
+				},
+			},
+			status: {
+				create: {},
+			},
+			settings: {
+				create: {},
+			},
+		},
+	});
 }
