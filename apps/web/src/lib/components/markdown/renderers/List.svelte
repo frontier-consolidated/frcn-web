@@ -7,11 +7,11 @@
 </script>
 
 {#if token.ordered}
-	<List tag="ol" {start}>
+	<List tag="ol" {start} position="outside" class="pl-4">
 		<slot />
 	</List>
 {:else}
-	<List tag="ul">
+	<List tag="ul" position="outside" class="pl-4">
 		<slot />
 	</List>
 {/if}
