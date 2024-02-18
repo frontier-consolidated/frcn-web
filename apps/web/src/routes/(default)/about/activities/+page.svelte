@@ -3,8 +3,10 @@
 
 	import Hr from "$lib/components/Hr.svelte";
 	import image1 from "$lib/images/stock/activities/1.png"
-	import image2 from "$lib/images/stock/activities/2.jpg"
-	import image3 from "$lib/images/stock/activities/3.jpg"
+	import image2Desktop from "$lib/images/stock/activities/2-desktop.jpg"
+	import image2Mobile from "$lib/images/stock/activities/2-mobile.jpg"
+	import image3Desktop from "$lib/images/stock/activities/3-desktop.jpg"
+	import image3Mobile from "$lib/images/stock/activities/3-mobile.jpg"
 	import image4 from "$lib/images/stock/activities/4.jpg"
 	import image5 from "$lib/images/stock/activities/5.png"
 	import image6 from "$lib/images/stock/activities/6.jpg"
@@ -31,52 +33,51 @@
 			It's dangerous to go alone. Bring a friend - or many!
 		</p>
 		<p>
-			Everything about Star Citizen is large - the scope, the space, the community. And the potential for both 
+			Everything about Star Citizen is large - the scope, the space, the community, and the potential for both 
 			profit and disaster. In either case, it's better enjoyed with others. By all means, we all need a break and 
 			to cruise the void in solitude from time to time. But just the same, returning to your home base laden 
-			with fresh aUEC, ready for planning your next move with your buddies, will taste all the more sweet. 
-			Fortune and misfortune are both best savored with company. If nothing else, they might save your ass 
-			one day you screw up really badly.
+			with fresh aUEC, ready for planning your next move with your buddies, will taste all the more sweet.
+		</p>
+		<p>
+			Fortune and misfortune are both best savored with company. If nothing else, your friends might save 
+			your ass one day you screw up really badly.
 		</p>
 	</HeroImg>
 	<HeroImg
-		src={image2}
+		src={image2Mobile}
+		sources={{
+			md: image2Desktop
+		}}
 		position="bottom-left"
 	>
 		<HeroTitle>Combined Ops</HeroTitle>
 		<p>
-			For many of FRCNs ops, industry is usually either the focus or at the very least playing an important part. 
-			We have previously run events where combat creates work for salvaging teams, who again create work 
-			for logistics and support.
+			For many of FRCNs ops, industry is often either the focus or an important part, but far from always.
 		</p>
 		<p>
-			These events can easily have over 50 players in total, consisting of HQ, mining, salvage, logistics, support 
-			and combat wings. There are plenty of roles to fill and not having certain ships or equipment does not 
-			prevent you from participating.
-		</p>
-		<p>
-			Hopping into one of the larger events can and will be a wild experience especially if it happens to be 
-			your first event in Star Citizen or with FRCN.
+			Larger events can easily have over 50 players in total, consisting of HQ, mining, salvage, logistics, 
+			support and combat wings. There are plenty of roles to fill and not having certain ships or equipment 
+			does not prevent you from participating.
 		</p>
 	</HeroImg>
 	<HeroImg
-		src={image3}
+		src={image3Mobile}
+		sources={{
+			md: image3Desktop
+		}}
 		position="top-right"
 	>
 		<HeroTitle>That's mine!</HeroTitle>
 		<p>
-			FRCN also runs community mining events, where we train how to mine in Star Citizen, and everyone's 
+			FRCN also runs community mining events, where we train how to mine in Star Citizen. Everyone's 
 			welcome, from first-timers to seasoned veterans. If you don't own a mining vehicle or suitable ship, we 
 			can usually find a seat for you in one of ours, or help you rent one.
 		</p>
 		<p>
-			Our "Casual midweek mining" events are exactly as the name implies. Casual mining together, in a 
-			group. Focus is on enjoying our time, while at the same time learning to be a part of a team and play as 
-			a larger group.
-		</p>
-		<p>
-			From captaining a ship, piloting, mining turret operator to scout pilot and security - all are equally 
-			important during an event. And profits are shared equally.
+			Our "Casual midweek mining" events are exactly as the name implies. Focus is on enjoying our time, 
+			while at the same time learning to be a part of a team and play as a larger group. From captaining a ship, 
+			piloting, mining turret operator to scout pilot and security - all are equally important during an event, 
+			and profits are shared equally.
 		</p>
 	</HeroImg>
 	<HeroImg
@@ -85,12 +86,10 @@
 		<HeroTitle>Salvage the situation</HeroTitle>
 		<p>
 			The dangers of the 'verse leaves a lot of bounty available for the taking, sometimes from other people. 
-			Whether it's recycled hull material, components or less legal goodies, FRCN collects it all. And sells it on 
-			to more or less worthy customers.
+			Whether it's recycled hull material, components or less legal goodies, FRCN collects it all.
 		</p>
 		<p>
-			As with any other profitable activity, there are often many jobs that need doing and seats available to 
-			fill. Whether you'd like to pilot a Vulture or Reclaimer, or operate a salvage turret or a tractor beam - or 
+			Whether you'd like to pilot a Vulture or Reclaimer, or operate a salvage turret or a tractor beam - or 
 			even be a cargo deck box monkey - FRCN can put you to good use cleaning up the spaceways. And if 
 			there isn't enough debris, we can always make more.
 		</p>
@@ -114,21 +113,18 @@
 	</HeroImg>
 	<HeroImg
 		src={image6}
-		position="bottom-left"
+		position="top-right"
 	>
 		<HeroTitle>Working together</HeroTitle>
 		<p>
 			The 'verse is dark and full of dangers, but also full of fun to be had with a group of players, large or 
-			small.
+			small. Star Citizen is made to be played with others and has a vast scope of opportunities for gameplay 
+			beyond the solo player.
 		</p>
 		<p>
-			Star Citizen is made to be played with others and has a vast scope of opportunities for gameplay beyond 
-			the solo player.
-		</p>
-		<p>
-			While it's relatively easy to gather a friend or two for some quality time exploring the 'verse, crewing up 
-			for a larger ship or more complex operation can be more demanding and may require experience in 
-			organisation, logistics and general herding of cats. That's where FRCN can help.
+			While it's easy to gather a friend or two for some quality time exploring the 'verse, crewing up for a 
+			larger ship or more complex operation can be more demanding and may require skills in coordination, 
+			logistics and the general herding of cats. That's where FRCN can help.
 		</p>
 	</HeroImg>
 	<HeroImg

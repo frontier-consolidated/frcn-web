@@ -5,8 +5,8 @@
 
 	import Hr from "$lib/components/Hr.svelte";
 	import { DISCORD_URL } from "$lib/constants";
-	import communityImage from "$lib/images/stock/activities.jpg"
-	import activitiesImage from "$lib/images/stock/community.jpg"
+	import activitiesImage from "$lib/images/stock/activities.png"
+	import communityImage from "$lib/images/stock/community.jpg"
 	import joinusImage from "$lib/images/stock/joinus.jpg"
 	import knowledgeImage from "$lib/images/stock/knowledge.png"
 	import orgImage from "$lib/images/stock/org.jpg"
@@ -45,7 +45,7 @@
 	</p>
 	<div class="flex-1 flex items-end justify-center">
 		<Button size="lg" class="text-white bg-discord-500 dark:bg-discord-500 dark:hover:bg-discord-200" href={DISCORD_URL}>
-			<DiscordSolid class="me-2" /> Join our Discord
+			<DiscordSolid class="me-2" tabindex="-1" /> Join our Discord
 		</Button>
 	</div>
 </HeroImg>
@@ -54,25 +54,25 @@
 		src={communityImage}
 		href="/about/community"
 		>
-		<UsersSolid size="sm" class="me-2" /> Community
+		<UsersSolid size="sm" class="me-2" tabindex="-1" /> Community
 	</PageCard>
 	<PageCard
 		src={orgImage}
 		href="/about/org"
 	>
-		<BuildingSolid size="sm" class="me-2" /> Organisation
+		<BuildingSolid size="sm" class="me-2" tabindex="-1" /> Organisation
 	</PageCard>
 	<PageCard
 		src={activitiesImage}
 		href="/about/activities"
 	>
-		<CalendarMonthSolid size="sm" class="me-2" /> Activities
+		<CalendarMonthSolid size="sm" class="me-2" tabindex="-1" /> Activities
 	</PageCard>
 	<PageCard
 		src={knowledgeImage}
 		href="/knowledge"
 	>
-		<BookSolid size="sm" class="me-2" /> Guides & Resources
+		<BookSolid size="sm" class="me-2" tabindex="-1" /> Guides & Resources
 	</PageCard>
 </div>
 <section class="mt-8">
