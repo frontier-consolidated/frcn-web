@@ -10,12 +10,6 @@
 
 	import Hr from "./Hr.svelte";
 
-    user.subscribe(val => {
-        if (val.data) {
-            userProfileView.set(val.data)
-        }
-    })
-
     $: joinDate = new Intl.DateTimeFormat($locale!, {
         month: "long",
         year: "numeric"
