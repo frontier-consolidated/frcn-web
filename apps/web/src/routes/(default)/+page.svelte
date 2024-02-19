@@ -75,7 +75,7 @@
 		<BookSolid size="sm" class="me-2" tabindex="-1" /> Guides & Resources
 	</PageCard>
 </div>
-<section class="mt-8">
+<section class="mt-32">
 	<Heading tag="h2" class="font-medium text-2xl">
 		Gallery
 	</Heading>
