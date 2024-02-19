@@ -118,9 +118,9 @@
             <Frame data-for={reference} use={init} border shadow rounded options={referenceEl} role="tooltip" tabindex={-1} class="dark:!border-gray-600">
                 <div class="flex items-center py-2 px-3 text-sm font-medium text-red-500">
                     {#if !valid}
-                        <ExclamationCircleSolid class="me-2" />
+                        <ExclamationCircleSolid class="me-2" tabindex="-1" />
                     {:else}
-                        <CheckCircleSolid class="me-2" />
+                        <CheckCircleSolid class="me-2" tabindex="-1" />
                     {/if}
                     {msg}
                 </div>

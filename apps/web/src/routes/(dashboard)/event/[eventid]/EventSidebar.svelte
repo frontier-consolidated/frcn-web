@@ -34,13 +34,13 @@
 		<SidebarGroup>
 			<SidebarItem href="/events" label="Back To Events">
 				<svelte:fragment slot="icon">
-					<ArrowLeftSolid />
+					<ArrowLeftSolid tabindex="-1" />
 				</svelte:fragment>
 			</SidebarItem>
 			{#if data.canEdit}
 				<SidebarDropdownWrapper label="Manage">
 					<svelte:fragment slot="icon">
-						<AdjustmentsHorizontalSolid />
+						<AdjustmentsHorizontalSolid tabindex="-1" />
 					</svelte:fragment>
 					<SidebarDropdownItem label="Invite Members" />
 					<SidebarDropdownItem label="End Event" class="dark:hover:bg-red-500" />
@@ -52,7 +52,7 @@
 					label="Leave Event"
 				>
 					<svelte:fragment slot="icon">
-						<ArrowLeftToBracketOutline />
+						<ArrowLeftToBracketOutline tabindex="-1" />
 					</svelte:fragment>
 				</SidebarItem>
 			{:else}
@@ -62,14 +62,14 @@
 					on:click={() => rsvpModal = true}
 				>
 					<svelte:fragment slot="icon">
-						<UserPlusSolid />
+						<UserPlusSolid tabindex="-1" />
 					</svelte:fragment>
 				</SidebarItem>
 			{/if}
 		</SidebarGroup>
 		<SidebarGroup border class="overflow-y-auto">
 			<div class="flex items-center gap-2 dark:text-white px-2">
-				<UsersSolid />
+				<UsersSolid tabindex="-1" />
 				<span class="self-center text-lg font-semibold whitespace-nowrap">
 					{data.members.length} Event Member{data.members.length !== 1 ? "s" : ""}
 				</span>

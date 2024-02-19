@@ -17,17 +17,17 @@
                 </div>
                 <SidebarItem label="General" href="/admin/general">
                     <svelte:fragment slot="icon">
-                        <GearSolid />
+                        <GearSolid tabindex="-1" />
                     </svelte:fragment>
                 </SidebarItem>
                 <SidebarItem label="Channels" href="/admin/channels">
                     <svelte:fragment slot="icon">
-                        <UserHeadsetSolid />
+                        <UserHeadsetSolid tabindex="-1" />
                     </svelte:fragment>
                 </SidebarItem>
                 <SidebarItem label="Roles" href="/admin/roles">
                     <svelte:fragment slot="icon">
-                        <TagSolid />
+                        <TagSolid tabindex="-1" />
                     </svelte:fragment>
                 </SidebarItem>
             </SidebarGroup>
@@ -39,7 +39,7 @@
                 </div>
                 <SidebarItem label="Users" href="/admin/users">
                     <svelte:fragment slot="icon">
-                        <UserGroupSolid />
+                        <UserGroupSolid tabindex="-1" />
                     </svelte:fragment>
                 </SidebarItem>
             </SidebarGroup>

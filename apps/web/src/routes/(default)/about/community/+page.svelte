@@ -43,7 +43,7 @@
 		</p>
 		<div class="flex-1 flex items-end justify-center">
 			<Button size="lg" class="text-white bg-discord-500 dark:bg-discord-500 dark:hover:bg-discord-200" href={DISCORD_URL}>
-				<DiscordSolid class="me-2" /> Join our Discord
+				<DiscordSolid class="me-2" tabindex="-1" /> Join our Discord
 			</Button>
 		</div>
 	</HeroImg>

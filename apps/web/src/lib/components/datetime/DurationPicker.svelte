@@ -30,7 +30,7 @@
 </script>
 
 <Input bind:value={inputValue} {id} placeholder="Select duration" {...$$restProps}>
-	<ClockSolid slot="left" size="sm" class="ms-1" />
+	<ClockSolid slot="left" size="sm" class="ms-1" tabindex="-1" />
 </Input>
 <Dropdown
 	bind:open={dropdownOpen}

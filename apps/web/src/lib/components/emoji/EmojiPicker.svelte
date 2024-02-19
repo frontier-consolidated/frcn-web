@@ -135,7 +135,7 @@
 						type="button"
 						class={twMerge("inline-block text-sm font-medium text-center disabled:cursor-not-allowed", category === currentCategory ? activeClass : inactiveClass)}
 					>
-						<EmojiCategoryIcon {category} tabindex={-1} class="w-4 h-4" />
+						<EmojiCategoryIcon {category} tabindex="-1" class="w-4 h-4" />
 					</button>
 				</li>
 			{/each}

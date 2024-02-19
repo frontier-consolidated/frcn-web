@@ -57,7 +57,7 @@
 			}
 		}}
 	>
-		<ArrowLeftSolid size="xs" />
+		<ArrowLeftSolid size="xs" tabindex="-1" />
 	</Button>
 	<Button
 		class="dark:bg-gray-700 dark:hover:bg-gray-600"
@@ -86,6 +86,6 @@
 			}
 		}}
 	>
-		<ArrowRightSolid size="xs" />
+		<ArrowRightSolid size="xs" tabindex="-1" />
 	</Button>
 </div>

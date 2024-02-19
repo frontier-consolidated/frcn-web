@@ -121,7 +121,7 @@
 							</slot>
 							<button class="focus:outline-none whitespace-normal m-0.5 rounded-sm focus:ring-1 p-0.5 ms-1.5 -me-1.5" on:click={() => removeOption(option)}>
 								<span class="sr-only">Remove {option.name}</span>
-								<CloseSolid class="w-2.5 h-2.5" />
+								<CloseSolid class="w-2.5 h-2.5" tabindex="-1" />
 							</button>
 						</Badge>
 					{/each}
@@ -145,7 +145,7 @@
 			{/if}
 		</span>
 		<div class="flex ms-auto items-center">
-			<AngleDownSolid size="xs" class="cursor-pointer ms-1 text-gray-500" />
+			<AngleDownSolid size="xs" class="cursor-pointer ms-1 text-gray-500" tabindex="-1" />
 		</div>
 	</div>
 	{#if !disabled && selectableOptions.length > 0}
