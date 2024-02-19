@@ -71,7 +71,7 @@
 						fileModal.open = true;
 					}}
 				>
-					<CirclePlusSolid class="me-2" /> Upload Resource
+					<CirclePlusSolid class="me-2" tabindex="-1" /> Upload Resource
 				</Button>
 			{/if}
 		</div>

@@ -51,7 +51,7 @@
 				dropNotification(notification.id);
 			}}
 		>
-			<svelte:component this={getIcon(notification.type)} slot="icon" class="w-5 h-5" />
+			<svelte:component this={getIcon(notification.type)} slot="icon" class="w-5 h-5" tabindex="-1" />
 			{notification.message}
 		</Toast>
 	{/each}

@@ -23,12 +23,12 @@
 	<DropdownItem>User Details</DropdownItem>
 	<DropdownDivider />
 	<DropdownItem class="flex">
-		<UserGroupSolid class="me-2" /> Join {member.user.name}'s crew
+		<UserGroupSolid class="me-2" tabindex="-1" /> Join {member.user.name}'s crew
 	</DropdownItem>
 	<DropdownItem class="flex">
-		<UserGroupSolid class="me-2" /> Add to my crew
+		<UserGroupSolid class="me-2" tabindex="-1" /> Add to my crew
 	</DropdownItem>
 	<DropdownItem class="flex dark:hover:bg-red-500">
-		<UserRemoveSolid class="me-2" /> Kick Member
+		<UserRemoveSolid class="me-2" tabindex="-1" /> Kick Member
 	</DropdownItem>
 </Dropdown>

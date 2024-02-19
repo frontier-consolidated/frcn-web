@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Permission, hasPermission } from "@frcn/shared";
 	import { Avatar, Badge, Modal } from "flowbite-svelte";
-	import { CirclePlusSolid, PlusSolid, StarSolid } from "flowbite-svelte-icons";
+	import { CirclePlusSolid, StarSolid } from "flowbite-svelte-icons";
     import { locale } from "svelte-i18n";
 
 	import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";
@@ -47,7 +47,7 @@
                     {@const primaryRole = role.id === $userProfileView?.primaryRole.id}
                     <Badge data-role-id={role.id}>
                         {#if primaryRole}
-                            <StarSolid size="xs" class="me-1" />
+                            <StarSolid size="xs" class="me-1" tabindex="-1" />
                         {/if}
                         {role.name}
                     </Badge>

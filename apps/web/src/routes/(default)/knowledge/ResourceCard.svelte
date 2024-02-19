@@ -59,21 +59,21 @@
                 link.click()
                 URL.revokeObjectURL(link.href)
             }}>
-                <DownloadSolid class="me-2" /> Download
+                <DownloadSolid class="me-2" tabindex="-1" /> Download
             </Button>
             {#if hasPermission($user.data?.permissions ?? 0, Permission.UploadResources)}
                 <Toolbar embedded>
                     <ToolbarButton name="Options">
-                        <DotsVerticalOutline />
+                        <DotsVerticalOutline tabindex="-1" />
                     </ToolbarButton>
                     <Dropdown>
                         <DropdownItem class="flex items-center" on:click={() => {
                             dispatch("edit", resource)
                         }}>
-                            <EditOutline size="sm" class="me-2" /> Edit
+                            <EditOutline size="sm" class="me-2" tabindex="-1" /> Edit
                         </DropdownItem>
                         <DropdownItem class="flex items-center dark:text-red-500 dark:hover:text-white dark:hover:bg-red-700" on:click={() => (deleteModalOpen = true)}>
-                            <TrashBinSolid size="sm" class="me-2" /> Delete
+                            <TrashBinSolid size="sm" class="me-2" tabindex="-1" /> Delete
                         </DropdownItem>
                     </Dropdown>
                 </Toolbar>

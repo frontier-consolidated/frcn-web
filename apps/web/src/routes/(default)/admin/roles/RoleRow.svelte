@@ -52,7 +52,7 @@
         <div class="flex items-center justify-center dark:hover:text-gray-100">
         <Tooltip placement="left">
                 <a slot="icon" class="flex items-center" href="/admin/roles/{role.id}#users" on:click={(ev) => ev.stopPropagation()}>
-                    {role.users.length} <UsersSolid class="ms-2" />
+                    {role.users.length} <UsersSolid class="ms-2" tabindex="-1" />
                 </a>
                 View members
             </Tooltip>
