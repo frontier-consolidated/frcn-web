@@ -46,7 +46,7 @@
 			{#if eventType}
 				<BreadcrumbItem home>
 					<svelte:fragment slot="icon">
-						<CalendarMonthSolid class="w-4 h-4 me-2" />
+						<CalendarMonthSolid class="w-4 h-4 me-2" tabindex="-1" />
 					</svelte:fragment>
 					{eventType} Event
 				</BreadcrumbItem>

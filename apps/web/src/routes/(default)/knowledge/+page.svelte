@@ -50,10 +50,10 @@
 	<ToolButton name="Cornerstone" img={cstoneIcon} href="https://finder.cstone.space/" />
 	<ToolButton name="CCU Game" img={ccugameIcon} href="https://ccugame.app/your-items/fleet" />
 	<ToolButton name="RSI Status" img={rsiIcon} href="https://status.robertsspaceindustries.com/" />
-	<ToolButton name="Hangar Link" href="https://hangar.link/" hideName>
+	<ToolButton name="Hangar Link" href="https://hangar.link/">
 		<img slot="icon" src={hangarLinkIcon} alt="Hangar Link" class="h-6 object-contain" />
 	</ToolButton>
-	<ToolButton name="VerseGuide" href="https://verseguide.com/" hideName>
+	<ToolButton name="VerseGuide" href="https://verseguide.com/">
 		<img slot="icon" src={verseGuideIcon} alt="VerseGuide" class="h-6 object-contain" />
 	</ToolButton>
 	<ToolButton name="SC Org Tools" img={scorgToolsIcon} href="https://scorg.tools/" />
@@ -71,7 +71,7 @@
 						fileModal.open = true;
 					}}
 				>
-					<CirclePlusSolid class="me-2" /> Upload Resource
+					<CirclePlusSolid class="me-2" tabindex="-1" /> Upload Resource
 				</Button>
 			{/if}
 		</div>

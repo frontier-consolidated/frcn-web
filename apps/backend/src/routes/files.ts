@@ -1,5 +1,7 @@
+import { randomUUID } from "crypto";
+import fs from "fs";
+import os from "os";
 import path from "path";
-
 
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
@@ -10,12 +12,21 @@ import multer, { MulterError } from "multer";
 
 import type { Context, RouteConfig } from "../context";
 import { transaction } from "../database";
+import { ffmpeg, ffprobe } from "../ffmpeg";
 import { $resources } from "../services/resources";
 import { $users } from "../services/users";
 
 const MAX_FILE_SIZE_MB = 100;
+const MAX_IMAGE_DIMENSION = 1600;
 
-const storage = multer.memoryStorage()
+const storageDir = path.join(os.tmpdir(), "frcn-web-uploads")
+const storage = multer.diskStorage({
+    destination: storageDir,
+    filename(req, file, callback) {
+        const parsedFileName = path.parse(file.originalname);
+        callback(null, `${randomUUID()}${parsedFileName.ext}`)
+    }
+})
 const upload = multer({
     storage,
     limits: {
@@ -27,7 +38,7 @@ function fileField(
     field: string,
 	options?: {
 		maxFiles?: number;
-		allowedExtensions?: string[];
+		allowedFiles?: string[];
 	}
 ): RequestHandler {
     const handler = upload.array(field, options?.maxFiles);
@@ -73,15 +84,19 @@ function fileField(
 				});
             }
             
-            if (options?.allowedExtensions) {
+            if (options?.allowedFiles) {
+                const allowedFiles = options.allowedFiles.map(f => f.toLowerCase())
+
 				const finalFiles: Express.Multer.File[] = [];
 				for (const file of files) {
 					const parsed = path.parse(file.originalname);
                     const ext = parsed.ext.length > 0 ? parsed.ext.substring(1).toLowerCase() : "";
+                    const mimeType = (mime.lookup(file.originalname) || "application/octet-stream").toLowerCase()
+                    const [baseMimeType] = mimeType.split("/")
                     
-					if (!options.allowedExtensions.includes(ext)) {
+					if (!(allowedFiles.includes(ext) || allowedFiles.includes(mimeType) || allowedFiles.includes(`${baseMimeType}/*`))) {
 						return res.status(415).send({
-							message: `File extension is not allowed: .${ext}`,
+							message: `File not allowed: ${file.originalname}`,
 						});
                     }
                     
@@ -119,6 +134,7 @@ export default function route(context: Context, config: RouteConfig) {
         "/res/:id",
         fileField("file", {
             maxFiles: 1,
+            allowedFiles: ["image/*", "pdf"]
         }),
         async (req, res, next) => {
             const resource = await $resources.getResource(req.params.id)
@@ -127,8 +143,47 @@ export default function route(context: Context, config: RouteConfig) {
             }
 
             const file = (req.files as Express.Multer.File[])[0]
+            
+            const filesToCleanup = [file.path]
+            function cleanup() {
+                for (const path of filesToCleanup) {
+                    if (fs.existsSync(path)) fs.unlinkSync(path)
+                }
+            }
 
-            const contentType = mime.contentType(file.originalname) || undefined
+            let targetFile = file.path
+            let fileName = file.originalname;
+            // use file.mimetype here?
+            let contentType = mime.contentType(fileName) || undefined
+            const parsedFileName = path.parse(fileName);
+
+            if (contentType?.startsWith("image/") && !contentType.includes("xml")) {
+                contentType = "image/webp"
+                fileName = `${parsedFileName.name}.webp`;
+
+                targetFile = path.join(storageDir, `${randomUUID()}.webp`);
+                filesToCleanup.push(targetFile)
+                try {
+                    const probeData = await ffprobe(file.path)
+                    const imageData = probeData.streams[0]
+                    
+                    const width = imageData.width!;
+                    const height = imageData.height!;
+                    
+                    await ffmpeg(command => {
+                        command.input(file.path)
+                        if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
+                            command.size(width > height ? `${MAX_IMAGE_DIMENSION}x?` : `?x${MAX_IMAGE_DIMENSION}`)
+                        }
+                        command.addOutputOption("-quality", "95")
+                        command.saveToFile(targetFile)
+                        return command;
+                    })
+                } catch (err) {
+                    cleanup()
+                    return next(err)
+                }
+            }
 
             const fileUpload = new Upload({
                 client: context.s3Client,
@@ -136,7 +191,7 @@ export default function route(context: Context, config: RouteConfig) {
                     Bucket: config.files.bucketName,
                     Key: resource.id,
                     ContentType: contentType,
-                    Body: file.buffer,
+                    Body: fs.createReadStream(targetFile),
                 },
                 tags: [],
                 queueSize: 4,
@@ -151,7 +206,7 @@ export default function route(context: Context, config: RouteConfig) {
                         data: {
                             canPreview: contentType?.startsWith("image"),
                             fileAttached: true,
-                            fileName: file.originalname,
+                            fileName: fileName,
                             fileSizeKb: Math.ceil(file.size / 1024)
                         }
                     })
@@ -163,6 +218,8 @@ export default function route(context: Context, config: RouteConfig) {
             } catch (err) {
                 await fileUpload.abort()
                 next(err)
+            } finally {
+                cleanup()
             }
         }
     );

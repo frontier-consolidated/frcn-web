@@ -144,7 +144,7 @@
 		<Button color="alternative" on:click={() => {
 			editRoles = data.roles.toReversed()
 		}}>
-			<CloseSolid class="me-2" /> Cancel
+			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>
 		<Button
 			disabled={!isDirty}
@@ -153,7 +153,7 @@
 				save();
 			}}
 		>
-			<EditOutline class="me-2" /> Save
+			<EditOutline class="me-2" tabindex="-1" /> Save
 		</Button>
 	</div>
 </div>

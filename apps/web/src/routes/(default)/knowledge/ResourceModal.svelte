@@ -222,12 +222,12 @@
 				>
 					{#if uploadFiles?.length > 0}
 						<div class="flex flex-col items-center">
-							<FileSolid class="text-white" size="xl" />
+							<FileSolid class="text-white" size="xl" tabindex="-1" />
 							<p class="text-md text-gray-500 dark:text-gray-400">{uploadFiles[0].name}</p>
 						</div>
 					{:else}
 						<div class="flex flex-col items-center w-full flex-1">
-							<UploadSolid class="mb-3" size="lg" />
+							<UploadSolid class="mb-3" size="lg" tabindex="-1" />
 							<p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> or drag and drop</p>
 							<p class="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF, SVG or PDF</p>
 						</div>

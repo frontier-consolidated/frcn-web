@@ -207,7 +207,7 @@
 					</Field>
 					<Alert color="red" class="dark:bg-gray-900">
 						<span slot="icon">
-							<InfoCircleSolid slot="icon" size="sm" />
+							<InfoCircleSolid slot="icon" size="sm" tabindex="-1" />
 							<span class="sr-only">Info</span>
 						</span>
 						<p class="font-medium"
@@ -288,9 +288,9 @@
 						/>
 					</Field>
 					<Field {validator} for="event-require-invite" value={editData.settings.inviteOnly}>
-						<Toggle id="event-require-invite" bind:checked={editData.settings.inviteOnly}
-							>Require Invite to Join</Toggle
-						>
+						<Toggle id="event-require-invite" bind:checked={editData.settings.inviteOnly}>
+							Require Invite to Join
+						</Toggle>
 						<Helper class="mt-1">
 							Selected users will have to request an invitation to join
 						</Helper>
@@ -302,7 +302,7 @@
 								disabled={!editData.settings.inviteOnly}
 								bind:checked={editData.settings.openToJoinRequests}
 							>
-							Open to Join Requests
+								Open to Join Requests
 							</Toggle>
 						{/key}
 						<Helper class="mt-1">Selected users can request to join the event</Helper>
@@ -390,7 +390,7 @@
 		<Button color="alternative" on:click={() => {
 			editData = cloneEventSettingsData(data);
 		}}>
-			<CloseSolid class="me-2" /> Cancel
+			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>
 		{#if data.posted}
 			<Button
@@ -400,7 +400,7 @@
 					save();
 				}}
 			>
-				<EditOutline class="me-2" /> Save
+				<EditOutline class="me-2" tabindex="-1" /> Save
 			</Button>
 		{:else}
 			<Button
@@ -411,7 +411,7 @@
 					save();
 				}}
 			>
-				<EditOutline class="me-2" /> Save Draft
+				<EditOutline class="me-2" tabindex="-1" /> Save Draft
 			</Button>
 			<Button
 				disabled={data.posted}
@@ -420,7 +420,7 @@
 					post();
 				}}
 			>
-				<CaretRightSolid class="me-2" /> Post
+				<CaretRightSolid class="me-2" tabindex="-1" /> Post
 			</Button>
 		{/if}
 	</div>

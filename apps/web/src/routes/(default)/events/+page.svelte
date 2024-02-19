@@ -51,7 +51,7 @@
 						}
 					}}
 				>
-					<CirclePlusSolid class="me-2" /> Create New Event
+					<CirclePlusSolid class="me-2" tabindex="-1" /> Create New Event
 				</Button>
 			{/if}
 		</div>

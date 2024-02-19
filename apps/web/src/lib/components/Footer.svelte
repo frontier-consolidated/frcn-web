@@ -53,13 +53,13 @@
         <FooterCopyright href="/" by="Frontier Consolidated" />
         <div class="flex mt-4 space-x-6 rtl:space-x-reverse sm:justify-center sm:mt-0">
             <FooterIcon href={YOUTUBE_URL}>
-                <YoutubeSolid class="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white" />
+                <YoutubeSolid class="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white" tabindex="-1" />
             </FooterIcon>
             <FooterIcon href={DISCORD_URL}>
-                <DiscordSolid class="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white" />
+                <DiscordSolid class="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white" tabindex="-1" />
             </FooterIcon>
             <FooterIcon href={GITHUB_URL}>
-                <GithubSolid class="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white" />
+                <GithubSolid class="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white" tabindex="-1" />
             </FooterIcon>
         </div>
     </div>

@@ -39,7 +39,7 @@
 			size="sm"
 			{disabled}
 		>
-			<TrashBinSolid />
+			<TrashBinSolid tabindex="-1" />
 		</Button>
 	{/if}
 </li>

@@ -48,7 +48,7 @@
                     {@const primaryRole = role.id === $userProfileView?.primaryRole.id}
                     <Badge data-role-id={role.id}>
                         {#if primaryRole}
-                            <StarSolid size="xs" class="me-1" />
+                            <StarSolid size="xs" class="me-1" tabindex="-1" />
                         {/if}
                         {role.name}
                         {#if canEdit}
