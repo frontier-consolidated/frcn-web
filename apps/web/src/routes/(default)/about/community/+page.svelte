@@ -52,7 +52,7 @@
 		sources={{
 			md: image2Desktop,
 		}}
-		position="bottom-left"
+		position="top-left"
 	>
 		<HeroTitle>Do I need to join your Org?</HeroTitle>
 		<p>
@@ -99,7 +99,7 @@
 		sources={{
 			md: image5Desktop,
 		}}
-		position="top-left"
+		position="top-right"
 	>
 		<HeroTitle>What types of gameplay do you cover?</HeroTitle>
 		<p>
