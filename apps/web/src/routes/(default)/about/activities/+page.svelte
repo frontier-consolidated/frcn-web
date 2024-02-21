@@ -10,6 +10,9 @@
 	import image4 from "$lib/images/stock/activities/4.jpg"
 	import image5 from "$lib/images/stock/activities/5.png"
 	import image6 from "$lib/images/stock/activities/6.jpg"
+	import image7 from "$lib/images/stock/activities/7.jpg"
+	import image8 from "$lib/images/stock/activities/8.png"
+	import image9 from "$lib/images/stock/activities/9.png"
 	import placeholder from "$lib/images/stock/placeholder.jpg"
 
 	import HeroImg from "../HeroImg.svelte";
@@ -128,20 +131,20 @@
 		</p>
 	</HeroImg>
 	<HeroImg
-		src={placeholder}
-		position="top-right"
+		src={image7}
+		position="top-left"
 	>
 		<HeroTitle>Velocity squared</HeroTitle>
 	</HeroImg>
 	<HeroImg
-		src={placeholder}
+		src={image8}
 		position="top-right"
 	>
 		<HeroTitle>Sample op 1</HeroTitle>
 	</HeroImg>
 	<HeroImg
-		src={placeholder}
-		position="top-right"
+		src={image9}
+		position="bottom-left"
 	>
 		<HeroTitle>Sample op 2</HeroTitle>
 	</HeroImg>

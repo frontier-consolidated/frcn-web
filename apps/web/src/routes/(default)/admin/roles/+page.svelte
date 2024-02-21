@@ -15,7 +15,6 @@
     import type { PageData } from './$types';
 	import RoleRow from "./RoleRow.svelte";
 
-
 	const roleSearch = queryParam("q")
     
     export let data: PageData;
