@@ -9,7 +9,7 @@
 	import communityImage from "$lib/images/stock/community.jpg"
 	import joinusImage from "$lib/images/stock/joinus.jpg"
 	import knowledgeImage from "$lib/images/stock/knowledge.png"
-	import orgImage from "$lib/images/stock/org.jpg"
+	import orgImage from "$lib/images/stock/org.png"
 
 	import HeroImg from "./about/HeroImg.svelte";
 	import HeroTitle from "./about/HeroTitle.svelte";
