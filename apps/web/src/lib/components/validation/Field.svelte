@@ -19,7 +19,7 @@
 
     const isEmpty =
         validateEmpty ??
-		((v: T) => v === undefined || v === null || ((Array.isArray(v) || typeof v === "string" || v instanceof FileList) && v.length === 0));
+		((v: T) => v === undefined || v === null || ((Array.isArray(v) || typeof v === "string" || (typeof FileList !== "undefined" && v instanceof FileList)) && v.length === 0));
 
     let showMessage = false;
     let valid: boolean = true, msg: string | null = null
