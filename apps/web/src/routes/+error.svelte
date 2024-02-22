@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import { Alert, Heading } from "flowbite-svelte";
+	import { Alert, Button, Heading } from "flowbite-svelte";
 
 	import Hr from "$lib/components/Hr.svelte";
+	import { login } from "$lib/stores/UserStore";
 
 	let title = "";
 	$: switch ($page.status) {
@@ -34,7 +35,11 @@
 				<p class="text-gray-500">{$page.status}</p>
 				<Hr class="w-full" />
 				<p class="mt-4 text-gray-400">You must be authenticated in order to view this page</p>
-
+				<div class="flex justify-center mt-4">
+					<Button on:click={() => {
+						login().catch(console.error)
+					}}>Login</Button>
+				</div>
 			</div>
 		</div>
 	{:else}
