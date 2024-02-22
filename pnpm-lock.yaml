@@ -186,6 +186,9 @@ importers:
       '@frcn/shared':
         specifier: workspace:^
         version: link:../../packages/shared
+      '@img/sharp-win32-x64':
+        specifier: ^0.33.2
+        version: 0.33.2
       '@uiw/codemirror-theme-github':
         specifier: ^4.21.21
         version: 4.21.21(@codemirror/language@6.10.0)(@codemirror/state@6.4.0)(@codemirror/view@6.23.0)
@@ -3267,7 +3270,6 @@ packages:
     os: [win32]
     requiresBuild: true
     dev: false
-    optional: true
 
   /@isaacs/cliui@8.0.2:
     resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}

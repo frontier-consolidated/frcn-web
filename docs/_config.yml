@@ -135,6 +135,8 @@ collections:
   tabs:
     output: true
     sort_by: order
+  authors:
+    sort_by: order
 
 defaults:
   - scope:
