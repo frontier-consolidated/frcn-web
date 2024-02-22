@@ -22,6 +22,7 @@
 		BuildingSolid,
 		UsersSolid,
 		BookSolid,
+		MapPinAltSolid,
 	} from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
@@ -96,14 +97,14 @@
 				<InfoCircleSolid size="sm" tabindex="-1" />About Us<ChevronDownOutline class="w-3 h-3" tabindex="-1" />
 			</NavLi>
 			<Dropdown containerClass="w-full lg:w-44 divide-y z-50">
-				<DropdownItem href="/about/activities" class="flex items-center font-normal text-md lg:font-medium lg:text-sm">
-					<CalendarMonthSolid size="sm" class="me-2" tabindex="-1" /> Activities
-				</DropdownItem>
 				<DropdownItem href="/about/community" class="flex items-center font-normal text-md lg:font-medium lg:text-sm">
 					<UsersSolid size="sm" class="me-2" tabindex="-1" /> Community
 				</DropdownItem>
 				<DropdownItem href="/about/org" class="flex items-center font-normal text-md lg:font-medium lg:text-sm">
 					<BuildingSolid size="sm" class="me-2" tabindex="-1" /> Organisation
+				</DropdownItem>
+				<DropdownItem href="/about/activities" class="flex items-center font-normal text-md lg:font-medium lg:text-sm">
+					<MapPinAltSolid size="sm" class="me-2" tabindex="-1" /> Activities
 				</DropdownItem>
 				<DropdownItem href={MERCH_URL} class="flex items-center font-normal text-md lg:font-medium lg:text-sm">
 					<BagSolid size="sm" class="me-2" tabindex="-1" /> Merch Store
