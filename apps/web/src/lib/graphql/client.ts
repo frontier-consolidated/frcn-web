@@ -45,6 +45,9 @@ export function createApolloClient(headers?: Record<string, string>) {
 			typePolicies: {
 				Event: {
 					merge: true
+				},
+				UserStatus: {
+					merge: true
 				}
 			}
 		})
