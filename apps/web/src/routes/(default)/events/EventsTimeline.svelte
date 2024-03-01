@@ -14,7 +14,7 @@
 	export let data: PageData;
 	
 	$: currentPage = getCurrentPage($page.url.searchParams);
-	$: pages = getPages("/events", $page.url.searchParams, currentPage, data.itemsPerPage, data.total);
+	$: pages = getPages($page.url, currentPage, data.itemsPerPage, data.total);
 </script>
 
 <svelte:head>
@@ -82,7 +82,7 @@
     </Timeline>
     <Pagination 
         {pages}
-        on:previous={() => {if (data.prevPage != null) goto(getPageUrl("/events", $page.url.searchParams, data.prevPage + 1))}}
-			on:next={() => {if (data.nextPage != null) goto(getPageUrl("/events", $page.url.searchParams, data.nextPage + 1))}}
+        on:previous={() => {if (data.prevPage != null) goto(getPageUrl($page.url, data.prevPage + 1))}}
+			on:next={() => {if (data.nextPage != null) goto(getPageUrl($page.url, data.nextPage + 1))}}
     />
 </div>
