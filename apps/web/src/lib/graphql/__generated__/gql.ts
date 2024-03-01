@@ -35,6 +35,7 @@ const documents = {
     "\n\tquery GetEvent($eventId: ID!) {\n\t\tevent: getEvent(id: $eventId) {\n\t\t\t...EventFragment\n\t\t}\n\t}\n": types.GetEventDocument,
     "\n\tquery GetEventSettings($eventId: ID!) {\n\t\tevent: getEvent(id: $eventId) {\n\t\t\t...EventSettingsFragment\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...ChannelFragment\n\t\t}\n\t\tcustomEmojis: getAllDiscordEmojis {\n\t\t\tid\n\t\t\tname\n\t\t\timage\n\t\t}\n\t\tdiscordRoles: getAllDiscordRoles {\n\t\t\tid\n\t\t\tname\n\t\t\tcolor\n\t\t}\n\t}\n": types.GetEventSettingsDocument,
     "\n\tquery GetEvents($filter: EventFilterInput, $page: Int, $limit: Int) {\n\t\tevents: getEvents(filter: $filter, page: $page, limit: $limit) {\n\t\t\titems {\n\t\t\t\t...EventFragment\n\t\t\t}\n\t\t\titemsPerPage\n\t\t\tpage\n\t\t\tnextPage\n\t\t\tprevPage\n\t\t\ttotal\n\t\t}\n\t}\n": types.GetEventsDocument,
+    "\n\tquery GetOwnedEvents {\n\t\tevents: getCurrentUser {\n\t\t\tevents {\n\t\t\t\t...EventFragment\n\t\t\t}\n\t\t}\n\t}\n": types.GetOwnedEventsDocument,
     "\n\tquery GetResources($filter: ResourceFilterInput, $page: Int, $limit: Int) {\n\t\tresources: getResources(filter: $filter, page: $page, limit: $limit) {\n\t\t\titems {\n\t\t\t\t...ResourceFragment\n\t\t\t}\n\t\t\titemsPerPage\n\t\t\tpage\n\t\t\tnextPage\n\t\t\tprevPage\n\t\t\ttotal\n\t\t}\n\t}\n": types.GetResourcesDocument,
     "\n\tquery GetRole($roleId: ID!) {\n\t\trole: getRole(id: $roleId) {\n\t\t\tid\n\t\t\tname\n\t\t\tdiscordId\n\t\t\tprimary\n\t\t\tpermissions\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tavatarUrl\n\t\t\t}\n\t\t}\n\t\tdiscordRoles: getAllDiscordRoles(everyone: false) {\n\t\t\tid\n\t\t\tname\n\t\t\tcolor\n\t\t}\n\t}\n": types.GetRoleDocument,
     "\n\tmutation PostEvent($eventId: ID!) {\n\t\tsuccess: postEvent(id: $eventId)\n\t}\n": types.PostEventDocument,
@@ -144,6 +145,10 @@ export function gql(source: "\n\tquery GetEventSettings($eventId: ID!) {\n\t\tev
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n\tquery GetEvents($filter: EventFilterInput, $page: Int, $limit: Int) {\n\t\tevents: getEvents(filter: $filter, page: $page, limit: $limit) {\n\t\t\titems {\n\t\t\t\t...EventFragment\n\t\t\t}\n\t\t\titemsPerPage\n\t\t\tpage\n\t\t\tnextPage\n\t\t\tprevPage\n\t\t\ttotal\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetEvents($filter: EventFilterInput, $page: Int, $limit: Int) {\n\t\tevents: getEvents(filter: $filter, page: $page, limit: $limit) {\n\t\t\titems {\n\t\t\t\t...EventFragment\n\t\t\t}\n\t\t\titemsPerPage\n\t\t\tpage\n\t\t\tnextPage\n\t\t\tprevPage\n\t\t\ttotal\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tquery GetOwnedEvents {\n\t\tevents: getCurrentUser {\n\t\t\tevents {\n\t\t\t\t...EventFragment\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetOwnedEvents {\n\t\tevents: getCurrentUser {\n\t\t\tevents {\n\t\t\t\t...EventFragment\n\t\t\t}\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

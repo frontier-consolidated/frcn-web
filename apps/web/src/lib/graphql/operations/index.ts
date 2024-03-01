@@ -12,6 +12,7 @@ import { GET_ALL_ROLES } from "./getAllRoles.query";
 import { GET_EVENT } from "./getEvent.query";
 import { GET_EVENTS } from "./getEvents.query";
 import { GET_EVENT_SETTINGS } from "./getEventSettings.query";
+import { GET_OWNED_EVENTS } from "./getOwnedEvents.query";
 import { GET_RESOURCES } from "./getResources.query";
 import { GET_ROLE } from "./getRole.query";
 import { POST_EVENT } from "./postEvent.mutation";
@@ -26,7 +27,8 @@ export const Queries = {
 	GET_EVENTS,
 	GET_ALL_ROLES,
 	GET_ROLE,
-	GET_RESOURCES
+	GET_RESOURCES,
+	GET_OWNED_EVENTS
 };
 
 export const Mutations = {
