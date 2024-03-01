@@ -74,6 +74,7 @@ type User {
 	primaryRole: UserRole!
 	roles: [UserRole!]!
 	rsvps: [EventRsvp!]! @ownership
+	events: [Event!]! @ownership
 	status: UserStatus!
 	settings: UserSettings! @ownership
 }

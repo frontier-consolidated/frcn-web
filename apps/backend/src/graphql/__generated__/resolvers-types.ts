@@ -464,6 +464,7 @@ export type User = {
   avatarUrl: Scalars['String']['output'];
   createdAt: Scalars['Timestamp']['output'];
   discordName: Scalars['String']['output'];
+  events: Array<Event>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
   permissions: Scalars['Int']['output'];
@@ -860,6 +861,7 @@ export type UserResolvers<ContextType = GQLContext, ParentType extends Resolvers
   avatarUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   discordName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  events?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   permissions?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
