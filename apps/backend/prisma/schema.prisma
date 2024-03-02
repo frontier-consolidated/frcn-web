@@ -97,9 +97,9 @@ model User {
 }
 
 model UsersInUserRoles {
-  role       UserRole @relation(fields: [roleId], references: [id])
+  role       UserRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId     String   @map("role_id")
-  user       User     @relation(fields: [userId], references: [id])
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId     String   @map("user_id")
   assignedAt DateTime @default(now()) @map("assigned_at")
 
@@ -114,7 +114,7 @@ model EventRsvpRole {
   emojiId   String      @map("emoji_id")
   limit     Int         @default(0)
   members   EventUser[]
-  event     Event       @relation(fields: [eventId], references: [id])
+  event     Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId   String      @map("event_id")
   updatedAt DateTime    @updatedAt @map("updated_at")
   createdAt DateTime    @default(now()) @map("created_at")
@@ -125,11 +125,11 @@ model EventRsvpRole {
 model EventUser {
   id        String         @id @default(uuid())
   pending   Boolean
-  user      User           @relation(fields: [userId], references: [id])
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String         @map("user_id")
   rsvp      EventRsvpRole? @relation(fields: [rsvpId], references: [id])
   rsvpId    String?        @map("rsvp_id")
-  event     Event          @relation(fields: [eventId], references: [id])
+  event     Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId   String         @map("event_id")
   updatedAt DateTime       @updatedAt @map("updated_at")
   createdAt DateTime       @default(now()) @map("created_at")
@@ -144,7 +144,7 @@ model EventSettings {
   openToJoinRequests Boolean  @map("open_to_join_requests")
   allowTeamSwitching Boolean  @map("allow_team_switching")
   allowCrewSwitching Boolean  @map("allow_crew_switching")
-  event              Event    @relation(fields: [eventId], references: [id])
+  event              Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId            String   @unique @map("event_id")
   updatedAt          DateTime @updatedAt @map("updated_at")
   createdAt          DateTime @default(now()) @map("created_at")
@@ -154,8 +154,8 @@ model EventSettings {
 
 model Event {
   id                    String                        @id @default(uuid())
-  owner                 User                          @relation(fields: [ownerId], references: [id])
-  ownerId               String                        @map("owner_id")
+  owner                 User?                         @relation(fields: [ownerId], references: [id])
+  ownerId               String?                       @map("owner_id")
   channel               EventChannel                  @relation(fields: [channelId], references: [id])
   channelId             Int                           @map("channel_id")
   discordThreadId       String?                       @map("discord_thread_id")
@@ -185,9 +185,9 @@ model Event {
 }
 
 model EventsWithUserRoleForAccess {
-  role       UserRole @relation(fields: [roleId], references: [id])
+  role       UserRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
   roleId     String   @map("role_id")
-  event      Event    @relation(fields: [eventId], references: [id])
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId    String   @map("event_id")
   assignedAt DateTime @default(now()) @map("assigned_at")
 
@@ -208,8 +208,8 @@ model EventChannel {
 
 model Resource {
   id               String   @id @default(uuid())
-  owner            User     @relation(fields: [ownerId], references: [id])
-  ownerId          String   @map("owner_id")
+  owner            User?    @relation(fields: [ownerId], references: [id])
+  ownerId          String?  @map("owner_id")
   name             String
   shortDescription String   @map("short_description") @db.VarChar(512)
   tags             String[]
