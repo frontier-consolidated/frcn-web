@@ -10,12 +10,13 @@ export function createResourceExtension(define: typeof Prisma.defineExtension, c
 			resource: {
 				async getOwner(model: FullModel<Resource>) {
 					if (model.owner) return model.owner;
+					if (!model.ownerId) return null;
 
 					const value = (await cacheGet(
 						model,
 						() => {
 							return client.user.findUnique({
-								where: { id: model.ownerId },
+								where: { id: model.ownerId! },
 							});
 						},
 						{

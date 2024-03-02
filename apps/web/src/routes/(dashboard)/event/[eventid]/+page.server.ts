@@ -21,7 +21,7 @@ export const load = (async ({ params, locals }) => {
 		error(404, "Event not found");
 	}
     
-    const canEdit = editingEnabled && locals.user && (locals.user.id === eventData.event.owner.id || hasPermission(locals.user.permissions, Permission.CreateEvents))
+    const canEdit = editingEnabled && locals.user && (locals.user.id === eventData.event.owner?.id || hasPermission(locals.user.permissions, Permission.CreateEvents))
 
     if (canEdit) {
         const { data: eventSettingsData, errors } = await locals.apollo.query({

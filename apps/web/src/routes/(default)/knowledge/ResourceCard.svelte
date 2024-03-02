@@ -43,8 +43,8 @@
         </span>
         <div class="flex items-center gap-2 mt-1">
             <span class="text-sm">By</span>
-            <Avatar rounded size="xs" src={resource.owner.avatarUrl} />
-            <span class="text-sm font-semibold text-gray-200">{resource.owner.name}</span>
+            <Avatar rounded size="xs" src={resource.owner?.avatarUrl} />
+            <span class="text-sm font-semibold text-gray-200">{resource.owner?.name ?? "[DELETED USER]"}</span>
         </div>
         <span class="block text-sm font-semibold dark:text-white mt-3">
             Description

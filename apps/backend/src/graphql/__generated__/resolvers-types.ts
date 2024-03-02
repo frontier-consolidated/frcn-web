@@ -65,7 +65,7 @@ export type Event = {
   members: Array<EventMember>;
   mentions: Array<Scalars['ID']['output']>;
   name: Scalars['String']['output'];
-  owner: User;
+  owner?: Maybe<User>;
   posted: Scalars['Boolean']['output'];
   roles: Array<EventRsvpRole>;
   rsvp?: Maybe<EventMember>;
@@ -398,7 +398,7 @@ export type Resource = {
   downloadUrl?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  owner: User;
+  owner?: Maybe<User>;
   previewUrl?: Maybe<Scalars['String']['output']>;
   shortDescription: Scalars['String']['output'];
   sizeKb: Scalars['Int']['output'];
@@ -714,7 +714,7 @@ export type EventResolvers<ContextType = GQLContext, ParentType extends Resolver
   members?: Resolver<Array<ResolversTypes['EventMember']>, ParentType, ContextType>;
   mentions?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  owner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   posted?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   roles?: Resolver<Array<ResolversTypes['EventRsvpRole']>, ParentType, ContextType>;
   rsvp?: Resolver<Maybe<ResolversTypes['EventMember']>, ParentType, ContextType>;
@@ -826,7 +826,7 @@ export type ResourceResolvers<ContextType = GQLContext, ParentType extends Resol
   downloadUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  owner?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  owner?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   previewUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   shortDescription?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   sizeKb?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;

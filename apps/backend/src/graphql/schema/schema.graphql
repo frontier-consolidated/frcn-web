@@ -113,7 +113,7 @@ type EventSettings {
 type Event {
 	id: ID!
 	channel: DiscordChannel!
-	owner: User!
+	owner: User
 	name: String!
 	summary: String!
 	description: String!
@@ -156,7 +156,7 @@ type DiscordEmoji {
 
 type Resource {
 	id: ID!
-	owner: User!
+	owner: User
 	name: String!
 	sizeKb: Int!
 	shortDescription: String!

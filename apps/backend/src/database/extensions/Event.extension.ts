@@ -18,12 +18,13 @@ export function createEventExtension(define: typeof Prisma.defineExtension, clie
 			event: {
 				async getOwner(model: FullModel<Event>) {
 					if (model.owner) return model.owner;
+					if (!model.ownerId) return null;
 
 					const value = (await cacheGet(
 						model,
 						() => {
 							return client.user.findUnique({
-								where: { id: model.ownerId },
+								where: { id: model.ownerId! },
 							});
 						},
 						{

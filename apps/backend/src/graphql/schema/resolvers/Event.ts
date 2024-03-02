@@ -27,7 +27,7 @@ export function resolveEvent(event: Event) {
 		_model: event,
 		id: event.id,
 		channel: null as unknown as DiscordChannel, // field-resolved
-		owner: null as unknown as GQLUser, // field-resolved
+		owner: null, // field-resolved
 		name: event.name,
 		summary: event.summary,
 		description: event.description,
@@ -105,9 +105,10 @@ export const eventResolvers: Resolvers = {
 			const channel = await database.event.getChannel(_model);
 			return await resolveDiscordChannel(channel, context);
 		},
-		async owner(source): Promise<WithModel<GQLUser, User>> {
+		async owner(source): Promise<WithModel<GQLUser, User> | null> {
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const owner = await database.event.getOwner(_model);
+			if (!owner) return null;
 			return resolveUser(owner);
 		},
 		async location(source, args, context) {

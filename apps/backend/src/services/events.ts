@@ -378,7 +378,7 @@ async function unrsvpForEvent(event: Event, user: User, discordClient: DiscordCl
 }
 
 async function canSeeEvent(event: Event, user: User | undefined, discordClient: DiscordClient) {
-	if (event.ownerId == user?.id) return true;
+	if (event.ownerId === user?.id) return true;
 	if (event.accessType === EventAccessType.Everyone) return true;
 
 	const members = await database.event.getMembers(event);
