@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, Heading } from "flowbite-svelte";
-	import { BookSolid, BuildingSolid, CalendarMonthSolid, DiscordSolid, FireSolid, HeartSolid, MapPinAltSolid, PapperPlaneSolid, RocketSolid, UsersSolid } from "flowbite-svelte-icons";
+	import { BookSolid, BuildingSolid, DiscordSolid, MapPinAltSolid, UsersSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
 	import Hr from "$lib/components/Hr.svelte";
