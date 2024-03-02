@@ -7,7 +7,7 @@ import { Client as DiscordClient } from "discord.js";
 import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { $system } from "./system";
-import { postEventMessage, updateEventMessage } from "../bot/messages/event.message";
+import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
 import { database } from "../database";
 import { EventAccessType, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 
@@ -286,6 +286,21 @@ async function postEvent(id: string, discordClient: DiscordClient) {
 	await postEventMessage(discordClient, event)
 }
 
+async function deleteEvent(id: string, discordClient: DiscordClient) {
+	const event = await database.event.findUnique({
+		where: { id },
+		include: {
+			channel: true,
+		},
+	});
+	if (!event) return;
+
+	await deleteEventMessage(discordClient, event)
+	await database.event.delete({
+		where: { id },
+	})
+}
+
 async function getUserRsvp(event: Event, user: User) {
 	const members = await database.event.getMembers(event)
 	return members.find(member => member.userId === user.id) ?? null
@@ -426,6 +441,7 @@ export const $events = {
 	createEvent,
 	editEvent,
 	postEvent,
+	deleteEvent,
 	canSeeEvent,
 	getUserRsvp,
 	canJoinRsvp,

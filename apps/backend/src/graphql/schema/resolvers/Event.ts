@@ -366,13 +366,11 @@ export const eventResolvers: Resolvers = {
 
 			return true;
 		},
-		async deleteEvent(source, args) {
+		async deleteEvent(source, args, context) {
 			const event = await $events.getEvent(args.id)
 			if (!event) return false;
 
-			await database.event.delete({
-				where: { id: event.id },
-			})
+			await $events.deleteEvent(args.id, context.app.discordClient)
 			return true;
 		}
 	},
