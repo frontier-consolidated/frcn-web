@@ -88,7 +88,8 @@
         mutation: Mutations.DELETE_RESOURCE,
         variables: {
             id: resource.id
-        }
+        },
+        errorPolicy: "all",
     })
 
     if (errors && errors.length > 0) {

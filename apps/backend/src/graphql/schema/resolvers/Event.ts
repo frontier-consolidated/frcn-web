@@ -365,5 +365,14 @@ export const eventResolvers: Resolvers = {
 
 			return true;
 		},
+		async deleteEvent(source, args) {
+			const event = await $events.getEvent(args.id)
+			if (!event) return false;
+
+			await database.event.delete({
+				where: { id: event.id },
+			})
+			return true;
+		}
 	},
 };

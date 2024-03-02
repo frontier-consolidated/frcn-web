@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from "$app/navigation";
 	import { strings, EventTypeOptions } from "@frcn/shared";
 	import { getLocations } from "@frcn/shared/locations";
 	import { Alert, Checkbox, Helper, Input, Label, Toggle, Button, } from "flowbite-svelte";
@@ -11,6 +12,7 @@
 	import { twMerge } from "tailwind-merge";
 	import isURL from "validator/lib/isURL"
 
+	import ConfirmationModal from "$lib/components/ConfirmationModal.svelte";
 	import DatetimePicker from "$lib/components/datetime/DatetimePicker.svelte";
 	import DurationPicker from "$lib/components/datetime/DurationPicker.svelte";
 	import LocationSelectUl from "$lib/components/location/LocationSelectUl.svelte";
@@ -41,6 +43,8 @@
 
 	let imagePlaceholder = false
 	let validator = new FieldValidator()
+
+	let deleteModalOpen = false;
 
 	async function save() {
 		if (!validator.validate()) return false;
@@ -387,8 +391,17 @@
 		</div>
 	</section>
 	<div class="flex flex-wrap justify-end items-center gap-2">
+		<Button color="red" class="mr-auto" on:click={() => {
+			deleteModalOpen = true;
+		}}>
+			<CloseSolid class="me-2" tabindex="-1" /> Delete
+		</Button>
 		<Button color="alternative" on:click={() => {
-			editData = cloneEventSettingsData(data);
+			if (data.createdAt === data.updatedAt) {
+				deleteModalOpen = true;
+			} else {
+				editData = cloneEventSettingsData(data);
+			}
 		}}>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>
@@ -425,3 +438,27 @@
 		{/if}
 	</div>
 </div>
+
+<ConfirmationModal title="Delete event" bind:open={deleteModalOpen} on:confirm={async () => {
+    const { errors } = await getApollo().mutate({
+        mutation: Mutations.DELETE_EVENT,
+        variables: {
+            id: data.id
+        },
+		errorPolicy: "all",
+    })
+
+    if (errors && errors.length > 0) {
+        pushNotification({
+            type: "error",
+            message: "Failed to delete event",
+        });
+        console.error(errors);
+        return;
+    }
+
+    deleteModalOpen = false;
+	goto("/events")
+}}>
+    <span>Are you sure you want to delete this event? Once deleted it cannot be undone.</span>
+</ConfirmationModal>

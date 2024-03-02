@@ -83,7 +83,8 @@
         mutation: Mutations.DELETE_ROLE,
         variables: {
             roleId: role.id
-        }
+        },
+        errorPolicy: "all",
     })
 
     if (errors && errors.length > 0) {
