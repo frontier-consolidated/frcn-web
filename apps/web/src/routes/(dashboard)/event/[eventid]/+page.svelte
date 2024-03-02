@@ -107,6 +107,7 @@
 			>
 				{#if data.posted}
 					<TabItem
+						open
 						title="Overview"
 						defaultClass="inline-block text-md font-medium text-center disabled:cursor-not-allowed"
 					></TabItem>
