@@ -5,6 +5,7 @@
 	import { DotsVerticalOutline, DownloadSolid, EditOutline, FileSolid, TrashBinSolid } from "flowbite-svelte-icons";
     import { createEventDispatcher } from "svelte";
 
+	import ConfirmationModal from "$lib/components/ConfirmationModal.svelte";
 	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
@@ -81,29 +82,26 @@
         </div>
     </div>
 </Card>
-<Modal title="Delete resource - {resource.name}" size="xs" bind:open={deleteModalOpen}>
+
+<ConfirmationModal title="Delete resource - {resource.name}" bind:open={deleteModalOpen} on:confirm={async () => {
+    const { errors } = await getApollo().mutate({
+        mutation: Mutations.DELETE_RESOURCE,
+        variables: {
+            id: resource.id
+        }
+    })
+
+    if (errors && errors.length > 0) {
+        pushNotification({
+            type: "error",
+            message: "Failed to delete resource",
+        });
+        console.error(errors);
+        return;
+    }
+
+    await invalidate("app:resources")
+    deleteModalOpen = false;
+}}>
     <span>Are you sure you want to delete the <strong>{resource.name}</strong> resource? Once deleted it cannot be undone.</span>
-    <svelte:fragment slot="footer">
-		<Button class="flex-1" on:click={async () => {
-			const { errors } = await getApollo().mutate({
-                mutation: Mutations.DELETE_RESOURCE,
-                variables: {
-                    id: resource.id
-                }
-            })
-
-            if (errors && errors.length > 0) {
-                pushNotification({
-                    type: "error",
-                    message: "Failed to delete resource",
-                });
-                console.error(errors);
-                return;
-            }
-
-            await invalidate("app:resources")
-            deleteModalOpen = false;
-		}}>Confirm</Button>
-		<Button color="alternative" class="flex-1" on:click={() => deleteModalOpen = false}>Cancel</Button>
-  	</svelte:fragment>
-</Modal>
+</ConfirmationModal>

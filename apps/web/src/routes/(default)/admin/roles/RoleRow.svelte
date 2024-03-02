@@ -4,6 +4,7 @@
 	import { DiscordSolid, DotsVerticalOutline, LockSolid, PenSolid, StarSolid, TrashBinSolid, UsersSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
+	import ConfirmationModal from "$lib/components/ConfirmationModal.svelte";
 	import Tooltip from "$lib/components/Tooltip.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -76,29 +77,26 @@
         </div>
     </TableBodyCell>
 </TableBodyRow>
-<Modal title="Delete role - {role.name}" size="xs" bind:open={modalOpen}>
+
+<ConfirmationModal title="Delete role - {role.name}" bind:open={modalOpen} on:confirm={async () => {
+    const { errors } = await getApollo().mutate({
+        mutation: Mutations.DELETE_ROLE,
+        variables: {
+            roleId: role.id
+        }
+    })
+
+    if (errors && errors.length > 0) {
+        pushNotification({
+            type: "error",
+            message: "Failed to delete role",
+        });
+        console.error(errors);
+        return;
+    }
+
+    await invalidate("app:allroles")
+    modalOpen = false;
+}}>
     <span>Are you sure you want to delete the <strong>{role.name}</strong> role? Once deleted it cannot be undone.</span>
-    <svelte:fragment slot="footer">
-		<Button class="flex-1" on:click={async () => {
-			const { errors } = await getApollo().mutate({
-                mutation: Mutations.DELETE_ROLE,
-                variables: {
-                    roleId: role.id
-                }
-            })
-
-            if (errors && errors.length > 0) {
-                pushNotification({
-                    type: "error",
-                    message: "Failed to delete role",
-                });
-                console.error(errors);
-                return;
-            }
-
-            await invalidate("app:allroles")
-            modalOpen = false;
-		}}>Confirm</Button>
-		<Button color="alternative" class="flex-1" on:click={() => modalOpen = false}>Cancel</Button>
-  	</svelte:fragment>
-</Modal>
+</ConfirmationModal>
