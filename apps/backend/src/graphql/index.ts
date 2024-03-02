@@ -23,6 +23,10 @@ export function createApolloServer(server: HttpServer, config: CreateApolloServe
 
 	return new ApolloServer<GQLContext>({
 		schema,
+		formatError(formattedError, error) {
+			console.error(error)
+			return formattedError
+		},
 		...config,
 		plugins: [
 			ApolloServerPluginDrainHttpServer({ httpServer: server }),
