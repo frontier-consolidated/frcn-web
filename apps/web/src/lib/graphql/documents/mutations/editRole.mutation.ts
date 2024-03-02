@@ -1,4 +1,4 @@
-import { gql } from "../__generated__";
+import { gql } from "../../__generated__";
 
 export const EDIT_ROLE = gql(`
 	mutation EditRole($roleId: ID!, $data: RoleEditInput!) {

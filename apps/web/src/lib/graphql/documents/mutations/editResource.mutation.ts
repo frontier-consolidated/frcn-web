@@ -1,4 +1,4 @@
-import { gql } from "../__generated__";
+import { gql } from "../../__generated__";
 
 export const EDIT_RESOURCE = gql(`
 	mutation EditResource($id: ID!, $data: ResourceEditInput!) {

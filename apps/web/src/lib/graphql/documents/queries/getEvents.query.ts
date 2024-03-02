@@ -1,4 +1,4 @@
-import { gql } from "../__generated__";
+import { gql } from "../../__generated__";
 
 export const GET_EVENTS = gql(`
 	query GetEvents($filter: EventFilterInput, $page: Int, $limit: Int) {

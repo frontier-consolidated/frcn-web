@@ -1,4 +1,4 @@
-import { gql } from "../__generated__";
+import { gql } from "../../__generated__";
 
 export const REORDER_ROLES = gql(`
 	mutation ReorderRoles($order: [ID!]!) {

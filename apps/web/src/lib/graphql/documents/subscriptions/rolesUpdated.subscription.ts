@@ -1,4 +1,4 @@
-import { gql } from "../__generated__";
+import { gql } from "../../__generated__";
 
 export const USER_ROLES_UPDATED = gql(`
 	subscription OnRolesUpdated($userId: ID!) {

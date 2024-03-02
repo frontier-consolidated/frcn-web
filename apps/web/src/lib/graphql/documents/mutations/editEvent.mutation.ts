@@ -1,4 +1,4 @@
-import { gql } from "../__generated__";
+import { gql } from "../../__generated__";
 
 export const EDIT_EVENT = gql(`
 	mutation EditEvent($eventId: ID!, $data: EventEditInput!) {
