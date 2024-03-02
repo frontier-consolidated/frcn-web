@@ -67,9 +67,9 @@
 		<EmojiPickerInput init={editRole.emoji.id} {additionalEmojis} bind:value={emojiInput} />
 	</TableBodyCell>
 	<TableBodyCell>
-		<Field {validator} for="{role.id}-role-name" value={editRole.name} required>
+		<Field {validator} for="role-name-{role.id}" value={editRole.name} required>
 			<Input
-				id="{role.id}-role-name"
+				id="role-name-{role.id}"
 				name="Event Role Name"
 				class="!bg-transparent !border-transparent !p-1 text-ellipsis"
 				placeholder="Role name"
