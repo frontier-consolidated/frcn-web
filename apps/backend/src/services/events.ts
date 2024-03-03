@@ -93,6 +93,7 @@ async function getEvents(
 				  }
 				: undefined,
 			eventType,
+			posted: true,
 			duration: duration
 				? {
 						gte: duration.min,
