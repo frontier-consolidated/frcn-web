@@ -20,7 +20,7 @@ import type {
 } from "../../__generated__/resolvers-types";
 import { EventAccessType } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
-import { gqlErrorBadInput, gqlErrorBadState } from "../gqlError";
+import { gqlErrorBadInput, gqlErrorBadState, gqlErrorUnauthenticated } from "../gqlError";
 
 export function resolveEvent(event: Event) {
 	return {
@@ -372,6 +372,29 @@ export const eventResolvers: Resolvers = {
 
 			await $events.deleteEvent(args.id, context.app.discordClient)
 			return true;
+		},
+		async rsvpForEvent(source, args, context) {
+			if (!context.user) throw gqlErrorUnauthenticated()
+			const event = await $events.getEvent(args.id)
+			if (!event) return false;
+
+			const roles = await database.event.getRoles(event)
+			const role = roles.find(r => r.id === args.rsvp)
+			if (!role) throw gqlErrorBadInput("No such rsvp role with id")
+			if (!(await $events.canJoinRsvp(role))) throw gqlErrorBadInput(`RSVP '${role.name}' is full`)
+			
+			const currentRsvp = await $events.getUserRsvp(event, context.user);
+
+			await $events.rsvpForEvent(event, role, context.user, currentRsvp, context.app.discordClient);
+			return true
+		},
+		async unrsvpForEvent(source, args, context) {
+			if (!context.user) throw gqlErrorUnauthenticated()
+			const event = await $events.getEvent(args.id)
+			if (!event) return false;
+
+			await $events.unrsvpForEvent(event, context.user, context.app.discordClient);
+			return true
 		}
 	},
 };
