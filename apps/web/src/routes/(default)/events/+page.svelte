@@ -23,7 +23,7 @@
 
 <Heading tag="h1" class="font-medium text-4xl">Events</Heading>
 <Hr />
-<section class="flex flex-col gap-2 mt-4">
+<section class="flex flex-col mt-4">
 	<div>
 		<div class="flex flex-col sm:flex-row gap-2">
 			<Search size="md" placeholder="Search by name" class="sm:max-w-[400px]" bind:value={$search} />
@@ -35,7 +35,7 @@
 			</div>
 		</div>
 	</div>
-	<Tabs contentClass="p-4" style="underline">
+	<Tabs contentClass="mt-6" style="underline">
 		<TabItem title="Timeline" open={$page.url.hash.length < 2 || $page.url.hash === "#timeline"} on:click={() => window.location.hash = "#timeline"}>
 			<EventsTimeline {data} />
 		</TabItem>
