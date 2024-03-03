@@ -113,7 +113,7 @@
 </script>
 
 <svelte:head>
-	<title>Admin - Edit Role - {data.role?.name}</title>
+	<title>{data.role?.name} - Admin | Frontier Consolidated</title>
 </svelte:head>
 
 <a class="flex items-center text-gray-300 mb-2 p-2 cursor-pointer hover:text-gray-400" href="/admin/roles" use:initNavigation>

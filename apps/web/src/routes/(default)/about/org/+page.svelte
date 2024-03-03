@@ -19,7 +19,7 @@
 </script>
 
 <svelte:head>
-	<title>About - Our Organisation</title>
+	<title>Our Organisation - About | Frontier Consolidated</title>
 </svelte:head>
 
 <Heading tag="h1" class="font-medium text-4xl">Frontier Organisation</Heading>

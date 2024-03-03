@@ -34,11 +34,11 @@
 	};
 
 	$: currentPage = getCurrentPage($page.url.searchParams);
-	$: pages = getPages("/knowledge", $page.url.searchParams, currentPage, data.itemsPerPage, data.total);
+	$: pages = getPages($page.url, currentPage, data.itemsPerPage, data.total);
 </script>
 
 <svelte:head>
-	<title>Resources</title>
+	<title>Resources | Frontier Consolidated</title>
 	<meta name="description" content="Frontier Consolidated - Search for Guides & Resources" />
 </svelte:head>
 
@@ -87,8 +87,8 @@
 		</div>
 		<Pagination
 			{pages}
-			on:previous={() => {if (data.prevPage != null) goto(getPageUrl("/knowledge", $page.url.searchParams, data.prevPage + 1))}}
-			on:next={() => {if (data.nextPage != null) goto(getPageUrl("/knowledge", $page.url.searchParams, data.nextPage + 1))}}
+			on:previous={() => {if (data.prevPage != null) goto(getPageUrl($page.url, data.prevPage + 1))}}
+			on:next={() => {if (data.nextPage != null) goto(getPageUrl($page.url, data.nextPage + 1))}}
 		/>
 	</div>
 </section>

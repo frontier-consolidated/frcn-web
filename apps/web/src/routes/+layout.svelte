@@ -16,7 +16,7 @@
 
 <div class="main-container relative flex flex-col min-h-screen bg-white dark:bg-gray-950">
 	<Header />
-	<Banner id="wip-banner" bannerType="default" classDiv="bg-orange-50 dark:bg-orange-800 text-orange-800 dark:text-orange-400 dark:border-orange-700">
+	<Banner id="wip-banner" bannerType="default" classDiv="z-20 bg-orange-50 dark:bg-orange-800 text-orange-800 dark:text-orange-400 dark:border-orange-700">
 		<CodeSolid class="me-2" tabindex="-1" /> Currently Under Construction
 	</Banner>
 	<slot />

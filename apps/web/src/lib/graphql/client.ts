@@ -10,7 +10,7 @@ import { createClient } from "graphql-ws";
 
 import { Routes, apiUri } from "$lib/api";
 
-import { fragments } from "./operations/fragments";
+import { fragments } from "./documents/fragments";
 
 export function createApolloClient(headers?: Record<string, string>) {
 	const httpLink = new HttpLink({
@@ -44,6 +44,9 @@ export function createApolloClient(headers?: Record<string, string>) {
 			fragments,
 			typePolicies: {
 				Event: {
+					merge: true
+				},
+				UserStatus: {
 					merge: true
 				}
 			}

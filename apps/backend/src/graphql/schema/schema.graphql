@@ -74,6 +74,7 @@ type User {
 	primaryRole: UserRole!
 	roles: [UserRole!]!
 	rsvps: [EventRsvp!]! @ownership
+	events: [Event!]! @ownership
 	status: UserStatus!
 	settings: UserSettings! @ownership
 }
@@ -106,13 +107,18 @@ type EventSettings {
 	inviteOnly: Boolean!
 	openToJoinRequests: Boolean!
 	allowTeamSwitching: Boolean!
-	allowCrewSwitching: Boolean!
+}
+
+type EventTeam {
+	id: ID!
+	name: String!
+	members: [EventMember!]!
 }
 
 type Event {
 	id: ID!
 	channel: DiscordChannel!
-	owner: User!
+	owner: User
 	name: String!
 	summary: String!
 	description: String!
@@ -129,6 +135,7 @@ type Event {
 	rsvp: EventMember
 	roles: [EventRsvpRole!]!
 	members: [EventMember!]!
+	teams: [EventTeam!]!
 	mentions: [ID!]! @permission(has: CreateEvents)
 	settings: EventSettings! @permission(has: CreateEvents)
 	accessType: EventAccessType! @permission(has: CreateEvents)
@@ -153,9 +160,15 @@ type DiscordEmoji {
 	image: String
 }
 
+type DiscordEmojis {
+	serverName: String!
+	serverAvatar: String
+	emojis: [DiscordEmoji!]!
+}
+
 type Resource {
 	id: ID!
-	owner: User!
+	owner: User
 	name: String!
 	sizeKb: Int!
 	shortDescription: String!
@@ -188,7 +201,6 @@ input EventSettingsInput {
 	inviteOnly: Boolean!
 	openToJoinRequests: Boolean!
 	allowTeamSwitching: Boolean!
-	allowCrewSwitching: Boolean!
 }
 
 input EventRoleInput {
@@ -214,6 +226,14 @@ input EventEditInput {
 	settings: EventSettingsInput
 	accessType: EventAccessType
 	accessRoles: [ID!]
+}
+
+input EventTeamCreateInput {
+	name: String!
+}
+
+input EventTeamEditInput {
+	name: String
 }
 
 input SystemEditInput {
@@ -277,7 +297,7 @@ type Query {
 	# System
 	getAllEventChannels: [DiscordChannel]! @permission(one: [CreateEvents, ManageSystem])
 	getAllDiscordChannels: [DiscordChannel!]! @permission(has: ManageSystem)
-	getAllDiscordEmojis: [DiscordEmoji!]! @permission(has: CreateEvents)
+	getAllDiscordEmojis: DiscordEmojis! @permission(has: CreateEvents)
 	getAllDiscordRoles(everyone: Boolean): [DiscordRole!]!
 		@permission(one: [CreateEvents, ManageRoles])
 	getSystemSettings: SystemSettings! @permission(has: ManageSystem)
@@ -297,6 +317,13 @@ type Mutation {
 
 	rsvpForEvent(id: ID!, rsvp: ID!): Boolean!
 	unrsvpForEvent(id: ID!): Boolean!
+
+	setEventMemberTeam(id: ID!, member: ID!, team: ID): Boolean!
+	kickEventMember(id: ID!, member: ID!): Boolean! @permission(has: CreateEvents)
+
+	createEventTeam(id: ID!, data: EventTeamCreateInput!): EventTeam!
+	editEventTeam(id: ID!, data: EventTeamEditInput!): EventTeam!
+	deleteEventTeam(id: ID!, team: ID!): Boolean!
 
 	# Resources
 	createResource(data: ResourceCreateInput!): Resource! @permission(has: UploadResources)

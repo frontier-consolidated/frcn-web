@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Avatar, Badge, Button, Card, Dropdown, DropdownItem, Modal, Toolbar, ToolbarButton } from "flowbite-svelte";
+	import { Badge, Button, Card, Dropdown, DropdownItem, Toolbar, ToolbarButton } from "flowbite-svelte";
 	import { DotsVerticalOutline, DownloadSolid, EditOutline, FileSolid, TrashBinSolid } from "flowbite-svelte-icons";
     import { createEventDispatcher } from "svelte";
 
+	import ConfirmationModal from "$lib/components/ConfirmationModal.svelte";
+	import CreatedByButton from "$lib/components/CreatedByButton.svelte";
 	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
@@ -40,11 +42,7 @@
         <span class="block mt-2 text-xl font-semibold dark:text-white">
             {resource.name}
         </span>
-        <div class="flex items-center gap-2 mt-1">
-            <span class="text-sm">By</span>
-            <Avatar rounded size="xs" src={resource.owner.avatarUrl} />
-            <span class="text-sm font-semibold text-gray-200">{resource.owner.name}</span>
-        </div>
+        <CreatedByButton class="mt-1" user={resource.owner} />
         <span class="block text-sm font-semibold dark:text-white mt-3">
             Description
         </span>
@@ -81,29 +79,27 @@
         </div>
     </div>
 </Card>
-<Modal title="Delete resource - {resource.name}" size="xs" bind:open={deleteModalOpen}>
+
+<ConfirmationModal title="Delete resource - {resource.name}" bind:open={deleteModalOpen} on:confirm={async () => {
+    const { errors } = await getApollo().mutate({
+        mutation: Mutations.DELETE_RESOURCE,
+        variables: {
+            id: resource.id
+        },
+        errorPolicy: "all",
+    })
+
+    if (errors && errors.length > 0) {
+        pushNotification({
+            type: "error",
+            message: "Failed to delete resource",
+        });
+        console.error(errors);
+        return;
+    }
+
+    await invalidate("app:resources")
+    deleteModalOpen = false;
+}}>
     <span>Are you sure you want to delete the <strong>{resource.name}</strong> resource? Once deleted it cannot be undone.</span>
-    <svelte:fragment slot="footer">
-		<Button class="flex-1" on:click={async () => {
-			const { errors } = await getApollo().mutate({
-                mutation: Mutations.DELETE_RESOURCE,
-                variables: {
-                    id: resource.id
-                }
-            })
-
-            if (errors && errors.length > 0) {
-                pushNotification({
-                    type: "error",
-                    message: "Failed to delete resource",
-                });
-                console.error(errors);
-                return;
-            }
-
-            await invalidate("app:resources")
-            deleteModalOpen = false;
-		}}>Confirm</Button>
-		<Button color="alternative" class="flex-1" on:click={() => deleteModalOpen = false}>Cancel</Button>
-  	</svelte:fragment>
-</Modal>
+</ConfirmationModal>

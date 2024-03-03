@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Input, TableBodyCell, TableBodyRow } from "flowbite-svelte";
-	import { TrashBinSolid } from "flowbite-svelte-icons";
+	import { DatabaseSolid, TrashBinSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
 	import EmojiPickerInput from "$lib/components/emoji/EmojiPickerInput.svelte";
@@ -50,12 +50,12 @@
 		}
 	}
 	$: additionalEmojis = data.options?.emojis
-		? (data.options?.emojis.map((emoji) => ({
+		? (data.options.emojis.emojis.map((emoji) => ({
 				id: emoji.id,
 				name: emoji.name,
 				names: [emoji.name],
 				imageUrl: emoji.image,
-				category: "custom",
+				category: data.options!.emojis.serverName.toLowerCase(),
 			})) as Emoji[])
 		: [];
 
@@ -64,12 +64,14 @@
 
 <TableBodyRow>
 	<TableBodyCell class="text-center">
-		<EmojiPickerInput init={editRole.emoji.id} {additionalEmojis} bind:value={emojiInput} />
+		<EmojiPickerInput init={editRole.emoji.id} {additionalEmojis} categoryIcons={data.options?.emojis ? {
+			[data.options.emojis.serverName.toLowerCase()]: data.options.emojis.serverAvatar ?? DatabaseSolid
+		} : undefined} bind:value={emojiInput} />
 	</TableBodyCell>
 	<TableBodyCell>
-		<Field {validator} for="{role.id}-role-name" value={editRole.name} required>
+		<Field {validator} for="role-name-{role.id}" value={editRole.name} required>
 			<Input
-				id="{role.id}-role-name"
+				id="role-name-{role.id}"
 				name="Event Role Name"
 				class="!bg-transparent !border-transparent !p-1 text-ellipsis"
 				placeholder="Role name"

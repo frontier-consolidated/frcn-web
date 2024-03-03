@@ -1,6 +1,6 @@
 overwrite: true
 schema: "../backend/src/graphql/schema/schema.generated.graphql"
-documents: "./src/lib/graphql/operations/**/*.ts"
+documents: "./src/lib/graphql/documents/**/*.ts"
 ignoreNoDocuments: true
 generates:
     ./src/lib/graphql/__generated__/:

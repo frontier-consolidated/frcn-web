@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Button, Heading } from "flowbite-svelte";
-	import { BookSolid, BuildingSolid, CalendarMonthSolid, DiscordSolid, UsersSolid } from "flowbite-svelte-icons";
+	import { BookSolid, BuildingSolid, DiscordSolid, MapPinAltSolid, UsersSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
 	import Hr from "$lib/components/Hr.svelte";
@@ -66,7 +66,7 @@
 		src={activitiesImage}
 		href="/about/activities"
 	>
-		<CalendarMonthSolid size="sm" class="me-2" tabindex="-1" /> Activities
+		<MapPinAltSolid size="sm" class="me-2" tabindex="-1" /> Activities
 	</PageCard>
 	<PageCard
 		src={knowledgeImage}

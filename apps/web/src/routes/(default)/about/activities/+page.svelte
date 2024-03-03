@@ -13,14 +13,13 @@
 	import image7 from "$lib/images/stock/activities/7.jpg"
 	import image8 from "$lib/images/stock/activities/8.png"
 	import image9 from "$lib/images/stock/activities/9.png"
-	import placeholder from "$lib/images/stock/placeholder.jpg"
 
 	import HeroImg from "../HeroImg.svelte";
 	import HeroTitle from "../HeroTitle.svelte";
 </script>
 
 <svelte:head>
-	<title>About - Our Activities</title>
+	<title>Our Activities - About | Frontier Consolidated</title>
 </svelte:head>
 
 <Heading tag="h1" class="font-medium text-4xl">Frontier Activities</Heading>

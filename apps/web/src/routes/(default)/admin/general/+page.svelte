@@ -15,7 +15,7 @@
 </script>
 
 <svelte:head>
-	<title>Admin - General Settings</title>
+	<title>General - Admin | Frontier Consolidated</title>
 </svelte:head>
 
 <SectionHeading>
