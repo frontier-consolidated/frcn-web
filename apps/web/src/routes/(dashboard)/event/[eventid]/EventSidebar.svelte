@@ -16,6 +16,9 @@
 	} from "flowbite-svelte-icons";
 
 	import RsvpModal from "$lib/components/RSVPModal.svelte";
+	import { Mutations, getApollo } from "$lib/graphql";
+	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
 	import EventMember from "./EventMember.svelte";
@@ -46,6 +49,26 @@
 				<SidebarItem
 					nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white dark:hover:bg-red-500"
 					label="Leave Event"
+					on:click={async () => {
+						const { data: unrsvpData, errors } = await getApollo().mutate({
+							mutation: Mutations.UNRSVP_FOR_EVENT,
+							variables: {
+								eventId: data.id
+							}
+						})
+
+						if (!unrsvpData?.success || (errors && errors.length > 0)) {
+							pushNotification({
+								type: "error",
+								message: "Failed to leave event",
+							});
+							console.error(errors);
+							return;
+						}
+
+						data.rsvp = null;
+						data.members = data.members.filter(member => member.user.id !== $user.data?.id)
+					}}
 				>
 					<svelte:fragment slot="icon">
 						<ArrowLeftToBracketOutline tabindex="-1" />
@@ -80,4 +103,4 @@
 	</SidebarWrapper>
 </Sidebar>
 
-<RsvpModal event={data} bind:open={rsvpModal} />
+<RsvpModal event={data} dependency="app:currentevent" bind:open={rsvpModal} />
