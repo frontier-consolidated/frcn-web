@@ -71,7 +71,7 @@ export async function buildEventMessage(id: string, client: Client) {
 	const eventEmbed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
 		.setTitle(`:calendar_spiral: ${event.name}`)
-		.setDescription(event.description)
+		.setDescription(event.description ? event.description : "*No Description*")
 		.addFields({
 			name: "Event Type",
 			value: strings.toTitleCase(event.eventType!)
