@@ -9,7 +9,9 @@ import type { PageServerLoad } from './$types';
 
 const editingEnabled = true
 
-export const load = (async ({ params, locals }) => {
+export const load = (async ({ params, locals, depends }) => {
+    depends("app:currentevent")
+
     const { data: eventData } = await locals.apollo.query({
 		query: Queries.GET_EVENT,
 		variables: {
