@@ -43,6 +43,7 @@ export function resolveEvent(event: Event) {
 
 		roles: [], // field-resolved
 		members: [], // field-resolved
+		teams: [], // field-resolved
 		mentions: event.discordMentions,
 		settings: null as unknown as GQLEventSettings, // field-resolved
 		accessType: event.accessType as EventAccessType,
@@ -56,7 +57,6 @@ function resolveEventSettings(settings: EventSettings) {
 		inviteOnly: settings.inviteOnly,
 		openToJoinRequests: settings.openToJoinRequests,
 		allowTeamSwitching: settings.allowTeamSwitching,
-		allowCrewSwitching: settings.allowCrewSwitching,
 	} satisfies GQLEventSettings;
 }
 

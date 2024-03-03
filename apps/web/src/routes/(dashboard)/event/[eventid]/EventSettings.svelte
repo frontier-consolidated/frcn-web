@@ -75,7 +75,6 @@
 						hideLocation: editData.settings.hideLocation,
 						inviteOnly: editData.settings.inviteOnly,
 						openToJoinRequests: editData.settings.openToJoinRequests,
-						allowCrewSwitching: editData.settings.allowCrewSwitching,
 						allowTeamSwitching: editData.settings.allowTeamSwitching,
 					},
 					accessType: editData.accessType,
@@ -323,14 +322,6 @@
 					</Toggle>
 					<Helper class="mt-1">
 						Users will be able to switch teams once the event has started
-					</Helper>
-				</Field>
-				<Field {validator} for="event-allow-crew-switching" value={editData.settings.allowCrewSwitching}>
-					<Toggle id="event-allow-crew-switching" bind:checked={editData.settings.allowCrewSwitching}>
-						Allow Crew Switching
-					</Toggle>
-					<Helper class="mt-1">
-						Users will be able to switch crews once the event has started
 					</Helper>
 				</Field>
 			</div>

@@ -143,7 +143,6 @@ model EventSettings {
   inviteOnly         Boolean  @map("invite_only")
   openToJoinRequests Boolean  @map("open_to_join_requests")
   allowTeamSwitching Boolean  @map("allow_team_switching")
-  allowCrewSwitching Boolean  @map("allow_crew_switching")
   event              Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId            String   @unique @map("event_id")
   updatedAt          DateTime @updatedAt @map("updated_at")

@@ -172,7 +172,6 @@ async function createEvent(owner: User, discordClient: DiscordClient) {
 					inviteOnly: false,
 					openToJoinRequests: true,
 					allowTeamSwitching: false,
-					allowCrewSwitching: false,
 				},
 			},
 			accessType: EventAccessType.Channel,
@@ -247,7 +246,6 @@ async function editEvent(id: string, data: EventEditInput, discordClient: Discor
 							hideLocation: data.settings.hideLocation,
 							inviteOnly: data.settings.inviteOnly,
 							openToJoinRequests: data.settings.openToJoinRequests,
-							allowCrewSwitching: data.settings.allowCrewSwitching,
 							allowTeamSwitching: data.settings.allowTeamSwitching,
 						},
 				  }
