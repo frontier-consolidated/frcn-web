@@ -16,7 +16,7 @@ export function resolveResource(resource: Resource, context: GQLContext) {
 	return {
 		_model: resource,
 		id: resource.id,
-		owner: null as unknown as GQLUser, // field-resolved
+		owner: null, // field-resolved
 		name: resource.name,
 		sizeKb: resource.fileSizeKb ?? 0,
 		shortDescription: resource.shortDescription,
@@ -30,9 +30,10 @@ export function resolveResource(resource: Resource, context: GQLContext) {
 
 export const resourceResolvers: Resolvers = {
 	Resource: {
-		async owner(source): Promise<WithModel<GQLUser, User>> {
+		async owner(source): Promise<WithModel<GQLUser, User> | null> {
 			const { _model } = source as WithModel<GQLResource, Resource>;
 			const owner = await database.resource.getOwner(_model);
+			if (!owner) return null;
 			return resolveUser(owner);
 		},
 	},

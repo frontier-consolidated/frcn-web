@@ -113,11 +113,11 @@
 </script>
 
 <svelte:head>
-	<title>Admin - Edit Role - {data.role?.name}</title>
+	<title>{data.role?.name} - Admin | Frontier Consolidated</title>
 </svelte:head>
 
 <a class="flex items-center text-gray-300 mb-2 p-2 cursor-pointer hover:text-gray-400" href="/admin/roles" use:initNavigation>
-	<ArrowLeftSolid class="me-2" /> Back to Roles
+	<ArrowLeftSolid class="me-2" tabindex="-1" /> Back to Roles
 </a>
 <SectionHeading>
     Edit Role - {data.role?.name}
@@ -239,7 +239,7 @@
 		<Button color="alternative" on:click={() => {
 			editData = cloneRoleData(data.role);
 		}}>
-			<CloseSolid class="me-2" /> Cancel
+			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>
 		<Button
 			disabled={!isDirty}
@@ -248,7 +248,7 @@
 				save();
 			}}
 		>
-			<EditOutline class="me-2" /> Save
+			<EditOutline class="me-2" tabindex="-1" /> Save
 		</Button>
 	</div>
 </div>

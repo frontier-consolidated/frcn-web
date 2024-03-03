@@ -15,7 +15,6 @@
     import type { PageData } from './$types';
 	import RoleRow from "./RoleRow.svelte";
 
-
 	const roleSearch = queryParam("q")
     
     export let data: PageData;
@@ -91,7 +90,7 @@
 </script>
 
 <svelte:head>
-	<title>Admin - Edit Roles</title>
+	<title>Roles - Admin | Frontier Consolidated</title>
 </svelte:head>
 
 <SectionHeading>
@@ -145,7 +144,7 @@
 		<Button color="alternative" on:click={() => {
 			editRoles = data.roles.toReversed()
 		}}>
-			<CloseSolid class="me-2" /> Cancel
+			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>
 		<Button
 			disabled={!isDirty}
@@ -154,7 +153,7 @@
 				save();
 			}}
 		>
-			<EditOutline class="me-2" /> Save
+			<EditOutline class="me-2" tabindex="-1" /> Save
 		</Button>
 	</div>
 </div>

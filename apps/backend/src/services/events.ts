@@ -7,7 +7,7 @@ import { Client as DiscordClient } from "discord.js";
 import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { $system } from "./system";
-import { postEventMessage, updateEventMessage } from "../bot/messages/event.message";
+import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
 import { database } from "../database";
 import { EventAccessType, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 
@@ -93,6 +93,7 @@ async function getEvents(
 				  }
 				: undefined,
 			eventType,
+			posted: true,
 			duration: duration
 				? {
 						gte: duration.min,
@@ -171,7 +172,6 @@ async function createEvent(owner: User, discordClient: DiscordClient) {
 					inviteOnly: false,
 					openToJoinRequests: true,
 					allowTeamSwitching: false,
-					allowCrewSwitching: false,
 				},
 			},
 			accessType: EventAccessType.Channel,
@@ -246,7 +246,6 @@ async function editEvent(id: string, data: EventEditInput, discordClient: Discor
 							hideLocation: data.settings.hideLocation,
 							inviteOnly: data.settings.inviteOnly,
 							openToJoinRequests: data.settings.openToJoinRequests,
-							allowCrewSwitching: data.settings.allowCrewSwitching,
 							allowTeamSwitching: data.settings.allowTeamSwitching,
 						},
 				  }
@@ -284,6 +283,21 @@ async function postEvent(id: string, discordClient: DiscordClient) {
 	if (!event) return;
 	
 	await postEventMessage(discordClient, event)
+}
+
+async function deleteEvent(id: string, discordClient: DiscordClient) {
+	const event = await database.event.findUnique({
+		where: { id },
+		include: {
+			channel: true,
+		},
+	});
+	if (!event) return;
+
+	await deleteEventMessage(discordClient, event)
+	await database.event.delete({
+		where: { id },
+	})
 }
 
 async function getUserRsvp(event: Event, user: User) {
@@ -378,7 +392,7 @@ async function unrsvpForEvent(event: Event, user: User, discordClient: DiscordCl
 }
 
 async function canSeeEvent(event: Event, user: User | undefined, discordClient: DiscordClient) {
-	if (event.ownerId == user?.id) return true;
+	if (event.ownerId === user?.id) return true;
 	if (event.accessType === EventAccessType.Everyone) return true;
 
 	const members = await database.event.getMembers(event);
@@ -426,6 +440,7 @@ export const $events = {
 	createEvent,
 	editEvent,
 	postEvent,
+	deleteEvent,
 	canSeeEvent,
 	getUserRsvp,
 	canJoinRsvp,

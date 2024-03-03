@@ -22,6 +22,7 @@
 		BuildingSolid,
 		UsersSolid,
 		BookSolid,
+		MapPinAltSolid,
 	} from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
@@ -78,9 +79,9 @@
 			<Button href={DISCORD_URL} color="none" class="shrink-0 ms-5 xl:ms-10 p-0 text-discord-500 hover:text-discord-200" size="lg">
 				<MediaQuery query="(min-width: 410px)" let:matches>
 					{#if matches}
-						<DiscordSolid size="lg" class="me-2" />Discord
+						<DiscordSolid size="lg" class="me-2" tabindex="-1" />Discord
 					{:else}
-						<DiscordSolid size="lg" />
+						<DiscordSolid size="lg" tabindex="-1" />
 					{/if}
 				</MediaQuery>
 			</Button>
@@ -88,26 +89,34 @@
 		</div>
 		<NavUl divClass="w-full lg:block lg:w-auto" class="lg:flex-1 lg:ml-4 lg:mr-4 2xl:ml-8 mr-auto order-1" ulClass="relative flex flex-col gap-1 lg:py-4 mt-4 lg:flex-row lg:flex-wrap lg:gap-x-8 lg:gap-y-2 rtl:space-x-reverse lg:mt-0 lg:text-sm lg:font-medium border-none dark:bg-transparent" {activeUrl} {activeClass} {nonActiveClass}>
 			<NavLi href="/" class="flex gap-2 items-center">
-				<HomeSolid size="sm" />Home
+				<HomeSolid size="sm" tabindex="-1" />Home
 			</NavLi>
 			<NavLi
 				class={twMerge("flex gap-2 items-center cursor-pointer", activeUrl.startsWith("/about") ? activeClass : undefined)}
 			>
-				<InfoCircleSolid size="sm" />About Us<ChevronDownOutline class="w-3 h-3" />
+				<InfoCircleSolid size="sm" tabindex="-1" />About Us<ChevronDownOutline class="w-3 h-3" tabindex="-1" />
 			</NavLi>
 			<Dropdown containerClass="w-full lg:w-44 divide-y z-50">
-				<DropdownItem href="/about/activities" class="flex items-center font-normal text-md lg:font-medium lg:text-sm"><CalendarMonthSolid size="sm" class="me-2" /> Activities</DropdownItem>
-				<DropdownItem href="/about/community" class="flex items-center font-normal text-md lg:font-medium lg:text-sm"><UsersSolid size="sm" class="me-2" /> Community</DropdownItem>
-				<DropdownItem href="/about/org" class="flex items-center font-normal text-md lg:font-medium lg:text-sm"><BuildingSolid size="sm" class="me-2" /> Organisation</DropdownItem>
-				<DropdownItem href={MERCH_URL} class="flex items-center font-normal text-md lg:font-medium lg:text-sm"><BagSolid size="sm" class="me-2" /> Merch Store</DropdownItem>
+				<DropdownItem href="/about/community" class="flex items-center font-normal text-md lg:font-medium lg:text-sm">
+					<UsersSolid size="sm" class="me-2" tabindex="-1" /> Community
+				</DropdownItem>
+				<DropdownItem href="/about/org" class="flex items-center font-normal text-md lg:font-medium lg:text-sm">
+					<BuildingSolid size="sm" class="me-2" tabindex="-1" /> Organisation
+				</DropdownItem>
+				<DropdownItem href="/about/activities" class="flex items-center font-normal text-md lg:font-medium lg:text-sm">
+					<MapPinAltSolid size="sm" class="me-2" tabindex="-1" /> Activities
+				</DropdownItem>
+				<DropdownItem href={MERCH_URL} class="flex items-center font-normal text-md lg:font-medium lg:text-sm">
+					<BagSolid size="sm" class="me-2" tabindex="-1" /> Merch Store
+				</DropdownItem>
 			</Dropdown>
 			{#if !!$user.data}
 				<NavLi href="/events" class="flex gap-2 items-center">
-					<CalendarMonthSolid size="sm" />Events
+					<CalendarMonthSolid size="sm" tabindex="-1" />Events
 				</NavLi>
 			{/if}
 			<NavLi href="/knowledge" class="flex gap-2 items-center">
-				<BookSolid size="sm" />Resources
+				<BookSolid size="sm" tabindex="-1" />Resources
 			</NavLi>
 		</NavUl>
 	</NavContainer>

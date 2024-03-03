@@ -1,6 +1,6 @@
 import type { User, UserSettings, UserStatus } from "@prisma/client";
 
-import { resolveEventRsvp } from "./Event";
+import { resolveEvent, resolveEventRsvp } from "./Event";
 import { resolveUserRole } from "./Roles";
 import type { WithModel } from "./types";
 import { database } from "../../../database";
@@ -30,6 +30,7 @@ export function resolveUser(user: User) {
 		primaryRole: null as unknown as GQLUserRole, // field-resolved
 		roles: [], // field-resolved
 		rsvps: [], // field-resolved
+		events: [], // field-resolved
 		status: null as unknown as GQLUserStatus, // field-resolved
 		settings: null as unknown as GQLUserSettings, // field-resolved
 	} satisfies WithModel<GQLUser, User>;
@@ -74,6 +75,15 @@ export const userResolvers: Resolvers = {
 
 			const rsvps = await database.user.getRSVPs(_model);
 			return await Promise.all(rsvps.map((rsvp) => resolveEventRsvp(rsvp)));
+		},
+		async events(source, args, context) {
+			if (!context.user) throw gqlErrorUnauthenticated();
+
+			const { _model } = source as WithModel<GQLUser, User>;
+			if (_model.id !== context.user.id) throw gqlErrorOwnership();
+
+			const events = await database.user.getEvents(_model);
+			return await Promise.all(events.map((event) => resolveEvent(event)))
 		},
 		async status(source) {
 			const { _model } = source as WithModel<GQLUser, User>;

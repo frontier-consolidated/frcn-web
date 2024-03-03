@@ -4,6 +4,7 @@
 	import { createEventDispatcher } from "svelte";
 
 	import adminPermissions from "$lib/data/adminPermissions";
+	import { userProfileView } from "$lib/stores/UserProfileViewStore";
 	import { user } from "$lib/stores/UserStore";
 
 	import MediaQuery from "./MediaQuery.svelte";
@@ -20,7 +21,9 @@
 	<Avatar rounded size="sm" src={$user.data?.avatarUrl} />
 </div>
 <Dropdown class="w-44">
-	<DropdownItem>My Profile</DropdownItem>
+	<DropdownItem on:click={() => {
+		if ($user.data) userProfileView.set($user.data);
+	}}>My Profile</DropdownItem>
 	<DropdownItem href="/account">Settings</DropdownItem>
 	{#if $user.data && hasOneOfPermissions($user.data?.permissions, adminPermissions)}
 		<DropdownDivider />

@@ -12,6 +12,8 @@
 
 	export let init: string | undefined = undefined;
 	export let additionalEmojis: Emoji[] = [];
+	// eslint-disable-next-line no-undef
+	export let categoryIcons: Record<string, string | ConstructorOfATypedSvelteComponent> = {}
 	let emojis = [...additionalEmojis, ...(defaultEmojis.emojis as Emoji[])];
 	$: emojis = [...additionalEmojis, ...(defaultEmojis.emojis as Emoji[])];
 
@@ -135,7 +137,7 @@
 						type="button"
 						class={twMerge("inline-block text-sm font-medium text-center disabled:cursor-not-allowed", category === currentCategory ? activeClass : inactiveClass)}
 					>
-						<EmojiCategoryIcon {category} tabindex={-1} class="w-4 h-4" />
+						<EmojiCategoryIcon {categoryIcons} {category} tabindex="-1" class="w-4 h-4" />
 					</button>
 				</li>
 			{/each}
@@ -165,7 +167,7 @@
 				{#each categories as category}
 					<div data-category={category} use:initCategory class={search ? "hidden" : undefined}>
 						<div class="px-2 py-1 flex items-center font-medium text-xs text-gray-300">
-							<EmojiCategoryIcon {category} class="w-3 h-3 me-1" />
+							<EmojiCategoryIcon {categoryIcons} {category} class="w-3 h-3 me-1" />
 							{category.toUpperCase()}
 						</div>
 						<div class="grid grid-cols-9">

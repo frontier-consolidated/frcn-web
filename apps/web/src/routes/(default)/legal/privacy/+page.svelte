@@ -9,6 +9,10 @@ import { A, Li, List } from "flowbite-svelte";
 	import LegalTitle from "../LegalTitle.svelte";
 </script>
 
+<svelte:head>
+    <title>Privacy Policy - Legal | Frontier Consolidated</title>
+</svelte:head>
+
 <LegalTitle>Privacy Policy</LegalTitle>
 <p class="font-medium text-gray-400">Last updated January 30, 2024</p>
 <Hr class="my-8" />

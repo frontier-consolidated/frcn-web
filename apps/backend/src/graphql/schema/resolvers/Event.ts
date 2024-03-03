@@ -20,14 +20,14 @@ import type {
 } from "../../__generated__/resolvers-types";
 import { EventAccessType } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
-import { gqlErrorBadInput, gqlErrorBadState } from "../gqlError";
+import { gqlErrorBadInput, gqlErrorBadState, gqlErrorUnauthenticated } from "../gqlError";
 
 export function resolveEvent(event: Event) {
 	return {
 		_model: event,
 		id: event.id,
 		channel: null as unknown as DiscordChannel, // field-resolved
-		owner: null as unknown as GQLUser, // field-resolved
+		owner: null, // field-resolved
 		name: event.name,
 		summary: event.summary,
 		description: event.description,
@@ -43,6 +43,7 @@ export function resolveEvent(event: Event) {
 
 		roles: [], // field-resolved
 		members: [], // field-resolved
+		teams: [], // field-resolved
 		mentions: event.discordMentions,
 		settings: null as unknown as GQLEventSettings, // field-resolved
 		accessType: event.accessType as EventAccessType,
@@ -56,7 +57,6 @@ function resolveEventSettings(settings: EventSettings) {
 		inviteOnly: settings.inviteOnly,
 		openToJoinRequests: settings.openToJoinRequests,
 		allowTeamSwitching: settings.allowTeamSwitching,
-		allowCrewSwitching: settings.allowCrewSwitching,
 	} satisfies GQLEventSettings;
 }
 
@@ -105,9 +105,10 @@ export const eventResolvers: Resolvers = {
 			const channel = await database.event.getChannel(_model);
 			return await resolveDiscordChannel(channel, context);
 		},
-		async owner(source): Promise<WithModel<GQLUser, User>> {
+		async owner(source): Promise<WithModel<GQLUser, User> | null> {
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const owner = await database.event.getOwner(_model);
+			if (!owner) return null;
 			return resolveUser(owner);
 		},
 		async location(source, args, context) {
@@ -365,5 +366,35 @@ export const eventResolvers: Resolvers = {
 
 			return true;
 		},
+		async deleteEvent(source, args, context) {
+			const event = await $events.getEvent(args.id)
+			if (!event) return false;
+
+			await $events.deleteEvent(args.id, context.app.discordClient)
+			return true;
+		},
+		async rsvpForEvent(source, args, context) {
+			if (!context.user) throw gqlErrorUnauthenticated()
+			const event = await $events.getEvent(args.id)
+			if (!event) return false;
+
+			const roles = await database.event.getRoles(event)
+			const role = roles.find(r => r.id === args.rsvp)
+			if (!role) throw gqlErrorBadInput("No such rsvp role with id")
+			if (!(await $events.canJoinRsvp(role))) throw gqlErrorBadInput(`RSVP '${role.name}' is full`)
+			
+			const currentRsvp = await $events.getUserRsvp(event, context.user);
+
+			await $events.rsvpForEvent(event, role, context.user, currentRsvp, context.app.discordClient);
+			return true
+		},
+		async unrsvpForEvent(source, args, context) {
+			if (!context.user) throw gqlErrorUnauthenticated()
+			const event = await $events.getEvent(args.id)
+			if (!event) return false;
+
+			await $events.unrsvpForEvent(event, context.user, context.app.discordClient);
+			return true
+		}
 	},
 };

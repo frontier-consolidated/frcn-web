@@ -1,8 +1,5 @@
 <script lang="ts">
 	import {
-	Button,
-	Label,
-		Modal,
 		Sidebar,
 		SidebarDropdownItem,
 		SidebarDropdownWrapper,
@@ -17,30 +14,34 @@
 		UserPlusSolid,
 		UsersSolid,
 	} from "flowbite-svelte-icons";
+	import { twMerge } from "tailwind-merge";
 
-	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
+	import RsvpModal from "$lib/components/RSVPModal.svelte";
+	import { Mutations, getApollo } from "$lib/graphql";
+	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
-	import EventMember from "./EventMember.svelte";
+	import EventSidebarMember from "./EventSidebarMember.svelte";
 
 	export let data: PageData;
 
+	let hideMembers = false;
 	let rsvpModal = false;
-	let rsvpRole: string;
 </script>
 
-<Sidebar asideClass="shrink-0 hidden lg:block w-64 max-h-screen">
-	<SidebarWrapper>
-		<SidebarGroup>
+<Sidebar asideClass="sticky top-0 z-10 lg:static shrink-0 lg:w-64">
+	<SidebarWrapper class="py-2 lg:py-4 rounded-none lg:h-full dark:bg-slate-950">
+		<ul class="flex flex-wrap [&>li]:flex-1 [&>li]:min-w-48 lg:[&>li]:min-w-0 [&>li]:w-full gap-2 lg:block lg:space-y-2">
 			<SidebarItem href="/events" label="Back To Events">
 				<svelte:fragment slot="icon">
-					<ArrowLeftSolid />
+					<ArrowLeftSolid tabindex="-1" />
 				</svelte:fragment>
 			</SidebarItem>
 			{#if data.canEdit}
 				<SidebarDropdownWrapper label="Manage">
 					<svelte:fragment slot="icon">
-						<AdjustmentsHorizontalSolid />
+						<AdjustmentsHorizontalSolid tabindex="-1" />
 					</svelte:fragment>
 					<SidebarDropdownItem label="Invite Members" />
 					<SidebarDropdownItem label="End Event" class="dark:hover:bg-red-500" />
@@ -50,9 +51,29 @@
 				<SidebarItem
 					nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white dark:hover:bg-red-500"
 					label="Leave Event"
+					on:click={async () => {
+						const { data: unrsvpData, errors } = await getApollo().mutate({
+							mutation: Mutations.UNRSVP_FOR_EVENT,
+							variables: {
+								eventId: data.id
+							}
+						})
+
+						if (!unrsvpData?.success || (errors && errors.length > 0)) {
+							pushNotification({
+								type: "error",
+								message: "Failed to leave event",
+							});
+							console.error(errors);
+							return;
+						}
+
+						data.rsvp = null;
+						data.members = data.members.filter(member => member.user.id !== $user.data?.id)
+					}}
 				>
 					<svelte:fragment slot="icon">
-						<ArrowLeftToBracketOutline />
+						<ArrowLeftToBracketOutline tabindex="-1" />
 					</svelte:fragment>
 				</SidebarItem>
 			{:else}
@@ -62,46 +83,34 @@
 					on:click={() => rsvpModal = true}
 				>
 					<svelte:fragment slot="icon">
-						<UserPlusSolid />
+						<UserPlusSolid tabindex="-1" />
 					</svelte:fragment>
 				</SidebarItem>
 			{/if}
-		</SidebarGroup>
-		<SidebarGroup border class="overflow-y-auto">
+		</ul>
+		<SidebarGroup border class="overflow-y-auto hidden lg:block">
 			<div class="flex items-center gap-2 dark:text-white px-2">
-				<UsersSolid />
+				<UsersSolid tabindex="-1" />
 				<span class="self-center text-lg font-semibold whitespace-nowrap">
 					{data.members.length} Event Member{data.members.length !== 1 ? "s" : ""}
 				</span>
 			</div>
-			<SidebarGroup ulClass="space-y-0">
-				{#each data.members as member}
-					<EventMember {member} />
-				{/each}
+			<SidebarItem
+			nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+				label={hideMembers ? "Show Members" : "Hide Members"}
+				on:click={() => hideMembers = !hideMembers}
+			/>
+			<SidebarGroup ulClass={twMerge("space-y-0", hideMembers && "hidden")}>
+				{#if data.members.length > 0}
+					{#each data.members as member}
+						<EventSidebarMember bind:event={data} {member} />
+					{/each}
+				{:else}
+					<span class="block text-sm text-center dark:text-gray-600">No members</span>
+				{/if}
 			</SidebarGroup>
-			<SidebarGroup ulClass="space-y-0" border></SidebarGroup>
 		</SidebarGroup>
 	</SidebarWrapper>
 </Sidebar>
-<Modal title="RSVP for {data.name}" placement="top-center" outsideclose bind:open={rsvpModal} bodyClass="overflow-y-visible">
-	<div>
-		<Label for="event-rsvp-role" class="mb-2">RSVP Role</Label>
-		<BetterSelect
-			id="event-rsvp-role"
-			name="Event RSVP Role"
-			options={data.roles.map((role) => ({
-				value: role.id,
-				name: role.name,
-			}))}
-			required
-			bind:value={rsvpRole}
-		/>
-	</div>
-	<svelte:fragment slot="footer">
-		<Button disabled={!rsvpRole} on:click={() => {
-			if (!rsvpRole) return;
-			// rsvp
-		}}>RSVP</Button>
-		<Button color="alternative" on:click={() => rsvpModal = false}>Cancel</Button>
-  	</svelte:fragment>
-</Modal>
+
+<RsvpModal event={data} dependency="app:currentevent" bind:open={rsvpModal} />

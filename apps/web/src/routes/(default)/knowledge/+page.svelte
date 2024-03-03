@@ -34,11 +34,11 @@
 	};
 
 	$: currentPage = getCurrentPage($page.url.searchParams);
-	$: pages = getPages("/knowledge", $page.url.searchParams, currentPage, data.itemsPerPage, data.total);
+	$: pages = getPages($page.url, currentPage, data.itemsPerPage, data.total);
 </script>
 
 <svelte:head>
-	<title>Resources</title>
+	<title>Resources | Frontier Consolidated</title>
 	<meta name="description" content="Frontier Consolidated - Search for Guides & Resources" />
 </svelte:head>
 
@@ -50,10 +50,10 @@
 	<ToolButton name="Cornerstone" img={cstoneIcon} href="https://finder.cstone.space/" />
 	<ToolButton name="CCU Game" img={ccugameIcon} href="https://ccugame.app/your-items/fleet" />
 	<ToolButton name="RSI Status" img={rsiIcon} href="https://status.robertsspaceindustries.com/" />
-	<ToolButton name="Hangar Link" href="https://hangar.link/" hideName>
+	<ToolButton name="Hangar Link" href="https://hangar.link/">
 		<img slot="icon" src={hangarLinkIcon} alt="Hangar Link" class="h-6 object-contain" />
 	</ToolButton>
-	<ToolButton name="VerseGuide" href="https://verseguide.com/" hideName>
+	<ToolButton name="VerseGuide" href="https://verseguide.com/">
 		<img slot="icon" src={verseGuideIcon} alt="VerseGuide" class="h-6 object-contain" />
 	</ToolButton>
 	<ToolButton name="SC Org Tools" img={scorgToolsIcon} href="https://scorg.tools/" />
@@ -71,7 +71,7 @@
 						fileModal.open = true;
 					}}
 				>
-					<CirclePlusSolid class="me-2" /> Upload Resource
+					<CirclePlusSolid class="me-2" tabindex="-1" /> Upload Resource
 				</Button>
 			{/if}
 		</div>
@@ -87,8 +87,8 @@
 		</div>
 		<Pagination
 			{pages}
-			on:previous={() => {if (data.prevPage != null) goto(getPageUrl("/knowledge", $page.url.searchParams, data.prevPage + 1))}}
-			on:next={() => {if (data.nextPage != null) goto(getPageUrl("/knowledge", $page.url.searchParams, data.nextPage + 1))}}
+			on:previous={() => {if (data.prevPage != null) goto(getPageUrl($page.url, data.prevPage + 1))}}
+			on:next={() => {if (data.nextPage != null) goto(getPageUrl($page.url, data.nextPage + 1))}}
 		/>
 	</div>
 </section>

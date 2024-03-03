@@ -72,7 +72,7 @@
 		placeholder="Select date and time"
 		bind:value={inputValue}
 	>
-		<CalendarEditSolid slot="left" size="sm" class="ms-1" />
+		<CalendarEditSolid slot="left" size="sm" class="ms-1" tabindex="-1" />
 	</Input>
 </div>
 <Dropdown

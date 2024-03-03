@@ -99,8 +99,16 @@ export const discordResolvers: Resolvers = {
 			return channels.map((channel) => resolveDiscordChannel(channel, context));
 		},
 		async getAllDiscordEmojis(source, args, context) {
+			const guild = await $discord.getGuild(context.app.discordClient);
 			const emojis = await $discord.getAllEmojis(context.app.discordClient);
-			return emojis.map((emoji) => resolveDiscordEmoji(emoji, context));
+			return {
+				serverName: guild.name,
+				serverAvatar: guild.iconURL({
+					extension: "webp",
+					size: 16
+				}),
+				emojis: await Promise.all(emojis.map((emoji) => resolveDiscordEmoji(emoji, context)))
+			}
 		},
 		async getAllDiscordRoles(source, args, context) {
 			const roles = await $discord.getAllRoles(context.app.discordClient, args.everyone ?? undefined);

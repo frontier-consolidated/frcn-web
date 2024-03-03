@@ -9,10 +9,6 @@ import { $events } from "../services/events";
 import { $users } from "../services/users";
 
 async function eventInteraction(interaction: ButtonInteraction | AnySelectMenuInteraction) {
-    await interaction.deferReply({
-        ephemeral: true,
-    })
-
     const event = await $events.getEventFromMessageId(interaction.message.id)
     if (!event) {
         await interaction.editReply({
@@ -76,8 +72,6 @@ async function eventInteraction(interaction: ButtonInteraction | AnySelectMenuIn
 
 async function eventDmInteraction(interaction: ButtonInteraction | AnySelectMenuInteraction) {
     if (!interaction.customId.startsWith("unrsvp-")) return;
-        
-    await interaction.deferReply()
     
     const eventId = interaction.customId.substring(7)
     
@@ -101,25 +95,16 @@ async function eventDmInteraction(interaction: ButtonInteraction | AnySelectMenu
 export function load(client: Client) {
     client.on("interactionCreate", async (interaction) => {
         if (interaction.user.bot) return;
-        
+
         if (interaction.type === InteractionType.MessageComponent) {
+            await interaction.deferReply({
+                ephemeral: true,
+            })
+
             if (interaction.channel?.isDMBased()) {
                 await eventDmInteraction(interaction)
             } else {
                 await eventInteraction(interaction)
-            }
-
-            if (!interaction.replied) {
-                const payload = {
-                    ...buildErrorMessage("Unknown action"),
-                    ephemeral: true
-                }
-
-                if (interaction.deferred) {
-                    interaction.editReply(payload)
-                } else {
-                    interaction.reply(payload)
-                }
             }
         }
 

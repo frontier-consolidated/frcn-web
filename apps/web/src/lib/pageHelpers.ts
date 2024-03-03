@@ -6,13 +6,13 @@ export function getCurrentPage(query: URLSearchParams) {
     return pageNum - 1
 }
 
-export function getPageUrl(path: string, query: URLSearchParams, page: number) {
-    const pageQuery = new URLSearchParams(query)
-    pageQuery.set("page", `${page}`)
-    return `${path}?${pageQuery.toString()}`
+export function getPageUrl(baseUrl: string | URL, page: number) {
+    const url = new URL(baseUrl, "http://host")
+    url.searchParams.set("page", `${page}`)
+    return url.toString().substring(url.origin.length)
 }
 
-export function getPages(path: string, query: URLSearchParams, currentPage: number, itemsPerPage: number, total: number) {
+export function getPages(baseUrl: string | URL, currentPage: number, itemsPerPage: number, total: number) {
     const pages: LinkType[] = []
 
     const lastPage = Math.ceil(total / itemsPerPage) - 1
@@ -26,7 +26,7 @@ export function getPages(path: string, query: URLSearchParams, currentPage: numb
 
         pages.push({
             name: `${page + 1}`,
-            href: getPageUrl(path, query, page + 1),
+            href: getPageUrl(baseUrl, page + 1),
             active: page === currentPage,
         })
     }
