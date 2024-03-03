@@ -14,6 +14,7 @@
 		UserPlusSolid,
 		UsersSolid,
 	} from "flowbite-svelte-icons";
+	import { twMerge } from "tailwind-merge";
 
 	import RsvpModal from "$lib/components/RSVPModal.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
@@ -21,16 +22,17 @@
 	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
-	import EventMember from "./EventMember.svelte";
+	import EventSidebarMember from "./EventSidebarMember.svelte";
 
 	export let data: PageData;
 
+	let hideMembers = false;
 	let rsvpModal = false;
 </script>
 
-<Sidebar asideClass="shrink-0 hidden lg:block w-64 max-h-screen">
-	<SidebarWrapper>
-		<SidebarGroup>
+<Sidebar asideClass="sticky top-0 z-10 lg:static shrink-0 lg:w-64">
+	<SidebarWrapper class="py-2 lg:py-4 rounded-none lg:h-full dark:bg-slate-950">
+		<ul class="flex flex-wrap [&>li]:flex-1 [&>li]:min-w-48 lg:[&>li]:min-w-0 [&>li]:w-full gap-2 lg:block lg:space-y-2">
 			<SidebarItem href="/events" label="Back To Events">
 				<svelte:fragment slot="icon">
 					<ArrowLeftSolid tabindex="-1" />
@@ -85,20 +87,28 @@
 					</svelte:fragment>
 				</SidebarItem>
 			{/if}
-		</SidebarGroup>
-		<SidebarGroup border class="overflow-y-auto">
+		</ul>
+		<SidebarGroup border class="overflow-y-auto hidden lg:block">
 			<div class="flex items-center gap-2 dark:text-white px-2">
 				<UsersSolid tabindex="-1" />
 				<span class="self-center text-lg font-semibold whitespace-nowrap">
 					{data.members.length} Event Member{data.members.length !== 1 ? "s" : ""}
 				</span>
 			</div>
-			<SidebarGroup ulClass="space-y-0">
-				{#each data.members as member}
-					<EventMember {member} />
-				{/each}
+			<SidebarItem
+			nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+				label={hideMembers ? "Show Members" : "Hide Members"}
+				on:click={() => hideMembers = !hideMembers}
+			/>
+			<SidebarGroup ulClass={twMerge("space-y-0", hideMembers && "hidden")}>
+				{#if data.members.length > 0}
+					{#each data.members as member}
+						<EventSidebarMember bind:event={data} {member} />
+					{/each}
+				{:else}
+					<span class="block text-sm text-center dark:text-gray-600">No members</span>
+				{/if}
 			</SidebarGroup>
-			<SidebarGroup ulClass="space-y-0" border></SidebarGroup>
 		</SidebarGroup>
 	</SidebarWrapper>
 </Sidebar>
