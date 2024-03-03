@@ -1,16 +1,16 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Avatar, Badge, Button, Card, Dropdown, DropdownItem, Modal, Toolbar, ToolbarButton } from "flowbite-svelte";
+	import { Badge, Button, Card, Dropdown, DropdownItem, Toolbar, ToolbarButton } from "flowbite-svelte";
 	import { DotsVerticalOutline, DownloadSolid, EditOutline, FileSolid, TrashBinSolid } from "flowbite-svelte-icons";
     import { createEventDispatcher } from "svelte";
 
 	import ConfirmationModal from "$lib/components/ConfirmationModal.svelte";
+	import CreatedByButton from "$lib/components/CreatedByButton.svelte";
 	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
-	import { userProfileView } from "$lib/stores/UserProfileViewStore";
 	import { user } from "$lib/stores/UserStore";
 
     const dispatch = createEventDispatcher()
@@ -42,16 +42,7 @@
         <span class="block mt-2 text-xl font-semibold dark:text-white">
             {resource.name}
         </span>
-        <button class="w-max flex items-center gap-2 mt-1 group" on:click={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            if (!resource.owner) return;
-            userProfileView.set(resource.owner)
-        }}>
-            <span class="text-sm dark:text-white">By</span>
-            <Avatar rounded size="xs" src={resource.owner?.avatarUrl} />
-            <span class="text-sm font-semibold text-gray-200 group-hover:text-white">{resource.owner?.name ?? "[DELETED USER]"}</span>
-        </button>
+        <CreatedByButton class="mt-1" user={resource.owner} />
         <span class="block text-sm font-semibold dark:text-white mt-3">
             Description
         </span>

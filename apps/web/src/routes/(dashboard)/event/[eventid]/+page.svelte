@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { strings } from "@frcn/shared";
-	import { Breadcrumb, BreadcrumbItem, Tabs, TabItem, Avatar } from "flowbite-svelte";
+	import { Breadcrumb, BreadcrumbItem, Tabs, TabItem } from "flowbite-svelte";
 	import { CalendarMonthSolid } from "flowbite-svelte-icons";
 
+	import CreatedByButton from "$lib/components/CreatedByButton.svelte";
 	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
 	import LocationBreadcrumbItem from "$lib/components/location/LocationBreadcrumbItem.svelte";
 	import Markdown from "$lib/components/markdown/Markdown.svelte";
@@ -40,11 +41,7 @@
 			<h1 class="text-2xl font-semibold dark:text-white">
 				{data.name ? data.name : "New Event"}
 			</h1>
-			<div class="flex items-center gap-2 mt-1">
-				<span class="text-sm dark:text-white">By</span>
-				<Avatar rounded size="xs" src={data.owner?.avatarUrl} />
-				<span class="text-sm font-semibold text-gray-200">{data.owner?.name ?? "[DELETED USER]"}</span>
-			</div>
+			<CreatedByButton class="mt-1" user={data.owner} />
 		</div>
 		<Breadcrumb
 			ariaLabel="Event Type and Location"
