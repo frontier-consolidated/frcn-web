@@ -15,9 +15,8 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
 const documents = {
     "\n    fragment ChannelFragment on DiscordChannel {\n        id\n        name\n        type\n    }\n": types.ChannelFragmentFragmentDoc,
     "\n    fragment EventFragment on Event {\n        id\n        channel {\n            ...ChannelFragment\n        }\n        owner {\n            ...UserFragment\n        }\n        name\n        summary\n        description\n        imageUrl\n        eventType\n        location\n        rsvp {\n            pending\n            rsvp\n        }\n        roles {\n            id\n            name\n            emoji {\n                id\n                name\n                image\n            }\n            limit\n        }\n        members {\n            ...EventMemberFragment\n        }\n        posted\n        duration\n        startAt\n        endedAt\n        updatedAt\n        createdAt\n    }\n": types.EventFragmentFragmentDoc,
-    "\n    fragment EventMemberFragment on EventMember {\n        id\n        pending\n        user {\n            ...EventUserFragment\n        }\n        rsvp\n        rsvpAt\n    }\n": types.EventMemberFragmentFragmentDoc,
+    "\n    fragment EventMemberFragment on EventMember {\n        id\n        pending\n        user {\n            ...UserFragment\n        }\n        rsvp\n        rsvpAt\n    }\n": types.EventMemberFragmentFragmentDoc,
     "\n    fragment EventSettingsFragment on Event {\n        mentions\n        settings {\n            hideLocation\n            inviteOnly\n            openToJoinRequests\n            allowTeamSwitching\n            allowCrewSwitching\n        }\n        accessType\n        accessRoles {\n            id\n            name\n        }\n    }\n": types.EventSettingsFragmentFragmentDoc,
-    "\n    fragment EventUserFragment on User {\n        id\n        name\n        discordName\n        avatarUrl\n        verified\n        status {\n            activity\n            ship\n        }\n    }\n": types.EventUserFragmentFragmentDoc,
     "\n    fragment ResourceFragment on Resource {\n        id\n        owner {\n            ...UserFragment\n        }\n        name\n        sizeKb\n        shortDescription\n        previewUrl\n        downloadUrl\n        tags\n        updatedAt\n        createdAt\n    }\n": types.ResourceFragmentFragmentDoc,
     "\n    fragment RoleFragment on UserRole {\n        id\n        name\n        primary\n        discordId\n        permissions\n        updatedAt\n        createdAt\n    }\n": types.RoleFragmentFragmentDoc,
     "\n    fragment UserFragment on User {\n        id\n        name\n        scName\n        discordName\n        verified\n        avatarUrl\n        primaryRole {\n            id\n            name\n        }\n        roles {\n            id\n            name\n        }\n        updatedAt\n        createdAt\n    }\n": types.UserFragmentFragmentDoc,
@@ -71,15 +70,11 @@ export function gql(source: "\n    fragment EventFragment on Event {\n        id
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n    fragment EventMemberFragment on EventMember {\n        id\n        pending\n        user {\n            ...EventUserFragment\n        }\n        rsvp\n        rsvpAt\n    }\n"): (typeof documents)["\n    fragment EventMemberFragment on EventMember {\n        id\n        pending\n        user {\n            ...EventUserFragment\n        }\n        rsvp\n        rsvpAt\n    }\n"];
+export function gql(source: "\n    fragment EventMemberFragment on EventMember {\n        id\n        pending\n        user {\n            ...UserFragment\n        }\n        rsvp\n        rsvpAt\n    }\n"): (typeof documents)["\n    fragment EventMemberFragment on EventMember {\n        id\n        pending\n        user {\n            ...UserFragment\n        }\n        rsvp\n        rsvpAt\n    }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n    fragment EventSettingsFragment on Event {\n        mentions\n        settings {\n            hideLocation\n            inviteOnly\n            openToJoinRequests\n            allowTeamSwitching\n            allowCrewSwitching\n        }\n        accessType\n        accessRoles {\n            id\n            name\n        }\n    }\n"): (typeof documents)["\n    fragment EventSettingsFragment on Event {\n        mentions\n        settings {\n            hideLocation\n            inviteOnly\n            openToJoinRequests\n            allowTeamSwitching\n            allowCrewSwitching\n        }\n        accessType\n        accessRoles {\n            id\n            name\n        }\n    }\n"];
-/**
- * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function gql(source: "\n    fragment EventUserFragment on User {\n        id\n        name\n        discordName\n        avatarUrl\n        verified\n        status {\n            activity\n            ship\n        }\n    }\n"): (typeof documents)["\n    fragment EventUserFragment on User {\n        id\n        name\n        discordName\n        avatarUrl\n        verified\n        status {\n            activity\n            ship\n        }\n    }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

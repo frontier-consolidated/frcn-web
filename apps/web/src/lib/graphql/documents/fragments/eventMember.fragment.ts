@@ -5,7 +5,7 @@ export const EVENT_MEMBER_FRAGMENT = gql(`
         id
         pending
         user {
-            ...EventUserFragment
+            ...UserFragment
         }
         rsvp
         rsvpAt
