@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
+	import { goto, invalidate } from "$app/navigation";
 	import { strings, EventTypeOptions } from "@frcn/shared";
 	import { getLocations } from "@frcn/shared/locations";
 	import { Alert, Checkbox, Helper, Input, Label, Toggle, Button, } from "flowbite-svelte";
@@ -125,7 +125,7 @@
 			return false;
 		}
 
-		window.location.reload();
+		await invalidate("app:currentevent")
 		return true;
 	}
 </script>
