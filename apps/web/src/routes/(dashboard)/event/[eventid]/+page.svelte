@@ -20,7 +20,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.name ? `Event - ${data.name}` : "New Event"}</title>
+	<title>{data.name ? `${data.name}` : "New Event"} - Event | Frontier Consolidated</title>
 	<meta
 		name="description"
 		content={data.posted
@@ -122,7 +122,7 @@
 				{/if}
 				{#if data.canEdit}
 					<TabItem
-						open
+						open={!data.posted}
 						title="Settings"
 						defaultClass="inline-block text-md font-medium text-center disabled:cursor-not-allowed"
 					>

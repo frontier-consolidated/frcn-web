@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-	<title>Admin - Manage Users</title>
+	<title>Users - Admin | Frontier Consolidated</title>
 </svelte:head>
 
 <SectionHeading>

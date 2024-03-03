@@ -22,7 +22,7 @@
 </script>
 
 <svelte:head>
-	<title>About - Our Community</title>
+	<title>Our Community - About | Frontier Consolidated</title>
 </svelte:head>
 
 <Heading tag="h1" class="font-medium text-4xl">Frontier Community</Heading>

@@ -90,7 +90,7 @@
 </script>
 
 <svelte:head>
-	<title>Admin - Edit Roles</title>
+	<title>Roles - Admin | Frontier Consolidated</title>
 </svelte:head>
 
 <SectionHeading>

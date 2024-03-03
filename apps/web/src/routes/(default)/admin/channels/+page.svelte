@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-	<title>Admin - Event Channels</title>
+	<title>Event Channels - Admin | Frontier Consolidated</title>
 </svelte:head>
 
 <SectionHeading>

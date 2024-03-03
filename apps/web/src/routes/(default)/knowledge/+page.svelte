@@ -38,7 +38,7 @@
 </script>
 
 <svelte:head>
-	<title>Resources</title>
+	<title>Resources | Frontier Consolidated</title>
 	<meta name="description" content="Frontier Consolidated - Search for Guides & Resources" />
 </svelte:head>
 

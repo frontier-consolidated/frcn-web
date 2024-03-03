@@ -17,7 +17,7 @@
 </script>
 
 <svelte:head>
-	<title>Events</title>
+	<title>Events | Frontier Consolidated</title>
 	<meta name="description" content="Frontier Consolidated - Search Events" />
 </svelte:head>
 

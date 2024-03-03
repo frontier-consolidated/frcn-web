@@ -7,7 +7,7 @@
 </script>
 
 <svelte:head>
-	<title>{$page.status} - Frontier Consolidated</title>
+	<title>{$page.status} | Frontier Consolidated</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
