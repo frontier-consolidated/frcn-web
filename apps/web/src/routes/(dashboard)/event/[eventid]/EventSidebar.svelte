@@ -1,8 +1,5 @@
 <script lang="ts">
 	import {
-	Button,
-	Label,
-		Modal,
 		Sidebar,
 		SidebarDropdownItem,
 		SidebarDropdownWrapper,
@@ -18,7 +15,7 @@
 		UsersSolid,
 	} from "flowbite-svelte-icons";
 
-	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
+	import RsvpModal from "$lib/components/RSVPModal.svelte";
 
 	import type { PageData } from "./$types";
 	import EventMember from "./EventMember.svelte";
@@ -26,7 +23,6 @@
 	export let data: PageData;
 
 	let rsvpModal = false;
-	let rsvpRole: string;
 </script>
 
 <Sidebar asideClass="shrink-0 hidden lg:block w-64 max-h-screen">
@@ -83,25 +79,5 @@
 		</SidebarGroup>
 	</SidebarWrapper>
 </Sidebar>
-<Modal title="RSVP for {data.name}" placement="top-center" outsideclose bind:open={rsvpModal} bodyClass="overflow-y-visible">
-	<div>
-		<Label for="event-rsvp-role" class="mb-2">RSVP Role</Label>
-		<BetterSelect
-			id="event-rsvp-role"
-			name="Event RSVP Role"
-			options={data.roles.map((role) => ({
-				value: role.id,
-				name: role.name,
-			}))}
-			required
-			bind:value={rsvpRole}
-		/>
-	</div>
-	<svelte:fragment slot="footer">
-		<Button disabled={!rsvpRole} on:click={() => {
-			if (!rsvpRole) return;
-			// rsvp
-		}}>RSVP</Button>
-		<Button color="alternative" on:click={() => rsvpModal = false}>Cancel</Button>
-  	</svelte:fragment>
-</Modal>
+
+<RsvpModal event={data} bind:open={rsvpModal} />

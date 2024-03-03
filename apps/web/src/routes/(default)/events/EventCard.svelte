@@ -5,14 +5,18 @@
 	import { CalendarMonthSolid } from "flowbite-svelte-icons";
     
 	import LocationBreadcrumbItem from "$lib/components/location/LocationBreadcrumbItem.svelte";
+	import RsvpModal from "$lib/components/RSVPModal.svelte";
+	import { Mutations, getApollo } from "$lib/graphql";
 	import type { EventFragmentFragment } from "$lib/graphql/__generated__/graphql";
     import placeholder from "$lib/images/stock/placeholder.jpg"
+	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { userProfileView } from "$lib/stores/UserProfileViewStore";
 	import { user } from "$lib/stores/UserStore";
 
     export let event: Omit<EventFragmentFragment, "location"> & { location: AnyLocation[] | null }
 
     $: rsvped = event.members.find(member => member.user.id === $user.data?.id)
+    let rsvpModalOpen = false;
 </script>
 
 <a href="/event/{event.id}" class="group/card bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-lg border border-gray-200 dark:border-gray-700 divide-gray-200 dark:divide-gray-700 shadow-md flex p-0 w-full">
@@ -80,15 +84,39 @@
             <span class="text-sm text-center">{event.members.length} rsvps</span>
         </div>
         {#if rsvped}
-            <Button color="red" on:click={(e) => {
+            <Button color="red" on:click={async (e) => {
                 e.preventDefault()
+
+                const { data: unrsvpData, errors } = await getApollo().mutate({
+                    mutation: Mutations.UNRSVP_FOR_EVENT,
+                    variables: {
+                        eventId: event.id
+                    },
+                    errorPolicy: "all"
+                })
+
+                if (!unrsvpData?.success || (errors && errors.length > 0)) {
+                    pushNotification({
+                        type: "error",
+                        message: "Failed to unrsvp for event",
+                    });
+                    console.error(errors);
+                    return;
+                }
+
+                event.members = event.members.filter(member => member.user.id !== $user.data?.id)
             }}>
                 UnRSVP
             </Button>
         {:else}
-            <Button>
+            <Button on:click={async (e) => {
+                e.preventDefault()
+                rsvpModalOpen = true
+            }}>
                 RSVP
             </Button>
         {/if}
     </div>
 </a>
+
+<RsvpModal {event} bind:open={rsvpModalOpen} />
