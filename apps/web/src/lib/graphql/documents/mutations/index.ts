@@ -9,12 +9,16 @@ import { EDIT_RESOURCE } from "./editResource.mutation";
 import { EDIT_ROLE } from "./editRole.mutation";
 import { POST_EVENT } from "./postEvent.mutation";
 import { REORDER_ROLES } from "./reorderRoles.mutation";
+import { RSVP_FOR_EVENT } from "./rsvpForEvent.mutation";
+import { UNRSVP_FOR_EVENT } from "./unrsvpForEvent.mutation";
 
 export const Mutations = {
 	CREATE_EVENT,
 	EDIT_EVENT,
 	POST_EVENT,
 	DELETE_EVENT,
+	RSVP_FOR_EVENT,
+	UNRSVP_FOR_EVENT,
 	CREATE_ROLE,
 	EDIT_ROLE,
 	DELETE_ROLE,

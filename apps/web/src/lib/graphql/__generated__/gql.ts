@@ -32,6 +32,8 @@ const documents = {
     "\n\tmutation EditRole($roleId: ID!, $data: RoleEditInput!) {\n\t\trole: editRole(id: $roleId, data: $data) {\n\t\t\tid\n\t\t\tname\n\t\t\tdiscordId\n\t\t\tprimary\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.EditRoleDocument,
     "\n\tmutation PostEvent($eventId: ID!) {\n\t\tsuccess: postEvent(id: $eventId)\n\t}\n": types.PostEventDocument,
     "\n\tmutation ReorderRoles($order: [ID!]!) {\n\t\torder: reorderRoles(order: $order)\n\t}\n": types.ReorderRolesDocument,
+    "\n\tmutation RsvpForEvent($eventId: ID!, $rsvpId: ID!) {\n\t\tsuccess: rsvpForEvent(id: $eventId, rsvp: $rsvpId)\n\t}\n": types.RsvpForEventDocument,
+    "\n\tmutation UnrsvpForEvent($eventId: ID!) {\n\t\tsuccess: unrsvpForEvent(id: $eventId)\n\t}\n": types.UnrsvpForEventDocument,
     "\n\tquery GetCurrentRsvps {\n\t\trsvps: getCurrentUser {\n\t\t\trsvps {\n\t\t\t\tinvite\n\t\t\t\trsvpAt\n\t\t\t\trsvp {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t\tevent {\n\t\t\t\t\tid\n\t\t\t\t\towner {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t\tscName\n\t\t\t\t\t\tavatarUrl\n\t\t\t\t\t\tverified\n\t\t\t\t\t\tupdatedAt\n\t\t\t\t\t\tcreatedAt\n\t\t\t\t\t}\n\t\t\t\t\tname\n\t\t\t\t\tsummary\n\t\t\t\t\tdescription\n\t\t\t\t\timageUrl\n\t\t\t\t\teventType\n\t\t\t\t\tlocation\n\t\t\t\t\tduration\n\t\t\t\t\tstartAt\n\t\t\t\t\tendedAt\n\t\t\t\t\tupdatedAt\n\t\t\t\t\tcreatedAt\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": types.GetCurrentRsvpsDocument,
     "\n\tquery GetCurrentUser {\n\t\tuser: getCurrentUser {\n\t\t\t...UserFragment\n\t\t\tpermissions\n\t\t\tsettings {\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t\tstatus {\n\t\t\t\tactivity\n\t\t\t\tship\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t}\n\t}\n": types.GetCurrentUserDocument,
     "\n\tquery GetAllRoles {\n\t\troles: getRoles {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n": types.GetAllRolesDocument,
@@ -134,6 +136,14 @@ export function gql(source: "\n\tmutation PostEvent($eventId: ID!) {\n\t\tsucces
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n\tmutation ReorderRoles($order: [ID!]!) {\n\t\torder: reorderRoles(order: $order)\n\t}\n"): (typeof documents)["\n\tmutation ReorderRoles($order: [ID!]!) {\n\t\torder: reorderRoles(order: $order)\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tmutation RsvpForEvent($eventId: ID!, $rsvpId: ID!) {\n\t\tsuccess: rsvpForEvent(id: $eventId, rsvp: $rsvpId)\n\t}\n"): (typeof documents)["\n\tmutation RsvpForEvent($eventId: ID!, $rsvpId: ID!) {\n\t\tsuccess: rsvpForEvent(id: $eventId, rsvp: $rsvpId)\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tmutation UnrsvpForEvent($eventId: ID!) {\n\t\tsuccess: unrsvpForEvent(id: $eventId)\n\t}\n"): (typeof documents)["\n\tmutation UnrsvpForEvent($eventId: ID!) {\n\t\tsuccess: unrsvpForEvent(id: $eventId)\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
