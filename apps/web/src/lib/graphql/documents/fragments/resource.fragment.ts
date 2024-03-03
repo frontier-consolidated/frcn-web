@@ -4,9 +4,7 @@ export const RESOURCE_FRAGMENT = gql(`
     fragment ResourceFragment on Resource {
         id
         owner {
-            id
-            name
-            avatarUrl
+            ...UserFragment
         }
         name
         sizeKb

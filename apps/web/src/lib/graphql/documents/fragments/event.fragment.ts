@@ -7,11 +7,7 @@ export const EVENT_FRAGMENT = gql(`
             ...ChannelFragment
         }
         owner {
-            id
-            name
-            discordName
-            avatarUrl
-            verified
+            ...UserFragment
         }
         name
         summary
