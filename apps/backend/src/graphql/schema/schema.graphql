@@ -154,6 +154,12 @@ type DiscordEmoji {
 	image: String
 }
 
+type DiscordEmojis {
+	serverName: String!
+	serverAvatar: String
+	emojis: [DiscordEmoji!]!
+}
+
 type Resource {
 	id: ID!
 	owner: User
@@ -278,7 +284,7 @@ type Query {
 	# System
 	getAllEventChannels: [DiscordChannel]! @permission(one: [CreateEvents, ManageSystem])
 	getAllDiscordChannels: [DiscordChannel!]! @permission(has: ManageSystem)
-	getAllDiscordEmojis: [DiscordEmoji!]! @permission(has: CreateEvents)
+	getAllDiscordEmojis: DiscordEmojis! @permission(has: CreateEvents)
 	getAllDiscordRoles(everyone: Boolean): [DiscordRole!]!
 		@permission(one: [CreateEvents, ManageRoles])
 	getSystemSettings: SystemSettings! @permission(has: ManageSystem)

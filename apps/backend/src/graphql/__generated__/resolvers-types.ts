@@ -42,6 +42,13 @@ export type DiscordEmoji = {
   name: Scalars['String']['output'];
 };
 
+export type DiscordEmojis = {
+  __typename?: 'DiscordEmojis';
+  emojis: Array<DiscordEmoji>;
+  serverAvatar?: Maybe<Scalars['String']['output']>;
+  serverName: Scalars['String']['output'];
+};
+
 export type DiscordRole = {
   __typename?: 'DiscordRole';
   color: Scalars['String']['output'];
@@ -343,7 +350,7 @@ export enum Permission {
 export type Query = {
   __typename?: 'Query';
   getAllDiscordChannels: Array<DiscordChannel>;
-  getAllDiscordEmojis: Array<DiscordEmoji>;
+  getAllDiscordEmojis: DiscordEmojis;
   getAllDiscordRoles: Array<DiscordRole>;
   getAllEventChannels: Array<Maybe<DiscordChannel>>;
   getCurrentUser?: Maybe<User>;
@@ -583,6 +590,7 @@ export type ResolversTypes = ResolversObject<{
   CacheControlScope: CacheControlScope;
   DiscordChannel: ResolverTypeWrapper<DiscordChannel>;
   DiscordEmoji: ResolverTypeWrapper<DiscordEmoji>;
+  DiscordEmojis: ResolverTypeWrapper<DiscordEmojis>;
   DiscordRole: ResolverTypeWrapper<DiscordRole>;
   Event: ResolverTypeWrapper<Event>;
   EventAccessType: EventAccessType;
@@ -624,6 +632,7 @@ export type ResolversParentTypes = ResolversObject<{
   Boolean: Scalars['Boolean']['output'];
   DiscordChannel: DiscordChannel;
   DiscordEmoji: DiscordEmoji;
+  DiscordEmojis: DiscordEmojis;
   DiscordRole: DiscordRole;
   Event: Event;
   EventEditInput: EventEditInput;
@@ -689,6 +698,13 @@ export type DiscordEmojiResolvers<ContextType = GQLContext, ParentType extends R
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   image?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DiscordEmojisResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DiscordEmojis'] = ResolversParentTypes['DiscordEmojis']> = ResolversObject<{
+  emojis?: Resolver<Array<ResolversTypes['DiscordEmoji']>, ParentType, ContextType>;
+  serverAvatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  serverName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -806,7 +822,7 @@ export type PagedResourceResolvers<ContextType = GQLContext, ParentType extends 
 
 export type QueryResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   getAllDiscordChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
-  getAllDiscordEmojis?: Resolver<Array<ResolversTypes['DiscordEmoji']>, ParentType, ContextType>;
+  getAllDiscordEmojis?: Resolver<ResolversTypes['DiscordEmojis'], ParentType, ContextType>;
   getAllDiscordRoles?: Resolver<Array<ResolversTypes['DiscordRole']>, ParentType, ContextType, Partial<QueryGetAllDiscordRolesArgs>>;
   getAllEventChannels?: Resolver<Array<Maybe<ResolversTypes['DiscordChannel']>>, ParentType, ContextType>;
   getCurrentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
@@ -903,6 +919,7 @@ export type UserStatusResolvers<ContextType = GQLContext, ParentType extends Res
 export type Resolvers<ContextType = GQLContext> = ResolversObject<{
   DiscordChannel?: DiscordChannelResolvers<ContextType>;
   DiscordEmoji?: DiscordEmojiResolvers<ContextType>;
+  DiscordEmojis?: DiscordEmojisResolvers<ContextType>;
   DiscordRole?: DiscordRoleResolvers<ContextType>;
   Event?: EventResolvers<ContextType>;
   EventMember?: EventMemberResolvers<ContextType>;
