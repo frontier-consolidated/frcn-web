@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { strings } from "@frcn/shared";
-	import { Breadcrumb, BreadcrumbItem, Tabs, TabItem } from "flowbite-svelte";
+	import { Breadcrumb, BreadcrumbItem, Tabs, TabItem, Avatar } from "flowbite-svelte";
 	import { CalendarMonthSolid } from "flowbite-svelte-icons";
 
 	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
@@ -36,9 +36,16 @@
 	<EventSidebar bind:data />
 
 	<section class="flex-1 flex flex-col gap-4 py-2">
-		<h1 class="text-2xl font-semibold dark:text-white">
-			{data.name ? data.name : "New Event"}
-		</h1>
+		<div>
+			<h1 class="text-2xl font-semibold dark:text-white">
+				{data.name ? data.name : "New Event"}
+			</h1>
+			<div class="flex items-center gap-2 mt-1">
+				<span class="text-sm dark:text-white">By</span>
+				<Avatar rounded size="xs" src={data.owner?.avatarUrl} />
+				<span class="text-sm font-semibold text-gray-200">{data.owner?.name ?? "[DELETED USER]"}</span>
+			</div>
+		</div>
 		<Breadcrumb
 			ariaLabel="Event Type and Location"
 			olClass="inline-flex flex-wrap items-center space-x-1 md:space-x-3 rtl:space-x-reverse"
