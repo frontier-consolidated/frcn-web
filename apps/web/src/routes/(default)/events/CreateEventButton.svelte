@@ -7,9 +7,6 @@
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
-
-
-
 </script>
 
 {#if hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
