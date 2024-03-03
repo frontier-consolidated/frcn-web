@@ -10,7 +10,8 @@
 
     export let event: Omit<EventFragmentFragment, "location">;
     export let open: boolean = false;
-    
+    export let dependency = "app:events"
+
     let rsvpRole: string | null = null;
 </script>
 
@@ -49,7 +50,7 @@
                 return;
             }
 
-            await invalidate("app:events")
+            await invalidate(dependency)
             open = false;
 		}}>RSVP</Button>
 		<Button color="alternative" on:click={() => open = false}>Cancel</Button>
