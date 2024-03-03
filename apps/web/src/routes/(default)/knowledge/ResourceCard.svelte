@@ -10,6 +10,7 @@
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { userProfileView } from "$lib/stores/UserProfileViewStore";
 	import { user } from "$lib/stores/UserStore";
 
     const dispatch = createEventDispatcher()
@@ -41,11 +42,16 @@
         <span class="block mt-2 text-xl font-semibold dark:text-white">
             {resource.name}
         </span>
-        <div class="flex items-center gap-2 mt-1">
-            <span class="text-sm">By</span>
+        <button class="w-max flex items-center gap-2 mt-1 group" on:click={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            if (!resource.owner) return;
+            userProfileView.set(resource.owner)
+        }}>
+            <span class="text-sm dark:text-white">By</span>
             <Avatar rounded size="xs" src={resource.owner?.avatarUrl} />
-            <span class="text-sm font-semibold text-gray-200">{resource.owner?.name ?? "[DELETED USER]"}</span>
-        </div>
+            <span class="text-sm font-semibold text-gray-200 group-hover:text-white">{resource.owner?.name ?? "[DELETED USER]"}</span>
+        </button>
         <span class="block text-sm font-semibold dark:text-white mt-3">
             Description
         </span>
