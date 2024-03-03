@@ -44,6 +44,13 @@
 		on:click={(e) => e.stopPropagation()}
 	/>
 	<Dropdown>
+		<DropdownItem on:click={(e) => {
+			e.stopPropagation()
+			userProfileView.set(member.user)
+		}}>
+			View Profile
+		</DropdownItem>
+		<DropdownDivider />
 		{#if $user.data?.id === member.user.id}
 			<DropdownItem class="flex dark:hover:bg-red-500" on:click={async (e) => {
 				e.stopPropagation()
@@ -70,13 +77,6 @@
 				<ArrowLeftToBracketOutline class="me-2" tabindex="-1" /> Leave Event
 			</DropdownItem>
 		{:else}
-			<DropdownItem on:click={(e) => {
-				e.stopPropagation()
-				userProfileView.set(member.user)
-			}}>
-				View Profile
-			</DropdownItem>
-			<DropdownDivider />
 			<DropdownItem class="flex">
 				<UserGroupSolid class="me-2" tabindex="-1" /> Join {member.user.name}'s crew
 			</DropdownItem>
