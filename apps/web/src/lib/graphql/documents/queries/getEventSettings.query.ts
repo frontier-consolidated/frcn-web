@@ -9,9 +9,13 @@ export const GET_EVENT_SETTINGS = gql(`
 			...ChannelFragment
 		}
 		customEmojis: getAllDiscordEmojis {
-			id
-			name
-			image
+			serverName
+			serverAvatar
+			emojis {
+				id
+				name
+				image
+			}
 		}
 		discordRoles: getAllDiscordRoles {
 			id
