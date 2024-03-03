@@ -8,6 +8,8 @@
 
 	export let init: string = "white_check_mark";
 	export let additionalEmojis: Emoji[] = [];
+	// eslint-disable-next-line no-undef
+	export let categoryIcons: Record<string, string | ConstructorOfATypedSvelteComponent> = {}
 	export let value: Emoji | null = null;
 
 	let clazz: string | undefined = undefined;
@@ -26,5 +28,5 @@
 			<svg class="w-6 h-6"></svg>
 		{/if}
 	</Button>
-	<EmojiPicker {init} {additionalEmojis} bind:value />
+	<EmojiPicker {init} {additionalEmojis} {categoryIcons} bind:value />
 </div>
