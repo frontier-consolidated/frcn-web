@@ -30,7 +30,7 @@
                 <div class="mb-2">
                     <TimeBadge id="test-event-time" format="datetime-relative" value={event.startAt ?? 0} />
                 </div>
-                <EventCard {event} />
+                <EventCard bind:event />
             </TimelineItem>
         {/each}
     </Timeline>
