@@ -2,7 +2,7 @@
 
 export PRISMA_SKIP_POSTINSTALL_GENERATE=true
 
-BUILD_DIR="ec2-build"
+BUILD_DIR=$1
 
 mkdir -p $BUILD_DIR
 
