@@ -1,0 +1,76 @@
+name: Deploy to AWS EC2 Dev
+
+on:
+    push:
+        branches:
+            - dev
+
+jobs:
+    deploy:
+        environment: frontierconsolidated.com
+        name: Build and deploy
+        runs-on: ubuntu-latest
+        steps:
+            - name: Setup node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 21
+
+            - name: Install pnpm
+              uses: pnpm/action-setup@v3
+              with:
+                  version: 8
+
+            - name: Get pnpm store
+              shell: bash
+              run: |
+                  echo "PNPM_STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+            - name: Setup pnpm cache
+              uses: actions/cache@v4
+              with:
+                  path: ${{ env.PNPM_STORE_PATH }}
+                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-store-
+
+            - name: Configure SSH
+              run: |
+                  mkdir -p ~/.ssh/
+                  echo "$SSH_KEY" > ~/.ssh/aws
+                  chmod 600 ~/.ssh/aws
+                  cat >>~/.ssh/config <<END
+                  Host server
+                      HostName $SSH_HOST
+                      User $SSH_USER
+                      Port $SSH_PORT
+                      IdentityFile ~/.ssh/aws
+                      StrictHostKeyChecking no
+                  END
+              env:
+                  SSH_USER: ${{ secrets.SSH_USER }}
+                  SSH_KEY: ${{ secrets.SSH_KEY }}
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
+                  SSH_PORT: ${{ secrets.SSH_PORT }}
+
+            - name: Checkout branch
+              uses: actions/checkout@v4
+
+            - name: Run build script
+              shell: bash
+              run: |
+                  ./.github/scripts/ec2-build.sh ec2-build
+
+            - name: Deploy web
+              run: |
+                  rsync -avzH --delete-excluded -e "ssh -i ~/.ssh/aws" ./ec2-build/web/ $SSH_USER@$SSH_HOST:/var/www/dev.frontierconsolidated.com/web/
+              env:
+                  SSH_USER: ${{ secrets.SSH_USER }}
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
+
+            - name: Deploy backend
+              run: |
+                  rsync -avzH --delete-excluded -e "ssh -i ~/.ssh/aws" ./ec2-build/backend/ $SSH_USER@$SSH_HOST:/home/$SSH_USER/dev-backend/
+              env:
+                  SSH_USER: ${{ secrets.SSH_USER }}
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
