@@ -61,6 +61,24 @@ jobs:
               run: |
                   ./.github/scripts/ec2-build.sh ec2-build
 
+            - name: Get runner public ip
+              shell: bash
+              run: |
+                  echo "PUBLIC_IP=$(curl -s https://ipinfo.io/ip)" >> $GITHUB_ENV
+
+            - name: Setup AWS credentials
+              uses: aws-actions/configure-aws-credentials@v4
+              with:
+                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  aws-region: ${{ secrets.AWS_REGION }}
+
+            - name: Add runner ip to AWS security group
+              run: |
+                  aws ec2 authorize-security-group-ingress --group-name $AWS_SECURITY_GROUP --protocol tcp --port 22 --cidr $PUBLIC_IP/32
+              env:
+                  AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP }}
+
             - name: Deploy web
               run: |
                   rsync -avzH --delete-excluded -e "ssh -i ~/.ssh/aws" ./ec2-build/web/ $SSH_USER@$SSH_HOST:/var/www/dev.frontierconsolidated.com/web/
@@ -74,3 +92,10 @@ jobs:
               env:
                   SSH_USER: ${{ secrets.SSH_USER }}
                   SSH_HOST: ${{ secrets.SSH_HOST }}
+
+            - name: Remove runner ip from AWS security group
+              run: |
+                  aws ec2 revoke-security-group-ingress --group-name $AWS_SECURITY_GROUP --protocol tcp --port 22 --cidr $PUBLIC_IP/32
+              if: always()
+              env:
+                  AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP }}
