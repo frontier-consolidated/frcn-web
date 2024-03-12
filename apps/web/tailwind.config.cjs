@@ -2,6 +2,8 @@ const plugin = require("tailwindcss/plugin")
 const flattenColorPalette = require("tailwindcss/lib/util/flattenColorPalette").default
 const { parseColor } = require("tailwindcss/lib/util/color")
 
+const fallbackFonts = ["ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "sans-serif"]
+
 /** @type {import('tailwindcss').Config}*/
 const config = {
 	content: [
@@ -62,6 +64,9 @@ const config = {
 	darkMode: "class",
 
 	theme: {
+		fontFamily: {
+			fractul: ["Fractul", ...fallbackFonts]
+		},
 		extend: {
 			zIndex: {
 				"100": "100"
