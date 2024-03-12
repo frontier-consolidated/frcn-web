@@ -5,7 +5,9 @@ import { Queries } from '$lib/graphql';
 
 import type { PageServerLoad } from './$types';
 
-export const load = (async ({ locals, url }) => {
+export const load = (async ({ locals, url, depends }) => {
+    depends("app:my-events")
+
     if (!locals.user) redirect(307, "/events")
 
     const { data } = await locals.apollo.query({

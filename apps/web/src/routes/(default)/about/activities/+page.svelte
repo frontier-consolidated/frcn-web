@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Heading } from "flowbite-svelte";
 
-	import Hr from "$lib/components/Hr.svelte";
 	import image1 from "$lib/images/stock/activities/1.png"
 	import image2Desktop from "$lib/images/stock/activities/2-desktop.jpg"
 	import image2Mobile from "$lib/images/stock/activities/2-mobile.jpg"
@@ -13,24 +12,31 @@
 	import image7 from "$lib/images/stock/activities/7.jpg"
 	import image8 from "$lib/images/stock/activities/8.png"
 	import image9 from "$lib/images/stock/activities/9.png"
+	import heroImageFallback from "$lib/images/stock/activities/hero.jpg"
+	import heroImageSrcset from "$lib/images/stock/activities/hero.jpg?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
 
-	import HeroImg from "../HeroImg.svelte";
-	import HeroTitle from "../HeroTitle.svelte";
+	import AboutHero from "../AboutHero.svelte";
+	import AboutSection from "../AboutSection.svelte";
 </script>
 
 <svelte:head>
 	<title>Our Activities - About | Frontier Consolidated</title>
 </svelte:head>
 
-<Heading tag="h1" class="font-medium text-4xl">Frontier Activities</Heading>
-<p class="text-gray-400">Be a part of something great</p>
-<Hr />
-<section class="mt-2 flex flex-col gap-8">
-	<HeroImg
+<AboutHero
+	srcset={heroImageSrcset}
+	fallback={heroImageFallback}
+>
+	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">Frontier Activities</Heading>
+	<p class="text-slate-400 drop-shadow-md">Be a part of something great</p>
+</AboutHero>
+
+<section class="mt-2 flex flex-col gap-8 p-4 w-full max-w-6xl mx-auto">
+	<AboutSection
+		title="Better together"
 		src={image1}
 		position="bottom-left"
 	>
-		<HeroTitle>Better together</HeroTitle>
 		<p>
 			It's dangerous to go alone. Bring a friend - or many!
 		</p>
@@ -44,15 +50,15 @@
 			Fortune and misfortune are both best savored with company. If nothing else, your friends might save 
 			your ass one day you screw up really badly.
 		</p>
-	</HeroImg>
-	<HeroImg
+	</AboutSection>
+	<AboutSection
+		title="Combined Ops"
 		src={image2Mobile}
 		sources={{
 			md: image2Desktop
 		}}
 		position="bottom-left"
 	>
-		<HeroTitle>Combined Ops</HeroTitle>
 		<p>
 			For many of FRCNs ops, industry is often either the focus or an important part, but far from always.
 		</p>
@@ -61,15 +67,15 @@
 			support and combat wings. There are plenty of roles to fill and not having certain ships or equipment 
 			does not prevent you from participating.
 		</p>
-	</HeroImg>
-	<HeroImg
+	</AboutSection>
+	<AboutSection
+		title="That's mine!"
 		src={image3Mobile}
 		sources={{
 			md: image3Desktop
 		}}
 		position="top-right"
 	>
-		<HeroTitle>That's mine!</HeroTitle>
 		<p>
 			FRCN also runs community mining events, where we train how to mine in Star Citizen. Everyone's 
 			welcome, from first-timers to seasoned veterans. If you don't own a mining vehicle or suitable ship, we 
@@ -81,11 +87,11 @@
 			piloting, mining turret operator to scout pilot and security - all are equally important during an event, 
 			and profits are shared equally.
 		</p>
-	</HeroImg>
-	<HeroImg
+	</AboutSection>
+	<AboutSection
+		title="Salvage the situation"
 		src={image4}
 	>
-		<HeroTitle>Salvage the situation</HeroTitle>
 		<p>
 			The dangers of the 'verse leaves a lot of bounty available for the taking, sometimes from other people. 
 			Whether it's recycled hull material, components or less legal goodies, FRCN collects it all.
@@ -95,12 +101,12 @@
 			even be a cargo deck box monkey - FRCN can put you to good use cleaning up the spaceways. And if 
 			there isn't enough debris, we can always make more.
 		</p>
-	</HeroImg>
-	<HeroImg
+	</AboutSection>
+	<AboutSection
+		title="Combat"
 		src={image5}
 		position="top-left"
 	>
-		<HeroTitle>Combat</HeroTitle>
 		<p>
 			FRCN offers a unique blend of camaraderie, strategy, and action for players looking to delve into the 
 			game's combat aspects, without the pressure of hardcore commitment, and provides a supportive 
@@ -112,12 +118,12 @@
 			bounty hunting to safeguarding valuable assets, all while being part of a group that values cooperation, 
 			mutual respect, and the sheer joy of playing together.
 		</p>
-	</HeroImg>
-	<HeroImg
+	</AboutSection>
+	<AboutSection
+		title="Working together"
 		src={image6}
-		position="top-right"
+		position="bottom-left"
 	>
-		<HeroTitle>Working together</HeroTitle>
 		<p>
 			The 'verse is dark and full of dangers, but also full of fun to be had with a group of players, large or 
 			small. Star Citizen is made to be played with others and has a vast scope of opportunities for gameplay 
@@ -128,23 +134,23 @@
 			larger ship or more complex operation can be more demanding and may require skills in coordination, 
 			logistics and the general herding of cats. That's where FRCN can help.
 		</p>
-	</HeroImg>
-	<HeroImg
+	</AboutSection>
+	<AboutSection
+		title="Velocity squared"
 		src={image7}
-		position="top-left"
-	>
-		<HeroTitle>Velocity squared</HeroTitle>
-	</HeroImg>
-	<HeroImg
-		src={image8}
 		position="top-right"
 	>
-		<HeroTitle>Sample op 1</HeroTitle>
-	</HeroImg>
-	<HeroImg
+	</AboutSection>
+	<AboutSection
+		title="Sample op 1"
+		src={image8}
+		position="bottom-right"
+	>
+	</AboutSection>
+	<AboutSection
+		title="Sample op 2"
 		src={image9}
 		position="bottom-left"
 	>
-		<HeroTitle>Sample op 2</HeroTitle>
-	</HeroImg>
+	</AboutSection>
 </section>

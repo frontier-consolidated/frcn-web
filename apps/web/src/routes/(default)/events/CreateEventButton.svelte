@@ -11,7 +11,7 @@
 
 {#if hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
     <Button
-        class="sm:shrink-0"
+        class="sm:shrink-0 rounded clip-opposite-3"
         on:click={async () => {
             try {
                 const { data: createData } = await getApollo().mutate({

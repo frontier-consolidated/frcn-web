@@ -9,8 +9,8 @@
 			y2="100%"
 			gradientTransform="rotate(45,1024,499)"
 		>
-			<stop offset="0" stop-color="#01040a" />
-			<stop offset="1" stop-color="#030712" />
+			<stop offset="0" stop-color="#03030320" />
+			<stop offset="1" stop-color="#0000000e" />
 		</linearGradient>
 		<pattern
 			patternUnits="userSpaceOnUse"

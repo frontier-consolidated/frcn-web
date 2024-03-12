@@ -12,35 +12,35 @@
 </svelte:head>
 
 <main class="flex flex-1 flex-col p-4 w-full max-w-5xl my-0 mx-auto box-border">
-	{#if $page.status === 401}
-		<div class="my-auto py-16">
-			<div class="flex flex-col items-center rounded-lg p-6 bg-gray-900 border-2 border-red-800 border-dashed">
+	<div class="h-screen pt-[20vh]">
+		<div class="flex flex-col items-center rounded-lg p-6 bg-gray-900 border-2 border-red-800 border-dashed">
+			{#if $page.status === 401}
 				<Heading tag="h1" class="font-medium text-4xl text-center">Access Denied</Heading>
-				<p class="text-gray-500">{$page.status}</p>
+				<p class="text-gray-500">Error code: {$page.status}</p>
 				<Hr class="w-full" />
 				<p class="mt-4 text-gray-400">You must be authenticated in order to view this page</p>
 				<div class="flex justify-center mt-4">
-					<Button on:click={() => {
+					<Button class="rounded-none clip-opposite-3" on:click={() => {
 						login().catch(console.error)
-					}}>Login</Button>
+					}}>LOGIN</Button>
 				</div>
-			</div>
-		</div>
-	{:else if $page.status === 404}
-		<div class="h-screen pt-[20vh]">
-			<div class="flex flex-col items-center rounded-lg p-6 bg-gray-900 border-2 border-red-800 border-dashed">
+			{:else if $page.status === 404}
 				<Heading tag="h1" class="font-medium text-4xl text-center">Page Not Found</Heading>
-				<p class="text-gray-500">{$page.status}</p>
+				<p class="text-gray-500">Error code: {$page.status}</p>
 				<Hr class="w-full" />
 				<p class="mt-4 text-gray-400">We could not find the page you were looking for.</p>
 				<div class="flex justify-center mt-4">
-					<Button href="/">Go to Home</Button>
+					<Button href="/" class="rounded-none clip-opposite-3">BACK TO SAFETY</Button>
 				</div>
-			</div>
+			{:else}
+				<Heading tag="h1" class="font-medium text-4xl text-center">Server Error</Heading>
+				<p class="text-gray-500">Error code: {$page.status}</p>
+				<Hr class="w-full" />
+				<p class="mt-4 text-gray-400">We encountered and issue with your request, please try again later.</p>
+				<div class="flex justify-center mt-4">
+					<Button href="/" class="rounded-none clip-opposite-3">BACK TO SAFETY</Button>
+				</div>
+			{/if}
 		</div>
-	{:else}
-		<Alert color="red">
-			<span>{$page.status}: {$page.error?.message}</span>
-		</Alert>
-	{/if}
+	</div>
 </main>

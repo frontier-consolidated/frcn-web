@@ -14,16 +14,17 @@
 	import { user } from "$lib/stores/UserStore";
 
     export let event: Omit<EventFragmentFragment, "location"> & { location: AnyLocation[] | null }
+    export let dependency: string | undefined = undefined;
 
     $: rsvped = event.members.find(member => member.user.id === $user.data?.id)
     let rsvpModalOpen = false;
 </script>
 
-<a href="/event/{event.id}" class="group/card flex flex-col sm:flex-row bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded-lg border border-gray-200 dark:border-gray-700 divide-gray-200 dark:divide-gray-700 shadow-md p-0 w-full">
-    <img src={event.imageUrl ?? placeholder} alt="Event thumbnail" class="object-cover h-32 sm:h-auto sm:w-36 rounded-t-lg sm:rounded-none sm:rounded-s-lg group-hover/card:brightness-110" on:error={(e) => {
+<a href="/event/{event.id}" class="group/card flex flex-col sm:flex-row bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded clip-br-6 divide-gray-200 dark:divide-gray-700 shadow-md p-0 w-full">
+    <img src={event.imageUrl ?? placeholder} alt="Event thumbnail" class="object-cover h-32 sm:h-auto sm:w-36 rounded-t sm:rounded-none sm:rounded-s group-hover/card:brightness-110" on:error={(e) => {
         e.currentTarget.setAttribute("src", placeholder)
     }} />
-    <div class="flex flex-col px-4 py-2">
+    <div class="flex flex-col px-4 py-3">
         <Breadcrumb
             ariaLabel="Event Type and Location"
             classOl="flex-wrap"
@@ -61,7 +62,7 @@
             </div>
         {/if}
     </div>
-    <div class="flex border-t sm:border-none border-gray-200 sm:flex-col items-center sm:items-stretch justify-between sm:ml-auto shrink-0 sm:w-36 p-4">
+    <div class="flex border-t sm:border-none border-gray-200 sm:flex-col items-end sm:items-center sm:items-stretch justify-between sm:ml-auto shrink-0 sm:w-36 p-4">
         <div class="flex flex-col flex-1 sm:flex-none">
             <div class="flex justify-center ml-4">
                 {#each event.members.slice(0, 3) as member}
@@ -75,7 +76,7 @@
             <span class="text-sm text-center">{event.members.length} rsvps</span>
         </div>
         {#if rsvped}
-            <Button color="red" class="h-max" on:click={async (e) => {
+            <Button disabled={!event.posted} color="red" class="h-max rounded clip-opposite-4" on:click={async (e) => {
                 e.preventDefault()
 
                 const { data: unrsvpData, errors } = await getApollo().mutate({
@@ -100,7 +101,7 @@
                 UnRSVP
             </Button>
         {:else}
-            <Button class="h-max" on:click={async (e) => {
+            <Button disabled={!event.posted} class="h-max rounded clip-opposite-4" on:click={async (e) => {
                 e.preventDefault()
                 rsvpModalOpen = true
             }}>
@@ -110,4 +111,4 @@
     </div>
 </a>
 
-<RsvpModal {event} bind:open={rsvpModalOpen} />
+<RsvpModal {event} {dependency} bind:open={rsvpModalOpen} />
