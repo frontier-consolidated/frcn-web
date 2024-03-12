@@ -14,11 +14,13 @@
 	<meta name="theme-color" content="#1784F2">
 </svelte:head>
 
-<div class="main-container relative flex flex-col min-h-screen bg-white dark:bg-gray-950">
-	<Header />
-	<Banner id="wip-banner" bannerType="default" classDiv="z-20 bg-orange-50 dark:bg-orange-800 text-orange-800 dark:text-orange-400 dark:border-orange-700">
-		<CodeSolid class="me-2" tabindex="-1" /> Currently Under Construction
-	</Banner>
+<div class="main-container font-fractul relative flex flex-col min-h-screen bg-white dark:bg-gray-950">
+	<div class="fixed top-0 left-0 w-full z-20">
+		<Header />
+		<Banner id="wip-banner" bannerType="default" classDiv="z-20 bg-orange-50 dark:bg-orange-800 text-orange-800 dark:text-orange-400 dark:border-orange-700">
+			<CodeSolid class="me-2" tabindex="-1" /> Currently Under Construction
+		</Banner>
+	</div>
 	<slot />
 	<Footer />
 	<UserProfileModal />
@@ -29,7 +31,6 @@
 <style>
 	.main-container {
 		background-image: url("$lib/images/background.svg");
-		background-attachment: fixed;
 		background-size: cover;
 	}
 </style>
