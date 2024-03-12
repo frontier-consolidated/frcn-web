@@ -55,8 +55,8 @@
 		<source srcset={heroImageSrcset} type="image/webp" />
 		<img src={heroImageFallback} alt="index hero" class="w-full object-cover h-[80vh] brightness-90 bg-slate-950" />
 	</picture>
-	<div class="absolute top-0 left-0 h-full w-full p-4 sm:p-[20%] flex items-center justify-center sm:justify-end">
-		<div class="max-w-[24rem] sm:min-w-[24rem] sm:max-w-[50rem] w-full sm:w-[50%] p-8 text-gray-900 dark:text-white flex flex-col gap-3 backdrop-blur-xl clip-opposite-reverse-8 bg-white/50 dark:bg-black/30">
+	<div class="absolute top-0 left-0 h-full w-full p-4 sm:px-[20%] flex items-center justify-center sm:!justify-end">
+		<div class="max-w-[24rem] w-full p-8 text-gray-900 dark:text-white flex flex-col gap-3 backdrop-blur-xl clip-opposite-reverse-8 bg-white/50 dark:bg-black/30 sm:min-w-[24rem] sm:max-w-[50rem] sm:!w-6/12">
 			<span class="font-medium text-lg">
 				<span class="me-4 text-primary-700 dark:text-primary-500">///</span> Welcome to the Frontier!
 			</span>
