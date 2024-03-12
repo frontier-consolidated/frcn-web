@@ -91,41 +91,18 @@ const config = {
 				},
 
 				discord: {
-					200: "#97a9e8",
-					500: "#7289da",
+					"DEFAULT": "#5B69F0",
+					pressed: "#4A55C2"
 				},
 
-				erkul: {
-					color: "#ffa537"
-				},
-
-				tradetools: {
-					color: "#df691a"
-				},
-
-				cstone: {
-					color: "#dddddd"
-				},
-
-				ccugame: {
-					color: "#ea7187"
-				},
-
-				sc: {
-					color: "#00e7ff"
-				},
-
-				scorgtools: {
-					color: "#8fdf14"
-				},
-
-				hangarlink: {
-					color: "#97CBF8"
-				},
-
-				verseguide: {
-					color: "#46A0D0"
-				}
+				erkul: "#ffa537",
+				tradetools: "#df691a",
+				cstone: "#dddddd",
+				ccugame: "#ea7187",
+				sc: "#00e7ff",
+				scorgtools: "#8fdf14",
+				hangarlink: "#97CBF8",
+				verseguide: "#46A0D0"
 			},
 		},
 	},
