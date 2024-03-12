@@ -101,7 +101,6 @@ export const Stanton = system("Stanton", [
 			outpost("The Garden"),
 			outpost("Nuen Waste Management"),
 			outpost("Kudre Ore Mine (Closed)"),
-			outpost("Jumptown"),
 			outpost("TPF"),
 			outpost("Kudre Ore"),
 			outpost("Bountiful Harvest Hydroponics"),
