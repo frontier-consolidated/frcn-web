@@ -6,7 +6,7 @@
 	import type { EventFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
-	import BetterSelect from "./select/BetterSelect.svelte";
+	import Select from "../select/Select.svelte";
 
     export let event: Omit<EventFragmentFragment, "location">;
     export let open: boolean = false;
@@ -18,7 +18,7 @@
 <Modal title="RSVP for '{event.name}'" placement="top-center" outsideclose bind:open bodyClass="overflow-y-visible">
 	<div>
 		<Label for="event-rsvp-role" class="mb-2">RSVP Role</Label>
-		<BetterSelect
+		<Select
 			id="event-rsvp-role"
 			name="Event RSVP Role"
 			options={event.roles.map((role) => ({

@@ -8,7 +8,7 @@
 	import { userProfileView } from "$lib/stores/UserProfileViewStore";
 	import { user } from "$lib/stores/UserStore";
 
-	import Hr from "./Hr.svelte";
+	import Hr from "../Hr.svelte";
 
     $: joinDate = new Intl.DateTimeFormat($locale!, {
         month: "long",
