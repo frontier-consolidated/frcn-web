@@ -16,7 +16,7 @@
 	} from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
-	import RsvpModal from "$lib/components/RSVPModal.svelte";
+	import { RsvpModal } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";

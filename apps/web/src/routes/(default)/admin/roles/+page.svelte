@@ -6,7 +6,7 @@
     import Sortable from "sortablejs"
 	import { queryParam } from "sveltekit-search-params";
 
-	import SectionHeading from "$lib/components/SectionHeading.svelte";
+	import { SectionHeading } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";

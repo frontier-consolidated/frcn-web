@@ -4,9 +4,7 @@
     import { UploadSolid, FileSolid } from "flowbite-svelte-icons"
 
 	import { Routes, api } from "$lib/api";
-    import BetterSelect from "$lib/components/select/BetterSelect.svelte";
-	import Field from "$lib/components/validation/Field.svelte";
-	import { FieldValidator } from "$lib/components/validation/FieldValidator";
+    import { Select, Field, FieldValidator } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -199,7 +197,7 @@
 			required
 		>
 			<Label for="resource-upload-tags" class="mb-2">Tags</Label>
-            <BetterSelect
+            <Select
                 id="resource-upload-tags"
                 name="Resource Upload Tags"
                 options={tags.map(tag => ({

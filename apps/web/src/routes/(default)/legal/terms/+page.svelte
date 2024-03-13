@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Hr from "$lib/components/Hr.svelte";
+	import { Hr } from "$lib/components";
 
 	import LegalSectionWrapper from "../LegalSectionWrapper.svelte";
 	import LegalTitle from "../LegalTitle.svelte";

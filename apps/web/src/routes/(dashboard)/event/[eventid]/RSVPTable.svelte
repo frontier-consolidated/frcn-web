@@ -2,8 +2,7 @@
 	import { Table, TableBody, TableHead, TableHeadCell, Button } from "flowbite-svelte";
 	import { v4 as uuidv4 } from 'uuid';
 
-	import Tooltip from "$lib/components/Tooltip.svelte";
-	import type { FieldValidator } from "$lib/components/validation/FieldValidator";
+	import { Tooltip, type FieldValidator } from "$lib/components";
 
 	import type { PageData } from "./$types";
 	import RsvpItem from "./RSVPItem.svelte";

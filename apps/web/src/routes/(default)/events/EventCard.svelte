@@ -4,9 +4,7 @@
 	import { Avatar, Breadcrumb, BreadcrumbItem, Button } from "flowbite-svelte";
 	import { CalendarMonthSolid } from "flowbite-svelte-icons";
     
-	import CreatedByButton from "$lib/components/CreatedByButton.svelte";
-	import LocationBreadcrumbItem from "$lib/components/location/LocationBreadcrumbItem.svelte";
-	import RsvpModal from "$lib/components/RSVPModal.svelte";
+	import { CreatedByButton, LocationBreadcrumbItem, RsvpModal } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { EventFragmentFragment } from "$lib/graphql/__generated__/graphql";
     import placeholder from "$lib/images/stock/placeholder.jpg"

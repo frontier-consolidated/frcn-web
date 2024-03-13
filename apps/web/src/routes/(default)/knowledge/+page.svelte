@@ -6,7 +6,7 @@
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params"
 
-	import Hr from "$lib/components/Hr.svelte";
+	import { Hr } from "$lib/components";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import ccugameIcon from "$lib/images/tool-icons/ccugame.png"
 	import cstoneIcon from "$lib/images/tool-icons/cornerstone.png"

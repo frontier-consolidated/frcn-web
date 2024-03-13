@@ -5,12 +5,7 @@
 	import { Avatar, Button, Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
 	import { ArrowLeftSolid, CloseCircleSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
-	import Hr from "$lib/components/Hr.svelte";
-	import SectionHeading from "$lib/components/SectionHeading.svelte";
-	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
-	import Tooltip from "$lib/components/Tooltip.svelte";
-	import Field from "$lib/components/validation/Field.svelte";
-	import { FieldValidator } from "$lib/components/validation/FieldValidator";
+	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator } from "$lib/components";
 	import { getApollo, Mutations } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
@@ -159,7 +154,7 @@
 								</Tooltip>
 							{/if}
 						</Label>
-						<BetterSelect
+						<Select
 							id="system-roles-role-discord-role"
 							name="Role Discord Role"
 							options={[{
@@ -182,7 +177,7 @@
 								{/if}
 								<span>{option.name}</span>
 							</div>
-						</BetterSelect>
+						</Select>
 						<Helper class="mt-1">
 							The discord guild role that this role is linked to, users will receive this role if they have the selected discord role
 						</Helper>

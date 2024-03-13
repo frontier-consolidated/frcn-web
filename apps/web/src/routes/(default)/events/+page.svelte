@@ -4,7 +4,7 @@
 	import { Heading, TabItem, Tabs, Search, Button } from "flowbite-svelte";
 	import { queryParam } from "sveltekit-search-params"
 
-	import Hr from "$lib/components/Hr.svelte";
+	import { Hr } from "$lib/components";
 	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";

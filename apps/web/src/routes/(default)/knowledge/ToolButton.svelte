@@ -2,7 +2,7 @@
 import { Button } from "flowbite-svelte";
 	import { twMerge } from "tailwind-merge";
 
-	import MediaQuery from "$lib/components/MediaQuery.svelte";
+	import { MediaQuery } from "$lib/components";
 
     export let img: string = "";
     export let name: string;

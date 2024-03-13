@@ -3,10 +3,8 @@
 	import { DatabaseSolid, TrashBinSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
-	import EmojiPickerInput from "$lib/components/emoji/EmojiPickerInput.svelte";
+	import { EmojiPickerInput, Field, FieldValidator } from "$lib/components";
 	import type { Emoji } from "$lib/components/emoji/types";
-	import Field from "$lib/components/validation/Field.svelte";
-	import type { FieldValidator } from "$lib/components/validation/FieldValidator";
 
 	import type { PageData } from "./$types";
 

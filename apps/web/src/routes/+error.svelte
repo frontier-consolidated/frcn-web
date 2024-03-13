@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import { Alert, Button, Heading } from "flowbite-svelte";
+	import { Button, Heading } from "flowbite-svelte";
 
-	import Hr from "$lib/components/Hr.svelte";
+	import { Hr } from "$lib/components";
 	import { login } from "$lib/stores/UserStore";
 </script>
 

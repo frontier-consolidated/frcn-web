@@ -1,12 +1,9 @@
 <script lang="ts">
-	import "@selemondev/svelte-marquee/dist/style.css"
-
-	import { Marquee } from "@selemondev/svelte-marquee"
 	import { Button, Heading } from "flowbite-svelte";
 	import { BookSolid, BuildingSolid, DiscordSolid, MapPinAltSolid, UsersSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
-	import Hr from "$lib/components/Hr.svelte";
+	import { Hr } from "$lib/components";
 	import { DISCORD_URL, MERCH_URL } from "$lib/constants";
 	import activitiesImage from "$lib/images/stock/activities.png"
 	import communityImage from "$lib/images/stock/community.jpg"
@@ -124,13 +121,13 @@
 	</section>
 </div>
 <section class="border-y border-gray-400 dark:border-gray-800 bg-gray-400/70 dark:bg-gray-900 py-8">
-	<Marquee fade>
+	<!-- <Marquee fade>
 		{#each partners as partner}
 			<a href={partner.href} class="shrink-0 rounded-lg h-32 w-32">
 				<img src={partner.src} alt={partner.alt} class="w-full h-full object-contain" />
 			</a>
 		{/each}
-	</Marquee>
+	</Marquee> -->
 </section>
 <div class="mt-24 flex flex-col mx-auto w-full max-w-5xl p-4 pt-0 gap-24">
 	<section>

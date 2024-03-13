@@ -5,9 +5,7 @@
 	import { DotsVerticalOutline, DownloadSolid, EditOutline, FileSolid, TrashBinSolid } from "flowbite-svelte-icons";
     import { createEventDispatcher } from "svelte";
 
-	import ConfirmationModal from "$lib/components/ConfirmationModal.svelte";
-	import CreatedByButton from "$lib/components/CreatedByButton.svelte";
-	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
+	import { CreatedByButton, TimeBadge, ConfirmationModal } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";

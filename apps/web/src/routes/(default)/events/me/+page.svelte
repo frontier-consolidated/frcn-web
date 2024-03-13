@@ -2,7 +2,7 @@
 	import { Heading, Search } from "flowbite-svelte";
 	import { queryParam } from "sveltekit-search-params"
 
-	import Hr from "$lib/components/Hr.svelte";
+	import { Hr } from "$lib/components";
 
 	import type { PageData } from "./$types";
 	import CreateEventButton from "../CreateEventButton.svelte";

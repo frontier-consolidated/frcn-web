@@ -3,11 +3,7 @@
 	import { Banner } from "flowbite-svelte";
 	import { CodeSolid } from "flowbite-svelte-icons";
 
-	import CookieConsentModal from "$lib/components/CookieConsentModal.svelte";
-	import Footer from "$lib/components/Footer.svelte";
-	import Header from "$lib/components/Header.svelte";
-	import Notifications from "$lib/components/Notifications.svelte";
-	import UserProfileModal from "$lib/components/UserProfileModal.svelte";
+	import { CookieConsentModal, Footer, Header, Notifications, UserProfileModal } from "$lib/components";
 </script>
 
 <svelte:head>
