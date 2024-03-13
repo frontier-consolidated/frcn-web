@@ -7,7 +7,7 @@
 	import { cookieConsentModal } from "$lib/stores/CookieConsentModalStore";
 
 	import Hr from "./Hr.svelte";
-	import ScreenQuery from "./ScreenQuery.svelte";
+	import ScreenQuery from "./utils/ScreenQuery.svelte";
 
 </script>
 

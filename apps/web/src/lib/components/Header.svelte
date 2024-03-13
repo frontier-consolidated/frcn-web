@@ -24,13 +24,13 @@
 	} from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
-	import MediaQuery from "$lib/components/MediaQuery.svelte"
 	import { DISCORD_URL, MERCH_URL } from "$lib/constants";
 	import logo from "$lib/images/logo.png";
 	import { login, logout, user } from "$lib/stores/UserStore";
 
 	import NavUser from "./NavUser.svelte";
-	import ScreenQuery from "./ScreenQuery.svelte";
+	import MediaQuery from "./utils/MediaQuery.svelte"
+	import ScreenQuery from "./utils/ScreenQuery.svelte";
 
 	$: activeUrl = $page.url.pathname;
 
@@ -96,7 +96,7 @@
 			</Button>
 			<NavHamburger class="md:block lg:hidden" />
 		</div>
-		<NavUl divClass="w-full lg:block lg:w-auto" class="mr-auto order-1 lg:flex-1 lg:ml-4 lg:mr-4 2xl:ml-8" ulClass="flex flex-col gap-1 lg:py-4 mt-4 lg:!flex-row lg:flex-wrap lg:!gap-x-8 lg:!gap-y-2 rtl:justify-end lg:mt-0 lg:text-sm lg:font-medium border-none bg-transparent dark:bg-transparent" hidden={browser ? undefined : false} {activeUrl} {activeClass} {nonActiveClass}>
+		<NavUl divClass="w-full lg:!block lg:w-auto" class="mr-auto order-1 lg:flex-1 lg:ml-4 lg:mr-4 2xl:ml-8" ulClass="flex flex-col gap-1 lg:py-4 mt-4 lg:!flex-row lg:flex-wrap lg:!gap-x-8 lg:!gap-y-2 rtl:justify-end lg:mt-0 lg:text-sm lg:font-medium border-none bg-transparent dark:bg-transparent" {activeUrl} {activeClass} {nonActiveClass}>
 			{#if !$user.data}
 				<li class="sm:hidden">
 					<button

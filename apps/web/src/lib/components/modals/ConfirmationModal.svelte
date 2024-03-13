@@ -1,6 +1,8 @@
 <script lang="ts">
-	import { Button, Modal } from "flowbite-svelte";
+	import { Modal } from "flowbite-svelte";
     import { createEventDispatcher } from "svelte";
+
+	import Button from "../Button.svelte";
 
     const dispatch = createEventDispatcher()
 

@@ -7,7 +7,7 @@
 	import { userProfileView } from "$lib/stores/UserProfileViewStore";
 	import { user } from "$lib/stores/UserStore";
 
-	import MediaQuery from "./MediaQuery.svelte";
+	import MediaQuery from "./utils/MediaQuery.svelte";
 
 	const dispatch = createEventDispatcher();
 </script>
