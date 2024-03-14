@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page } from "$app/stores";
-	import { Button, Heading } from "flowbite-svelte";
+	import { Heading } from "flowbite-svelte";
 
-	import { Hr } from "$lib/components";
+	import { Button, Hr } from "$lib/components";
 	import { login } from "$lib/stores/UserStore";
 </script>
 
@@ -20,7 +20,7 @@
 				<Hr class="w-full" />
 				<p class="mt-4 text-gray-400">You must be authenticated in order to view this page</p>
 				<div class="flex justify-center mt-4">
-					<Button class="rounded-none clip-opposite-3" on:click={() => {
+					<Button on:click={() => {
 						login().catch(console.error)
 					}}>LOGIN</Button>
 				</div>
@@ -30,7 +30,7 @@
 				<Hr class="w-full" />
 				<p class="mt-4 text-gray-400">We could not find the page you were looking for.</p>
 				<div class="flex justify-center mt-4">
-					<Button href="/" class="rounded-none clip-opposite-3">BACK TO SAFETY</Button>
+					<Button href="/">BACK TO SAFETY</Button>
 				</div>
 			{:else}
 				<Heading tag="h1" class="font-medium text-4xl text-center">Server Error</Heading>
@@ -38,7 +38,7 @@
 				<Hr class="w-full" />
 				<p class="mt-4 text-gray-400">We encountered and issue with your request, please try again later.</p>
 				<div class="flex justify-center mt-4">
-					<Button href="/" class="rounded-none clip-opposite-3">BACK TO SAFETY</Button>
+					<Button href="/">BACK TO SAFETY</Button>
 				</div>
 			{/if}
 		</div>

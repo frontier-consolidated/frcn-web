@@ -2,7 +2,7 @@
 	import { Heading, Search } from "flowbite-svelte";
 	import { queryParam } from "sveltekit-search-params"
 
-	import { Hr } from "$lib/components";
+	import { Button, Hr } from "$lib/components";
 
 	import type { PageData } from "./$types";
 	import CreateEventButton from "../CreateEventButton.svelte";
@@ -24,8 +24,13 @@
 	<section class="flex flex-col mt-4">
 		<div>
 			<div class="flex flex-col sm:flex-row gap-2">
-				<Search size="md" placeholder="Search by name" class="flex-1 sm:w-96 rounded" bind:value={$search} />
-				<CreateEventButton />
+				<Search size="md" placeholder="Search by name" class="sm:max-w-[400px] rounded" bind:value={$search} />
+				<div class="shrink-0 flex flex-col justify-end min-[480px]:flex-row gap-2">
+					<Button color="alternative" class="md:flex-1 sm:shrink-0" href="/events">
+						All Events
+					</Button>
+					<CreateEventButton />
+				</div>
 			</div>
 		</div>
 		<div class="flex flex-col gap-2 mt-6">

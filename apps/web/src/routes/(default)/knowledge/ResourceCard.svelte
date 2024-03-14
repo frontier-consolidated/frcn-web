@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Badge, Button, Dropdown, DropdownItem, Toolbar, ToolbarButton } from "flowbite-svelte";
+	import { Badge, Dropdown, DropdownItem, Toolbar, ToolbarButton } from "flowbite-svelte";
 	import { DotsVerticalOutline, DownloadSolid, EditOutline, FileSolid, TrashBinSolid } from "flowbite-svelte-icons";
     import { createEventDispatcher } from "svelte";
 
-	import { CreatedByButton, TimeBadge, ConfirmationModal } from "$lib/components";
+	import { CreatedByButton, TimeBadge, ConfirmationModal, Button } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -49,7 +49,7 @@
                 {resource.shortDescription}
             </p>
             <div class="flex gap-2 pt-4 mt-auto">
-                <Button class="flex-1 rounded-none clip-opposite-4" on:click={() => {
+                <Button class="flex-1" on:click={() => {
                     if (!resource.downloadUrl) return;
                     const link = document.createElement("a")
                     link.href = resource.downloadUrl

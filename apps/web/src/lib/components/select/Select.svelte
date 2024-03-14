@@ -109,7 +109,7 @@
 		aria-disabled={disabled}
 		tabindex="-1"
 		role="listbox"
-		class={twMerge("flex items-center w-full text-gray-900 bg-gray-50 border border-gray-300 rounded-lg text-sm p-2.5 min-h-[3rem] dark:bg-gray-700 dark:border-gray-600", disabled ? "cursor-not-allowed dark:text-gray-400" : "focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:text-white")}
+		class={twMerge("flex items-center w-full text-gray-900 bg-gray-50 border border-gray-300 rounded text-sm p-2.5 min-h-[3rem] dark:bg-gray-700 dark:border-gray-600", disabled ? "cursor-not-allowed dark:text-gray-400" : "focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:text-white")}
 	>
 		<span class="flex flex-wrap gap-1 w-full">
 			{#if selectedOptions.length > 0}
@@ -150,7 +150,8 @@
 	</div>
 	{#if !disabled && selectableOptions.length > 0}
 		<Dropdown
-			containerClass="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-gray-600 divide-gray-100 dark:divide-gray-600 shadow-md divide-y z-50 w-full cursor-pointer overflow-y-scroll max-h-64"
+			containerClass="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded border border-gray-300 dark:border-gray-600 divide-gray-100 dark:divide-gray-600 shadow-md divide-y z-50 w-full cursor-pointer overflow-y-scroll max-h-64"
+			class="rounded"
 			bind:open={dropdownOpen}
 		>
 			<DropdownItem disabled defaultClass="font-medium py-2 px-4 text-sm text-gray-500"

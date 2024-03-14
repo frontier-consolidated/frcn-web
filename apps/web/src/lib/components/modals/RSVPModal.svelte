@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
-	import { Button, Label, Modal } from "flowbite-svelte";
+	import { Label, Modal } from "flowbite-svelte";
 
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { EventFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
+	import Button from "../Button.svelte";
 	import Select from "../select/Select.svelte";
 
     export let event: Omit<EventFragmentFragment, "location">;

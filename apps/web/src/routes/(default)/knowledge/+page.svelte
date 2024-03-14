@@ -2,11 +2,11 @@
 	import { goto } from "$app/navigation";
 	import { page } from "$app/stores";
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Button, Heading, Pagination, Search } from "flowbite-svelte";
+	import { Heading, Pagination, Search } from "flowbite-svelte";
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params"
 
-	import { Hr } from "$lib/components";
+	import { Button, Hr } from "$lib/components";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import ccugameIcon from "$lib/images/tool-icons/ccugame.png"
 	import cstoneIcon from "$lib/images/tool-icons/cornerstone.png"
@@ -68,7 +68,7 @@
 				<Search size="md" placeholder="Search by name" class="rounded flex-1 sm:w-96" bind:value={$search} />
 				{#if hasPermission($user.data?.permissions ?? 0, Permission.UploadResources)}
 					<Button
-						class="self-end sm:shrink-0 rounded clip-opposite-3"
+						class="self-end sm:shrink-0"
 						on:click={() => {
 							fileModal.edit = null;
 							fileModal.open = true;

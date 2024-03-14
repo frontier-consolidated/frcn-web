@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { Button, Heading } from "flowbite-svelte";
+	import { Heading } from "flowbite-svelte";
 	import { BookSolid, BuildingSolid, DiscordSolid, MapPinAltSolid, UsersSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
-	import { Hr } from "$lib/components";
+	import { Button, Hr, JoinDiscordButton } from "$lib/components";
 	import { DISCORD_URL, MERCH_URL } from "$lib/constants";
 	import activitiesImage from "$lib/images/stock/activities.png"
 	import communityImage from "$lib/images/stock/community.jpg"
@@ -64,9 +64,7 @@
 				Check out our community and org pages to see what we're about and come say hi over on Discord if you want to get involved.
 			</p>
 			<div class="flex-1 flex items-end justify-center">
-				<Button size="lg" class="transition-[padding] rounded-none clip-opposite-5 text-white bg-discord dark:bg-discord hover:bg-discord-pressed dark:hover:bg-discord-pressed px-8 hover:px-10" href={DISCORD_URL}>
-					<DiscordSolid class="me-2" tabindex="-1" /> JOIN DISCORD
-				</Button>
+				<JoinDiscordButton />
 			</div>
 		</div>
 	</div>
@@ -95,7 +93,7 @@
 			<span class="me-4 text-primary-700 dark:text-primary-500">///</span> Org Merch
 		</Heading>
 		<Hr class="my-4 bg-primary-300 dark:bg-primary-600" />
-		<div class="relative bg-pattern w-full h-[500px] rounded clip-opposite-12 backdrop-blur bg-gray-300 dark:bg-gray-700 dark:text-white flex flex-col items-center justify-center gap-4 gap-4 p-4 min-[480px]:px-12">
+		<div class="relative w-full h-[500px] rounded clip-opposite-12 backdrop-blur bg-triangle-pattern bg-cover bg-fixed bg-gray-300 dark:bg-gray-700 dark:text-white flex flex-col items-center justify-center gap-4 gap-4 p-4 min-[480px]:px-12">
 			<!-- <div class="absolute rounded top-7 left-2 h-1 w-14 bg-primary-200 -rotate-45 box-glow-primary-500"></div>
 			<div class="absolute rounded bottom-7 right-2 h-1 w-14 bg-primary-200 -rotate-45 box-glow-primary-500"></div> -->
 			<div class="flex flex-col items-center">
@@ -103,7 +101,7 @@
 				<span class="text-gray-700 dark:text-gray-400 text-center">Visit our merch store</span>
 			</div>
 			<img src={merchImage} alt="Merch" class="max-h-72" />
-			<Button href={MERCH_URL} target="_blank" class="rounded-none clip-opposite-4 px-12" size="xl">
+			<Button href={MERCH_URL} target="_blank" class="px-12" size="xl">
 				SHOP
 			</Button>
 			<span>Powered by <strong>TEEMILL</strong></span>
@@ -153,11 +151,3 @@
 		</div>
 	</section>
 </div>
-
-<style>
-	.bg-pattern {
-		background-image: url("$lib/images/background.svg");
-		background-attachment: fixed;
-		background-size: cover;
-	}
-</style>

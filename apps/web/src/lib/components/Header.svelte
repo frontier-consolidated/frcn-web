@@ -7,7 +7,6 @@
 		NavLi,
 		NavUl,
 		NavHamburger,
-		Button,
 		MegaMenu,
 		Spinner,
 	} from "flowbite-svelte";
@@ -28,6 +27,7 @@
 	import logo from "$lib/images/logo.png";
 	import { login, logout, user } from "$lib/stores/UserStore";
 
+	import Button from "./Button.svelte";
 	import NavUser from "./NavUser.svelte";
 	import MediaQuery from "./utils/MediaQuery.svelte"
 	import ScreenQuery from "./utils/ScreenQuery.svelte";
@@ -73,7 +73,8 @@
 				/>
 			{:else}
 				<Button
-					class="rounded-none clip-opposite-3 py-2 px-8 hidden sm:!block"
+					size="sm"
+					class="px-8 hidden sm:!block"
 					on:click={() => {
 						if ($user.loading) return;
 						login().catch(console.error);
@@ -85,7 +86,7 @@
 					LOGIN
 				</Button>
 			{/if}
-			<Button href={DISCORD_URL} color="none" class="shrink-0 ms-5 xl:ms-10 p-0 text-slate-800 dark:text-discord hover:text-discord dark:hover:text-discord-pressed" size="lg">
+			<a href={DISCORD_URL} class="shrink-0 inline-flex justify-center items-center font-medium ms-5 xl:ms-10 p-0 text-slate-800 dark:text-discord hover:text-discord dark:hover:text-discord-pressed">
 				<MediaQuery query="(min-width: 500px)" let:matches>
 					{#if matches}
 						<DiscordSolid size="lg" class="me-2" tabindex="-1" />Discord
@@ -93,7 +94,7 @@
 						<DiscordSolid size="lg" tabindex="-1" />
 					{/if}
 				</MediaQuery>
-			</Button>
+			</a>
 			<NavHamburger class="md:block lg:hidden" />
 		</div>
 		<NavUl divClass="w-full lg:!block lg:w-auto" class="mr-auto order-1 lg:flex-1 lg:ml-4 lg:mr-4 2xl:ml-8" ulClass="flex flex-col gap-1 lg:py-4 mt-4 lg:!flex-row lg:flex-wrap lg:!gap-x-8 lg:!gap-y-2 rtl:justify-end lg:mt-0 lg:text-sm lg:font-medium border-none bg-transparent dark:bg-transparent" {activeUrl} {activeClass} {nonActiveClass}>

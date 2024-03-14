@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { page } from "$app/stores";
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Heading, TabItem, Tabs, Search, Button } from "flowbite-svelte";
+	import { Heading, TabItem, Tabs, Search } from "flowbite-svelte";
 	import { queryParam } from "sveltekit-search-params"
 
-	import { Hr } from "$lib/components";
+	import { Button, Hr } from "$lib/components";
 	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
@@ -30,10 +30,8 @@
 				<Search size="md" placeholder="Search by name" class="sm:max-w-[400px] rounded" bind:value={$search} />
 				<div class="shrink-0 flex flex-col justify-end min-[480px]:flex-row gap-2">
 					{#if hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
-						<Button color="alternative" class="group/my-events md:flex-1 rounded clip-opposite-3 p-px border-none bg-gray-200 dark:bg-gray-600 dark:hover:bg-gray-700 sm:shrink-0" href="/events/me">
-							<div class="flex items-center justify-center w-full h-full rounded clip-opposite-3 px-5 py-2.5 bg-white group-hover/my-events:bg-gray-100 dark:bg-gray-950 dark:group-hover/my-events:bg-gray-950">
-								My Events
-							</div>
+						<Button color="alternative" class="md:flex-1 sm:shrink-0" href="/events/me">
+							My Events
 						</Button>
 					{/if}
 					<CreateEventButton />

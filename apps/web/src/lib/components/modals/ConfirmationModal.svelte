@@ -13,9 +13,9 @@
 <Modal {title} size="xs" bind:open>
     <slot />
     <svelte:fragment slot="footer">
-		<Button class="flex-1" on:click={async () => {
+		<Button class="w-6/12" on:click={async () => {
 			dispatch("confirm")
 		}}>Confirm</Button>
-		<Button color="alternative" class="flex-1" on:click={() => open = false}>Cancel</Button>
+		<Button color="alternative" class="w-6/12" on:click={() => open = false}>Cancel</Button>
   	</svelte:fragment>
 </Modal>

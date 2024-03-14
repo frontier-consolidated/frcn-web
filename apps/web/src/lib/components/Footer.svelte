@@ -34,6 +34,7 @@
                     <FooterLink liClass="mb-4" href="/about/activities">Activities</FooterLink>
                     <FooterLink liClass="mb-4" href="/about/community">Community</FooterLink>
                     <FooterLink liClass="mb-4" href="/about/org">Organisation</FooterLink>
+                    <FooterLink liClass="mb-4" href="/events">Events</FooterLink>
                     <FooterLink liClass="mb-4" href="/knowledge">Guides & Resources</FooterLink>
                 </FooterLinkGroup>
             </div>

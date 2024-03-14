@@ -2,10 +2,10 @@
 	import { invalidateAll } from "$app/navigation";
 	import { page } from "$app/stores";
 	import { Permission, hasAdmin } from "@frcn/shared"
-	import { Avatar, Button, Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
+	import { Avatar, Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
 	import { ArrowLeftSolid, CloseCircleSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
-	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator } from "$lib/components";
+	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button } from "$lib/components";
 	import { getApollo, Mutations } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";

@@ -128,14 +128,14 @@
 	<div class="grid grid-flow-col items-center mb-2 p-1">
 		<Input
 			bind:value={inputHours}
-			class="w-10 text-center no-inner-spin"
+			class="w-10 text-center no-inner-spin rounded"
 			type="number"
 			min="0"
 		/>
 		<span class="font-semibold p-1 me-1">hours</span>
 		<Input
 			bind:value={inputMinutes}
-			class="w-10 text-center no-inner-spin"
+			class="w-10 text-center no-inner-spin rounded"
 			type="number"
 			min="0"
 			max="59"
@@ -143,7 +143,7 @@
 		<span class="font-semibold p-1 me-1">mins</span>
 		<Input
 			bind:value={inputSeconds}
-			class="w-10 text-center no-inner-spin"
+			class="w-10 text-center no-inner-spin rounded"
 			type="number"
 			min="0"
 			max="59"

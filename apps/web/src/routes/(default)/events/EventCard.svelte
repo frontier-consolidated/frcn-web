@@ -1,10 +1,10 @@
 <script lang="ts">
     import { strings } from "@frcn/shared";
 	import type { AnyLocation } from "@frcn/shared/locations";
-	import { Avatar, Breadcrumb, BreadcrumbItem, Button } from "flowbite-svelte";
+	import { Avatar, Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
 	import { CalendarMonthSolid } from "flowbite-svelte-icons";
     
-	import { CreatedByButton, LocationBreadcrumbItem, RsvpModal } from "$lib/components";
+	import { Button, CreatedByButton, LocationBreadcrumbItem, RsvpModal } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { EventFragmentFragment } from "$lib/graphql/__generated__/graphql";
     import placeholder from "$lib/images/stock/placeholder.jpg"
@@ -74,7 +74,7 @@
             <span class="text-sm text-center">{event.members.length} rsvps</span>
         </div>
         {#if rsvped}
-            <Button disabled={!event.posted} color="red" class="h-max rounded clip-opposite-4" on:click={async (e) => {
+            <Button disabled={!event.posted} color="red" class="h-max" on:click={async (e) => {
                 e.preventDefault()
 
                 const { data: unrsvpData, errors } = await getApollo().mutate({
@@ -99,7 +99,7 @@
                 UnRSVP
             </Button>
         {:else}
-            <Button disabled={!event.posted} class="h-max rounded clip-opposite-4" on:click={async (e) => {
+            <Button disabled={!event.posted} class="h-max" on:click={async (e) => {
                 e.preventDefault()
                 rsvpModalOpen = true
             }}>

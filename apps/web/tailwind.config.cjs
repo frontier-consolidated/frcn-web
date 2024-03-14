@@ -68,6 +68,9 @@ const config = {
 			fractul: ["Fractul", ...fallbackFonts]
 		},
 		extend: {
+			backgroundImage: {
+				"triangle-pattern": "url('/triangle_pattern.svg')"
+			},
 			zIndex: {
 				"100": "100"
 			},

@@ -76,13 +76,13 @@
     $: classRounded = ($$restProps.class as string ?? "").split(" ").filter(clazz => clazz.includes("rounded")).join(" ")
 </script>
 
-<Button {...$$restProps} class={twMerge("group rounded-none", clip, (outline || borderClasses[color]) && "border-none p-px", outline && outlineClasses[color], !outline && borderClasses[color], $$restProps.class)} {outline} {color} {size}>
+<Button {...$$restProps} class={twMerge("group rounded", clip, (outline || borderClasses[color]) && "border-none p-px", outline && outlineClasses[color], !outline && borderClasses[color], $$restProps.class)} {outline} {color} {size}  on:click on:change on:keydown on:keyup on:touchstart on:touchend on:touchcancel on:mouseenter on:mouseleave>
     {#if outline}
-        <div class={twMerge("w-full h-full inline-flex items-center justify-center group-hover:bg-transparent", outlineBgColor, outlineBgClasses[color], clip, sizeClasses[size], classRounded, classInner)}>
+        <div class={twMerge("w-full h-full inline-flex items-center justify-center group-hover:bg-transparent", outlineBgColor, outlineBgClasses[color], clip, sizeClasses[size], classRounded || "rounded", classInner)}>
             <slot />
         </div>
     {:else if borderClasses[color]}
-        <div class={twMerge("w-full h-full inline-flex items-center justify-center", clip, sizeClasses[size], innerBorderClasses[color], classRounded, classInner)}>
+        <div class={twMerge("w-full h-full inline-flex items-center justify-center", clip, sizeClasses[size], innerBorderClasses[color], classRounded || "rounded", classInner)}>
             <slot />
         </div>
     {:else}

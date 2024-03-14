@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { Table, TableBody, TableHead, TableHeadCell, Button } from "flowbite-svelte";
+	import { Table, TableBody, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { v4 as uuidv4 } from 'uuid';
 
-	import { Tooltip, type FieldValidator } from "$lib/components";
+	import { Tooltip, type FieldValidator, Button } from "$lib/components";
 
 	import type { PageData } from "./$types";
 	import RsvpItem from "./RSVPItem.svelte";

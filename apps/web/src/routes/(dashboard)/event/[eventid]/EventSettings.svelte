@@ -2,7 +2,7 @@
 	import { goto, invalidate } from "$app/navigation";
 	import { strings, EventTypeOptions } from "@frcn/shared";
 	import { getLocations } from "@frcn/shared/locations";
-	import { Alert, Checkbox, Helper, Input, Label, Toggle, Button, } from "flowbite-svelte";
+	import { Alert, Checkbox, Helper, Input, Label, Toggle } from "flowbite-svelte";
 	import {
 		InfoCircleSolid,
 		EditOutline,
@@ -12,7 +12,7 @@
 	import { twMerge } from "tailwind-merge";
 	import isURL from "validator/lib/isURL"
 
-	import { DatetimePicker, DurationPicker, LocationSelectUl, MarkdownEditor, ConfirmationModal, SectionHeading, Select, Field, FieldValidator } from "$lib/components";
+	import { DatetimePicker, DurationPicker, LocationSelectUl, MarkdownEditor, ConfirmationModal, SectionHeading, Select, Field, FieldValidator, Button } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -146,6 +146,7 @@
 						type="text"
 						placeholder="Event name"
 						required
+						class="rounded"
 						bind:value={editData.name}
 					/>
 				</Field>
@@ -157,6 +158,7 @@
 						type="text"
 						placeholder="Event summary"
 						required
+						class="rounded"
 						bind:value={editData.summary}
 					/>
 					<Helper class="mt-1">
@@ -182,6 +184,7 @@
 						placeholder="https://example.com/image.png"
 						pattern={urlPattern}
 						required
+						class="rounded"
 						bind:value={editData.imageUrl}
 					/>
 					{#if editData.imageUrl}

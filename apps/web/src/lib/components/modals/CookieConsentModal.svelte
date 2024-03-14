@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
-	import { A, Button, Modal } from "flowbite-svelte";
+	import { A, Modal } from "flowbite-svelte";
 	import { queryParam } from "sveltekit-search-params";
 
 	import { Routes, api } from "$lib/api";
 	import { cookieConsentModal } from "$lib/stores/CookieConsentModalStore";
+
+	import Button from "../Button.svelte";
 
     const missingConsent = browser ? queryParam("missing_consent") : null
 
@@ -31,25 +33,25 @@
 }}>
     <span class="font-medium text-xl text-gray-800 dark:text-white">We use cookies</span>
     <p>
-        We use cookies to enhance site functionality, improve your site experience and track your current login session. You may accept or reject by clicking below or at anytime by clicking 'Manage Cookies' in the footer of any page. <A aClass="hover:underline" href="/legal/cookies">Read our Cookie Policy</A>
+        We use cookies to enhance site functionality, improve your site experience and track your current login session. You may accept or reject by clicking below or at anytime by clicking 'Manage Cookies' in the footer of any page. <A aClass="hover:underline" href="/legal/cookies" on:click={() => {
+            cleanup()
+        }}>Read our Cookie Policy</A>
     </p>
     <div class="flex flex-wrap gap-4 pt-4">
-        <Button class="w-full md:flex-1 rounded-none clip-opposite-4" on:click={() => {
+        <Button class="w-full md:flex-1" on:click={() => {
             updateConsent("all").catch(console.error)
         }}>
             Accept all cookies
         </Button>
-        <Button class="w-full md:flex-1 rounded-none clip-opposite-4" on:click={() => {
+        <Button class="w-full md:flex-1" on:click={() => {
             updateConsent("necessary").catch(console.error)
         }}>
             Necessary cookies only
         </Button>
-        <Button class="group/reject w-full md:flex-1 rounded-none clip-opposite-4 p-px text-primary-700 hover:text-white hover:bg-primary-700 dark:hover:bg-primary-600" on:click={() => {
+        <Button outline outlineBgColor="bg-white dark:bg-gray-800" class="w-full md:flex-1" on:click={() => {
             updateConsent("reject").catch(console.error)
         }}>
-            <div class="w-full clip-opposite-4 px-5 py-2.5 bg-white dark:bg-gray-800 group-hover/reject:bg-primary-700 dark:group-hover/reject:bg-primary-600">
-                Reject all cookies
-            </div>
+            Reject all cookies
         </Button>
     </div>
 </Modal>

@@ -2,6 +2,7 @@
 	import { Button, Heading, Li, List } from "flowbite-svelte";
 	import { DiscordSolid } from "flowbite-svelte-icons";
 
+	import { JoinDiscordButton } from "$lib/components";
 	import { DISCORD_URL } from "$lib/constants";
 	import image1Desktop from "$lib/images/stock/community/1-desktop.jpg"
 	import image1Mobile from "$lib/images/stock/community/1-mobile.jpg"
@@ -47,9 +48,7 @@
 			see it, you can join it. Just read the room and don't talk over ops comms, if one is ongoing.
 		</p>
 		<div class="flex-1 flex items-end justify-center">
-			<Button size="lg" class="transition-[padding] rounded-none clip-opposite-5 text-white bg-discord dark:bg-discord hover:bg-discord-pressed dark:hover:bg-discord-pressed px-8 hover:px-10" href={DISCORD_URL}>
-				<DiscordSolid class="me-2" tabindex="-1" /> JOIN DISCORD
-			</Button>
+			<JoinDiscordButton />
 		</div>
 	</AboutSection>
 	<AboutSection
