@@ -42,7 +42,6 @@
                 <h2 class="mb-6 text-sm font-semibold uppercase text-gray-900 dark:text-white">Legal</h2>
                 <FooterLinkGroup>
                     <FooterLink liClass="mb-4" href="/legal/privacy">Privacy Policy</FooterLink>
-                    <FooterLink liClass="mb-4" href="/legal/terms">Terms & Conditions</FooterLink>
                     <li class="mb-4">
                         <button class="hover:underline" on:click={() => {
                             cookieConsentModal.set(true)
