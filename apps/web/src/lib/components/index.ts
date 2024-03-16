@@ -14,6 +14,7 @@ import LocationIcon from "./location/LocationIcon.svelte"
 import LocationOption from "./location/LocationOption.svelte"
 import LocationSelectLi from "./location/LocationSelectLi.svelte"
 import LocationSelectUl from "./location/LocationSelectUl.svelte"
+import LoginButton from "./LoginButton.svelte"
 import Markdown from "./markdown/Markdown.svelte"
 import MarkdownEditor from "./markdown/MarkdownEditor.svelte"
 import ConfirmationModal from "./modals/ConfirmationModal.svelte"
@@ -60,6 +61,7 @@ export {
     Header,
     Hr,
     JoinDiscordButton,
+    LoginButton,
     NavUser,
     Notifications,
     SectionHeading,

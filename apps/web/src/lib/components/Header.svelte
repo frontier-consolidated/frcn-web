@@ -28,6 +28,7 @@
 	import { login, logout, user } from "$lib/stores/UserStore";
 
 	import Button from "./Button.svelte";
+	import LoginButton from "./LoginButton.svelte";
 	import NavUser from "./NavUser.svelte";
 	import MediaQuery from "./utils/MediaQuery.svelte"
 	import ScreenQuery from "./utils/ScreenQuery.svelte";
@@ -72,19 +73,7 @@
 					}}
 				/>
 			{:else}
-				<Button
-					size="sm"
-					class="px-8 hidden sm:!block"
-					on:click={() => {
-						if ($user.loading) return;
-						login().catch(console.error);
-					}}
-				>
-					{#if $user.loading || !browser}
-						<Spinner class="me-2" size="4" color="white" />
-					{/if}
-					LOGIN
-				</Button>
+				<LoginButton spinner />
 			{/if}
 			<a href={DISCORD_URL} class="shrink-0 inline-flex justify-center items-center font-medium ms-5 xl:ms-10 p-0 text-slate-800 dark:text-discord hover:text-discord dark:hover:text-discord-pressed">
 				<MediaQuery query="(min-width: 500px)" let:matches>
