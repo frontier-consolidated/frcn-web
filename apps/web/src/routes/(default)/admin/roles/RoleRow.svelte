@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { goto, invalidate } from "$app/navigation";
-	import { Button, Modal, TableBodyCell, TableBodyRow } from "flowbite-svelte";
-	import { DiscordSolid, DotsVerticalOutline, LockSolid, PenSolid, StarSolid, TrashBinSolid, UsersSolid } from "flowbite-svelte-icons";
+	import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
+	import { DiscordSolid, DotsVerticalOutline, EditOutline, LockSolid, StarSolid, TrashBinSolid, UsersSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
-	import ConfirmationModal from "$lib/components/ConfirmationModal.svelte";
-	import Tooltip from "$lib/components/Tooltip.svelte";
+	import { ConfirmationModal, Tooltip } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
@@ -62,18 +61,22 @@
     <TableBodyCell class="group-[.dragging]:hidden">
         <div class="flex items-center justify-end gap-6">
             <Tooltip>
-                <PenSolid slot="icon" class="hidden group-hover:inline-block" />
+                <EditOutline slot="icon" class="hidden group-hover:inline-block" />
                 Edit
             </Tooltip>
-            <TrashBinSolid
-                aria-disabled={false}
-                class={twMerge("dark:text-white dark:hover:text-red-600", locked ? "cursor-not-allowed opacity-50" : "cursor-pointer")}
-                on:click={(ev) => {
-                    ev.stopPropagation()
-                    if (locked) return;
-                    modalOpen = true
-                }}
-            />
+            <Tooltip>
+                <TrashBinSolid
+                    slot="icon"
+                    aria-disabled={false}
+                    class={twMerge("dark:text-white dark:hover:text-red-600", locked ? "cursor-not-allowed opacity-50" : "cursor-pointer")}
+                    on:click={(ev) => {
+                        ev.stopPropagation()
+                        if (locked) return;
+                        modalOpen = true
+                    }}
+                />
+                Delete
+            </Tooltip>
         </div>
     </TableBodyCell>
 </TableBodyRow>

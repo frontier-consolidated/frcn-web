@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { hasAdmin } from "@frcn/shared";
-	import { Button, Search, Table, TableHead, TableHeadCell } from "flowbite-svelte";
+	import { Search, Table, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { CloseSolid, EditOutline } from "flowbite-svelte-icons";
     import Sortable from "sortablejs"
 	import { queryParam } from "sveltekit-search-params";
 
-	import SectionHeading from "$lib/components/SectionHeading.svelte";
+	import { Button, SectionHeading } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -97,7 +97,7 @@
     User Roles
 </SectionHeading>
 <div class="flex gap-2 px-2 my-4">
-    <Search size="md" bind:value={$roleSearch} />
+    <Search size="md" bind:value={$roleSearch} class="rounded" />
     <Button class="shrink-0" on:click={async () => {
 		try {
 			const { data: createData } = await getApollo().mutate({

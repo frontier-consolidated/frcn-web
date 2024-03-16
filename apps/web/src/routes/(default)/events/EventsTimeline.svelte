@@ -3,7 +3,7 @@
     import { page } from "$app/stores";
 	import { Timeline, TimelineItem, Pagination } from "flowbite-svelte";
 
-	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
+	import { TimeBadge } from "$lib/components";
 	import { getCurrentPage, getPageUrl, getPages } from "$lib/pageHelpers";
 
     import type { PageData } from "./$types";

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SectionHeading from "$lib/components/SectionHeading.svelte";
+	import { SectionHeading } from "$lib/components";
 
     // import type { PageData } from './$types';
     

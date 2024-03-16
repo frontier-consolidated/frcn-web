@@ -1,7 +1,7 @@
 <script lang="ts">
 import { A, Li, List, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from "flowbite-svelte";
 
-	import Hr from "$lib/components/Hr.svelte";
+	import { Hr } from "$lib/components";
 	import { DISCORD_URL } from "$lib/constants";
 
 	import LegalSection from "../LegalSection.svelte";

@@ -16,12 +16,12 @@
 	$: role = member.rsvp ? event.roles.find(role => role.id === member.rsvp) : null
 </script>
 
-<button class="rounded flex items-center gap-2 px-1 w-full dark:text-white hover:bg-gray-700" on:click={() => {
+<button class="rounded flex items-center gap-2 px-1 w-full dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700" on:click={() => {
 	userProfileView.set(member.user)
 }}>
 	<Avatar rounded size="sm" src={member.user.avatarUrl} />
 	<div class="flex flex-col items-start">
-		<span class="text-md font-semibold text-ellipsis line-clamp-1">{member.user.name}</span>
+		<span class="text-md font-semibold text-ellipsis line-clamp-1 text-gray-800 dark:text-white">{member.user.name}</span>
 		<div class="text-left text-sm font-semibold text-ellipsis line-clamp-1">
 			{#if role}
 				<span class="text-violet-400">

@@ -16,7 +16,7 @@
 	} from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
-	import RsvpModal from "$lib/components/RSVPModal.svelte";
+	import { RsvpModal } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
@@ -31,25 +31,26 @@
 </script>
 
 <Sidebar asideClass="sticky top-0 z-10 lg:static shrink-0 lg:w-64">
-	<SidebarWrapper class="py-2 lg:py-4 rounded-none lg:h-full dark:bg-slate-950">
+	<SidebarWrapper class="py-2 lg:py-4 rounded-none lg:h-full dark:bg-slate-950 bg-cover lg:bg-triangle-pattern">
 		<ul class="flex flex-wrap [&>li]:flex-1 [&>li]:min-w-48 lg:[&>li]:min-w-0 [&>li]:w-full gap-2 lg:block lg:space-y-2">
-			<SidebarItem href="/events" label="Back To Events">
+			<SidebarItem class="rounded clip-opposite-4" href="/events" label="Back To Events">
 				<svelte:fragment slot="icon">
 					<ArrowLeftSolid tabindex="-1" />
 				</svelte:fragment>
 			</SidebarItem>
 			{#if data.canEdit}
-				<SidebarDropdownWrapper label="Manage">
+				<SidebarDropdownWrapper label="Manage" class="rounded clip-opposite-4">
 					<svelte:fragment slot="icon">
 						<AdjustmentsHorizontalSolid tabindex="-1" />
 					</svelte:fragment>
-					<SidebarDropdownItem label="Invite Members" />
-					<SidebarDropdownItem label="End Event" class="dark:hover:bg-red-500" />
+					<SidebarDropdownItem label="Invite Members" class="rounded clip-opposite-4" />
+					<SidebarDropdownItem label="End Event" class="rounded clip-opposite-4 dark:hover:bg-red-500" />
 				</SidebarDropdownWrapper>
 			{/if}
 			{#if data.rsvp}
 				<SidebarItem
-					nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white dark:hover:bg-red-500"
+					class="rounded clip-opposite-4"
+					nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:text-white hover:bg-red-500"
 					label="Leave Event"
 					on:click={async () => {
 						const { data: unrsvpData, errors } = await getApollo().mutate({
@@ -77,7 +78,8 @@
 					</svelte:fragment>
 				</SidebarItem>
 			{:else}
-				<SidebarItem
+				<SidebarItem	
+					class="rounded clip-opposite-4"
 					nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white dark:hover:bg-primary-500"
 					label="Join Event"
 					on:click={() => rsvpModal = true}
@@ -96,7 +98,8 @@
 				</span>
 			</div>
 			<SidebarItem
-			nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+				class="rounded clip-opposite-4"
+				nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 bg-white hover:bg-gray-100 dark:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
 				label={hideMembers ? "Show Members" : "Hide Members"}
 				on:click={() => hideMembers = !hideMembers}
 			/>

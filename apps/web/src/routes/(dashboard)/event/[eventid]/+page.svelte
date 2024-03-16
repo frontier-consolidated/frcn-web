@@ -28,7 +28,7 @@
 	{/if}
 </svelte:head>
 
-<section class="flex flex-col lg:flex-row gap-2 lg:gap-8 lg:items-stretch">
+<section class="flex flex-col lg:flex-row gap-2 lg:gap-8 lg:items-stretch mt-[72px]">
 	<EventSidebar bind:data />
 	<section class="flex-1 p-4 pb-8 lg:pr-8 lg:pl-0">
 		<Tabs

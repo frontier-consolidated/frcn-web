@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Button } from "flowbite-svelte";
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 
+	import { Button } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";

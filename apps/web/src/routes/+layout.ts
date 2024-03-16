@@ -11,7 +11,7 @@ export const load = async ({ data }) => {
 	await waitLocale();
 
 	const spectrumIdentity = integration.isLoaded() ? await integration.identify() : null
-	console.log("Spectrum identity", spectrumIdentity)
+	// console.log("Spectrum identity", spectrumIdentity)
 
 	return {
 		...data,

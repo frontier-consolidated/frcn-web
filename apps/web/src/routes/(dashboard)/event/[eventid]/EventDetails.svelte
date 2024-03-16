@@ -3,14 +3,9 @@
 	import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
 	import { CalendarMonthSolid } from "flowbite-svelte-icons";
 
-	import CreatedByButton from "$lib/components/CreatedByButton.svelte";
-	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
-	import LocationBreadcrumbItem from "$lib/components/location/LocationBreadcrumbItem.svelte";
-	import Markdown from "$lib/components/markdown/Markdown.svelte";
-	import ViewMore from "$lib/components/ViewMore.svelte";
+	import { CreatedByButton, TimeBadge, LocationBreadcrumbItem, Markdown, ViewMore } from "$lib/components";
 
 	import type { PageData } from "./$types";
-
 
     export let data: PageData;
 

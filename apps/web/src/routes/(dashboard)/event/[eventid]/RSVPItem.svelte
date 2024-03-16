@@ -3,10 +3,8 @@
 	import { DatabaseSolid, TrashBinSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
-	import EmojiPickerInput from "$lib/components/emoji/EmojiPickerInput.svelte";
+	import { EmojiPickerInput, Field, FieldValidator } from "$lib/components";
 	import type { Emoji } from "$lib/components/emoji/types";
-	import Field from "$lib/components/validation/Field.svelte";
-	import type { FieldValidator } from "$lib/components/validation/FieldValidator";
 
 	import type { PageData } from "./$types";
 
@@ -73,7 +71,7 @@
 			<Input
 				id="role-name-{role.id}"
 				name="Event Role Name"
-				class="!bg-transparent !border-transparent !p-1 text-ellipsis"
+				class="!bg-transparent !border-transparent !p-1 text-ellipsis rounded"
 				placeholder="Role name"
 				bind:value={editRole.name}
 			/>
@@ -84,7 +82,7 @@
 			name="Event Role User Limit"
 			min="0"
 			pattern="([0-9]+|{INFINITY})"
-			class="!bg-transparent !border-transparent !p-1 no-inner-spin text-center"
+			class="!bg-transparent !border-transparent !p-1 no-inner-spin text-center rounded"
 			bind:value={limitInput}
 			on:blur={() => {
 				let num = Number(limitInput);

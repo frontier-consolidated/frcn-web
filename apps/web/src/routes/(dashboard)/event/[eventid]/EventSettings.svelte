@@ -2,7 +2,7 @@
 	import { goto, invalidate } from "$app/navigation";
 	import { strings, EventTypeOptions } from "@frcn/shared";
 	import { getLocations } from "@frcn/shared/locations";
-	import { Alert, Checkbox, Helper, Input, Label, Toggle, Button, } from "flowbite-svelte";
+	import { Alert, Checkbox, Helper, Input, Label, Toggle } from "flowbite-svelte";
 	import {
 		InfoCircleSolid,
 		EditOutline,
@@ -12,15 +12,7 @@
 	import { twMerge } from "tailwind-merge";
 	import isURL from "validator/lib/isURL"
 
-	import ConfirmationModal from "$lib/components/ConfirmationModal.svelte";
-	import DatetimePicker from "$lib/components/datetime/DatetimePicker.svelte";
-	import DurationPicker from "$lib/components/datetime/DurationPicker.svelte";
-	import LocationSelectUl from "$lib/components/location/LocationSelectUl.svelte";
-	import MarkdownEditor from "$lib/components/markdown/MarkdownEditor.svelte";
-	import SectionHeading from "$lib/components/SectionHeading.svelte";
-	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
-	import Field from "$lib/components/validation/Field.svelte";
-	import { FieldValidator } from "$lib/components/validation/FieldValidator";
+	import { DatetimePicker, DurationPicker, LocationSelectUl, MarkdownEditor, ConfirmationModal, SectionHeading, Select, Field, FieldValidator, Button } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -138,7 +130,7 @@
 			<div class="flex flex-col gap-4 p-4">
 				<Field {validator} for="event-type" value={editData.eventType} required>
 					<Label for="event-type" class="mb-2">Event Type</Label>
-					<BetterSelect
+					<Select
 						id="event-type"
 						name="Event Type"
 						options={EventTypeOptions}
@@ -154,6 +146,7 @@
 						type="text"
 						placeholder="Event name"
 						required
+						class="rounded"
 						bind:value={editData.name}
 					/>
 				</Field>
@@ -165,6 +158,7 @@
 						type="text"
 						placeholder="Event summary"
 						required
+						class="rounded"
 						bind:value={editData.summary}
 					/>
 					<Helper class="mt-1">
@@ -190,6 +184,7 @@
 						placeholder="https://example.com/image.png"
 						pattern={urlPattern}
 						required
+						class="rounded"
 						bind:value={editData.imageUrl}
 					/>
 					{#if editData.imageUrl}
@@ -278,7 +273,7 @@
 			<div class="flex flex-col gap-4 p-4">
 				<Field {validator} for="event-access" value={editData.accessType}>
 					<Label for="event-access" class="mb-2">Event Access</Label>
-					<BetterSelect
+					<Select
 						id="event-access"
 						name="Event Access Type"
 						options={Object.values(EventAccessType).map((type) => ({
@@ -333,7 +328,7 @@
 			<div class="flex flex-col gap-4 p-4">
 				<Field {validator} for="event-channel" value={editData.channel.id} required>
 					<Label for="event-channel" class="mb-2">Events Channel</Label>
-					<BetterSelect
+					<Select
 						id="event-channel"
 						name="Events Channel"
 						options={data.options?.channels.map((channel) => ({
@@ -346,7 +341,7 @@
 				</Field>
 				<Field {validator} for="event-mentions" value={editData.mentions}>
 					<Label for="event-mentions" class="mb-2">Mentions</Label>
-					<BetterSelect
+					<Select
 						id="event-mentions"
 						name="Events Mentions"
 						options={data.options?.discordRoles.map(role => ({
@@ -366,7 +361,7 @@
 							<div class="rounded-full w-3 h-3 me-2" style="background-color:{option.style?.color}" />
 							<span>{option.name}</span>
 						</div>
-					</BetterSelect>
+					</Select>
 				</Field>
 			</div>
 		</section>

@@ -7,7 +7,7 @@
 	import { userProfileView } from "$lib/stores/UserProfileViewStore";
 	import { user } from "$lib/stores/UserStore";
 
-	import MediaQuery from "./MediaQuery.svelte";
+	import MediaQuery from "./utils/MediaQuery.svelte";
 
 	const dispatch = createEventDispatcher();
 </script>
@@ -20,7 +20,7 @@
 	</MediaQuery>
 	<Avatar rounded size="sm" src={$user.data?.avatarUrl} />
 </div>
-<Dropdown class="w-44">
+<Dropdown containerClass="rounded divide-y z-50" class="w-44">
 	<DropdownItem on:click={() => {
 		if ($user.data) userProfileView.set($user.data);
 	}}>My Profile</DropdownItem>

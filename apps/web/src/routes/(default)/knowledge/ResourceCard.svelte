@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Badge, Button, Card, Dropdown, DropdownItem, Toolbar, ToolbarButton } from "flowbite-svelte";
+	import { Badge, Dropdown, DropdownItem, Toolbar, ToolbarButton } from "flowbite-svelte";
 	import { DotsVerticalOutline, DownloadSolid, EditOutline, FileSolid, TrashBinSolid } from "flowbite-svelte-icons";
     import { createEventDispatcher } from "svelte";
 
-	import ConfirmationModal from "$lib/components/ConfirmationModal.svelte";
-	import CreatedByButton from "$lib/components/CreatedByButton.svelte";
-	import TimeBadge from "$lib/components/datetime/TimeBadge.svelte";
+	import { CreatedByButton, TimeBadge, ConfirmationModal, Button } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -20,10 +18,10 @@
     let deleteModalOpen = false;
 </script>
 
-<Card padding="none" size="md">
+<div class="shadow-md bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded flex flex-col w-full h-full max-w-lg">
     {#if resource.previewUrl}
         <a href={resource.previewUrl} target="_blank">
-            <img class="rounded-t-lg aspect-video object-cover hover:brightness-110" src={resource.previewUrl} alt="{resource.name} preview" />
+            <img class="rounded-t aspect-video object-cover hover:brightness-110" src={resource.previewUrl} alt="{resource.name} preview" />
         </a>
     {:else}
         <div class="flex flex-col items-center justify-center rounded-t-lg w-full aspect-video bg-gray-900">
@@ -39,7 +37,7 @@
             </Badge>
             {/each}
         </div>
-        <span class="block mt-2 text-xl font-semibold dark:text-white">
+        <span class="block mt-2 text-xl font-semibold text-gray-800 dark:text-white">
             {resource.name}
         </span>
         <CreatedByButton class="mt-1" user={resource.owner} />
@@ -64,7 +62,7 @@
                     <ToolbarButton name="Options">
                         <DotsVerticalOutline tabindex="-1" />
                     </ToolbarButton>
-                    <Dropdown>
+                    <Dropdown containerClass="rounded divide-y z-50">
                         <DropdownItem class="flex items-center" on:click={() => {
                             dispatch("edit", resource)
                         }}>
@@ -78,7 +76,7 @@
             {/if}
         </div>
     </div>
-</Card>
+</div>
 
 <ConfirmationModal title="Delete resource - {resource.name}" bind:open={deleteModalOpen} on:confirm={async () => {
     const { errors } = await getApollo().mutate({
