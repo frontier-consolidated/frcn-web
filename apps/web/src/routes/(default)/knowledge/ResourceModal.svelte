@@ -59,7 +59,6 @@
 
 	async function upload() {
 		const valid = validator.validate()
-		console.log(valid)
 		if (!valid) return;
 
 		if (!uploadFiles || uploadFiles.length < 1) {
@@ -163,6 +162,7 @@
 		>
 			<Label for="resource-upload-name" class="mb-2">Name</Label>
 			<Input
+				class="rounded"
 				id="resource-upload-name"
 				name="Resource Upload Name"
 				type="text"
@@ -180,7 +180,7 @@
 		>
 			<Label for="resource-upload-description" class="mb-2">Description</Label>
 			<Textarea
-                class="bg-gray-50 text-gray-900 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 border-gray-300 dark:border-gray-500"
+                class="rounded bg-gray-50 text-gray-900 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 border-gray-300 dark:border-gray-500"
 				id="resource-upload-description"
 				name="Resource Upload Description"
 				type="text"
@@ -215,12 +215,16 @@
 				<Label for="resource-upload" class="mb-2">Files</Label>
 				<button
 					type="button"
-					class="relative flex justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600" 
+					class="relative flex justify-center items-center w-full h-64 bg-gray-50 rounded border-2 border-gray-300 border-dashed dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600" 
 					on:keydown={handleFileKeydown}
 				>
 					{#if uploadFiles?.length > 0}
 						<div class="flex flex-col items-center">
-							<FileSolid class="text-white" size="xl" tabindex="-1" />
+							{#if uploadFiles[0].type.startsWith("image")}
+								<img src={URL.createObjectURL(uploadFiles[0])} alt="Preview image of '{uploadFiles[0].name}' file" class="rounded h-32" />
+							{:else}
+								<FileSolid class="text-white" size="xl" tabindex="-1" />
+							{/if}
 							<p class="text-md text-gray-500 dark:text-gray-400">{uploadFiles[0].name}</p>
 						</div>
 					{:else}
@@ -258,8 +262,10 @@
 			</Button>
 		{/if}
 			<Button color="alternative" on:click={() => {
-			open = false
-			editData = cloneResourceData(data)
-		}}>Cancel</Button>
+				open = false
+				editData = cloneResourceData(data)
+			}}>
+				Cancel
+			</Button>
   	</svelte:fragment>
 </Modal>

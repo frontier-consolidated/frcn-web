@@ -6,7 +6,7 @@
     $: activeUrl = $page.url.pathname;
 </script>
 
-<section class="flex flex-col lg:flex-row gap-8">
+<section class="flex flex-col lg:flex-row gap-8 mx-auto w-full max-w-6xl mt-24">
     <Sidebar asideClass="shrink-0 w-64" {activeUrl}>
         <SidebarWrapper>
             <SidebarGroup>
@@ -15,17 +15,17 @@
                         System Settings
                     </span>
                 </div>
-                <SidebarItem label="General" href="/admin/general">
+                <SidebarItem label="General" href="/admin/general" class="rounded clip-opposite-4">
                     <svelte:fragment slot="icon">
                         <GearSolid tabindex="-1" />
                     </svelte:fragment>
                 </SidebarItem>
-                <SidebarItem label="Channels" href="/admin/channels">
+                <SidebarItem label="Channels" href="/admin/channels" class="rounded clip-opposite-4">
                     <svelte:fragment slot="icon">
                         <UserHeadsetSolid tabindex="-1" />
                     </svelte:fragment>
                 </SidebarItem>
-                <SidebarItem label="Roles" href="/admin/roles">
+                <SidebarItem label="Roles" href="/admin/roles" class="rounded clip-opposite-4">
                     <svelte:fragment slot="icon">
                         <TagSolid tabindex="-1" />
                     </svelte:fragment>
@@ -37,7 +37,7 @@
                         User Management
                     </span>
                 </div>
-                <SidebarItem label="Users" href="/admin/users">
+                <SidebarItem label="Users" href="/admin/users" class="rounded clip-opposite-4">
                     <svelte:fragment slot="icon">
                         <UserGroupSolid tabindex="-1" />
                     </svelte:fragment>

@@ -50,7 +50,7 @@
 			{#if data.rsvp}
 				<SidebarItem
 					class="rounded clip-opposite-4"
-					nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white dark:hover:bg-red-500"
+					nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:text-white hover:bg-red-500"
 					label="Leave Event"
 					on:click={async () => {
 						const { data: unrsvpData, errors } = await getApollo().mutate({
@@ -99,7 +99,7 @@
 			</div>
 			<SidebarItem
 				class="rounded clip-opposite-4"
-				nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+				nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 bg-white hover:bg-gray-100 dark:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
 				label={hideMembers ? "Show Members" : "Hide Members"}
 				on:click={() => hideMembers = !hideMembers}
 			/>

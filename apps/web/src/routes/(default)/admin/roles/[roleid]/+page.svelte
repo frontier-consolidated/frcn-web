@@ -108,7 +108,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.role?.name} - Admin | Frontier Consolidated</title>
+	<title>{data.role?.name} Role - Admin | Frontier Consolidated</title>
 </svelte:head>
 
 <a class="flex items-center text-gray-300 mb-2 p-2 cursor-pointer hover:text-gray-400" href="/admin/roles" use:initNavigation>
@@ -125,6 +125,7 @@
 					<Field {validator} for="system-roles-role-name" value={editData.name} required>
 						<Label for="system-roles-role-name" class="mb-2">Role Name</Label>
 						<Input
+							class="rounded"
 							id="system-roles-role-name"
 							name="Role Name"
 							type="text"

@@ -35,7 +35,7 @@
 			on:click={(ev) => {
 				dispatch("delete", ev);
 			}}
-			class={twMerge("aspect-square h-full rounded dark:hover:bg-red-600", disabled ? "dark:bg-gray-500" : "dark:bg-red-500")}
+			class={twMerge("aspect-square h-full rounded dark:hover:bg-red-600", disabled ? "bg-gray-500 dark:bg-gray-500" : "bg-red-500 dark:bg-red-500")}
 			size="sm"
 			{disabled}
 		>

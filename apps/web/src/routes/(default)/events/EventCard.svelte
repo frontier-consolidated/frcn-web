@@ -47,7 +47,7 @@
                 <BreadcrumbItem>???</BreadcrumbItem>
             {/if}
         </Breadcrumb>
-        <span class="text-xl font-semibold dark:text-white">{event.name ? event.name : "Unnamed Event"}</span>
+        <span class="text-xl font-semibold text-gray-800 dark:text-white">{event.name ? event.name : "Unnamed Event"}</span>
         <CreatedByButton class="mt-1" user={event.owner} />
         {#if event.summary}
             <div class="mt-2">

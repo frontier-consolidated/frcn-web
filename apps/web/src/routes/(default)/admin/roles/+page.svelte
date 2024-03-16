@@ -97,7 +97,7 @@
     User Roles
 </SectionHeading>
 <div class="flex gap-2 px-2 my-4">
-    <Search size="md" bind:value={$roleSearch} />
+    <Search size="md" bind:value={$roleSearch} class="rounded" />
     <Button class="shrink-0" on:click={async () => {
 		try {
 			const { data: createData } = await getApollo().mutate({

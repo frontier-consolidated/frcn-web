@@ -3,11 +3,6 @@
 
 	import { SectionHeading, Select, Field, FieldValidator } from '$lib/components';
 
-    // import type { PageData } from './$types';
-    
-    // export let data: PageData;
-
-
     let validator = new FieldValidator();
 </script>
 
@@ -22,6 +17,7 @@
     <Field {validator} for="system-general-guildid" value={"a"} required>
         <Label for="system-general-guildid" class="mb-2">Discord Guild Id</Label>
         <Input
+            class="rounded"
             id="system-general-guildid"
             name="Discord Guild Id"
             type="text"

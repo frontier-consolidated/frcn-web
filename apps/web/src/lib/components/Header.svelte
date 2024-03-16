@@ -27,7 +27,6 @@
 	import logo from "$lib/images/logo.png";
 	import { login, logout, user } from "$lib/stores/UserStore";
 
-	import Button from "./Button.svelte";
 	import LoginButton from "./LoginButton.svelte";
 	import NavUser from "./NavUser.svelte";
 	import MediaQuery from "./utils/MediaQuery.svelte"
@@ -45,7 +44,7 @@
 	let aboutOpen = false;
 	
 	const activeClass =
-		"clip-br-4 lg:clip-none md:py-2 md:pe-4 md:ps-3 lg:p-0 text-white dark:text-white bg-primary-600 hover:bg-primary-500 dark:hover:bg-primary-700 lg:bg-transparent lg:dark:hover:bg-transparent lg:text-primary-700 lg:dark:text-white dark:bg-primary-600 lg:dark:bg-transparent";
+		"clip-br-4 lg:clip-none md:py-2 md:pe-4 md:ps-3 lg:p-0 text-white dark:text-white bg-primary-600 hover:bg-primary-500 dark:hover:bg-primary-700 lg:bg-transparent lg:hover:bg-transparent lg:dark:hover:bg-transparent lg:text-primary-700 lg:dark:text-white dark:bg-primary-600 lg:dark:bg-transparent";
 	const nonActiveClass = 'clip-br-4 lg:clip-none md:py-2 md:pe-4 md:ps-3 lg:p-0 text-gray-800 bg-gray-300 hover:bg-gray-200 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 dark:text-gray-400 lg:dark:hover:text-white dark:bg-gray-800 lg:bg-transparent lg:dark:bg-transparent dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent';
 </script>
 
