@@ -11,12 +11,34 @@ jobs:
         name: Build and deploy
         runs-on: ubuntu-latest
         steps:
+            - name: Configure SSH
+              run: |
+                  mkdir -p ~/.ssh/
+                  echo "$SSH_KEY" > ~/.ssh/aws
+                  chmod 600 ~/.ssh/aws
+                  cat >>~/.ssh/config <<END
+                  Host server
+                      HostName $SSH_HOST
+                      User $SSH_USER
+                      Port $SSH_PORT
+                      IdentityFile ~/.ssh/aws
+                      StrictHostKeyChecking no
+                  END
+              env:
+                  SSH_USER: ${{ secrets.SSH_USER }}
+                  SSH_KEY: ${{ secrets.SSH_KEY }}
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
+                  SSH_PORT: ${{ secrets.SSH_PORT }}
+
             - name: Setup rsync
               uses: GuillaumeFalourd/setup-rsync@v1.2
               id: rsync
 
             - name: Get rsync version
               run: rsync --version
+
+            - name: Check remote rsync version
+              run: ssh server "/usr/bin/rsync --version"
 
             - name: Setup node
               uses: actions/setup-node@v4
@@ -40,25 +62,6 @@ jobs:
                   key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
                   restore-keys: |
                       ${{ runner.os }}-pnpm-store-
-
-            - name: Configure SSH
-              run: |
-                  mkdir -p ~/.ssh/
-                  echo "$SSH_KEY" > ~/.ssh/aws
-                  chmod 600 ~/.ssh/aws
-                  cat >>~/.ssh/config <<END
-                  Host server
-                      HostName $SSH_HOST
-                      User $SSH_USER
-                      Port $SSH_PORT
-                      IdentityFile ~/.ssh/aws
-                      StrictHostKeyChecking no
-                  END
-              env:
-                  SSH_USER: ${{ secrets.SSH_USER }}
-                  SSH_KEY: ${{ secrets.SSH_KEY }}
-                  SSH_HOST: ${{ secrets.SSH_HOST }}
-                  SSH_PORT: ${{ secrets.SSH_PORT }}
 
             - name: Checkout branch
               uses: actions/checkout@v4
