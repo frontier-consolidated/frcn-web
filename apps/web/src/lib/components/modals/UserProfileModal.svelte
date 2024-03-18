@@ -43,7 +43,7 @@
                     {$userProfileView.data?.discordName ?? "Wumpus"}
                 </span>
                 <span class="text-xs font-normal text-gray-500">
-                    @{$userProfileView.data?.discordName ?? "Wumpus"}
+                    {$userProfileView.data?.discordUsername ?? "Wumpus"}
                 </span>
                 <ArrowUpRightFromSquareOutline class="ml-auto group-hover:text-black dark:group-hover:text-gray-200" size="sm" />
             </a>
@@ -74,12 +74,12 @@
                     {/each}
                     {#if canEdit}
                         <CirclePlusSolid size="sm" class="cursor-pointer hover:text-white" />
-                        <Dropdown>
+                        <Dropdown class="px-2 text-sm">
                             <div slot="header" class="px-2 py-1">
                                 <Search size="sm" />
                             </div>
-                            {#each $page.data.roles as role}
-                                <li>{role.name}</li>
+                            {#each $page.data.roles.filter(role => !role.primary) as role}
+                                <li class="rounded px-2 py-1 hover:bg-gray-600 cursor-pointer">{role.name}</li>
                             {/each}
                         </Dropdown>
                     {/if}
