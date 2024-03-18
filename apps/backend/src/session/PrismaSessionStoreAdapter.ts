@@ -64,34 +64,38 @@ export default class PrismaSessionStoreAdapter extends Store {
 		const deviceId = sessionData.deviceId!;
 		const data = JSON.stringify(sessionData);
 
-		this.db.userSession
-			.upsert({
-				where: { sid },
-				update: {
-					data,
-					user: {
-						connect: userId
-							? {
-									id: userId,
-							  }
-							: undefined,
-						disconnect:
-							!userId && sessionData.user
+		this.db.userSession.findUnique({
+			where: { sid }
+		})
+			.then(session => {
+				return this.db.userSession.upsert({
+					where: { sid },
+					update: {
+						data,
+						user: {
+							connect: userId
 								? {
-										id: sessionData.user,
+										id: userId,
 								  }
 								: undefined,
+							disconnect:
+								!userId && session?.userId
+									? {
+											id: session.userId,
+									  }
+									: undefined,
+						},
+						deviceId,
+						expiresAt: this.allowTouch ? expiresAt : undefined,
 					},
-					deviceId,
-					expiresAt: this.allowTouch ? expiresAt : undefined,
-				},
-				create: {
-					sid,
-					data,
-					deviceId,
-					userId,
-					expiresAt,
-				},
+					create: {
+						sid,
+						data,
+						deviceId,
+						userId,
+						expiresAt,
+					},
+				})
 			})
 			.then(() => {
 				// Delete sessions from the same device that are not being used
