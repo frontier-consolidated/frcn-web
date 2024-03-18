@@ -79,16 +79,20 @@ jobs:
               env:
                   AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP }}
 
+            - name: SSH Test
+              run: |
+                  ssh server "pwd"
+
             - name: Deploy web
               run: |
-                  rsync -avzH --delete-excluded -e "ssh -i ~/.ssh/aws" ./ec2-build/web/ $SSH_USER@$SSH_HOST:/var/www/dev.frontierconsolidated.com/web/
+                  rsync -avzH --delete-excluded -e "ssh server" ./ec2-build/web/ $SSH_USER@$SSH_HOST:/var/www/dev.frontierconsolidated.com/web/
               env:
                   SSH_USER: ${{ secrets.SSH_USER }}
                   SSH_HOST: ${{ secrets.SSH_HOST }}
 
             - name: Deploy backend
               run: |
-                  rsync -avzH --delete-excluded -e "ssh -i ~/.ssh/aws" ./ec2-build/backend/ $SSH_USER@$SSH_HOST:/var/www/dev.frontierconsolidated.com/backend/
+                  rsync -avzH --delete-excluded -e "ssh server" ./ec2-build/backend/ $SSH_USER@$SSH_HOST:/var/www/dev.frontierconsolidated.com/backend/
               env:
                   SSH_USER: ${{ secrets.SSH_USER }}
                   SSH_HOST: ${{ secrets.SSH_HOST }}
