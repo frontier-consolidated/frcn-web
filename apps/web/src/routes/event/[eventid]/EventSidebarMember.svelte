@@ -5,7 +5,7 @@
 
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
-	import { userProfileView } from "$lib/stores/UserProfileViewStore";
+	import { viewUserProfile } from "$lib/stores/UserProfileViewStore";
 	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
@@ -13,11 +13,11 @@
 	export let event: PageData;
 	export let member: PageData["members"][number];
 
-	$: role = member.rsvp ? event.roles.find(role => role.id === member.rsvp) : null
+	$: role = member.rsvp ? event.rsvpRoles.find(role => role.id === member.rsvp) : null
 </script>
 
 <button class="rounded flex items-center gap-2 px-1 w-full dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700" on:click={() => {
-	userProfileView.set(member.user)
+	viewUserProfile(member.user.id)
 }}>
 	<Avatar rounded size="sm" src={member.user.avatarUrl} />
 	<div class="flex flex-col items-start">
@@ -46,7 +46,7 @@
 	<Dropdown>
 		<DropdownItem on:click={(e) => {
 			e.stopPropagation()
-			userProfileView.set(member.user)
+			viewUserProfile(member.user.id)
 		}}>
 			View Profile
 		</DropdownItem>

@@ -7,6 +7,7 @@ import { GET_EVENT_SETTINGS } from "./getEventSettings.query";
 import { GET_OWNED_EVENTS } from "./getOwnedEvents.query";
 import { GET_RESOURCES } from "./getResources.query";
 import { GET_ROLE } from "./getRole.query";
+import { GET_USER } from "./getUser.query";
 
 export const Queries = {
 	CURRENT_USER,
@@ -17,5 +18,6 @@ export const Queries = {
 	GET_ALL_ROLES,
 	GET_ROLE,
 	GET_RESOURCES,
-	GET_OWNED_EVENTS
+	GET_OWNED_EVENTS,
+	GET_USER
 };

@@ -26,7 +26,6 @@ import Notifications from "./Notifications.svelte"
 import SectionHeading from "./SectionHeading.svelte"
 import Select from "./select/Select.svelte"
 import Tooltip from "./Tooltip.svelte"
-import UserRoleSelectDropdown from "./UserRoleSelectDropdown.svelte"
 import MediaQuery from "./utils/MediaQuery.svelte"
 import ScreenQuery from "./utils/ScreenQuery.svelte"
 import Field from "./validation/Field.svelte"
@@ -66,6 +65,5 @@ export {
     Notifications,
     SectionHeading,
     Tooltip,
-    UserRoleSelectDropdown,
     ViewMore
 }
