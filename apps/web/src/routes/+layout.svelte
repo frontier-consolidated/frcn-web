@@ -17,7 +17,9 @@
 			<CodeSolid class="me-2" tabindex="-1" /> Currently Under Construction
 		</Banner>
 	</div>
-	<slot />
+	<main class="flex flex-1 flex-col w-full box-border">
+		<slot />
+	</main>
 	<Footer />
 	<UserProfileModal />
 	<CookieConsentModal />
