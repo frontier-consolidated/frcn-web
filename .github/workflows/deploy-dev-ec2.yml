@@ -11,6 +11,9 @@ jobs:
         name: Build and deploy
         runs-on: ubuntu-latest
         steps:
+            - name: Setup rsync
+              uses: GuillaumeFalourd/setup-rsync@v1.2
+
             - name: Setup node
               uses: actions/setup-node@v4
               with:
@@ -78,10 +81,6 @@ jobs:
                   aws ec2 authorize-security-group-ingress --group-name $AWS_SECURITY_GROUP --protocol tcp --port 22 --cidr $PUBLIC_IP/32
               env:
                   AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP }}
-
-            - name: SSH Test
-              run: |
-                  ssh server "pwd"
 
             - name: Deploy web
               run: |
