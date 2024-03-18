@@ -93,6 +93,10 @@ jobs:
                   SSH_USER: ${{ secrets.SSH_USER }}
                   SSH_HOST: ${{ secrets.SSH_HOST }}
 
+            - name: Restart services
+              run: |
+                  ssh server "cd /var/www/dev.frontierconsolidated.com && sudo /bin/systemctl restart frcn-dev-frontend.service && sudo /bin/systemctl restart frcn-dev-backend.service"
+
             - name: Remove runner ip from AWS security group
               run: |
                   aws ec2 revoke-security-group-ingress --group-name $AWS_SECURITY_GROUP --protocol tcp --port 22 --cidr $PUBLIC_IP/32
