@@ -12,6 +12,13 @@ async function getUser(id: string) {
 	return user;
 }
 
+async function getUserByDiscordId(id: string) {
+	const user = await database.user.findUnique({
+		where: { discordId: id }
+	})
+	return user;
+}
+
 async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClient) {
 	const defaultPrimaryRole = await $roles.getDefaultPrimaryRole();
 
@@ -78,6 +85,7 @@ async function getPermissions(user: User) {
 
 export const $users = {
 	getUser,
+	getUserByDiscordId,
 	getOrCreateUser,
 	getAllRoles,
 	getPermissions,
