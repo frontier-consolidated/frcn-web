@@ -33,7 +33,7 @@ async function eventInteraction(interaction: ButtonInteraction | AnySelectMenuIn
         return
     }
 
-    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user))
+    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
     
     const currentRsvp = await $events.getUserRsvp(event, user);
 
@@ -83,7 +83,7 @@ async function eventDmInteraction(interaction: ButtonInteraction | AnySelectMenu
         return;
     }
 
-    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user))
+    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
     await $events.unrsvpForEvent(event, user, interaction.client);
 
     const payload = buildUnrsvpMessage()

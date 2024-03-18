@@ -22,6 +22,7 @@ export function resolveUser(user: User) {
 		scName: user.scName,
 		discordId: user.discordId,
 		discordName: user.discordName,
+		discordUsername: user.discordUsername,
 		verified: user.scVerified,
 		avatarUrl: user.avatarUrl,
 		updatedAt: user.updatedAt,
