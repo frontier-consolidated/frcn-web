@@ -13,6 +13,7 @@ jobs:
         steps:
             - name: Setup rsync
               uses: GuillaumeFalourd/setup-rsync@v1.2
+              id: rsync
 
             - name: Get rsync version
               run: rsync --version
