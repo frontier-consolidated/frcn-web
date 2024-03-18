@@ -48,16 +48,6 @@ jobs:
               env:
                   AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP }}
 
-            - name: Setup rsync
-              uses: GuillaumeFalourd/setup-rsync@v1.2
-              id: rsync
-
-            - name: Get rsync version
-              run: rsync --version
-
-            - name: Check remote rsync version
-              run: ssh server "/usr/bin/rsync --version"
-
             - name: Setup node
               uses: actions/setup-node@v4
               with:
@@ -90,18 +80,24 @@ jobs:
                   ./.github/scripts/ec2-build.sh ec2-build
 
             - name: Deploy web
-              run: |
-                  rsync -avzH --delete-excluded -e "ssh server" --rsync-path=/usr/bin/rsync ./ec2-build/web/ $SSH_USER@$SSH_HOST:/var/www/dev.frontierconsolidated.com/web/
-              env:
-                  SSH_USER: ${{ secrets.SSH_USER }}
-                  SSH_HOST: ${{ secrets.SSH_HOST }}
+              uses: burnett01/rsync-deployments@7.0.0
+              with:
+                  switches: -avzH --delete-excluded
+                  path: ec2-build/web/
+                  remote_path: /var/www/dev.frontierconsolidated.com/web/
+                  remote_host: ${{ secrets.SSH_HOST }}
+                  remote_user: ${{ secrets.SSH_USER }}
+                  remote_key: ${{ secrets.SSH_KEY }}
 
-            - name: Deploy backend
-              run: |
-                  rsync -avzH --delete-excluded -e "ssh server" --rsync-path=/usr/bin/rsync ./ec2-build/backend/ $SSH_USER@$SSH_HOST:/var/www/dev.frontierconsolidated.com/backend/
-              env:
-                  SSH_USER: ${{ secrets.SSH_USER }}
-                  SSH_HOST: ${{ secrets.SSH_HOST }}
+            - name: Deploy web
+              uses: burnett01/rsync-deployments@7.0.0
+              with:
+                  switches: -avzH --delete-excluded
+                  path: ec2-build/backend/
+                  remote_path: /var/www/dev.frontierconsolidated.com/backend/
+                  remote_host: ${{ secrets.SSH_HOST }}
+                  remote_user: ${{ secrets.SSH_USER }}
+                  remote_key: ${{ secrets.SSH_KEY }}
 
             - name: Restart services
               run: |
