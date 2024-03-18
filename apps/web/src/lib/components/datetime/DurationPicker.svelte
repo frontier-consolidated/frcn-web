@@ -2,6 +2,7 @@
 	import { dates } from "@frcn/shared";
 	import { Input, Dropdown, DropdownHeader } from "flowbite-svelte";
 	import { ClockSolid } from "flowbite-svelte-icons";
+	import { twMerge } from "tailwind-merge";
 
 	import DurationControls from "./duration/DurationControls.svelte";
 
@@ -29,12 +30,13 @@
 	}
 </script>
 
-<Input bind:value={inputValue} {id} placeholder="Select duration" {...$$restProps}>
+<Input bind:value={inputValue} {id} placeholder="Select duration" {...$$restProps} class={twMerge("rounded", $$restProps.class)}>
 	<ClockSolid slot="left" size="sm" class="ms-1" tabindex="-1" />
 </Input>
 <Dropdown
 	bind:open={dropdownOpen}
-	class="border rounded-lg border-gray-300 dark:border-gray-600 p-4"
+	containerClass="divide-y z-50 rounded"
+	class="border rounded border-gray-300 dark:border-gray-600 p-4"
 >
 	{#if title}
 		<DropdownHeader>

@@ -1,0 +1,153 @@
+<script lang="ts">
+	import { Heading } from "flowbite-svelte";
+	import { BookSolid, BuildingSolid, DiscordSolid, MapPinAltSolid, UsersSolid } from "flowbite-svelte-icons";
+	import { twMerge } from "tailwind-merge";
+
+	import { Button, Hr, JoinDiscordButton } from "$lib/components";
+	import { DISCORD_URL, MERCH_URL } from "$lib/constants";
+	import activitiesImage from "$lib/images/stock/activities.png"
+	import communityImage from "$lib/images/stock/community.jpg"
+	import heroImageFallback from "$lib/images/stock/joinus.jpg"
+	import heroImageSrcset from "$lib/images/stock/joinus.jpg?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
+	import knowledgeImage from "$lib/images/stock/knowledge.png"
+	import merchImage from "$lib/images/stock/merch.png"
+	import orgImage from "$lib/images/stock/org.png"
+
+	import { galleryImages } from "./galleryImages";
+
+	const pageCards = [
+		{ src: communityImage, name: "COMMUNITY", href: "/about/community", icon: UsersSolid },
+		{ src: orgImage, name: "ORGANISATION", href: "/about/org", icon: BuildingSolid },
+		{ src: activitiesImage, name: "ACTIVITES", href: "/about/activities", icon: MapPinAltSolid },
+		{ src: knowledgeImage, name: "GUIDES & RESOURCES", href: "/knowledge", icon: BookSolid }
+	]
+
+	const partners = [
+		{ src: "https://www.teamspeak.com/user/themes/teamspeak/images/logo_inverse.svg", href: "https://www.teamspeak.com/", alt: "Teamspeak" },
+		{ src: "https://robertsspaceindustries.com/media/6wlp3kdl35hz6r/logo/ANZIA-Logo.png", href: "https://anziaracing.com/", alt: "ANZIA Racing" },
+		{ src: "https://www.teamspeak.com/user/themes/teamspeak/images/logo_inverse.svg", href: "https://www.teamspeak.com/", alt: "Teamspeak" },
+		{ src: "https://robertsspaceindustries.com/media/6wlp3kdl35hz6r/logo/ANZIA-Logo.png", href: "https://anziaracing.com/", alt: "ANZIA Racing" },
+		{ src: "https://www.teamspeak.com/user/themes/teamspeak/images/logo_inverse.svg", href: "https://www.teamspeak.com/", alt: "Teamspeak" },
+		{ src: "https://robertsspaceindustries.com/media/6wlp3kdl35hz6r/logo/ANZIA-Logo.png", href: "https://anziaracing.com/", alt: "ANZIA Racing" },
+		{ src: "https://www.teamspeak.com/user/themes/teamspeak/images/logo_inverse.svg", href: "https://www.teamspeak.com/", alt: "Teamspeak" },
+		{ src: "https://robertsspaceindustries.com/media/6wlp3kdl35hz6r/logo/ANZIA-Logo.png", href: "https://anziaracing.com/", alt: "ANZIA Racing" },
+		{ src: "https://www.teamspeak.com/user/themes/teamspeak/images/logo_inverse.svg", href: "https://www.teamspeak.com/", alt: "Teamspeak" },
+		{ src: "https://robertsspaceindustries.com/media/6wlp3kdl35hz6r/logo/ANZIA-Logo.png", href: "https://anziaracing.com/", alt: "ANZIA Racing" },
+	]
+</script>
+
+<svelte:head>
+	<title>Frontier Consolidated</title>
+	<meta name="description" content="Get involved with the latest community events" />
+	{#each pageCards as card}
+		<link rel="preload" href={card.src} as="image" />
+	{/each}
+	{#each galleryImages as image}
+		<link rel="preload" href={image.src} as="image" />
+	{/each}
+</svelte:head>
+
+<div class="relative">
+	<picture>
+		<source srcset={heroImageSrcset} type="image/webp" />
+		<img src={heroImageFallback} alt="index hero" class="w-full object-cover h-[80vh] brightness-90 bg-slate-950" />
+	</picture>
+	<div class="absolute top-0 left-0 h-full w-full p-4 sm:px-[20%] flex items-center justify-center sm:!justify-end">
+		<div class="max-w-[24rem] w-full p-8 text-gray-900 dark:text-white flex flex-col gap-3 backdrop-blur-xl clip-opposite-reverse-8 bg-white/50 dark:bg-black/30 sm:min-w-[24rem] sm:max-w-[50rem] sm:!w-6/12">
+			<span class="font-medium text-lg">
+				<span class="me-4 text-primary-700 dark:text-primary-500">///</span> Welcome to the Frontier!
+			</span>
+			<p>
+				Frontier Consolidated is a growing Star Citizen organisation and we want to bring the joy of multiplayer action to as many people as we can.
+			</p>
+			<p>
+				Check out our community and org pages to see what we're about and come say hi over on Discord if you want to get involved.
+			</p>
+			<div class="flex-1 flex items-end justify-center">
+				<JoinDiscordButton />
+			</div>
+		</div>
+	</div>
+</div>
+<section class="relative p-4 pt-0 border-y border-gray-400 dark:border-gray-800 bg-gray-300 dark:bg-gray-900">
+	<div class="-mt-10 grid sm:grid-cols-2 xl:grid-cols-4 gap-4 mx-auto max-w-7xl">
+		{#each pageCards as card}
+			<a href={card.href} class="group/card relative rounded clip-tr-8">
+				<figure class="h-36 min-[480px]:h-48 sm:h-60 cursor-pointer">
+					<img class="clip-tr-8 rounded h-full w-full object-cover transition-[filter] group-hover/card:grayscale" src={card.src} alt={card.name} />
+					<figcaption class="absolute rounded-b flex items-center w-full bottom-0 p-2 sm:p-4 bg-white/50 dark:bg-black/30 backdrop-blur-lg text-gray-900 dark:text-white font-semibold text-md">
+						<svelte:component this={card.icon} size="sm" class="me-2" tabindex="-1" /> {card.name}
+					</figcaption>
+				</figure>
+			</a>
+		{/each}
+	</div>
+	<div class="absolute -bottom-[2rem] left-0 clip-br-8 w-[20%] h-8 bg-gray-400 dark:bg-gray-800"></div>
+	<div class="absolute -bottom-[2rem] right-0 clip-bl-8 w-[20%] h-8 bg-gray-400 dark:bg-gray-800"></div>
+	<div class="absolute -bottom-[calc(2rem-1px)] left-0 clip-br-8 w-[calc(20%-1px)] h-8 bg-gray-300 dark:bg-gray-900"></div>
+	<div class="absolute -bottom-[calc(2rem-1px)] right-0 clip-bl-8 w-[calc(20%-1px)] h-8 bg-gray-300 dark:bg-gray-900"></div>
+</section>
+<div class="mt-16 flex flex-col mx-auto w-full max-w-5xl p-4 pb-0 gap-24">
+	<section>
+		<Heading tag="h2" class="font-medium text-2xl">
+			<span class="me-4 text-primary-700 dark:text-primary-500">///</span> Org Merch
+		</Heading>
+		<Hr class="my-4 bg-primary-300 dark:bg-primary-600" />
+		<div class="relative w-full h-[500px] rounded clip-opposite-12 backdrop-blur bg-triangle-pattern bg-cover bg-fixed bg-gray-300 dark:bg-gray-700 dark:text-white flex flex-col items-center justify-center gap-4 gap-4 p-4 min-[480px]:px-12">
+			<!-- <div class="absolute rounded top-7 left-2 h-1 w-14 bg-primary-200 -rotate-45 box-glow-primary-500"></div>
+			<div class="absolute rounded bottom-7 right-2 h-1 w-14 bg-primary-200 -rotate-45 box-glow-primary-500"></div> -->
+			<div class="flex flex-col items-center">
+				<span class="font-medium text-xl text-center">Interested in supporting or some new swag?</span>
+				<span class="text-gray-700 dark:text-gray-400 text-center">Visit our merch store</span>
+			</div>
+			<img src={merchImage} alt="Merch" class="max-h-72" />
+			<Button href={MERCH_URL} target="_blank" class="px-12" size="xl">
+				SHOP
+			</Button>
+			<span>Powered by <strong>TEEMILL</strong></span>
+		</div>
+	</section>
+	<section>
+		<Heading tag="h2" class="font-medium text-2xl">
+			<span class="me-4 text-primary-700 dark:text-primary-500">///</span> Proud Partners
+		</Heading>
+		<div class="relative h-2 sm:h-4 my-4">
+			<div class="absolute bottom-0 left-0 h-px bg-primary-300 dark:bg-primary-600 w-[calc(40%-0.5rem)]"></div>
+			<div class="absolute top-0 right-[60%] h-full w-2 -skew-x-[45deg] bg-primary-300 dark:bg-primary-600"></div>
+			<div class="absolute top-0 right-0 h-px bg-primary-300 dark:bg-primary-600 w-[60%]"></div>
+		</div>
+	</section>
+</div>
+<section class="border-y border-gray-400 dark:border-gray-800 bg-gray-400/70 dark:bg-gray-900 py-8">
+	<!-- <Marquee fade>
+		{#each partners as partner}
+			<a href={partner.href} class="shrink-0 rounded-lg h-32 w-32">
+				<img src={partner.src} alt={partner.alt} class="w-full h-full object-contain" />
+			</a>
+		{/each}
+	</Marquee> -->
+</section>
+<div class="mt-24 flex flex-col mx-auto w-full max-w-5xl p-4 pt-0 gap-24">
+	<section>
+		<Heading tag="h2" class="font-medium text-2xl">
+			<span class="me-4 text-primary-700 dark:text-primary-500">///</span> Gallery
+		</Heading>
+		<Hr class="my-4 bg-primary-300 dark:bg-primary-600" />
+		<div class="grid md:grid-cols-2 gap-4">
+			<div class="grid gap-4 h-min">
+				{#each galleryImages.slice(0, 6) as item}
+					<div class="rounded clip-tr-8 p-px bg-gray-400 dark:bg-gray-800">
+						<img src={item.src} alt="" class={twMerge("w-full max-w-full clip-tr-8 rounded object-cover", `h-${item.height}`)} />
+					</div>
+				{/each}
+			</div>
+			<div class="grid gap-4 h-min">
+				{#each galleryImages.slice(6) as item}
+					<div class="rounded clip-tr-8 p-px bg-gray-400 dark:bg-gray-800">
+						<img src={item.src} alt="" class={twMerge("w-full max-w-full clip-tr-8 rounded object-cover", `h-${item.height}`)} />
+					</div>
+				{/each}
+			</div>
+		</div>
+	</section>
+</div>

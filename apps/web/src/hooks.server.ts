@@ -10,7 +10,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	const cookie = event.request.headers.get("cookie")
-	// console.log("Request cookie:", cookie)
 	const apollo = createApolloClient(cookie ? {
 		cookie
 	} : undefined)

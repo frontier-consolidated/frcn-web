@@ -43,6 +43,7 @@
     "@codemirror/view": "^6.23.0",
     "@floating-ui/dom": "^1.6.1",
     "@frcn/shared": "workspace:^",
+    "@selemondev/svelte-marquee": "^0.0.2",
     "@uiw/codemirror-theme-github": "^4.21.21",
     "axios": "^1.6.5",
     "graphql": "^16.8.1",
