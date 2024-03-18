@@ -64,6 +64,7 @@ type User {
 	id: ID!
 	name: String!
 	scName: String
+	discordId: ID!
 	discordName: String!
 	verified: Boolean!
 	avatarUrl: String!

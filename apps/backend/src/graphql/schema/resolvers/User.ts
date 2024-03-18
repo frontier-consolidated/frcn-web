@@ -20,6 +20,7 @@ export function resolveUser(user: User) {
 		id: user.id,
 		name: user.scVerified ? user.scName! : user.discordName,
 		scName: user.scName,
+		discordId: user.discordId,
 		discordName: user.discordName,
 		verified: user.scVerified,
 		avatarUrl: user.avatarUrl,
