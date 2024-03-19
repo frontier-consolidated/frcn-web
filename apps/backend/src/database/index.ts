@@ -52,6 +52,15 @@ export function transaction<R>(fn: (tx: typeof database) => Promise<R>): Promise
 }
 
 async function seedProduction() {
+	await database.systemSettings.upsert({
+		where: { unique: true },
+		update: {},
+		create: {
+			discordGuildId: "",
+			roleOrder: [],
+		},
+	});
+
 	const roles = await database.userRole.findMany();
 	const sortedRoles = await $roles.sort(roles);
 
@@ -131,16 +140,14 @@ async function seedProduction() {
 		console.log(`Upsert Admin user '${id}'`)
 	}
 
-	await database.systemSettings.upsert({
-		where: { unique: true },
-		update: {
-			roleOrder: updateRoleOrder ? roles.map((role) => role.id) : undefined,
-		},
-		create: {
-			discordGuildId: "1188196981508689950",
-			roleOrder: roles.map((role) => role.id),
-		},
-	});
+	if (updateRoleOrder) {
+		await database.systemSettings.update({
+			where: { unique: true },
+			data: {
+				roleOrder: roles.map((role) => role.id),
+			}
+		});
+	}
 }
 
 if (isProd()) await seedProduction()
