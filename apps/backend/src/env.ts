@@ -25,8 +25,16 @@ export function getHost() {
 	return `${subDomain}${subDomain ? "." : ""}${domain}${domain === "localhost" || hasExternalPort() ? `:${getExternalPort()}` : ""}`
 }
 
+function getBasePath() {
+	let basePath = process.env.BASE_PATH;
+	if (basePath && !basePath.startsWith("/")) {
+		basePath = "/" + basePath;
+	}
+	return basePath ?? ""
+}
+
 export function getOrigin(protocol: string = "") {
-	return `${protocol}://${getHost()}`;
+	return `${protocol}://${getHost()}${getBasePath()}`;
 }
 
 export function getWebOrigin() {
@@ -47,6 +55,14 @@ export function getOrigins() {
 	}
 
 	return origins
+}
+
+export function getURL(protocol: string = "", path: string) {
+	return new URL(getBasePath() + path, `${protocol}://${getHost()}`)
+}
+
+export function getWebURL(path: string) {
+	return new URL(path, getWebOrigin())
 }
 
 export function isProd() {
