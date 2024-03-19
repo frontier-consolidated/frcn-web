@@ -80,7 +80,7 @@ async function seedProduction() {
 				permissions: permissions([Permission.Admin]),
 			},
 		});
-		sortedRoles.push(adminRole)
+		sortedRoles.unshift(adminRole)
 		updateRoleOrder = true;
 		console.log("Created Admin role")
 	}
@@ -93,7 +93,7 @@ async function seedProduction() {
 				permissions: 0,
 			},
 		});
-		sortedRoles.unshift(defaultRole)
+		sortedRoles.push(defaultRole)
 		updateRoleOrder = true;
 		console.log("Created Default role")
 	}
