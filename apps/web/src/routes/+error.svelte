@@ -2,7 +2,7 @@
 	import { page } from "$app/stores";
 	import { Heading } from "flowbite-svelte";
 
-	import { Button, Hr, LoginButton } from "$lib/components";
+	import { Button, LoginButton } from "$lib/components";
 
 	let heading = "Critical Error"
 	$: switch ($page.status) {
