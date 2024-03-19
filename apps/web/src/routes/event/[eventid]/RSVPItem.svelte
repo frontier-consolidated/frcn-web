@@ -11,13 +11,13 @@
 	const INFINITY = "∞";
 
 	export let data: PageData;
-	export let roles: PageData["roles"];
-	export let role: PageData["roles"][number];
+	export let roles: PageData["rsvpRoles"];
+	export let role: PageData["rsvpRoles"][number];
 	export let validator: FieldValidator;
 
 	let editRole = structuredClone(role);
 
-	function updateRole(edit: PageData["roles"][number]) {
+	function updateRole(edit: PageData["rsvpRoles"][number]) {
 		roles = [...roles.filter((r) => r.id != role.id), edit];
 		role = edit;
 		return structuredClone(role);

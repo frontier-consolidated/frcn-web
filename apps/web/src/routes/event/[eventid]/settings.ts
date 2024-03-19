@@ -13,7 +13,7 @@ export function cloneEventSettingsData(data: PageData) {
 		location: data.location ? [...data.location] : [],
 		startAt: data.startAt,
 		duration: data.duration,
-		roles: structuredClone(data.roles),
+		rsvpRoles: structuredClone(data.rsvpRoles),
 		mentions: data.mentions ? [...data.mentions] : [],
 		settings: structuredClone(data.settings)!,
 		accessType: data.accessType!,
@@ -44,14 +44,14 @@ export function checkIfDirty(source: PageData, mutable: MutableData) {
 					clean &&= valueClean;
 				}
 				break;
-			case "roles":
+			case "rsvpRoles":
 				{
-					const valueClean = mutable.roles.length === source.roles.length;
+					const valueClean = mutable.rsvpRoles.length === source.rsvpRoles.length;
 					if (!valueClean) diff.push(key + ".length");
 					clean &&= valueClean;
 
-					for (const role of mutable.roles) {
-						const sourceRole = source.roles.find((r) => r.id === role.id);
+					for (const role of mutable.rsvpRoles) {
+						const sourceRole = source.rsvpRoles.find((r) => r.id === role.id);
 						if (sourceRole) {
 							const nameClean = sourceRole.name === role.name;
 							const limitClean = sourceRole.limit === role.limit;

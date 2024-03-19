@@ -75,24 +75,25 @@ model UserRole {
 }
 
 model User {
-  id            String             @id @default(uuid())
-  discordId     String             @unique @map("discord_id")
-  discordName   String             @map("discord_name")
-  scName        String?            @map("sc_name")
-  scVerified    Boolean            @map("sc_verified")
-  scVerifyCode  String?            @map("sc_verify_code")
-  avatarUrl     String             @map("avatar_url")
-  primaryRole   UserRole           @relation(fields: [primaryRoleId], references: [id])
-  primaryRoleId String             @map("primary_role_id")
-  roles         UsersInUserRoles[]
-  rsvps         EventUser[]
-  events        Event[]
-  resources     Resource[]
-  sessions      UserSession[]
-  status        UserStatus?
-  settings      UserSettings?
-  updatedAt     DateTime           @updatedAt @map("updated_at")
-  createdAt     DateTime           @default(now()) @map("created_at")
+  id              String             @id @default(uuid())
+  discordId       String             @unique @map("discord_id")
+  discordName     String             @map("discord_name")
+  discordUsername String             @map("discord_username")
+  scName          String?            @map("sc_name")
+  scVerified      Boolean            @map("sc_verified")
+  scVerifyCode    String?            @map("sc_verify_code")
+  avatarUrl       String             @map("avatar_url")
+  primaryRole     UserRole           @relation(fields: [primaryRoleId], references: [id])
+  primaryRoleId   String             @map("primary_role_id")
+  roles           UsersInUserRoles[]
+  rsvps           EventUser[]
+  events          Event[]
+  resources       Resource[]
+  sessions        UserSession[]
+  status          UserStatus?
+  settings        UserSettings?
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+  createdAt       DateTime           @default(now()) @map("created_at")
 
   @@map("users")
 }

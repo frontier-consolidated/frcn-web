@@ -520,7 +520,9 @@ export type User = {
   __typename?: 'User';
   avatarUrl: Scalars['String']['output'];
   createdAt: Scalars['Timestamp']['output'];
+  discordId: Scalars['ID']['output'];
   discordName: Scalars['String']['output'];
+  discordUsername: Scalars['String']['output'];
   events: Array<Event>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -944,7 +946,9 @@ export type UpdatedUserRolesResolvers<ContextType = GQLContext, ParentType exten
 export type UserResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = ResolversObject<{
   avatarUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  discordId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   discordName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  discordUsername?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
