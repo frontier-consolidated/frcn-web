@@ -1,8 +1,10 @@
+import { Permission } from "@frcn/shared";
 import type { User } from "@prisma/client";
 import { type APIUser, CDNRoutes, ImageFormat } from "discord.js";
 
 import { $roles } from "./roles";
 import { database } from "../database";
+import { getAdminIds } from "../env";
 
 async function getUser(id: string) {
 	const user = await database.user.findUnique({
@@ -54,15 +56,25 @@ async function getOrCreateUser(discordUser: APIUser) {
 	return user;
 }
 
-async function getAllRoles(user: User) {
+async function getAllRolesUnordered(user: User) {
 	const primaryRole = await database.user.getPrimaryRole(user);
 	const roles = await database.user.getRoles(user);
 	return [primaryRole, ...roles]
 }
 
+async function getAllRoles(user: User) {
+	return $roles.sort(await getAllRolesUnordered(user))
+}
+
 async function getPermissions(user: User) {
-	const roles = await getAllRoles(user);
-	const permissions = await $roles.resolvePermissions(roles);
+	const roles = await getAllRolesUnordered(user);
+	let permissions = $roles.resolvePermissions(roles);
+
+	const adminIds = getAdminIds()
+	if (adminIds.includes(user.discordId)) {
+		permissions |= Permission.Admin
+	}
+
 	return permissions
 }
 
