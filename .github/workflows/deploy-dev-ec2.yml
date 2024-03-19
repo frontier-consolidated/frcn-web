@@ -89,7 +89,7 @@ jobs:
                   remote_user: ${{ secrets.SSH_USER }}
                   remote_key: ${{ secrets.SSH_KEY }}
 
-            - name: Deploy web
+            - name: Deploy backend
               uses: burnett01/rsync-deployments@7.0.0
               with:
                   switches: -avzH --delete-excluded
