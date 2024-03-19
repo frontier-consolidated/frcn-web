@@ -26,7 +26,11 @@ export function getHost() {
 }
 
 export function getOrigin(protocol: string = "") {
-	return `${protocol}://${getHost()}`;
+	let basePath = process.env.BASE_PATH;
+	if (basePath && !basePath.startsWith("/")) {
+		basePath = "/" + basePath;
+	}
+	return `${protocol}://${getHost()}${basePath ?? ""}`;
 }
 
 export function getWebOrigin() {

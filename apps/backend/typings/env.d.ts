@@ -10,6 +10,7 @@ declare global {
 			EXTERNAL_PORT?: string;
 			DOMAIN: string;
 			SUB_DOMAIN?: string;
+			BASE_PATH?: string;
 
 			WEB_ORIGIN: string;
 			ORIGINS: string;
