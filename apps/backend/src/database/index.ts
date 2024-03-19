@@ -1,6 +1,7 @@
-import { Permission, permissions } from "@frcn/shared";
+
+import { Permission, hasPermission, permissions } from "@frcn/shared";
 // eslint-disable-next-line import/default
-import PrismaClientPkg from "@prisma/client";
+import PrismaClientPkg, { type UserRole } from "@prisma/client";
 
 import { createEventExtension } from "./extensions/Event.extension";
 import { createEventChannelExtension } from "./extensions/EventChannel.extension";
@@ -16,7 +17,8 @@ import { createUserSessionExtension } from "./extensions/UserSession.extension";
 import { createUserSettingsExtension } from "./extensions/UserSettings.extension";
 import { createUsersInUserRolesExtension } from "./extensions/UsersInUserRoles.extension";
 import { createUserStatusExtension } from "./extensions/UserStatus.extension";
-import { isProd } from "../env";
+import { getAdminIds, isProd } from "../env";
+import { $roles } from "../services/roles";
 
 const PrismaClient = PrismaClientPkg.PrismaClient
 const Prisma = PrismaClientPkg.Prisma
@@ -51,33 +53,72 @@ export function transaction<R>(fn: (tx: typeof database) => Promise<R>): Promise
 
 async function seedProduction() {
 	const roles = await database.userRole.findMany();
+	const sortedRoles = await $roles.sort(roles);
 
-	if (roles.length === 0 && process.env.ADMIN_DISCORD_ID) {
-		const adminRole = await database.userRole.upsert({
-			where: { id: "5740e3a4-20cd-43eb-b583-029cef2646a0" },
-			update: {},
-			create: {
-				id: "5740e3a4-20cd-43eb-b583-029cef2646a0",
+	let adminRole: UserRole | null = null;
+	for (const role of sortedRoles) {
+		if (hasPermission(role.permissions, Permission.Admin)) {
+			adminRole = role
+			break;
+		}
+	}
+
+	let defaultRole: UserRole | null = null;
+	for (const role of sortedRoles) {
+		if (role.primary && role.id !== adminRole?.id) {
+			defaultRole = role;
+			break;
+		}
+	}
+
+	let updateRoleOrder = false;
+
+	if (!adminRole) {
+		adminRole = await database.userRole.create({
+			data: {
 				name: "Admin",
-				primary: true,
 				permissions: permissions([Permission.Admin]),
 			},
 		});
-		roles.push(adminRole)
+		sortedRoles.push(adminRole)
+		updateRoleOrder = true;
 		console.log("Created Admin role")
+	}
 
+	if (!defaultRole) {
+		defaultRole = await database.userRole.create({
+			data: {
+				name: "default",
+				primary: true,
+				permissions: 0,
+			},
+		});
+		sortedRoles.unshift(defaultRole)
+		updateRoleOrder = true;
+		console.log("Created Default role")
+	}
+
+	const adminIds = getAdminIds()
+
+	for (const id of adminIds) {
 		await database.user.upsert({
-			where: { discordId: process.env.ADMIN_DISCORD_ID },
+			where: { discordId: id },
 			update: {},
 			create: {
-				discordId: process.env.ADMIN_DISCORD_ID,
+				discordId: id,
 				discordName: "Admin",
+				discordUsername: "@admin",
 				scVerified: false,
 				avatarUrl: "",
 				primaryRole: {
 					connect: {
-						id: adminRole.id,
+						id: defaultRole.id,
 					},
+				},
+				roles: {
+					create: {
+						roleId: adminRole.id
+					}
 				},
 				status: {
 					create: {},
@@ -87,18 +128,18 @@ async function seedProduction() {
 				},
 			},
 		});
-		console.log("Created Admin user")
-	}
-
-	const systemValues = {
-		discordGuildId: "1188196981508689950",
-		roleOrder: roles.map((role) => role.id),
+		console.log(`Upsert Admin user '${id}'`)
 	}
 
 	await database.systemSettings.upsert({
 		where: { unique: true },
-		update: {},
-		create: systemValues,
+		update: {
+			roleOrder: updateRoleOrder ? roles.map((role) => role.id) : undefined,
+		},
+		create: {
+			discordGuildId: "1188196981508689950",
+			roleOrder: roles.map((role) => role.id),
+		},
 	});
 }
 
