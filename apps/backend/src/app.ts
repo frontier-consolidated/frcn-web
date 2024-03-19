@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 import timeout from "connect-timeout";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express from "express";
+import express, { type NextFunction, type Request, type Response } from "express";
 
 import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
@@ -93,6 +93,20 @@ export async function createApp(config: CreateAppOptions) {
     };
     module.default(context, config.routeConfig);
   }
+
+  app.use((err: Error | Error[], req: Request, res: Response, _next: NextFunction) => {
+    const errors = Array.isArray(err) ? err : [err];
+    for (const error of errors) {
+      console.error(error);
+    }
+  
+    if (res.headersSent) return;
+  
+    res.status(500).send({
+      message: "An error occured on the server!",
+      errors,
+    });
+  });
 
   return context;
 }
