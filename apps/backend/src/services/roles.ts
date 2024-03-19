@@ -139,7 +139,7 @@ async function hasOneOfRoles(roles: UserRole[], user: User) {
 	return false;
 }
 
-async function resolvePermissions(roles: UserRole[]) {
+function resolvePermissions(roles: UserRole[]) {
 	let permissions = 0;
 	for (const role of roles) {
 		permissions |= role.permissions;
