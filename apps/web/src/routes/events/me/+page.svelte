@@ -11,6 +11,7 @@
 	export let data: PageData;
 
 	const search = queryParam("q")
+	let searchInput = $search
 </script>
 
 <svelte:head>
@@ -24,7 +25,15 @@
 	<section class="flex flex-col mt-4">
 		<div>
 			<div class="flex flex-col sm:flex-row gap-2">
-				<Search size="md" placeholder="Search by name" class="sm:max-w-[400px] rounded" bind:value={$search} />
+				<Search size="md" placeholder="Search by name" class="sm:max-w-[400px] rounded"
+					bind:value={searchInput} 
+					on:keydown={(e) => {
+						if (e.key === "Enter") search.set(searchInput);
+					}} 
+					on:blur={() => {
+						search.set(searchInput)
+					}} 
+				/>
 				<div class="shrink-0 flex flex-col justify-end min-[480px]:flex-row gap-2">
 					<Button color="alternative" class="md:flex-1 sm:shrink-0" href="/events">
 						All Events

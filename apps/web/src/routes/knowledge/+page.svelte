@@ -25,6 +25,7 @@
 	import ToolButton from "./ToolButton.svelte";
 
 	const search = queryParam("q")
+	let searchInput = $search;
 
 	const tools = [
 		{ name: "SC Trade Tools", icon: tradeToolsIcon, href: "https://sc-trade.tools/" },
@@ -65,7 +66,15 @@
 	<section class="flex flex-col gap-2 mt-4">
 		<div>
 			<div class="flex flex-col sm:flex-row gap-2">
-				<Search size="md" placeholder="Search by name" class="rounded flex-1 sm:w-96" bind:value={$search} />
+				<Search size="md" placeholder="Search by name" class="rounded flex-1 sm:w-96" 
+					bind:value={searchInput} 
+					on:keydown={(e) => {
+						if (e.key === "Enter") search.set(searchInput);
+					}} 
+					on:blur={() => {
+						search.set(searchInput)
+					}} 
+				/>
 				{#if hasPermission($user.data?.permissions ?? 0, Permission.UploadResources)}
 					<Button
 						class="self-end sm:shrink-0"
