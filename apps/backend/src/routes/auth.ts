@@ -2,7 +2,7 @@
 import { REST, Routes, type RESTPostOAuth2AccessTokenResult, type APIUser } from "discord.js";
 
 import type { Context, RouteConfig } from "../context";
-import { getURL } from "../env";
+import { getAdminIds, getURL } from "../env";
 import { $discord } from "../services/discord";
 import { $users } from "../services/users";
 import { getConsent } from "../session/middleware/consent.middleware";
@@ -91,7 +91,8 @@ export default function route(context: Context, config: RouteConfig) {
 				authPrefix: "Bearer",
 			})) as APIUser;
 
-			if (!(await $discord.isInGuild(context.discordClient, discordUser.id))) {
+			const adminIds = getAdminIds()
+			if (!adminIds.includes(discordUser.id) && !(await $discord.isInGuild(context.discordClient, discordUser.id))) {
 				if (!redirect_uri) {
 					return res.status(400).send({
 						message: "Not in guild"

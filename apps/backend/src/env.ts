@@ -69,6 +69,10 @@ export function isProd() {
 	return process.env.NODE_ENV === "production"
 }
 
+export function getAdminIds() {
+	return (process.env.ADMIN_DISCORD_IDS ?? "").split(",").map(id => id.trim())
+}
+
 export function validateEnvironment() {
 	console.log("Validating environment...")
 
@@ -105,9 +109,9 @@ export function validateEnvironment() {
 	// DEVICE_TRACK_COOKIE=
 	assert(process.env.DEVICE_TRACK_COOKIE && process.env.DEVICE_TRACK_COOKIE.length > 0, "Environment: Expected 'DEVICE_TRACK_COOKIE'")
 
-	// ADMIN_DISCORD_ID=
+	// ADMIN_DISCORD_IDS=
 	if (isProd()) {
-		assert(process.env.ADMIN_DISCORD_ID && process.env.ADMIN_DISCORD_ID.length > 0, "Environment: Expected 'ADMIN_DISCORD_ID' in production")
+		assert(process.env.ADMIN_DISCORD_IDS && process.env.ADMIN_DISCORD_IDS.length > 0, "Environment: Expected 'ADMIN_DISCORD_IDS' in production")
 	}
 
 	// DISCORD_CLIENTID=

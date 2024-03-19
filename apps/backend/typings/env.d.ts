@@ -24,7 +24,7 @@ declare global {
 
 			DEVICE_TRACK_COOKIE: string;
 
-			ADMIN_DISCORD_ID?: string;
+			ADMIN_DISCORD_IDS?: string;
 
 			DISCORD_CLIENTID: string;
 			DISCORD_SECRET: string;
