@@ -4,6 +4,7 @@
 	import { CodeSolid } from "flowbite-svelte-icons";
 
 	import { CookieConsentModal, Footer, Header, Notifications, UserProfileModal } from "$lib/components";
+	import JoinGuildModal from "$lib/components/modals/JoinGuildModal.svelte";
 </script>
 
 <svelte:head>
@@ -22,6 +23,7 @@
 	</main>
 	<Footer />
 	<UserProfileModal />
+	<JoinGuildModal />
 	<CookieConsentModal />
 	<Notifications />
 </div>
