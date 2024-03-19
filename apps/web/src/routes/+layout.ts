@@ -14,11 +14,14 @@ function base64URLdecode(str: string) {
 export const load = async ({ data, url }) => {
 	if (browser) {
 		locale.set(window.navigator.language);
+
 		if (url.searchParams.has("login_err")) {
 			const encodedError = url.searchParams.get("login_err")!
 			const decodedError = base64URLdecode(encodedError)
 			const err = JSON.parse(decodedError)
 			console.error(err)
+
+			url.searchParams.delete("login_err")
 		}
 	}
 	await waitLocale();
