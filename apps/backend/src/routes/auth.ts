@@ -102,7 +102,7 @@ export default function route(context: Context, config: RouteConfig) {
 				return res.redirect(url.toString())
 			}
 
-			const user = await $users.getOrCreateUser(discordUser);
+			const user = await $users.getOrCreateUser(discordUser, context.discordClient);
 			await req.login(user);
 		} catch (err) {
 			if (!redirect_uri) {

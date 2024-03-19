@@ -22,7 +22,7 @@
 		<Select
 			id="event-rsvp-role"
 			name="Event RSVP Role"
-			options={event.roles.map((role) => ({
+			options={event.rsvpRoles.map((role) => ({
 				value: role.id,
 				name: role.name,
 			}))}

@@ -55,7 +55,7 @@
 					location: editData.location.map((loc) => loc.name),
 					startAt: editData.startAt!,
 					duration: editData.duration!,
-					roles: editData.roles.map((r) => ({
+					roles: editData.rsvpRoles.map((r) => ({
 						id: r.id,
 						name: r.name,
 						limit: r.limit,
@@ -372,7 +372,7 @@
 		Event RSVPs
 	</SectionHeading>
 	<div class="py-4 sm:px-4">
-		<RsvpTable id="event-rsvps" {validator} {data} bind:value={editData.roles} />
+		<RsvpTable id="event-rsvps" {validator} {data} bind:value={editData.rsvpRoles} />
 	</div>
 </section>
 <div class="flex flex-wrap justify-end items-center gap-2">

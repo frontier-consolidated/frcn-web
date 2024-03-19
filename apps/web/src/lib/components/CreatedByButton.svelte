@@ -3,7 +3,7 @@
 	import { twMerge } from "tailwind-merge";
 
 	import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";
-	import { userProfileView } from "$lib/stores/UserProfileViewStore";
+	import { viewUserProfile } from "$lib/stores/UserProfileViewStore";
 
     export let user: UserFragmentFragment | null | undefined;
 </script>
@@ -12,7 +12,7 @@
     e.preventDefault()
     e.stopPropagation()
     if (!user) return;
-    userProfileView.set(user)
+    viewUserProfile(user)
 }}>
     <span class="text-sm dark:text-white">By</span>
     <Avatar rounded size="xs" src={user?.avatarUrl} />

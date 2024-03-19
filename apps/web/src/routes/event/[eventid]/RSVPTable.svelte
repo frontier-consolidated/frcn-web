@@ -8,7 +8,7 @@
 	import RsvpItem from "./RSVPItem.svelte";
 
 	export let data: PageData;
-	export let value: PageData["roles"] = [];
+	export let value: PageData["rsvpRoles"] = [];
 	export let validator: FieldValidator;
 </script>
 
