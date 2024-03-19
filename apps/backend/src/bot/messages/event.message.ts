@@ -5,7 +5,7 @@ import type { Event } from "@prisma/client";
 import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadAutoArchiveDuration } from "discord.js";
 
 import { database } from "../../database";
-import { getWebOrigin } from "../../env";
+import { getWebURL } from "../../env";
 import { $discord } from "../../services/discord";
 import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
@@ -141,7 +141,7 @@ export async function buildEventMessage(id: string, client: Client) {
 
 	const weblinkButton = new ButtonBuilder()
 		.setLabel("View")
-		.setURL(new URL(`/event/${event.id}`, getWebOrigin()).href)
+		.setURL(getWebURL(`/event/${event.id}`).href)
 		.setStyle(ButtonStyle.Link);
 	buttonsRow.addComponents(weblinkButton);
 
