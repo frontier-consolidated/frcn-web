@@ -144,7 +144,7 @@ async function seedProduction() {
 		await database.systemSettings.update({
 			where: { unique: true },
 			data: {
-				roleOrder: roles.map((role) => role.id),
+				roleOrder: sortedRoles.map((role) => role.id),
 			}
 		});
 	}
