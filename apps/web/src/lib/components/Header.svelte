@@ -19,7 +19,8 @@
 		BuildingSolid,
 		UsersSolid,
 		BookSolid,
-		MapPinAltSolid
+		MapPinAltSolid,
+		ArrowUpRightFromSquareOutline
 	} from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
@@ -102,29 +103,43 @@
 					</button>
 				</li>
 			{/if}
-			<NavLi
-				class={twMerge("flex gap-2 items-center cursor-pointer", activeUrl.startsWith("/about") ? activeClass : undefined)}
-			>
-				<InfoCircleSolid size="sm" tabindex="-1" />ABOUT US<ChevronDownOutline class={twMerge("transition-all w-3 h-3", aboutOpen && "rotate-180")} tabindex="-1" />
-			</NavLi>
-			{#if browser}
-				<ScreenQuery size="lg" let:matches>
-					<MegaMenu full offset={matches ? 26 : 54}
-						class="bg-gray-100/60 dark:bg-slate-900/80 pb-4 backdrop-blur-xl"
-						ulClass="grid grid-flow-row gap-y-4 md:gap-x-8 auto-col-max auto-row-max"
-						items={aboutItems}
-						bind:open={aboutOpen}
-						let:item
+			<ScreenQuery size="lg" let:matches>
+				{#if !browser || matches}
+					<NavLi
+						class={twMerge("flex gap-2 items-center cursor-pointer", activeUrl.startsWith("/about") ? activeClass : undefined)}
 					>
-						<a href={item.href} target={item.target} class="block transition p-4 border-l border-gray-700 dark:border-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600 h-full clip-r-4">
-							<div class="flex items-center font-medium text-md text-black dark:text-gray-200">
-								<svelte:component this={item.icon} size="sm" class="me-2" tabindex="-1" /> {item.name}
-							</div>
-							<span class="text-gray-700 dark:text-gray-500">{item.description}</span>
-						</a>
-					</MegaMenu>
-				</ScreenQuery>
-			{/if}
+						<InfoCircleSolid size="sm" tabindex="-1" />ABOUT US<ChevronDownOutline class={twMerge("transition-all w-3 h-3", aboutOpen && "rotate-180")} tabindex="-1" />
+					</NavLi>
+					{#if browser}
+						<MegaMenu full offset={26}
+							class="bg-gray-100/60 dark:bg-slate-900/80 pb-4 backdrop-blur-xl"
+							ulClass="grid grid-flow-row gap-y-4 md:gap-x-8 auto-col-max auto-row-max"
+							items={aboutItems}
+							bind:open={aboutOpen}
+							let:item
+						>
+							<a href={item.href} target={item.target} class="block transition p-4 border-l border-gray-700 dark:border-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600 h-full clip-r-4">
+								<div class="flex items-center font-medium text-md text-black dark:text-gray-200">
+									<svelte:component this={item.icon} size="sm" class="me-2" tabindex="-1" /> {item.name}
+									{#if item.target}
+										<ArrowUpRightFromSquareOutline size="xs" class="ms-2" />
+									{/if}
+								</div>
+								<span class="text-gray-700 dark:text-gray-500">{item.description}</span>
+							</a>
+						</MegaMenu>
+					{/if}
+				{:else}
+					{#each aboutItems as item}
+						<NavLi href={item.href} target={item.target} class="flex gap-2 items-center">
+							<svelte:component this={item.icon} size="sm" tabindex="-1" />{item.name}
+							{#if item.target}
+								<ArrowUpRightFromSquareOutline size="sm" class="ml-auto" />
+							{/if}
+						</NavLi>
+					{/each}
+				{/if}
+			</ScreenQuery>
 			{#if !!$user.data}
 				<NavLi href="/events" class="flex gap-2 items-center">
 					<CalendarMonthSolid size="sm" tabindex="-1" />EVENTS
