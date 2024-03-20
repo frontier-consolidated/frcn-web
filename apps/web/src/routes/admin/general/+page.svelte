@@ -12,7 +12,7 @@
 
     function cloneSystemSettings(data: PageData) {
         return {
-            discordGuildId: data.discordGuildId,
+            discordGuild: { ...data.discordGuild },
             defaultEventChannel: { ...data.defaultEventChannel },
         }
     }
@@ -20,7 +20,7 @@
     let validator = new FieldValidator();
     let editData = cloneSystemSettings(data)
 
-    $: isDirty = data.discordGuildId !== editData.discordGuildId || data.defaultEventChannel?.id !== editData.defaultEventChannel.id
+    $: isDirty = data.discordGuild.id !== editData.discordGuild.id || data.defaultEventChannel?.id !== editData.defaultEventChannel.id
 
     async function save() {
         if (!validator.validate()) return;
@@ -29,7 +29,7 @@
 			mutation: Mutations.EDIT_SYSTEM_SETTINGS,
 			variables: {
 				data: {
-                    discordGuildId: editData.discordGuildId,
+                    discordGuildId: editData.discordGuild.id,
                     defaultEventChannelId: editData.defaultEventChannel.id
                 }
 			},
@@ -63,7 +63,8 @@
 <div class="flex-1 flex flex-col justify-between">
     <div class="flex flex-col gap-4 p-4">
         <Field {validator} for="system-general-guildid" value={"a"} required>
-            <Label for="system-general-guildid" class="mb-2">Discord Guild Id</Label>
+            <Label for="system-general-guildid" class="mb-1">Discord Guild</Label>
+            <span class="block mb-1 text-xs text-gray-500">Current Guild: {data.discordGuild.name}</span>
             <Input
                 class="rounded"
                 id="system-general-guildid"
@@ -72,7 +73,7 @@
                 placeholder="0"
                 pattern="[0-9]+"
                 required
-                bind:value={editData.discordGuildId}
+                bind:value={editData.discordGuild.id}
             />
             <Helper class="mt-1">
                 The discord guild that all roles and events will be linked to

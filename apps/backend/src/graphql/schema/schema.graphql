@@ -35,7 +35,7 @@ directive @permission(has: Permission, one: [Permission!], all: [Permission!]) o
 # Types
 
 type SystemSettings {
-	discordGuildId: String!
+	discordGuild: DiscordGuild!
 	defaultEventChannel: DiscordChannel
 }
 
@@ -142,6 +142,11 @@ type Event {
 	settings: EventSettings! @permission(has: CreateEvents)
 	accessType: EventAccessType! @permission(has: CreateEvents)
 	accessRoles: [UserRole!]! @permission(has: CreateEvents)
+}
+
+type DiscordGuild {
+	id: ID!
+	name: String!
 }
 
 type DiscordChannel {

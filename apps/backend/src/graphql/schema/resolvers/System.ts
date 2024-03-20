@@ -6,6 +6,7 @@ import { database } from "../../../database";
 import { $events } from "../../../services/events";
 import { $system } from "../../../services/system";
 import type {
+	DiscordGuild,
 	SystemSettings as GQLSystemSettings,
 	Resolvers,
 } from "../../__generated__/resolvers-types";
@@ -14,13 +15,28 @@ import { gqlErrorBadInput } from "../gqlError";
 export function resolveSystemSettings(settings: SystemSettings) {
 	return {
 		_model: settings,
-		discordGuildId: settings.discordGuildId,
+		discordGuild: null as unknown as DiscordGuild, // field-resolved
 		defaultEventChannel: null, // field-resolved
 	} satisfies WithModel<GQLSystemSettings, SystemSettings>;
 }
 
 export const systemResolvers: Resolvers = {
 	SystemSettings: {
+		async discordGuild(source, args, context) {
+			const { _model } = source as WithModel<GQLSystemSettings, SystemSettings>;
+			try {
+				const guild = await context.app.discordClient.guilds.fetch(_model.discordGuildId)
+				return {
+					id: guild.id,
+					name: guild.name,
+				}
+			} catch (err) {
+				return {
+					id: _model.discordGuildId,
+					name: "!UNKNOWN"
+				}
+			}
+		},
 		async defaultEventChannel(source, args, context) {
 			const { _model } = source as WithModel<GQLSystemSettings, SystemSettings>;
 			const eventChannel = await database.systemSettings.getDefaultEventChannel(

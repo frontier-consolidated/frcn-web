@@ -49,6 +49,12 @@ export type DiscordEmojis = {
   serverName: Scalars['String']['output'];
 };
 
+export type DiscordGuild = {
+  __typename?: 'DiscordGuild';
+  id: Scalars['ID']['output'];
+  name: Scalars['String']['output'];
+};
+
 export type DiscordRole = {
   __typename?: 'DiscordRole';
   color: Scalars['String']['output'];
@@ -506,7 +512,7 @@ export type SystemEditInput = {
 export type SystemSettings = {
   __typename?: 'SystemSettings';
   defaultEventChannel?: Maybe<DiscordChannel>;
-  discordGuildId: Scalars['String']['output'];
+  discordGuild: DiscordGuild;
 };
 
 export type UpdatedUserRoles = {
@@ -644,6 +650,7 @@ export type ResolversTypes = ResolversObject<{
   DiscordChannel: ResolverTypeWrapper<DiscordChannel>;
   DiscordEmoji: ResolverTypeWrapper<DiscordEmoji>;
   DiscordEmojis: ResolverTypeWrapper<DiscordEmojis>;
+  DiscordGuild: ResolverTypeWrapper<DiscordGuild>;
   DiscordRole: ResolverTypeWrapper<DiscordRole>;
   Event: ResolverTypeWrapper<Event>;
   EventAccessType: EventAccessType;
@@ -689,6 +696,7 @@ export type ResolversParentTypes = ResolversObject<{
   DiscordChannel: DiscordChannel;
   DiscordEmoji: DiscordEmoji;
   DiscordEmojis: DiscordEmojis;
+  DiscordGuild: DiscordGuild;
   DiscordRole: DiscordRole;
   Event: Event;
   EventEditInput: EventEditInput;
@@ -764,6 +772,12 @@ export type DiscordEmojisResolvers<ContextType = GQLContext, ParentType extends 
   emojis?: Resolver<Array<ResolversTypes['DiscordEmoji']>, ParentType, ContextType>;
   serverAvatar?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   serverName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
+export type DiscordGuildResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DiscordGuild'] = ResolversParentTypes['DiscordGuild']> = ResolversObject<{
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -928,7 +942,7 @@ export type SubscriptionResolvers<ContextType = GQLContext, ParentType extends R
 
 export type SystemSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SystemSettings'] = ResolversParentTypes['SystemSettings']> = ResolversObject<{
   defaultEventChannel?: Resolver<Maybe<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
-  discordGuildId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  discordGuild?: Resolver<ResolversTypes['DiscordGuild'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -993,6 +1007,7 @@ export type Resolvers<ContextType = GQLContext> = ResolversObject<{
   DiscordChannel?: DiscordChannelResolvers<ContextType>;
   DiscordEmoji?: DiscordEmojiResolvers<ContextType>;
   DiscordEmojis?: DiscordEmojisResolvers<ContextType>;
+  DiscordGuild?: DiscordGuildResolvers<ContextType>;
   DiscordRole?: DiscordRoleResolvers<ContextType>;
   Event?: EventResolvers<ContextType>;
   EventMember?: EventMemberResolvers<ContextType>;
