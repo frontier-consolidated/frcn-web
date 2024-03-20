@@ -155,6 +155,7 @@ export async function buildEventMessage(id: string, client: Client) {
 async function getEventMessage(client: Client, event: Event) {
 	if (!event.discordEventMessageId) return null;
 	const eventChannel = await database.event.getChannel(event);
+	if (!eventChannel) return null;
 
 	const channel = await $discord.getChannel(
 		client,
@@ -166,9 +167,10 @@ async function getEventMessage(client: Client, event: Event) {
 
 export async function postEventMessage(client: Client, event: Event) {
 	const eventChannel = await database.event.getChannel(event)
+	if (!eventChannel) throw new Error("Could not find event channel")
 
 	const channel = await $discord.getChannel(client, eventChannel.discordId);
-	if (!channel?.isTextBased()) throw new Error();
+	if (!channel?.isTextBased()) throw new Error("Could not find event channel, or channel is somehow not text based");
 
 	const payload = await buildEventMessage(event.id, client);
 	const eventMessage = await channel.send(payload);

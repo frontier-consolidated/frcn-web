@@ -15,8 +15,7 @@ import type {
 	EventRsvpRole as GQLEventRsvpRole,
 	EventMember as GQLEventMember,
 	EventSettings as GQLEventSettings,
-	Resolvers,
-	DiscordChannel,
+	Resolvers
 } from "../../__generated__/resolvers-types";
 import { EventAccessType } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
@@ -26,7 +25,7 @@ export function resolveEvent(event: Event) {
 	return {
 		_model: event,
 		id: event.id,
-		channel: null as unknown as DiscordChannel, // field-resolved
+		channel: null, // field-resolved
 		owner: null, // field-resolved
 		name: event.name,
 		summary: event.summary,
@@ -103,6 +102,7 @@ export const eventResolvers: Resolvers = {
 		async channel(source, args, context) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const channel = await database.event.getChannel(_model);
+			if (!channel) return null;
 			return await resolveDiscordChannel(channel, context);
 		},
 		async owner(source): Promise<WithModel<GQLUser, User> | null> {

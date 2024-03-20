@@ -60,7 +60,7 @@ export type Event = {
   __typename?: 'Event';
   accessRoles: Array<UserRole>;
   accessType: EventAccessType;
-  channel: DiscordChannel;
+  channel?: Maybe<DiscordChannel>;
   createdAt: Scalars['Timestamp']['output'];
   description: Scalars['String']['output'];
   duration?: Maybe<Scalars['Int']['output']>;
@@ -402,7 +402,7 @@ export type Query = {
   getAllDiscordChannels: Array<DiscordChannel>;
   getAllDiscordEmojis: DiscordEmojis;
   getAllDiscordRoles: Array<DiscordRole>;
-  getAllEventChannels: Array<Maybe<DiscordChannel>>;
+  getAllEventChannels: Array<DiscordChannel>;
   getCurrentUser?: Maybe<User>;
   getEvent?: Maybe<Event>;
   getEvents?: Maybe<PagedEvent>;
@@ -499,6 +499,7 @@ export type SubscriptionUserRolesUpdatedArgs = {
 };
 
 export type SystemEditInput = {
+  defaultEventChannelId?: InputMaybe<Scalars['ID']['input']>;
   discordGuildId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -776,7 +777,7 @@ export type DiscordRoleResolvers<ContextType = GQLContext, ParentType extends Re
 export type EventResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = ResolversObject<{
   accessRoles?: Resolver<Array<ResolversTypes['UserRole']>, ParentType, ContextType>;
   accessType?: Resolver<ResolversTypes['EventAccessType'], ParentType, ContextType>;
-  channel?: Resolver<ResolversTypes['DiscordChannel'], ParentType, ContextType>;
+  channel?: Resolver<Maybe<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   duration?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
@@ -894,7 +895,7 @@ export type QueryResolvers<ContextType = GQLContext, ParentType extends Resolver
   getAllDiscordChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
   getAllDiscordEmojis?: Resolver<ResolversTypes['DiscordEmojis'], ParentType, ContextType>;
   getAllDiscordRoles?: Resolver<Array<ResolversTypes['DiscordRole']>, ParentType, ContextType, Partial<QueryGetAllDiscordRolesArgs>>;
-  getAllEventChannels?: Resolver<Array<Maybe<ResolversTypes['DiscordChannel']>>, ParentType, ContextType>;
+  getAllEventChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
   getCurrentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   getEvent?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<QueryGetEventArgs, 'id'>>;
   getEvents?: Resolver<Maybe<ResolversTypes['PagedEvent']>, ParentType, ContextType, Partial<QueryGetEventsArgs>>;
