@@ -4,7 +4,7 @@ export type MutableData = ReturnType<typeof cloneEventSettingsData>;
 
 export function cloneEventSettingsData(data: PageData) {
 	return {
-		channel: structuredClone(data.channel),
+		channel: data.channel ? structuredClone(data.channel) : { id: null, name: "!ERROR" },
 		name: data.name,
 		summary: data.summary,
 		description: data.description,
@@ -28,8 +28,8 @@ export function checkIfDirty(source: PageData, mutable: MutableData) {
 		switch (key) {
 			case "channel":
 				{
-					const mutableChannel = mutable.channel.id;
-					const sourceChannel = mutable.channel.id;
+					const mutableChannel = mutable.channel?.id;
+					const sourceChannel = mutable.channel?.id;
 					const valueClean = mutableChannel === sourceChannel;
 					if (!valueClean) diff.push(key);
 					clean &&= valueClean;
