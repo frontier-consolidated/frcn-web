@@ -7,6 +7,7 @@ import { DELETE_ROLE } from "./deleteRole.mutation";
 import { EDIT_EVENT } from "./editEvent.mutation";
 import { EDIT_RESOURCE } from "./editResource.mutation";
 import { EDIT_ROLE } from "./editRole.mutation";
+import { EDIT_SYSTEM_SETTINGS } from "./editSystemSettings.mutation";
 import { POST_EVENT } from "./postEvent.mutation";
 import { REORDER_ROLES } from "./reorderRoles.mutation";
 import { RSVP_FOR_EVENT } from "./rsvpForEvent.mutation";
@@ -26,4 +27,5 @@ export const Mutations = {
 	CREATE_RESOURCE,
 	EDIT_RESOURCE,
 	DELETE_RESOURCE,
+	EDIT_SYSTEM_SETTINGS
 };
