@@ -1,7 +1,7 @@
 export enum Permission {
 	CreateEvents = 1 << 0,
 	UploadResources = 1 << 1,
-	Unassigned2 = 1 << 2,
+	AccessCms = 1 << 2,
 	Unassigned3 = 1 << 3,
 	Unassigned4 = 1 << 4,
 	Unassigned5 = 1 << 5,
