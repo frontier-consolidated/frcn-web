@@ -1,17 +1,19 @@
 import { randomUUID } from "crypto";
 import fs from "fs";
+import type { OutgoingHttpHeaders } from "http";
 import os from "os";
 import path from "path";
 
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import { Permission, hasPermission } from "@frcn/shared";
+import type { FileUpload } from "@prisma/client";
 import type { RequestHandler } from "express";
 import * as mime from "mime-types";
 import multer, { MulterError } from "multer";
 
 import type { Context, RouteConfig } from "../context";
-import { transaction } from "../database";
+import { database, transaction } from "../database";
 import { ffmpeg, ffprobe } from "../ffmpeg";
 import { $resources } from "../services/resources";
 import { $users } from "../services/users";
@@ -50,11 +52,20 @@ function fileField(
             })
         }
 
-        if (!hasPermission(await $users.getPermissions(req.user), Permission.UploadResources)) {
-            return res.status(403).send({
-                message: "Missing permissions required to upload files"
-            })
+        const { type } = req.query as { type?: string }
+        const permissions = await $users.getPermissions(req.user)
+
+        let canUpload = true
+
+        if (type === "resource" && !hasPermission(permissions, Permission.UploadResources)) {
+            canUpload = false;
+        } else if (type === "cms_container" && !hasPermission(permissions, Permission.AccessCms)) {
+            canUpload = false;
         }
+
+        if (!canUpload) return res.status(403).send({
+            message: "Missing permissions required to upload files"
+        })
 
         handler(req, res, (err) => {
             if (err instanceof MulterError) {
@@ -131,19 +142,21 @@ function toHTTPTimestamp(date: Date): string {
 
 export default function route(context: Context, config: RouteConfig) {
     context.expressApp.post(
-        "/res/:id",
+        "/media/upload",
         fileField("file", {
             maxFiles: 1,
             allowedFiles: ["image/*", "pdf"]
         }),
         async (req, res, next) => {
-            const resource = await $resources.getResource(req.params.id)
-            if (!resource) {
-                return res.sendStatus(400)
+            const { type, attach_to } = req.query as {
+                type?: string,
+                attach_to?: string
             }
 
+            if (!type) return res.status(400).send({ message: "Missing 'type' query param" })
+            if (!attach_to) return res.status(400).send({ message: "Missing 'attach_to' query param" })
+
             const file = (req.files as Express.Multer.File[])[0]
-            
             const filesToCleanup = [file.path]
             function cleanup() {
                 for (const path of filesToCleanup) {
@@ -151,156 +164,163 @@ export default function route(context: Context, config: RouteConfig) {
                 }
             }
 
-            let targetFile = file.path
-            let fileName = file.originalname;
-            // use file.mimetype here?
-            let contentType = mime.contentType(fileName) || undefined
-            const parsedFileName = path.parse(fileName);
+            async function createFileUpload(createFn: (tx: typeof database, fileUpload: FileUpload,) => Promise<void>) {
+                let targetFile = file.path
+                let fileName = file.originalname;
+                // use file.mimetype here?
+                let contentType = mime.contentType(fileName) || undefined
+                const parsedFileName = path.parse(fileName);
+    
+                if (contentType?.startsWith("image/") && !contentType.includes("xml")) {
+                    contentType = "image/webp"
+                    fileName = `${parsedFileName.name}.webp`;
+    
+                    targetFile = path.join(storageDir, `${randomUUID()}.webp`);
+                    filesToCleanup.push(targetFile)
+                    try {
+                        const probeData = await ffprobe(file.path)
+                        const imageData = probeData.streams[0]
+                        
+                        const width = imageData.width!;
+                        const height = imageData.height!;
+                        
+                        await ffmpeg(command => {
+                            command.input(file.path)
+                            if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
+                                command.size(width > height ? `${MAX_IMAGE_DIMENSION}x?` : `?x${MAX_IMAGE_DIMENSION}`)
+                            }
+                            command.addOutputOption("-quality", "95")
+                            command.saveToFile(targetFile)
+                            return command;
+                        })
+                    } catch (err) {
+                        cleanup()
+                        return next(err)
+                    }
+                }
+    
+                const uploadId = randomUUID();
+                const uploadKey = `${req.hostname}-resource-${uploadId}`
+                const s3Upload = new Upload({
+                    client: context.s3Client,
+                    params: {
+                        Bucket: config.files.bucketName,
+                        Key: uploadKey,
+                        ContentType: contentType,
+                        Body: fs.createReadStream(targetFile),
+                    },
+                    tags: [],
+                    queueSize: 4,
+                    partSize: 5 * 1024 * 1024,
+                    leavePartsOnError: false,
+                })
 
-            if (contentType?.startsWith("image/") && !contentType.includes("xml")) {
-                contentType = "image/webp"
-                fileName = `${parsedFileName.name}.webp`;
-
-                targetFile = path.join(storageDir, `${randomUUID()}.webp`);
-                filesToCleanup.push(targetFile)
                 try {
-                    const probeData = await ffprobe(file.path)
-                    const imageData = probeData.streams[0]
-                    
-                    const width = imageData.width!;
-                    const height = imageData.height!;
-                    
-                    await ffmpeg(command => {
-                        command.input(file.path)
-                        if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
-                            command.size(width > height ? `${MAX_IMAGE_DIMENSION}x?` : `?x${MAX_IMAGE_DIMENSION}`)
-                        }
-                        command.addOutputOption("-quality", "95")
-                        command.saveToFile(targetFile)
-                        return command;
+                    await transaction(async (tx) => {
+                        const fileUpload = await tx.fileUpload.create({
+                            data: {
+                                id: uploadId,
+                                key: uploadKey,
+                                fileName: fileName,
+                                fileSizeKb: Math.ceil(file.size / 1024),
+                                contentType: contentType ?? "application/octet-stream"
+                            }
+                        })
+    
+                        await createFn(tx, fileUpload);
+    
+                        await s3Upload.done()
                     })
+    
+                    res.sendStatus(200)
                 } catch (err) {
+                    await s3Upload.abort();
+                    next(err)
+                } finally {
                     cleanup()
-                    return next(err)
                 }
             }
 
-            const fileUpload = new Upload({
-                client: context.s3Client,
-                params: {
-                    Bucket: config.files.bucketName,
-                    Key: resource.id,
-                    ContentType: contentType,
-                    Body: fs.createReadStream(targetFile),
-                },
-                tags: [],
-                queueSize: 4,
-                partSize: 5 * 1024 * 1024,
-                leavePartsOnError: false,
-            })
+            switch (type.toLowerCase()) {
+                case "resource": {
+                    const resource = await $resources.getResource(attach_to)
+                    if (!resource) {
+                        return res.status(404).send({ message: `Could not find resource 'attach_to=${attach_to}'` })
+                    }
 
-            try {
-                await transaction(async (tx) => {
-                    await tx.resource.update({
-                        where: { id: resource.id },
-                        data: {
-                            canPreview: contentType?.startsWith("image"),
-                            fileAttached: true,
-                            fileName: fileName,
-                            fileSizeKb: Math.ceil(file.size / 1024)
-                        }
+                    await createFileUpload(async (tx, fileUpload) => {
+                        await tx.resource.update({
+                            where: { id: resource.id },
+                            data: {
+                                canPreview: fileUpload.contentType.startsWith("image"),
+                                file: {
+                                    connect: fileUpload
+                                }
+                            }
+                        })
                     })
-
-                    await fileUpload.done()
-                })
-
-                res.sendStatus(200)
-            } catch (err) {
-                await fileUpload.abort()
-                next(err)
-            } finally {
-                cleanup()
+                    break;
+                }
+                case "cms_container":
+                    return res.status(501).send({ message: "Method not implemented" })
+                default:
+                    return res.status(400).send({ message: `Disallowed attachment 'type=${type}'` })
             }
         }
     );
 
-    context.expressApp.get("/res/:id", async (req, res, next) => {
-        const resource = await $resources.getResource(req.params.id)
-        if (!resource) {
-            return res.sendStatus(400)
-        }
-
-        if (!resource.fileAttached) {
-            return res.status(400).send({
-                message: "Resource has no file"
-            })
-        }
-
-        if (!resource.canPreview) {
-            return res.status(400).send({
-                message: "Cannot preview resource"
-            })
-        }
-
-        const command = new GetObjectCommand({
-            Bucket: config.files.bucketName,
-            Key: resource.id,
+    context.expressApp.get("/media/:id", async (req, res) => {
+        const file = await database.fileUpload.findUnique({
+            where: { id: req.params.id }
         })
-
-        try {
-            const response = await context.s3Client.send(command)
-            if (!response.Body) {
-                return res.sendStatus(404)
-            }
-            
-            const blob = await response.Body.transformToByteArray()
-            const buffer = Buffer.from(blob)
-
-            res.writeHead(200, {
-                "Content-Type": response.ContentType,
-                "Content-Length": buffer.length,
-                "Last-Modified": toHTTPTimestamp(response.LastModified ?? new Date()),
-                "ETag": response.ETag,
+        if (!file) {
+            return res.status(404).send({
+                message: "No file"
             })
-            res.end(buffer)
-        } catch (err) {
-            next(err)
         }
+
+        res.redirect(308, req.baseUrl + `/media/${req.params.id}/${file.fileName}`)
     })
 
-    context.expressApp.get("/res/:id/download", async (req, res, next) => {
-        const resource = await $resources.getResource(req.params.id)
-        if (!resource) {
-            return res.sendStatus(400)
-        }
+    context.expressApp.get("/media/:id/:slug", async (req, res, next) => {
+        const { download } = req.query as { download?: string }
 
-        if (!resource.fileAttached) {
-            return res.status(400).send({
-                message: "Resource has no file"
+        const file = await database.fileUpload.findUnique({
+            where: { id: req.params.id }
+        })
+        if (!file) {
+            return res.status(404).send({
+                message: "No file"
             })
         }
 
         const command = new GetObjectCommand({
             Bucket: config.files.bucketName,
-            Key: resource.id,
+            Key: file.key,
         })
 
         try {
             const response = await context.s3Client.send(command)
             if (!response.Body) {
+
                 return res.sendStatus(404)
             }
             
             const blob = await response.Body.transformToByteArray()
             const buffer = Buffer.from(blob)
 
-            res.writeHead(200, {
-                "Content-Disposition": `attachment; filename=${resource.fileName ?? "file"}`,
+            const headers = {
                 "Content-Type": response.ContentType,
                 "Content-Length": buffer.length,
                 "Last-Modified": toHTTPTimestamp(response.LastModified ?? new Date()),
                 "ETag": response.ETag,
-            })
+            } as OutgoingHttpHeaders
+
+            if (download !== undefined) {
+                headers["Content-Disposition"] = `attachment; filename=${file.fileName ?? "file"}`
+            }
+
+            res.writeHead(200, headers)
             res.end(buffer)
         } catch (err) {
             next(err)
