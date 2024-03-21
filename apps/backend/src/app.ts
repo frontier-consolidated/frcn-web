@@ -8,6 +8,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express, { type NextFunction, type Request, type Response } from "express";
 
+import { createCmsEventBus } from "./cms";
 import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
 import { createApolloServer } from "./graphql";
@@ -26,6 +27,10 @@ interface CreateAppOptions {
         region: string;
         clientKey: string;
         clientSecret: string;
+    },
+    cmsConfig: {
+        databaseUrl: string;
+        schema: string;
     }
 }
 
@@ -70,6 +75,8 @@ export async function createApp(config: CreateAppOptions) {
 
     const s3Client = createS3Client(config.s3Config.region, config.s3Config.clientKey, config.s3Config.clientSecret)
 
+    const cmsBus = createCmsEventBus(config.cmsConfig.databaseUrl, config.cmsConfig.schema)
+
     const context: Context = {
         expressApp: app,
         server,
@@ -77,7 +84,8 @@ export async function createApp(config: CreateAppOptions) {
         discordClient,
         discordRest,
         s3Client,
-        s3Bucket: config.s3Config.bucketName
+        s3Bucket: config.s3Config.bucketName,
+        cmsBus
     };
 
     const files = fs.readdirSync(path.join(__dirname, "routes"), {

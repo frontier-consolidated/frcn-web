@@ -4,10 +4,6 @@ export function getPort() {
 	return Number(process.env.PORT);
 }
 
-export function getCmsPort() {
-	return Number(process.env.CMS_PORT);
-}
-
 function hasExternalPort() {
 	return process.env.EXTERNAL_PORT && !isNaN(Number(process.env.EXTERNAL_PORT))
 }
