@@ -18,12 +18,8 @@ function consent(): "/consent" {
 	return "/consent"
 }
 
-function resource(id: string): `/res/${string}` {
-	return `/res/${id}`
-}
-
-function resourceDownload(id: string): `/res/${string}/download` {
-	return `/res/${id}/download`
+function upload(type: "resource" | "cms_container", attachTo: string): `/media/upload?type=${string}&attach_to=${string}` {
+	return `/media/upload?type=${type}&attach_to=${attachTo}`
 }
 
 export const Routes = {
@@ -32,6 +28,5 @@ export const Routes = {
 	consent,
 	graphql,
 	graphqlSubscriptions,
-	resource,
-	resourceDownload
+	upload
 };
