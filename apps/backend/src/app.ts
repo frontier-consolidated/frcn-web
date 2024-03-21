@@ -75,7 +75,7 @@ export async function createApp(config: CreateAppOptions) {
 
     const s3Client = createS3Client(config.s3Config.region, config.s3Config.clientKey, config.s3Config.clientSecret)
 
-    const cmsBus = createCmsEventBus(config.cmsConfig.databaseUrl, config.cmsConfig.schema)
+    const cmsBus = await createCmsEventBus(config.cmsConfig.databaseUrl, config.cmsConfig.schema)
 
     const context: Context = {
         expressApp: app,
