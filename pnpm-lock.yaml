@@ -50,9 +50,9 @@ importers:
       '@ffprobe-installer/ffprobe':
         specifier: ^2.1.2
         version: 2.1.2
-      '@frcn/cms-events':
+      '@frcn/cms':
         specifier: workspace:^
-        version: link:../../packages/cms-events
+        version: link:../../packages/cms
       '@frcn/shared':
         specifier: workspace:^
         version: link:../../packages/shared
@@ -201,9 +201,9 @@ importers:
       '@floating-ui/dom':
         specifier: ^1.6.1
         version: 1.6.1
-      '@frcn/cms-events':
+      '@frcn/cms':
         specifier: workspace:^
-        version: link:../../packages/cms-events
+        version: link:../../packages/cms
       '@frcn/shared':
         specifier: workspace:^
         version: link:../../packages/shared
@@ -322,6 +322,16 @@ importers:
       zen-observable-ts:
         specifier: ^1.1.0
         version: 1.1.0
+
+  packages/cms:
+    dependencies:
+      pg-tbus:
+        specifier: ^1.0.0
+        version: 1.0.0
+    devDependencies:
+      '@types/node':
+        specifier: ^20.11.5
+        version: 20.11.5
 
   packages/cms-events:
     dependencies:
