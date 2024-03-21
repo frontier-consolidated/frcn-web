@@ -15,6 +15,8 @@ declare global {
 			WEB_ORIGIN: string;
 			ORIGINS: string;
 
+			CMS_PORT: string;
+
 			DATABASE_URL: string;
 
 			CONSENT_COOKIE: string;

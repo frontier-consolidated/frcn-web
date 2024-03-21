@@ -1,5 +1,6 @@
 import { createApp } from "./app";
-import { getDomain, getOrigin, getOrigins, getPort, validateEnvironment } from "./env";
+import { createCmsApp } from "./cms/app";
+import { getCmsPort, getDomain, getOrigin, getOrigins, getPort, validateEnvironment } from "./env";
 
 process.env.NODE_ENV ??= "development"
 validateEnvironment()
@@ -42,13 +43,27 @@ const { server, discordClient } = await createApp({
 	}
 });
 
+const { app: cmsApp } = await createCmsApp()
+
 discordClient.login(process.env.DISCORD_TOKEN);
 
-const port = getPort();
-server.listen(port, () => {
-	console.log(`\n\n  \x1b[32m\x1b[1mAPI ready\x1b[0m
+const apiPort = getPort();
+const cmsPort = getCmsPort()
 
-  \x1b[32m➜\x1b[0m\x1b[1m  Local:  \x1b[0m\x1b[36mhttp://localhost:${port}/
-  \x1b[32m➜\x1b[0m\x1b[1m  Network:  \x1b[0m\x1b[36m${getOrigin("http")}/
-  \x1b[32m➜\x1b[0m\x1b[1m  Env:  \x1b[0m\x1b[36m${process.env.NODE_ENV}\x1b[0m`);
-});
+await Promise.all([
+	new Promise<void>(resolve => {
+		server.listen(apiPort, () => resolve())
+	}),
+	new Promise<void>(resolve => {
+		cmsApp.listen(cmsPort, () => resolve())
+	})
+])
+
+console.log(
+`\n\n  \x1b[32m\x1b[1mAPI ready\x1b[0m
+
+\x1b[32m➜\x1b[0m\x1b[1m  Local:     \x1b[0m\x1b[36mhttp://localhost:${apiPort}/
+\x1b[32m➜\x1b[0m\x1b[1m  Network:   \x1b[0m\x1b[36m${getOrigin("http")}/
+\x1b[32m➜\x1b[0m\x1b[1m  CMS Local: \x1b[0m\x1b[36mhttp://localhost:${cmsPort}/
+\x1b[32m➜\x1b[0m\x1b[2m  Env:       \x1b[0m\x1b[36m\x1b[2m${process.env.NODE_ENV}\x1b[0m`
+);
