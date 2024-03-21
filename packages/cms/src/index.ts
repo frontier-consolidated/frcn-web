@@ -10,3 +10,9 @@ const cms_update_event = defineEvent({
 export const CMSEvents = {
     cms_update_event
 }
+
+export enum CMSContainerType {
+    Layout = "layout",
+    Section = "section",
+    CallToAction = "cta"
+}

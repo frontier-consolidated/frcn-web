@@ -42,7 +42,7 @@
     "@codemirror/lang-markdown": "^6.2.4",
     "@codemirror/view": "^6.23.0",
     "@floating-ui/dom": "^1.6.1",
-    "@frcn/cms-events": "workspace:^",
+    "@frcn/cms": "workspace:^",
     "@frcn/shared": "workspace:^",
     "@selemondev/svelte-marquee": "^0.0.2",
     "@uiw/codemirror-theme-github": "^4.21.21",

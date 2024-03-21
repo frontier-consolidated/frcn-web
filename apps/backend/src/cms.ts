@@ -1,4 +1,4 @@
-import { CMSEvents } from "@frcn/cms-events";
+import { CMSEvents } from "@frcn/cms";
 import { createTBus } from "pg-tbus";
 
 export async function createCmsEventBus(connectionString: string, schema: string) {
