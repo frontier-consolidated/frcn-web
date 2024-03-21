@@ -18,10 +18,10 @@ export function resolveResource(resource: Resource, context: GQLContext) {
 		id: resource.id,
 		owner: null, // field-resolved
 		name: resource.name,
-		sizeKb: resource.fileSizeKb ?? 0,
+		sizeKb: 0, // field-resolved
 		shortDescription: resource.shortDescription,
-		previewUrl: resource.canPreview && resource.fileAttached ? `${getOrigin(context.req.secure ? "https" : "http")}/res/${resource.id}` : null,
-		downloadUrl: resource.fileAttached ? `${getOrigin(context.req.secure ? "https" : "http")}/res/${resource.id}/download` : null,
+		previewUrl: resource.canPreview && resource.fileId ? `${getOrigin(context.req.secure ? "https" : "http")}/media/${resource.id}` : null,
+		downloadUrl: resource.fileId ? `${getOrigin(context.req.secure ? "https" : "http")}/media/${resource.id}/download` : null,
 		tags: resource.tags,
 		updatedAt: resource.updatedAt,
 		createdAt: resource.createdAt
@@ -36,6 +36,13 @@ export const resourceResolvers: Resolvers = {
 			if (!owner) return null;
 			return resolveUser(owner);
 		},
+		async sizeKb(source) {
+			const { _model } = source as WithModel<GQLResource, Resource>;
+			if (!_model.fileId) return 0;
+			const file = await database.resource.getFile(_model)
+			if (!file) return 0;
+			return file.fileSizeKb;
+		}
 	},
 
 	Query: {
