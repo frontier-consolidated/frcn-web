@@ -233,7 +233,7 @@ model Resource {
   tags             String[]
   canPreview       Boolean     @default(false) @map("can_preview")
   file             FileUpload? @relation(fields: [fileId], references: [id])
-  fileId           String?
+  fileId           String?     @map("file_id")
   updatedAt        DateTime    @updatedAt @map("updated_at")
   createdAt        DateTime    @default(now()) @map("created_at")
 
@@ -260,9 +260,9 @@ model ContentContainer {
 model ContentContainerFile {
   id          Int              @id @default(autoincrement())
   container   ContentContainer @relation(fields: [containerId], references: [id], onDelete: Cascade)
-  containerId Int
+  containerId Int              @map("container_id")
   file        FileUpload       @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  fileId      String
+  fileId      String           @map("file_id")
 
   @@map("cms_container__file_link")
 }
