@@ -36,7 +36,9 @@ async function getResources(
 		tags: tags ? {
 			hasEvery: tags
 		} : undefined,
-		fileAttached: true
+		fileId: {
+			not: null
+		}
 	}
 
 	const count = await database.resource.count({
@@ -75,7 +77,6 @@ async function createResource(owner: User, data: ResourceCreateInput) {
 			shortDescription: data.shortDescription,
 			tags: data.tags,
 			canPreview: false,
-			fileAttached: false,
 		}
 	})
 
@@ -108,17 +109,21 @@ async function deleteResource(client: S3Client, bucket: string, id: string) {
 		where: { id },
 		select: {
 			id: true,
-			fileAttached: true
+			file: true
 		}
 	})
-	if (!resource || !resource.fileAttached) return;
+	if (!resource || !resource.file) return;
 
 	const command = new DeleteObjectCommand({
 		Bucket: bucket,
-		Key: resource.id,
+		Key: resource.file.key,
 	})
 
 	await transaction(async (tx) => {
+		await tx.fileUpload.delete({
+			where: { id: resource.file!.id }
+		})
+
 		await tx.resource.delete({
 			where: { id }
 		})
