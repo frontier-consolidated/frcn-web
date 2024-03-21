@@ -25,6 +25,7 @@
     "@aws-sdk/lib-storage": "^3.504.0",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@ffprobe-installer/ffprobe": "^2.1.2",
+    "@frcn/cms-events": "workspace:^",
     "@frcn/shared": "workspace:^",
     "@graphql-tools/schema": "^10.0.2",
     "@graphql-tools/utils": "^10.0.12",
