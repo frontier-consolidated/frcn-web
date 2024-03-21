@@ -215,6 +215,7 @@ model FileUpload {
   ownerId       String?                @map("owner_id")
   fileName      String                 @map("file_name")
   fileSizeKb    Int                    @map("file_size_kb")
+  contentType   String                 @map("content_type")
   resources     Resource[]
   cmsContainers ContentContainerFile[]
   updatedAt     DateTime               @updatedAt @map("updated_at")
