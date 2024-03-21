@@ -3,6 +3,8 @@ import { locale } from "svelte-i18n";
 
 import { Queries, createApolloClient } from "$lib/graphql";
 
+import "./cms.server";
+
 export const handle: Handle = async ({ event, resolve }) => {
 	const lang = event.request.headers.get("accept-language")?.split(",")[0];
 	if (lang) {

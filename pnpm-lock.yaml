@@ -50,6 +50,9 @@ importers:
       '@ffprobe-installer/ffprobe':
         specifier: ^2.1.2
         version: 2.1.2
+      '@frcn/cms-events':
+        specifier: workspace:^
+        version: link:../../packages/cms-events
       '@frcn/shared':
         specifier: workspace:^
         version: link:../../packages/shared
@@ -198,6 +201,9 @@ importers:
       '@floating-ui/dom':
         specifier: ^1.6.1
         version: 1.6.1
+      '@frcn/cms-events':
+        specifier: workspace:^
+        version: link:../../packages/cms-events
       '@frcn/shared':
         specifier: workspace:^
         version: link:../../packages/shared

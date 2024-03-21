@@ -19,6 +19,16 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+
+	namespace NodeJS {
+		interface ProcessEnv {
+			TZ?: string;
+			NODE_ENV?: string;
+
+			CMS_BUS_DATABASE_URL: string;
+			CMS_BUS_SCHEMA: string;
+		}
+	}
 	
 	declare module "*&imagetools" {
 		/**
