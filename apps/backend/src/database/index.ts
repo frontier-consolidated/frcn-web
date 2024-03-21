@@ -3,12 +3,14 @@ import { Permission, hasPermission, permissions } from "@frcn/shared";
 // eslint-disable-next-line import/default
 import PrismaClientPkg, { type UserRole } from "@prisma/client";
 
+import { createContentContainerExtension } from "./extensions/ContentContainer.extension";
 import { createEventExtension } from "./extensions/Event.extension";
 import { createEventChannelExtension } from "./extensions/EventChannel.extension";
 import { createEventRsvpRoleExtension } from "./extensions/EventRsvpRole.extension";
 import { createEventSettingsExtension } from "./extensions/EventSettings.extension";
 import { createEventsWithUserRoleForAccessExtension } from "./extensions/EventsWithUserRoleForAccess.extension";
 import { createEventUserExtension } from "./extensions/EventUser.extension";
+import { createFileUploadExtension } from "./extensions/FileUpload.extension";
 import { createResourceExtension } from "./extensions/Resource.extension";
 import { createSystemSettingsExtension } from "./extensions/SystemSettings.extension";
 import { createUserExtension } from "./extensions/User.extension";
@@ -27,12 +29,14 @@ export const prisma = new PrismaClient();
 const $prisma = prisma;
 
 const database = $prisma
+	.$extends(createContentContainerExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventChannelExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventRsvpRoleExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventSettingsExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventsWithUserRoleForAccessExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventUserExtension(Prisma.defineExtension, $prisma))
+	.$extends(createFileUploadExtension(Prisma.defineExtension, $prisma))
 	.$extends(createResourceExtension(Prisma.defineExtension, $prisma))
 	.$extends(createSystemSettingsExtension(Prisma.defineExtension, $prisma))
 	.$extends(createUserExtension(Prisma.defineExtension, $prisma))

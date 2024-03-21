@@ -210,10 +210,11 @@ model EventChannel {
 
 model FileUpload {
   id            String                 @id @default(uuid())
+  key           String
   owner         User?                  @relation(fields: [ownerId], references: [id])
   ownerId       String?                @map("owner_id")
-  fileName      String?                @map("file_name")
-  fileSizeKb    Int?                   @map("file_size_kb")
+  fileName      String                 @map("file_name")
+  fileSizeKb    Int                    @map("file_size_kb")
   resources     Resource[]
   cmsContainers ContentContainerFile[]
   updatedAt     DateTime               @updatedAt @map("updated_at")
@@ -224,7 +225,6 @@ model FileUpload {
 
 model Resource {
   id               String      @id @default(uuid())
-  key              String
   owner            User?       @relation(fields: [ownerId], references: [id])
   ownerId          String?     @map("owner_id")
   name             String
