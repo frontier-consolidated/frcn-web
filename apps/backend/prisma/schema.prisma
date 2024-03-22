@@ -29,6 +29,18 @@ model SystemSettings {
   @@schema("system")
 }
 
+model AccessKey {
+  id          Int      @id @default(autoincrement())
+  description String
+  hashedKey   String   @unique @map("hashed_key")
+  permissions Int
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("access_keys")
+  @@schema("system")
+}
+
 // Users
 
 model UserSession {
