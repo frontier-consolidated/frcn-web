@@ -1,5 +1,5 @@
 import { getConsent } from "./consent.middleware";
-import { $users } from "../../services/users";
+import { $users } from "../../../services/users";
 import type { MiddlewareHandler } from "../types";
 
 export const middleware: MiddlewareHandler = function ({ consent }) {

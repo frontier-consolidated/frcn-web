@@ -12,8 +12,8 @@ import { createCmsEventBus } from "./cms";
 import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
 import { createApolloServer } from "./graphql";
+import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/session";
 import { createS3Client } from "./s3Client";
-import { type SessionMiddlewareConfig, sessionMiddlewares } from "./session";
 
 interface CreateAppOptions {
     origins: string[];

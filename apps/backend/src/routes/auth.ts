@@ -3,9 +3,9 @@ import { REST, Routes, type RESTPostOAuth2AccessTokenResult, type APIUser } from
 
 import type { Context, RouteConfig } from "../context";
 import { getAdminIds, getURL } from "../env";
+import { getConsent } from "../middleware/session/middleware/consent.middleware";
 import { $discord } from "../services/discord";
 import { $users } from "../services/users";
-import { getConsent } from "../session/middleware/consent.middleware";
 
 export default function route(context: Context, config: RouteConfig) {
 	const clientId = config.auth.clientId;
