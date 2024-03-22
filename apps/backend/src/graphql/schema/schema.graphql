@@ -31,13 +31,21 @@ directive @ownership on FIELD_DEFINITION
 Enforces a field as requiring the given permission
 """
 directive @permission(has: Permission, one: [Permission!], all: [Permission!]) on FIELD_DEFINITION
-directive @accesskey
 
 # Types
 
 type SystemSettings {
 	discordGuild: DiscordGuild!
 	defaultEventChannel: DiscordChannel
+}
+
+type AccessKey {
+	id: Int!
+	key: String
+	description: String!
+	permissions: Int!
+	updatedAt: Timestamp!
+	createdAt: Timestamp!
 }
 
 type UserRole {
@@ -319,8 +327,11 @@ type Query {
 		@permission(one: [CreateEvents, ManageRoles])
 	getSystemSettings: SystemSettings! @permission(has: ManageSystem)
 
+	getAccessKey(id: Int!): AccessKey @permission(has: ManageSystem)
+	getAllAccessKeys: [AccessKey!]! @permission(has: ManageSystem)
+
 	# CMS
-	getContentContainer(identifier: String!): ContentContainer @permission(has: AccessCms) @accesskey
+	getContentContainer(identifier: String!): ContentContainer @permission(has: AccessCms)
 }
 
 type Mutation {
@@ -363,6 +374,11 @@ type Mutation {
 	# System
 	editEventChannels(channels: [ID!]!): [DiscordChannel!]! @permission(has: ManageSystem)
 	editSystemSettings(data: SystemEditInput!): SystemSettings! @permission(has: ManageSystem)
+
+	createAccessKey: AccessKey! @permission(has: ManageSystem)
+	editAccessKey(id: Int!, data: AccessKeyEditInput!): AccessKey! @permission(has: ManageSystem)
+	regenerateAccessKey(id: Int!): AccessKey! @permission(has: ManageSystem)
+	deleteAccessKey(id: Int!): Boolean! @permission(has: ManageSystem)
 }
 
 type UpdatedUserRoles {

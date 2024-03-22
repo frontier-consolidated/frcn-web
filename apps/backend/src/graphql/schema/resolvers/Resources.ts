@@ -6,10 +6,11 @@ import { database } from "../../../database";
 import { getOrigin } from "../../../env";
 import { $resources } from "../../../services/resources";
 import type {
-	User as GQLUser,
-	Resource as GQLResource,
-	Resolvers,
+    User as GQLUser,
+    Resource as GQLResource,
+    Resolvers,
 } from "../../__generated__/resolvers-types";
+import { gqlErrorUnauthenticated } from "../gqlError";
 
 export function resolveResource(resource: Resource) {
 	return {
@@ -82,7 +83,9 @@ export const resourceResolvers: Resolvers = {
 
 	Mutation: {
 		async createResource(source, args, context) {
-			const resource = await $resources.createResource(context.user!, args.data)
+			if (!context.user) throw gqlErrorUnauthenticated();
+
+			const resource = await $resources.createResource(context.user, args.data)
 			return resolveResource(resource)
 		},
 		async editResource(source, args) {

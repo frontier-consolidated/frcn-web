@@ -9,13 +9,13 @@ import { database } from "../../../database";
 import { $discord } from "../../../services/discord";
 import { $events } from "../../../services/events";
 import type {
-	User as GQLUser,
-	Event as GQLEvent,
-	EventRsvp as GQLEventRsvp,
-	EventRsvpRole as GQLEventRsvpRole,
-	EventMember as GQLEventMember,
-	EventSettings as GQLEventSettings,
-	Resolvers
+    User as GQLUser,
+    Event as GQLEvent,
+    EventRsvp as GQLEventRsvp,
+    EventRsvpRole as GQLEventRsvpRole,
+    EventMember as GQLEventMember,
+    EventSettings as GQLEventSettings,
+    Resolvers
 } from "../../__generated__/resolvers-types";
 import { EventAccessType } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
@@ -246,8 +246,10 @@ export const eventResolvers: Resolvers = {
 
 	Mutation: {
 		async createEvent(source, args, context) {
+			if (!context.user) throw gqlErrorUnauthenticated();
+
 			const event = await $events.createEvent(
-				context.user!,
+				context.user,
 				context.app.discordClient
 			);
 			return event.id;
