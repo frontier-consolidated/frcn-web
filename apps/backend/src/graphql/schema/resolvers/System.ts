@@ -1,4 +1,4 @@
-import type { SystemSettings } from "@prisma/client";
+import type { AccessKey, SystemSettings } from "@prisma/client";
 
 import { resolveDiscordChannel } from "./Discord";
 import type { WithModel } from "./types";
@@ -8,6 +8,7 @@ import { $system } from "../../../services/system";
 import type {
 	DiscordGuild,
 	SystemSettings as GQLSystemSettings,
+	AccessKey as GQLAccessKey,
 	Resolvers,
 } from "../../__generated__/resolvers-types";
 import { gqlErrorBadInput } from "../gqlError";
@@ -18,6 +19,17 @@ export function resolveSystemSettings(settings: SystemSettings) {
 		discordGuild: null as unknown as DiscordGuild, // field-resolved
 		defaultEventChannel: null, // field-resolved
 	} satisfies WithModel<GQLSystemSettings, SystemSettings>;
+}
+
+export function resolveAccessKey(accessKey: AccessKey, key?: string) {
+	return {
+		id: accessKey.id,
+		key,
+		description: accessKey.description,
+		permissions: accessKey.permissions,
+		updatedAt: accessKey.updatedAt,
+		createdAt: accessKey.createdAt
+	} satisfies GQLAccessKey
 }
 
 export const systemResolvers: Resolvers = {
@@ -52,6 +64,21 @@ export const systemResolvers: Resolvers = {
 			const settings = await $system.getSystemSettings();
 			return resolveSystemSettings(settings);
 		},
+		getCurrentAccessKey(source, args, context) {
+			if (!context.accesskey) return null;
+			return resolveAccessKey(context.accesskey)
+		},
+		async getAccessKey(source, args) {
+			const accessKey = await database.accessKey.findUnique({
+				where: { id: args.id }
+			})
+			if (!accessKey) return null;
+			return resolveAccessKey(accessKey)
+		},
+		async getAllAccessKeys() {
+			const accessKeys = await database.accessKey.findMany()
+			return accessKeys.map(accessKey => resolveAccessKey(accessKey))
+		}
 	},
 
 	Mutation: {
@@ -77,6 +104,45 @@ export const systemResolvers: Resolvers = {
 			})
 
 			return resolveSystemSettings(updatedSettings)
+		},
+		async createAccessKey() {
+			const [accessKey, key] = await $system.createAccessKey()
+			return resolveAccessKey(accessKey, key)
+		},
+		async editAccessKey(source, args) {
+			const accessKey = await database.accessKey.findUnique({
+				where: { id: args.id }
+			})
+			if (!accessKey) return null;
+
+			const updatedAccessKey = await database.accessKey.update({
+				where: { id: args.id },
+				data: {
+					description: args.data.description ?? undefined,
+					permissions: args.data.permissions ?? undefined
+				}
+			})
+			return resolveAccessKey(updatedAccessKey)
+		},
+		async regenerateAccessKey(source, args) {
+			const accessKey = await database.accessKey.findUnique({
+				where: { id: args.id }
+			})
+			if (!accessKey) return null;
+
+			const key = await $system.regenerateAccessKey(args.id);
+			return resolveAccessKey(accessKey, key)
+		},
+		async deleteAccessKey(source, args) {
+			const accessKey = await database.accessKey.findUnique({
+				where: { id: args.id }
+			})
+			if (!accessKey) return false;
+			
+			await database.accessKey.delete({
+				where: { id: args.id }
+			})
+			return true
 		}
 	}
 };
