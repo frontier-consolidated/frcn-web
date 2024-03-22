@@ -70,7 +70,9 @@ export function isProd() {
 }
 
 export function getAdminIds() {
-	return (process.env.ADMIN_DISCORD_IDS ?? "").split(",").map(id => id.trim())
+	const envIds = process.env.ADMIN_DISCORD_IDS ?? ""
+	if (!envIds) return []
+	return envIds.split(",").map(id => id.trim())
 }
 
 export function validateEnvironment() {
