@@ -2,13 +2,15 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "debian-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  schemas  = ["system", "user", "events", "cms"]
 }
 
 model SystemSettings {
@@ -21,7 +23,8 @@ model SystemSettings {
   updatedAt             DateTime      @updatedAt @map("updated_at")
   createdAt             DateTime      @default(now()) @map("created_at")
 
-  @@map("system_settings")
+  @@map("settings")
+  @@schema("system")
 }
 
 model UserSession {
@@ -34,7 +37,8 @@ model UserSession {
   updatedAt DateTime @updatedAt @map("updated_at")
   createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("user_sessions")
+  @@map("sessions")
+  @@schema("user")
 }
 
 model UserSettings {
@@ -44,7 +48,8 @@ model UserSettings {
   updatedAt DateTime @updatedAt @map("updated_at")
   createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("user_settings")
+  @@map("settings")
+  @@schema("user")
 }
 
 model UserStatus {
@@ -56,7 +61,8 @@ model UserStatus {
   updatedAt DateTime @updatedAt @map("updated_at")
   createdAt DateTime @default(now()) @map("created_at")
 
-  @@map("user_statuses")
+  @@map("statuses")
+  @@schema("user")
 }
 
 model UserRole {
@@ -71,7 +77,8 @@ model UserRole {
   updatedAt                DateTime                      @updatedAt @map("updated_at")
   createdAt                DateTime                      @default(now()) @map("created_at")
 
-  @@map("user_roles")
+  @@map("roles")
+  @@schema("user")
 }
 
 model User {
@@ -97,6 +104,7 @@ model User {
   createdAt       DateTime           @default(now()) @map("created_at")
 
   @@map("users")
+  @@schema("user")
 }
 
 model UsersInUserRoles {
@@ -107,7 +115,8 @@ model UsersInUserRoles {
   assignedAt DateTime @default(now()) @map("assigned_at")
 
   @@id([roleId, userId])
-  @@map("users__user_roles")
+  @@map("users__roles")
+  @@schema("user")
 }
 
 model EventRsvpRole {
@@ -122,7 +131,8 @@ model EventRsvpRole {
   updatedAt DateTime    @updatedAt @map("updated_at")
   createdAt DateTime    @default(now()) @map("created_at")
 
-  @@map("event_rsvp_roles")
+  @@map("rsvp_roles")
+  @@schema("events")
 }
 
 model EventUser {
@@ -137,7 +147,8 @@ model EventUser {
   updatedAt DateTime       @updatedAt @map("updated_at")
   createdAt DateTime       @default(now()) @map("created_at")
 
-  @@map("event_users")
+  @@map("users")
+  @@schema("events")
 }
 
 model EventSettings {
@@ -151,7 +162,8 @@ model EventSettings {
   updatedAt          DateTime @updatedAt @map("updated_at")
   createdAt          DateTime @default(now()) @map("created_at")
 
-  @@map("event_settings")
+  @@map("settings")
+  @@schema("events")
 }
 
 model Event {
@@ -184,6 +196,7 @@ model Event {
   createdAt             DateTime                      @default(now()) @map("created_at")
 
   @@map("events")
+  @@schema("events")
 }
 
 model EventsWithUserRoleForAccess {
@@ -195,6 +208,7 @@ model EventsWithUserRoleForAccess {
 
   @@id([roleId, eventId])
   @@map("events__user_roles")
+  @@schema("events")
 }
 
 model EventChannel {
@@ -205,7 +219,8 @@ model EventChannel {
   updatedAt      DateTime        @updatedAt @map("updated_at")
   createdAt      DateTime        @default(now()) @map("created_at")
 
-  @@map("event_channels")
+  @@map("channels")
+  @@schema("events")
 }
 
 model FileUpload {
@@ -222,6 +237,7 @@ model FileUpload {
   createdAt     DateTime               @default(now()) @map("created_at")
 
   @@map("file_uploads")
+  @@schema("cms")
 }
 
 model Resource {
@@ -238,6 +254,7 @@ model Resource {
   createdAt        DateTime    @default(now()) @map("created_at")
 
   @@map("resources")
+  @@schema("cms")
 }
 
 model ContentContainer {
@@ -254,7 +271,8 @@ model ContentContainer {
   updatedAt     DateTime               @updatedAt @map("updated_at")
   createdAt     DateTime               @default(now()) @map("created_at")
 
-  @@map("cms_container")
+  @@map("container")
+  @@schema("cms")
 }
 
 model ContentContainerFile {
@@ -264,5 +282,6 @@ model ContentContainerFile {
   file        FileUpload       @relation(fields: [fileId], references: [id], onDelete: Cascade)
   fileId      String           @map("file_id")
 
-  @@map("cms_container__file_link")
+  @@map("container__file_uploads")
+  @@schema("cms")
 }
