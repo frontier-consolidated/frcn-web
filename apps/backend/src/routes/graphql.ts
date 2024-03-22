@@ -11,6 +11,7 @@ export default async function route(context: Context) {
 			context: function ({ req }) {
 				return Promise.resolve({
 					user: req.user,
+					accesskey: req.accessKey,
 					app: context,
 					req
 				});
