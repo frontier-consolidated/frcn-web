@@ -13,6 +13,8 @@ datasource db {
   schemas  = ["system", "user", "events", "cms"]
 }
 
+// System
+
 model SystemSettings {
   id                    Int           @id @default(autoincrement())
   unique                Boolean       @unique @default(true)
@@ -26,6 +28,8 @@ model SystemSettings {
   @@map("settings")
   @@schema("system")
 }
+
+// Users
 
 model UserSession {
   sid       String   @id
@@ -118,6 +122,8 @@ model UsersInUserRoles {
   @@map("users__roles")
   @@schema("user")
 }
+
+// Events
 
 model EventRsvpRole {
   id        String      @id @default(uuid())
@@ -222,6 +228,8 @@ model EventChannel {
   @@map("channels")
   @@schema("events")
 }
+
+// CMS
 
 model FileUpload {
   id            String                 @id @default(uuid())
