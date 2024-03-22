@@ -6,7 +6,7 @@ import { $roles } from "../services/roles";
 
 import type { database as Database } from ".";
 
-export async function seedProduction(database: typeof Database) {
+export async function seed(database: typeof Database) {
 	await database.systemSettings.upsert({
 		where: { unique: true },
 		update: {},

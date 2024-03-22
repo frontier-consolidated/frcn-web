@@ -17,8 +17,7 @@ import { createUserSessionExtension } from "./extensions/UserSession.extension";
 import { createUserSettingsExtension } from "./extensions/UserSettings.extension";
 import { createUsersInUserRolesExtension } from "./extensions/UsersInUserRoles.extension";
 import { createUserStatusExtension } from "./extensions/UserStatus.extension";
-import { seedProduction } from "./seed";
-import { isProd } from "../env";
+import { seed } from "./seed";
 
 const PrismaClient = PrismaClientPkg.PrismaClient
 const Prisma = PrismaClientPkg.Prisma
@@ -53,6 +52,6 @@ export function transaction<R>(fn: (tx: typeof database) => Promise<R>): Promise
 	})
 }
 
-if (isProd()) await seedProduction(database)
+await seed(database)
 
 export { database }
