@@ -196,11 +196,19 @@ type Resource {
 }
 
 type ContentContainer {
+	id: Int!
 	identifier: String
 	type: String!
 	title: String!
 	content: String
+	files: [ContentContainerFile!]!
 	children: [ContentContainer!]!
+}
+
+type ContentContainerFile {
+	id: String!
+	identifier: String
+	previewUrl: String
 }
 
 # Inputs:
@@ -296,6 +304,12 @@ input ResourceEditInput {
 	tags: [String!]
 }
 
+input ContentContainerEditInput {
+	identifier: String
+	title: String
+	content: String
+}
+
 # Root types:
 
 type Query {
@@ -385,6 +399,15 @@ type Mutation {
 	editAccessKey(id: Int!, data: AccessKeyEditInput!): AccessKey @permission(has: ManageSystem)
 	regenerateAccessKey(id: Int!): AccessKey @permission(has: ManageSystem)
 	deleteAccessKey(id: Int!): Boolean! @permission(has: ManageSystem)
+
+	# CMS
+	createContentContainer(type: String!, parent: Int): ContentContainer!
+		@permission(has: AccessCms)
+	editContentContainer(id: Int!, data: ContentContainerEditInput!): ContentContainer
+		@permission(has: AccessCms)
+	reorderContentContainerChildren(id: Int!, order: [Int!]!): ContentContainer
+		@permission(has: AccessCms)
+	deleteContentContainer(id: Int!): Boolean! @permission(has: AccessCms)
 }
 
 type UpdatedUserRoles {
