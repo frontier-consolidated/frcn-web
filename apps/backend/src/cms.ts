@@ -1,4 +1,3 @@
-import { CMSEvents } from "@frcn/cms";
 import { createTBus } from "pg-tbus";
 
 export async function createCmsEventBus(connectionString: string, schema: string) {
@@ -9,10 +8,10 @@ export async function createCmsEventBus(connectionString: string, schema: string
 
     await bus.start()
 
-    setTimeout(() => {
-        console.log("Emitting event")
-        bus.publish(CMSEvents.cms_update_event.from("Hello world!"))
-    }, 2000)
+    // setTimeout(() => {
+    //     console.log("Emitting event")
+    //     bus.publish(CMSEvents.cms_update_event.from("Hello world!"))
+    // }, 2000)
 
 	return bus;
 }
