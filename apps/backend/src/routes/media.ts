@@ -1,29 +1,22 @@
 import { randomUUID } from "crypto";
 import fs from "fs";
 import type { OutgoingHttpHeaders } from "http";
-import os from "os";
 import path from "path";
 
 import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
 import { Permission, hasPermission } from "@frcn/shared";
-import type { FileUpload } from "@prisma/client";
 import type { RequestHandler } from "express";
 import * as mime from "mime-types";
 import multer, { MulterError } from "multer";
 
 import type { Context, RouteConfig } from "../context";
-import { database, transaction } from "../database";
-import { ffmpeg, ffprobe } from "../ffmpeg";
+import { database } from "../database";
+import { $files } from "../services/files";
 import { $resources } from "../services/resources";
 import { $users } from "../services/users";
 
-const MAX_FILE_SIZE_MB = 100;
-const MAX_IMAGE_DIMENSION = 1600;
-
-const storageDir = path.join(os.tmpdir(), "frcn-web-uploads")
 const storage = multer.diskStorage({
-    destination: storageDir,
+    destination: $files.FILE_UPLOAD_DIR,
     filename(req, file, callback) {
         const parsedFileName = path.parse(file.originalname);
         callback(null, `${randomUUID()}${parsedFileName.ext}`)
@@ -32,9 +25,20 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage,
     limits: {
-        fileSize: MAX_FILE_SIZE_MB * 1024 * 1024,
+        fileSize: $files.MAX_FILE_SIZE_MB * 1024 * 1024,
     }
 })
+
+const attachmentConfigs = {
+    resource: {
+        permission: Permission.UploadResources,
+        allowedFiles: ["image/*", "pdf"]
+    },
+    cms_container: {
+        permission: Permission.AccessCms,
+        allowedFiles: ["image/*"]
+    }
+} as Record<string, { permission: Permission, allowedFiles?: string[] }>
 
 function fileField(
     field: string,
@@ -53,26 +57,26 @@ function fileField(
         }
 
         const { type } = req.query as { type?: string }
+        
+        const config = type && attachmentConfigs[type]
+        if (!config) return res.status(400).send({ message: `Disallowed attachment 'type=${type}'` })
+        
         const permissions = await $users.getPermissions(req.user)
-
-        let canUpload = true
-
-        if (type === "resource" && !hasPermission(permissions, Permission.UploadResources)) {
-            canUpload = false;
-        } else if (type === "cms_container" && !hasPermission(permissions, Permission.AccessCms)) {
-            canUpload = false;
-        }
-
-        if (!canUpload) return res.status(403).send({
+        if (!hasPermission(permissions, config.permission)) return res.status(403).send({
             message: "Missing permissions required to upload files"
         })
+
+        if (config.allowedFiles) {
+            options ??= {}
+            options.allowedFiles ??= config.allowedFiles
+        }
 
         handler(req, res, (err) => {
             if (err instanceof MulterError) {
 				switch (err.code) {
 					case "LIMIT_FILE_SIZE":
 						return res.status(413).send({
-                            message: `A file is too big, max file size is ${MAX_FILE_SIZE_MB}mb`,
+                            message: `A file is too big, max file size is ${$files.MAX_FILE_SIZE_MB}mb`,
 						});
 					case "LIMIT_FIELD_COUNT":
 					case "LIMIT_UNEXPECTED_FILE":
@@ -143,10 +147,7 @@ function toHTTPTimestamp(date: Date): string {
 export default function route(context: Context, config: RouteConfig) {
     context.expressApp.post(
         "/media/upload",
-        fileField("file", {
-            maxFiles: 1,
-            allowedFiles: ["image/*", "pdf"]
-        }),
+        fileField("file", { maxFiles: 1 }),
         async (req, res, next) => {
             const { type, attach_to } = req.query as {
                 type?: string,
@@ -157,114 +158,37 @@ export default function route(context: Context, config: RouteConfig) {
             if (!attach_to) return res.status(400).send({ message: "Missing 'attach_to' query param" })
 
             const file = (req.files as Express.Multer.File[])[0]
-            const filesToCleanup = [file.path]
-            function cleanup() {
-                for (const path of filesToCleanup) {
-                    if (fs.existsSync(path)) fs.unlinkSync(path)
-                }
-            }
 
-            async function createFileUpload(createFn: (tx: typeof database, fileUpload: FileUpload,) => Promise<void>) {
-                let targetFile = file.path
-                let fileName = file.originalname;
-                // use file.mimetype here?
-                let contentType = mime.contentType(fileName) || undefined
-                const parsedFileName = path.parse(fileName);
+            try {
+                switch (type.toLowerCase()) {
+                    case "resource": {
+                        const resource = await $resources.getResource(attach_to)
+                        if (!resource) {
+                            return res.status(404).send({ message: `Could not find resource 'attach_to=${attach_to}'` })
+                        }
     
-                if (contentType?.startsWith("image/") && !contentType.includes("xml")) {
-                    contentType = "image/webp"
-                    fileName = `${parsedFileName.name}.webp`;
-    
-                    targetFile = path.join(storageDir, `${randomUUID()}.webp`);
-                    filesToCleanup.push(targetFile)
-                    try {
-                        const probeData = await ffprobe(file.path)
-                        const imageData = probeData.streams[0]
-                        
-                        const width = imageData.width!;
-                        const height = imageData.height!;
-                        
-                        await ffmpeg(command => {
-                            command.input(file.path)
-                            if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
-                                command.size(width > height ? `${MAX_IMAGE_DIMENSION}x?` : `?x${MAX_IMAGE_DIMENSION}`)
-                            }
-                            command.addOutputOption("-quality", "95")
-                            command.saveToFile(targetFile)
-                            return command;
-                        })
-                    } catch (err) {
-                        cleanup()
-                        return next(err)
-                    }
-                }
-    
-                const uploadId = randomUUID();
-                const uploadKey = `${req.hostname}-resource-${uploadId}`
-                const s3Upload = new Upload({
-                    client: context.s3Client,
-                    params: {
-                        Bucket: config.files.bucketName,
-                        Key: uploadKey,
-                        ContentType: contentType,
-                        Body: fs.createReadStream(targetFile),
-                    },
-                    tags: [],
-                    queueSize: 4,
-                    partSize: 5 * 1024 * 1024,
-                    leavePartsOnError: false,
-                })
-
-                try {
-                    await transaction(async (tx) => {
-                        const fileUpload = await tx.fileUpload.create({
-                            data: {
-                                id: uploadId,
-                                key: uploadKey,
-                                fileName: fileName,
-                                fileSizeKb: Math.ceil(file.size / 1024),
-                                contentType: contentType ?? "application/octet-stream"
-                            }
-                        })
-    
-                        await createFn(tx, fileUpload);
-    
-                        await s3Upload.done()
-                    })
-    
-                    res.sendStatus(200)
-                } catch (err) {
-                    await s3Upload.abort();
-                    next(err)
-                } finally {
-                    cleanup()
-                }
-            }
-
-            switch (type.toLowerCase()) {
-                case "resource": {
-                    const resource = await $resources.getResource(attach_to)
-                    if (!resource) {
-                        return res.status(404).send({ message: `Could not find resource 'attach_to=${attach_to}'` })
-                    }
-
-                    await createFileUpload(async (tx, fileUpload) => {
-                        await tx.resource.update({
-                            where: { id: resource.id },
-                            data: {
-                                canPreview: fileUpload.contentType.startsWith("image"),
-                                file: {
-                                    connect: fileUpload
+                        await $files.uploadFile(context.s3Client, config.files.bucketName, file, async (tx, fileUpload) => {
+                            await tx.resource.update({
+                                where: { id: resource.id },
+                                data: {
+                                    canPreview: fileUpload.contentType.startsWith("image"),
+                                    file: {
+                                        connect: fileUpload
+                                    }
                                 }
-                            }
+                            })
                         })
-                    })
-                    break;
+                        break;
+                    }
+                    case "cms_container":
+                        return res.status(501).send({ message: "Method not implemented" })
+                    default:
+                        return res.status(400).send({ message: `Disallowed attachment 'type=${type}'` })
                 }
-                case "cms_container":
-                    return res.status(501).send({ message: "Method not implemented" })
-                default:
-                    return res.status(400).send({ message: `Disallowed attachment 'type=${type}'` })
+            } catch (err) {
+                next(err)
+            } finally {
+                if (fs.existsSync(file.path)) fs.unlinkSync(file.path)
             }
         }
     );

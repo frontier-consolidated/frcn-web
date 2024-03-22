@@ -1,6 +1,7 @@
-import { DeleteObjectCommand, type S3Client } from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 import type { Prisma, User } from "@prisma/client";
 
+import { $files } from "./files";
 import { database, transaction } from "../database";
 import type { ResourceCreateInput, ResourceEditInput } from "../graphql/__generated__/resolvers-types";
 
@@ -112,23 +113,16 @@ async function deleteResource(client: S3Client, bucket: string, id: string) {
 			file: true
 		}
 	})
-	if (!resource || !resource.file) return;
-
-	const command = new DeleteObjectCommand({
-		Bucket: bucket,
-		Key: resource.file.key,
-	})
+	if (!resource) return;
 
 	await transaction(async (tx) => {
-		await tx.fileUpload.delete({
-			where: { id: resource.file!.id }
-		})
-
 		await tx.resource.delete({
 			where: { id }
 		})
-	
-		await client.send(command)
+
+		if (resource.file) {
+			await $files.deleteFile(client, bucket, resource.file.id)
+		}
 	})
 }
 
