@@ -265,6 +265,11 @@ input SystemEditInput {
 	defaultEventChannelId: ID
 }
 
+input AccessKeyEditInput {
+	description: String
+	permissions: Int
+}
+
 input RoleEditInput {
 	name: String @constraint(minLength: 1, maxLength: 128)
 	primary: Boolean
@@ -327,6 +332,7 @@ type Query {
 		@permission(one: [CreateEvents, ManageRoles])
 	getSystemSettings: SystemSettings! @permission(has: ManageSystem)
 
+	getCurrentAccessKey: AccessKey
 	getAccessKey(id: Int!): AccessKey @permission(has: ManageSystem)
 	getAllAccessKeys: [AccessKey!]! @permission(has: ManageSystem)
 
