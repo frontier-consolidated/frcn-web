@@ -12,6 +12,7 @@ import { createCmsEventBus } from "./cms";
 import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
 import { createApolloServer } from "./graphql";
+import { accesskeyMiddleware, type AccessKeyMiddlewareConfig } from "./middleware/accesskey.middleware";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/session";
 import { createS3Client } from "./s3Client";
 
@@ -19,6 +20,7 @@ interface CreateAppOptions {
     origins: string[];
     routeConfig: RouteConfig;
     sessionConfig: SessionMiddlewareConfig;
+    accesskeyConfig: AccessKeyMiddlewareConfig;
     discordConfig: {
         token: string;
     },
@@ -66,6 +68,7 @@ export async function createApp(config: CreateAppOptions) {
     app.use(express.urlencoded({ extended: true }));
 
     app.use(sessionMiddlewares(config.sessionConfig));
+    app.use(accesskeyMiddleware(config.accesskeyConfig))
 
     const apolloServer = createApolloServer(server, {
         introspection: true,

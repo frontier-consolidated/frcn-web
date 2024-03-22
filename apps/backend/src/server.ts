@@ -34,6 +34,9 @@ const { server, discordClient } = await createApp({
 			cookie: process.env.DEVICE_TRACK_COOKIE,
 		},
 	},
+	accesskeyConfig: {
+		header: process.env.ACCESS_KEY_HEADER,
+	},
 	discordConfig: {
 		token: process.env.DISCORD_TOKEN
 	},
