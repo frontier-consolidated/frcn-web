@@ -7,7 +7,6 @@
     "start": "node --loader extensionless --no-warnings dist/server.js",
     "build": "tsc -p tsconfig.prod.json && cp src/graphql/schema/schema.generated.graphql dist/graphql/schema",
     "db-generate": "prisma generate",
-    "db-seed": "prisma db seed",
     "db-migrate": "prisma migrate dev",
     "db-push": "prisma db push",
     "db-deploy": "prisma migrate deploy",
@@ -15,9 +14,6 @@
     "gql-generate-schema": "node --loader ts-node/esm --loader extensionless --no-warnings src/graphql/schema/generateSchema.ts",
     "typecheck": "tsc --noEmit",
     "lint": "eslint ."
-  },
-  "prisma": {
-    "seed": "node --loader ts-node/esm --loader extensionless --no-warnings prisma/seed.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.10.0",
