@@ -1,8 +1,11 @@
 import { createApp } from "./app";
+import { seedDatabase } from "./database";
 import { getDomain, getOrigin, getOrigins, getPort, validateEnvironment } from "./env";
 
 process.env.NODE_ENV ??= "development"
 validateEnvironment()
+
+await seedDatabase()
 
 const { server, discordClient } = await createApp({
 	origins: getOrigins(),

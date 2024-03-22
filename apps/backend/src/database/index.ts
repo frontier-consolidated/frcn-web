@@ -52,6 +52,10 @@ export function transaction<R>(fn: (tx: typeof database) => Promise<R>): Promise
 	})
 }
 
-await seed(database)
+export async function seedDatabase() {
+	console.log("Seeding database...")
+	await seed(database)
+	console.log("Seeding database completed")
+}
 
 export { database }
