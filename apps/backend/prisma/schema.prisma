@@ -284,6 +284,7 @@ model ContentContainer {
   title         String
   content       String?
   files         ContentContainerFile[]
+  filesOrder    String[]               @map("files_order")
   children      ContentContainer[]     @relation(name: "container_hierarchy")
   childrenOrder String[]               @map("children_order")
   parent        ContentContainer?      @relation(name: "container_hierarchy", fields: [parentId], references: [id], onDelete: Cascade)
@@ -296,12 +297,14 @@ model ContentContainer {
 }
 
 model ContentContainerFile {
-  id          Int              @id @default(autoincrement())
+  identifier  String?
   container   ContentContainer @relation(fields: [containerId], references: [id], onDelete: Cascade)
   containerId Int              @map("container_id")
   file        FileUpload       @relation(fields: [fileId], references: [id], onDelete: Cascade)
   fileId      String           @map("file_id")
 
+  @@id([containerId, fileId])
+  @@unique([identifier, containerId])
   @@map("container__file_uploads")
   @@schema("cms")
 }
