@@ -223,7 +223,7 @@ export type Mutation = {
   deleteEventTeam: Scalars['Boolean']['output'];
   deleteResource: Scalars['Boolean']['output'];
   deleteRole: Scalars['Boolean']['output'];
-  editAccessKey: AccessKey;
+  editAccessKey?: Maybe<AccessKey>;
   editEvent?: Maybe<Event>;
   editEventChannels: Array<DiscordChannel>;
   editEventTeam: EventTeam;
@@ -234,7 +234,7 @@ export type Mutation = {
   giveUserRole: Scalars['Boolean']['output'];
   kickEventMember: Scalars['Boolean']['output'];
   postEvent: Scalars['Boolean']['output'];
-  regenerateAccessKey: AccessKey;
+  regenerateAccessKey?: Maybe<AccessKey>;
   removeUserRole: Scalars['Boolean']['output'];
   reorderRoles: Array<Scalars['ID']['output']>;
   rsvpForEvent: Scalars['Boolean']['output'];
@@ -950,7 +950,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   deleteEventTeam?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteEventTeamArgs, 'id' | 'team'>>;
   deleteResource?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteResourceArgs, 'id'>>;
   deleteRole?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteRoleArgs, 'id'>>;
-  editAccessKey?: Resolver<ResolversTypes['AccessKey'], ParentType, ContextType, RequireFields<MutationEditAccessKeyArgs, 'data' | 'id'>>;
+  editAccessKey?: Resolver<Maybe<ResolversTypes['AccessKey']>, ParentType, ContextType, RequireFields<MutationEditAccessKeyArgs, 'data' | 'id'>>;
   editEvent?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<MutationEditEventArgs, 'data' | 'id'>>;
   editEventChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType, RequireFields<MutationEditEventChannelsArgs, 'channels'>>;
   editEventTeam?: Resolver<ResolversTypes['EventTeam'], ParentType, ContextType, RequireFields<MutationEditEventTeamArgs, 'data' | 'id'>>;
@@ -961,7 +961,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   giveUserRole?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationGiveUserRoleArgs, 'roleId' | 'userId'>>;
   kickEventMember?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationKickEventMemberArgs, 'id' | 'member'>>;
   postEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationPostEventArgs, 'id'>>;
-  regenerateAccessKey?: Resolver<ResolversTypes['AccessKey'], ParentType, ContextType, RequireFields<MutationRegenerateAccessKeyArgs, 'id'>>;
+  regenerateAccessKey?: Resolver<Maybe<ResolversTypes['AccessKey']>, ParentType, ContextType, RequireFields<MutationRegenerateAccessKeyArgs, 'id'>>;
   removeUserRole?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveUserRoleArgs, 'roleId' | 'userId'>>;
   reorderRoles?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<MutationReorderRolesArgs, 'order'>>;
   rsvpForEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRsvpForEventArgs, 'id' | 'rsvp'>>;

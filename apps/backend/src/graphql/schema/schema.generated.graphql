@@ -382,8 +382,8 @@ type Mutation {
 	editSystemSettings(data: SystemEditInput!): SystemSettings! @permission(has: ManageSystem)
 
 	createAccessKey: AccessKey! @permission(has: ManageSystem)
-	editAccessKey(id: Int!, data: AccessKeyEditInput!): AccessKey! @permission(has: ManageSystem)
-	regenerateAccessKey(id: Int!): AccessKey! @permission(has: ManageSystem)
+	editAccessKey(id: Int!, data: AccessKeyEditInput!): AccessKey @permission(has: ManageSystem)
+	regenerateAccessKey(id: Int!): AccessKey @permission(has: ManageSystem)
 	deleteAccessKey(id: Int!): Boolean! @permission(has: ManageSystem)
 }
 
