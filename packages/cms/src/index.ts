@@ -2,6 +2,8 @@ import pgtbus from "pg-tbus";
 import type * as pgtbusExports from "pg-tbus";
 const { defineEvent, Type } = pgtbus as unknown as typeof pgtbusExports
 
+export * from "./containers"
+
 const cms_update_event = defineEvent({
     event_name: "cms_update",
     schema: Type.String()
@@ -9,10 +11,4 @@ const cms_update_event = defineEvent({
 
 export const CMSEvents = {
     cms_update_event
-}
-
-export enum CMSContainerType {
-    Layout = "layout",
-    Section = "section",
-    CallToAction = "cta"
 }

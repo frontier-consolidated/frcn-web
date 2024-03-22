@@ -4,6 +4,16 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./containers": {
+      "import": "./dist/containers.js",
+      "types": "./dist/containers.d.ts"
+    }
+  },
   "scripts": {
     "build": "tsc"
   },
