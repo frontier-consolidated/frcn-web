@@ -7,7 +7,7 @@ export function createContentContainerExtension(define: typeof Prisma.defineExte
 	return define({
 		name: "ContentContainerExtension",
 		model: {
-			fileUpload: {
+			contentContainer: {
 				async getParent(model: FullModel<ContentContainer>) {
 					if (model.parent) return model.parent;
 					if (!model.parentId) return null;
