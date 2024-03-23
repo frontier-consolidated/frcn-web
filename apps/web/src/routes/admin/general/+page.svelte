@@ -95,6 +95,12 @@
                 The default channel where events will be posted
             </Helper>
         </Field>
+        <div>
+            <Label class="mb-2">Access Keys</Label>
+            <Button href="/admin/general/accesskeys" color="dark" size="sm">
+                Manage Access Keys
+            </Button>
+        </div>
     </div>
     <div class="flex justify-end items-center gap-2">
         <Button color="alternative" on:click={() => {

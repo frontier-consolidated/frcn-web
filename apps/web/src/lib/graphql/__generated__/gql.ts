@@ -21,22 +21,27 @@ const documents = {
     "\n    fragment ResourceFragment on Resource {\n        id\n        owner {\n            ...UserFragment\n        }\n        name\n        sizeKb\n        shortDescription\n        previewUrl\n        downloadUrl\n        tags\n        updatedAt\n        createdAt\n    }\n": types.ResourceFragmentFragmentDoc,
     "\n    fragment RoleFragment on UserRole {\n        id\n        name\n        primary\n        discordId\n        permissions\n        updatedAt\n        createdAt\n    }\n": types.RoleFragmentFragmentDoc,
     "\n    fragment UserFragment on User {\n        id\n        name\n        scName\n        discordId\n        discordName\n        discordUsername\n        verified\n        avatarUrl\n        primaryRole {\n            id\n            name\n        }\n        roles {\n            id\n            name\n        }\n        updatedAt\n        createdAt\n    }\n": types.UserFragmentFragmentDoc,
+    "\n\tmutation CreateAccessKey {\n\t\tkey: createAccessKey {\n\t\t\tid\n\t\t\tkey\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.CreateAccessKeyDocument,
     "\n\tmutation CreateEvent {\n\t\tevent: createEvent\n\t}\n": types.CreateEventDocument,
     "\n\tmutation CreateResource($data: ResourceCreateInput!) {\n\t\tresource: createResource(data: $data) {\n\t\t\t...ResourceFragment\n\t\t}\n\t}\n": types.CreateResourceDocument,
     "\n\tmutation CreateRole {\n\t\trole: createRole\n\t}\n": types.CreateRoleDocument,
+    "\n\tmutation DeleteAccessKey($id: Int!) {\n\t\tdeleted: deleteAccessKey(id: $id)\n\t}\n": types.DeleteAccessKeyDocument,
     "\n\tmutation DeleteEvent($id: ID!) {\n\t\tdeleted: deleteEvent(id: $id)\n\t}\n": types.DeleteEventDocument,
     "\n\tmutation DeleteResource($id: ID!) {\n\t\tdeleted: deleteResource(id: $id)\n\t}\n": types.DeleteResourceDocument,
     "\n\tmutation DeleteRole($roleId: ID!) {\n\t\tdeleted: deleteRole(id: $roleId)\n\t}\n": types.DeleteRoleDocument,
+    "\n\tmutation EditAccessKey($id: Int!, $data: AccessKeyEditInput!) {\n\t\tkey: editAccessKey(id: $id, data: $data) {\n\t\t\tid\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.EditAccessKeyDocument,
     "\n\tmutation EditEvent($eventId: ID!, $data: EventEditInput!) {\n\t\tevent: editEvent(id: $eventId, data: $data) {\n\t\t\t...EventFragment\n\t\t\t...EventSettingsFragment\n\t\t}\n\t}\n": types.EditEventDocument,
     "\n\tmutation EditResource($id: ID!, $data: ResourceEditInput!) {\n\t\tresource: editResource(id: $id, data: $data) {\n\t\t\t...ResourceFragment\n\t\t}\n\t}\n": types.EditResourceDocument,
     "\n\tmutation EditRole($roleId: ID!, $data: RoleEditInput!) {\n\t\trole: editRole(id: $roleId, data: $data) {\n\t\t\tid\n\t\t\tname\n\t\t\tdiscordId\n\t\t\tprimary\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.EditRoleDocument,
     "\n\tmutation EditSystemSettings($data: SystemEditInput!) {\n\t\tsettings: editSystemSettings(data: $data) {\n\t\t\tdiscordGuild {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\tdefaultEventChannel {\n\t\t\t\t...ChannelFragment\n\t\t\t}\n\t\t}\n\t}\n": types.EditSystemSettingsDocument,
     "\n\tmutation PostEvent($eventId: ID!) {\n\t\tsuccess: postEvent(id: $eventId)\n\t}\n": types.PostEventDocument,
+    "\n\tmutation RegenerateAccessKey($id: Int!) {\n\t\tkey: regenerateAccessKey(id: $id) {\n\t\t\tid\n\t\t\tkey\n\t\t}\n\t}\n": types.RegenerateAccessKeyDocument,
     "\n\tmutation ReorderRoles($order: [ID!]!) {\n\t\torder: reorderRoles(order: $order)\n\t}\n": types.ReorderRolesDocument,
     "\n\tmutation RsvpForEvent($eventId: ID!, $rsvpId: ID!) {\n\t\tsuccess: rsvpForEvent(id: $eventId, rsvp: $rsvpId)\n\t}\n": types.RsvpForEventDocument,
     "\n\tmutation UnrsvpForEvent($eventId: ID!) {\n\t\tsuccess: unrsvpForEvent(id: $eventId)\n\t}\n": types.UnrsvpForEventDocument,
     "\n\tquery GetCurrentRsvps {\n\t\trsvps: getCurrentUser {\n\t\t\trsvps {\n\t\t\t\tinvite\n\t\t\t\trsvpAt\n\t\t\t\trsvp {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t\tevent {\n\t\t\t\t\tid\n\t\t\t\t\towner {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t\tscName\n\t\t\t\t\t\tavatarUrl\n\t\t\t\t\t\tverified\n\t\t\t\t\t\tupdatedAt\n\t\t\t\t\t\tcreatedAt\n\t\t\t\t\t}\n\t\t\t\t\tname\n\t\t\t\t\tsummary\n\t\t\t\t\tdescription\n\t\t\t\t\timageUrl\n\t\t\t\t\teventType\n\t\t\t\t\tlocation\n\t\t\t\t\tduration\n\t\t\t\t\tstartAt\n\t\t\t\t\tendedAt\n\t\t\t\t\tupdatedAt\n\t\t\t\t\tcreatedAt\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": types.GetCurrentRsvpsDocument,
     "\n\tquery GetCurrentUser {\n\t\tuser: getCurrentUser {\n\t\t\t...UserFragment\n\t\t\tpermissions\n\t\t\tsettings {\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t\tstatus {\n\t\t\t\tactivity\n\t\t\t\tship\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t}\n\t}\n": types.GetCurrentUserDocument,
+    "\n\tquery GetAllAccessKeys {\n\t\tkeys: getAllAccessKeys {\n\t\t\tid\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.GetAllAccessKeysDocument,
     "\n\tquery GetAllRoles {\n\t\troles: getRoles {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n": types.GetAllRolesDocument,
     "\n\tquery GetContentContainer($identifier: String!, $type: String!) {\n\t\tcontainer: getContentContainer(identifier: $identifier, type: $type) {\n\t\t\t...ContentContainerFragment\n\t\t}\n\t}\n": types.GetContentContainerDocument,
     "\n\tquery GetContentContainerById($id: ID!) {\n\t\tcontainer: getContentContainerById(id: $id) {\n\t\t\t...ContentContainerFragment\n\t\t}\n\t}\n": types.GetContentContainerByIdDocument,
@@ -102,6 +107,10 @@ export function gql(source: "\n    fragment UserFragment on User {\n        id\n
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n\tmutation CreateAccessKey {\n\t\tkey: createAccessKey {\n\t\t\tid\n\t\t\tkey\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation CreateAccessKey {\n\t\tkey: createAccessKey {\n\t\t\tid\n\t\t\tkey\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n\tmutation CreateEvent {\n\t\tevent: createEvent\n\t}\n"): (typeof documents)["\n\tmutation CreateEvent {\n\t\tevent: createEvent\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -114,6 +123,10 @@ export function gql(source: "\n\tmutation CreateRole {\n\t\trole: createRole\n\t
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n\tmutation DeleteAccessKey($id: Int!) {\n\t\tdeleted: deleteAccessKey(id: $id)\n\t}\n"): (typeof documents)["\n\tmutation DeleteAccessKey($id: Int!) {\n\t\tdeleted: deleteAccessKey(id: $id)\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n\tmutation DeleteEvent($id: ID!) {\n\t\tdeleted: deleteEvent(id: $id)\n\t}\n"): (typeof documents)["\n\tmutation DeleteEvent($id: ID!) {\n\t\tdeleted: deleteEvent(id: $id)\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -123,6 +136,10 @@ export function gql(source: "\n\tmutation DeleteResource($id: ID!) {\n\t\tdelete
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n\tmutation DeleteRole($roleId: ID!) {\n\t\tdeleted: deleteRole(id: $roleId)\n\t}\n"): (typeof documents)["\n\tmutation DeleteRole($roleId: ID!) {\n\t\tdeleted: deleteRole(id: $roleId)\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tmutation EditAccessKey($id: Int!, $data: AccessKeyEditInput!) {\n\t\tkey: editAccessKey(id: $id, data: $data) {\n\t\t\tid\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation EditAccessKey($id: Int!, $data: AccessKeyEditInput!) {\n\t\tkey: editAccessKey(id: $id, data: $data) {\n\t\t\tid\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -146,6 +163,10 @@ export function gql(source: "\n\tmutation PostEvent($eventId: ID!) {\n\t\tsucces
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n\tmutation RegenerateAccessKey($id: Int!) {\n\t\tkey: regenerateAccessKey(id: $id) {\n\t\t\tid\n\t\t\tkey\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation RegenerateAccessKey($id: Int!) {\n\t\tkey: regenerateAccessKey(id: $id) {\n\t\t\tid\n\t\t\tkey\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n\tmutation ReorderRoles($order: [ID!]!) {\n\t\torder: reorderRoles(order: $order)\n\t}\n"): (typeof documents)["\n\tmutation ReorderRoles($order: [ID!]!) {\n\t\torder: reorderRoles(order: $order)\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -163,6 +184,10 @@ export function gql(source: "\n\tquery GetCurrentRsvps {\n\t\trsvps: getCurrentU
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n\tquery GetCurrentUser {\n\t\tuser: getCurrentUser {\n\t\t\t...UserFragment\n\t\t\tpermissions\n\t\t\tsettings {\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t\tstatus {\n\t\t\t\tactivity\n\t\t\t\tship\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetCurrentUser {\n\t\tuser: getCurrentUser {\n\t\t\t...UserFragment\n\t\t\tpermissions\n\t\t\tsettings {\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t\tstatus {\n\t\t\t\tactivity\n\t\t\t\tship\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tquery GetAllAccessKeys {\n\t\tkeys: getAllAccessKeys {\n\t\t\tid\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetAllAccessKeys {\n\t\tkeys: getAllAccessKeys {\n\t\t\tid\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

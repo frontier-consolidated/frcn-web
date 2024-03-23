@@ -5,7 +5,7 @@
 	import { Avatar, Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
 	import { ArrowLeftSolid, CloseCircleSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
-	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button } from "$lib/components";
+	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button, PermissionToggles } from "$lib/components";
 	import { getApollo, Mutations } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
@@ -13,7 +13,6 @@
 	import { user } from "$lib/stores/UserStore";
 
     import type { PageData } from './$types';
-	import { permissionDefs } from "./permissionDefs";
 
 	function cloneRoleData(data: PageData["role"]) {
 		return {
@@ -60,18 +59,11 @@
 
 	$: canToggleAdmin = checkIfCanToggleAdmin(data.roles, data.role, $user.data)
 
-	function togglePermission(ev: Event, permission: Permission) {
-		const target = (ev.target) as HTMLInputElement
-		if (target.checked) {
-			editData.permissions |= permission
-		} else {
-			editData.permissions ^= permission
-		}
-	}
-
-	let validator = new FieldValidator();
+	const validator = new FieldValidator();
 
 	async function save() {
+		if (!validator.validate()) return;
+
 		const { data: updatedData, errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_ROLE,
 			variables: {
@@ -186,32 +178,14 @@
 				</div>
 			</TabItem>
 			<TabItem title="Permissions" open={$page.url.hash === "#permissions"} on:click={() => window.location.hash = "#permissions"}>
-				<div class="flex flex-col gap-4 p-4 mt-2">
-					{#each permissionDefs as info, i}
-						{@const disabled = info.permission === Permission.Admin && !canToggleAdmin}
-						<div>
-							<Toggle
-								{disabled}
-								checked={(editData.permissions & info.permission) > 0} 
-								on:change={(ev) => togglePermission(ev, info.permission)}
-							>
-								{info.name}
-								{#if disabled}
-									<Tooltip>
-										<ExclamationCircleSolid slot="icon" class="ms-2 text-orange-400" />
-										You cannot remove admin from this role as this is the only role that gives you admin
-									</Tooltip>
-								{/if}
-							</Toggle>
-							<Helper class="mt-1">
-								{info.help}
-							</Helper>
-						</div>
-						{#if i + 1 < Object.values(permissionDefs).length}
-							<Hr />
-						{/if}
-					{/each}
-				</div>
+				<PermissionToggles disableToggles={{ [Permission.Admin]: canToggleAdmin }} bind:permissions={editData.permissions} let:info let:checked>
+					{#if info.permission === Permission.Admin && checked && !canToggleAdmin}
+						<Tooltip>
+							<ExclamationCircleSolid slot="icon" class="ms-2 text-orange-400" />
+							You cannot remove admin from this role as this is the only role that gives you admin
+						</Tooltip>
+					{/if}
+				</PermissionToggles>
 			</TabItem>
 			<TabItem title="Users ({data.role.users.length})" open={$page.url.hash === "#users"} on:click={() => window.location.hash = "#users"}>
 				<div class="flex flex-col gap-1 p-4 max-h-screen overflow-y-auto">
