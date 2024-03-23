@@ -6,8 +6,9 @@
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params"
 
-	import { Button, Hr } from "$lib/components";
+	import { Button, Hr, PageHero } from "$lib/components";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
+	import heroImageSrcset from "$lib/images/stock/resources-hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
 	import ccugameIcon from "$lib/images/tool-icons/ccugame.png"
 	import cstoneIcon from "$lib/images/tool-icons/cornerstone.png"
 	import erkulIcon from "$lib/images/tool-icons/erkul.png"
@@ -18,6 +19,7 @@
 	import verseGuideIcon from "$lib/images/tool-icons/verseguide.svg"
 	import { getCurrentPage, getPageUrl, getPages } from "$lib/pageHelpers";
 	import { user } from "$lib/stores/UserStore";
+
 
 	import type { PageData } from "./$types";
 	import ResourceCard from "./ResourceCard.svelte";
@@ -54,9 +56,10 @@
 	<meta name="description" content="Frontier Consolidated - Search for Guides & Resources" />
 </svelte:head>
 
-<div class="flex flex-col mx-auto w-full max-w-6xl p-4 mt-24">
-	<Heading tag="h1" class="font-medium text-4xl">Resources</Heading>
-	<Hr />
+<PageHero srcset={heroImageSrcset}>
+	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">Resources</Heading>
+</PageHero>
+<div class="flex flex-col mx-auto w-full max-w-6xl p-4">
 	<section class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mt-2 px-4">
 		{#each tools as tool}
 			<ToolButton name={tool.name} img={tool.icon} href={tool.href} />
