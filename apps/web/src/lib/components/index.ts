@@ -23,6 +23,7 @@ import RsvpModal from "./modals/RSVPModal.svelte"
 import UserProfileModal from "./modals/UserProfileModal.svelte"
 import NavUser from "./NavUser.svelte"
 import Notifications from "./Notifications.svelte"
+import PageHero from "./PageHero.svelte"
 import PermissionToggles from "./PermissionToggles.svelte"
 import SectionHeading from "./SectionHeading.svelte"
 import Select from "./select/Select.svelte"
@@ -64,6 +65,7 @@ export {
     LoginButton,
     NavUser,
     Notifications,
+    PageHero,
     PermissionToggles,
     SectionHeading,
     Tooltip,
