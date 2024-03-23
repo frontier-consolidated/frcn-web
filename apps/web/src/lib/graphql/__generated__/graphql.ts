@@ -22,10 +22,51 @@ export type Scalars = {
   Timestamp: { input: Timestamp['input']; output: Timestamp['output']; }
 };
 
+export type AccessKey = {
+  __typename?: 'AccessKey';
+  createdAt: Scalars['Timestamp']['output'];
+  description: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  key?: Maybe<Scalars['String']['output']>;
+  permissions: Scalars['Int']['output'];
+  updatedAt: Scalars['Timestamp']['output'];
+};
+
+export type AccessKeyEditInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  permissions?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export enum CacheControlScope {
   Private = 'PRIVATE',
   Public = 'PUBLIC'
 }
+
+export type ContentContainer = {
+  __typename?: 'ContentContainer';
+  children: Array<ContentContainer>;
+  content?: Maybe<Scalars['String']['output']>;
+  files: Array<ContentContainerFile>;
+  id: Scalars['ID']['output'];
+  identifier?: Maybe<Scalars['String']['output']>;
+  title: Scalars['String']['output'];
+  type: Scalars['String']['output'];
+};
+
+export type ContentContainerEditInput = {
+  content?: InputMaybe<Scalars['String']['input']>;
+  identifier?: InputMaybe<Scalars['String']['input']>;
+  title?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ContentContainerFile = {
+  __typename?: 'ContentContainerFile';
+  fileName: Scalars['String']['output'];
+  fileSizeKb: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
+  identifier?: Maybe<Scalars['String']['output']>;
+  previewUrl?: Maybe<Scalars['String']['output']>;
+};
 
 export type DiscordChannel = {
   __typename?: 'DiscordChannel';
@@ -188,14 +229,20 @@ export type EventTeamEditInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createAccessKey: AccessKey;
+  createContentContainer: ContentContainer;
   createEvent: Scalars['ID']['output'];
   createEventTeam: EventTeam;
   createResource: Resource;
   createRole: Scalars['ID']['output'];
+  deleteAccessKey: Scalars['Boolean']['output'];
+  deleteContentContainer: Scalars['Boolean']['output'];
   deleteEvent: Scalars['Boolean']['output'];
   deleteEventTeam: Scalars['Boolean']['output'];
   deleteResource: Scalars['Boolean']['output'];
   deleteRole: Scalars['Boolean']['output'];
+  editAccessKey?: Maybe<AccessKey>;
+  editContentContainer?: Maybe<ContentContainer>;
   editEvent?: Maybe<Event>;
   editEventChannels: Array<DiscordChannel>;
   editEventTeam: EventTeam;
@@ -206,7 +253,10 @@ export type Mutation = {
   giveUserRole: Scalars['Boolean']['output'];
   kickEventMember: Scalars['Boolean']['output'];
   postEvent: Scalars['Boolean']['output'];
+  regenerateAccessKey?: Maybe<AccessKey>;
   removeUserRole: Scalars['Boolean']['output'];
+  reorderContentContainerChildren?: Maybe<ContentContainer>;
+  reorderContentContainerFiles?: Maybe<ContentContainer>;
   reorderRoles: Array<Scalars['ID']['output']>;
   rsvpForEvent: Scalars['Boolean']['output'];
   setEventMemberTeam: Scalars['Boolean']['output'];
@@ -214,6 +264,12 @@ export type Mutation = {
   syncRole?: Maybe<UserRole>;
   unrsvpForEvent: Scalars['Boolean']['output'];
   verifyUserScName: User;
+};
+
+
+export type MutationCreateContentContainerArgs = {
+  parent?: InputMaybe<Scalars['ID']['input']>;
+  type: Scalars['String']['input'];
 };
 
 
@@ -225,6 +281,16 @@ export type MutationCreateEventTeamArgs = {
 
 export type MutationCreateResourceArgs = {
   data: ResourceCreateInput;
+};
+
+
+export type MutationDeleteAccessKeyArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationDeleteContentContainerArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -245,6 +311,18 @@ export type MutationDeleteResourceArgs = {
 
 
 export type MutationDeleteRoleArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationEditAccessKeyArgs = {
+  data: AccessKeyEditInput;
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationEditContentContainerArgs = {
+  data: ContentContainerEditInput;
   id: Scalars['ID']['input'];
 };
 
@@ -305,9 +383,26 @@ export type MutationPostEventArgs = {
 };
 
 
+export type MutationRegenerateAccessKeyArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
 export type MutationRemoveUserRoleArgs = {
   roleId: Scalars['ID']['input'];
   userId: Scalars['ID']['input'];
+};
+
+
+export type MutationReorderContentContainerChildrenArgs = {
+  id: Scalars['ID']['input'];
+  order: Array<Scalars['ID']['input']>;
+};
+
+
+export type MutationReorderContentContainerFilesArgs = {
+  id: Scalars['ID']['input'];
+  order: Array<Scalars['ID']['input']>;
 };
 
 
@@ -370,11 +465,11 @@ export type PagedResource = {
 
 export enum Permission {
   Admin = 'Admin',
+  CmsRead = 'CmsRead',
+  CmsWrite = 'CmsWrite',
   CreateEvents = 'CreateEvents',
   ManageRoles = 'ManageRoles',
   ManageSystem = 'ManageSystem',
-  Unassigned2 = 'Unassigned2',
-  Unassigned3 = 'Unassigned3',
   Unassigned4 = 'Unassigned4',
   Unassigned5 = 'Unassigned5',
   Unassigned6 = 'Unassigned6',
@@ -404,10 +499,16 @@ export enum Permission {
 
 export type Query = {
   __typename?: 'Query';
+  getAccessKey?: Maybe<AccessKey>;
+  getAllAccessKeys: Array<AccessKey>;
   getAllDiscordChannels: Array<DiscordChannel>;
   getAllDiscordEmojis: DiscordEmojis;
   getAllDiscordRoles: Array<DiscordRole>;
   getAllEventChannels: Array<DiscordChannel>;
+  getContentContainer?: Maybe<ContentContainer>;
+  getContentContainerById?: Maybe<ContentContainer>;
+  getContentContainersOfType: Array<ContentContainer>;
+  getCurrentAccessKey?: Maybe<AccessKey>;
   getCurrentUser?: Maybe<User>;
   getEvent?: Maybe<Event>;
   getEvents?: Maybe<PagedEvent>;
@@ -421,8 +522,29 @@ export type Query = {
 };
 
 
+export type QueryGetAccessKeyArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
 export type QueryGetAllDiscordRolesArgs = {
   everyone?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryGetContentContainerArgs = {
+  identifier: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+};
+
+
+export type QueryGetContentContainerByIdArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetContentContainersOfTypeArgs = {
+  type: Scalars['String']['input'];
 };
 
 
@@ -574,6 +696,8 @@ export type UserStatusEditInput = {
 
 export type ChannelFragmentFragment = { __typename?: 'DiscordChannel', id: ID['output'], name: String['output'], type?: String['output'] | null };
 
+export type ContentContainerFragmentFragment = { __typename?: 'ContentContainer', id: ID['output'], identifier?: String['output'] | null, type: String['output'], title: String['output'], content?: String['output'] | null, files: Array<{ __typename?: 'ContentContainerFile', id: ID['output'], identifier?: String['output'] | null, fileName: String['output'], fileSizeKb: Int['output'], previewUrl?: String['output'] | null }>, children: Array<{ __typename?: 'ContentContainer', id: ID['output'], identifier?: String['output'] | null, type: String['output'], title: String['output'], content?: String['output'] | null, files: Array<{ __typename?: 'ContentContainerFile', id: ID['output'], identifier?: String['output'] | null, fileName: String['output'], fileSizeKb: Int['output'], previewUrl?: String['output'] | null }> }> };
+
 export type EventFragmentFragment = { __typename?: 'Event', id: ID['output'], name: String['output'], summary: String['output'], description: String['output'], imageUrl?: String['output'] | null, eventType?: String['output'] | null, location?: Array<String['output']> | null, posted: Boolean['output'], duration?: Int['output'] | null, startAt?: Timestamp['output'] | null, endedAt?: Timestamp['output'] | null, updatedAt: Timestamp['output'], createdAt: Timestamp['output'], channel?: { __typename?: 'DiscordChannel', id: ID['output'], name: String['output'], type?: String['output'] | null } | null, owner?: { __typename?: 'User', id: ID['output'], name: String['output'], scName?: String['output'] | null, discordId: ID['output'], discordName: String['output'], discordUsername: String['output'], verified: Boolean['output'], avatarUrl: String['output'], updatedAt: Timestamp['output'], createdAt: Timestamp['output'], primaryRole: { __typename?: 'UserRole', id: ID['output'], name: String['output'] }, roles: Array<{ __typename?: 'UserRole', id: ID['output'], name: String['output'] }> } | null, rsvp?: { __typename?: 'EventMember', pending: Boolean['output'], rsvp?: ID['output'] | null } | null, rsvpRoles: Array<{ __typename?: 'EventRsvpRole', id: ID['output'], name: String['output'], limit: Int['output'], emoji: { __typename?: 'DiscordEmoji', id: ID['output'], name: String['output'], image?: String['output'] | null } }>, members: Array<{ __typename?: 'EventMember', id: ID['output'], pending: Boolean['output'], rsvp?: ID['output'] | null, rsvpAt: Timestamp['output'], user: { __typename?: 'User', id: ID['output'], name: String['output'], avatarUrl: String['output'] } }> };
 
 export type EventMemberFragmentFragment = { __typename?: 'EventMember', id: ID['output'], pending: Boolean['output'], rsvp?: ID['output'] | null, rsvpAt: Timestamp['output'], user: { __typename?: 'User', id: ID['output'], name: String['output'], avatarUrl: String['output'] } };
@@ -699,6 +823,35 @@ export type GetAllRolesQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAllRolesQuery = { __typename?: 'Query', roles: Array<{ __typename?: 'UserRole', id: ID['output'], name: String['output'], primary: Boolean['output'], discordId?: String['output'] | null, permissions: Int['output'], updatedAt: Timestamp['output'], createdAt: Timestamp['output'], users: Array<{ __typename?: 'User', id: ID['output'] }> }> };
 
+export type GetContentContainerQueryVariables = Exact<{
+  identifier: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+}>;
+
+
+export type GetContentContainerQuery = { __typename?: 'Query', container?: { __typename?: 'ContentContainer', id: ID['output'], identifier?: String['output'] | null, type: String['output'], title: String['output'], content?: String['output'] | null, files: Array<{ __typename?: 'ContentContainerFile', id: ID['output'], identifier?: String['output'] | null, fileName: String['output'], fileSizeKb: Int['output'], previewUrl?: String['output'] | null }>, children: Array<{ __typename?: 'ContentContainer', id: ID['output'], identifier?: String['output'] | null, type: String['output'], title: String['output'], content?: String['output'] | null, files: Array<{ __typename?: 'ContentContainerFile', id: ID['output'], identifier?: String['output'] | null, fileName: String['output'], fileSizeKb: Int['output'], previewUrl?: String['output'] | null }> }> } | null };
+
+export type GetContentContainerByIdQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetContentContainerByIdQuery = { __typename?: 'Query', container?: { __typename?: 'ContentContainer', id: ID['output'], identifier?: String['output'] | null, type: String['output'], title: String['output'], content?: String['output'] | null, files: Array<{ __typename?: 'ContentContainerFile', id: ID['output'], identifier?: String['output'] | null, fileName: String['output'], fileSizeKb: Int['output'], previewUrl?: String['output'] | null }>, children: Array<{ __typename?: 'ContentContainer', id: ID['output'], identifier?: String['output'] | null, type: String['output'], title: String['output'], content?: String['output'] | null, files: Array<{ __typename?: 'ContentContainerFile', id: ID['output'], identifier?: String['output'] | null, fileName: String['output'], fileSizeKb: Int['output'], previewUrl?: String['output'] | null }> }> } | null };
+
+export type GetContentContainerChildrenQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+}>;
+
+
+export type GetContentContainerChildrenQuery = { __typename?: 'Query', container?: { __typename?: 'ContentContainer', children: Array<{ __typename?: 'ContentContainer', id: ID['output'], identifier?: String['output'] | null, type: String['output'], title: String['output'], content?: String['output'] | null, files: Array<{ __typename?: 'ContentContainerFile', id: ID['output'], identifier?: String['output'] | null, fileName: String['output'], fileSizeKb: Int['output'], previewUrl?: String['output'] | null }>, children: Array<{ __typename?: 'ContentContainer', id: ID['output'], identifier?: String['output'] | null, type: String['output'], title: String['output'], content?: String['output'] | null, files: Array<{ __typename?: 'ContentContainerFile', id: ID['output'], identifier?: String['output'] | null, fileName: String['output'], fileSizeKb: Int['output'], previewUrl?: String['output'] | null }> }> }> } | null };
+
+export type GetContentContainersOfTypeQueryVariables = Exact<{
+  type: Scalars['String']['input'];
+}>;
+
+
+export type GetContentContainersOfTypeQuery = { __typename?: 'Query', containers: Array<{ __typename?: 'ContentContainer', id: ID['output'], identifier?: String['output'] | null, type: String['output'], title: String['output'], content?: String['output'] | null, files: Array<{ __typename?: 'ContentContainerFile', id: ID['output'], identifier?: String['output'] | null, fileName: String['output'], fileSizeKb: Int['output'], previewUrl?: String['output'] | null }>, children: Array<{ __typename?: 'ContentContainer', id: ID['output'], identifier?: String['output'] | null, type: String['output'], title: String['output'], content?: String['output'] | null, files: Array<{ __typename?: 'ContentContainerFile', id: ID['output'], identifier?: String['output'] | null, fileName: String['output'], fileSizeKb: Int['output'], previewUrl?: String['output'] | null }> }> }> };
+
 export type GetEventQueryVariables = Exact<{
   eventId: Scalars['ID']['input'];
 }>;
@@ -762,6 +915,7 @@ export type OnRolesUpdatedSubscriptionVariables = Exact<{
 
 export type OnRolesUpdatedSubscription = { __typename?: 'Subscription', roles: { __typename?: 'UpdatedUserRoles', permissions: Int['output'], primaryRole: { __typename?: 'UserRole', id: ID['output'], name: String['output'] }, roles: Array<{ __typename?: 'UserRole', id: ID['output'], name: String['output'] }> } };
 
+export const ContentContainerFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ContentContainerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ContentContainer"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"fileSizeKb"}},{"kind":"Field","name":{"kind":"Name","value":"previewUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"fileSizeKb"}},{"kind":"Field","name":{"kind":"Name","value":"previewUrl"}}]}}]}}]}}]} as unknown as DocumentNode<ContentContainerFragmentFragment, unknown>;
 export const ChannelFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ChannelFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DiscordChannel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<ChannelFragmentFragment, unknown>;
 export const UserFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"scName"}},{"kind":"Field","name":{"kind":"Name","value":"discordId"}},{"kind":"Field","name":{"kind":"Name","value":"discordName"}},{"kind":"Field","name":{"kind":"Name","value":"discordUsername"}},{"kind":"Field","name":{"kind":"Name","value":"verified"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"primaryRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"roles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<UserFragmentFragment, unknown>;
 export const EventMemberFragmentFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventMemberFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventMember"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pending"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"rsvp"}},{"kind":"Field","name":{"kind":"Name","value":"rsvpAt"}}]}}]} as unknown as DocumentNode<EventMemberFragmentFragment, unknown>;
@@ -786,6 +940,10 @@ export const UnrsvpForEventDocument = {"kind":"Document","definitions":[{"kind":
 export const GetCurrentRsvpsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentRsvps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"rsvps"},"name":{"kind":"Name","value":"getCurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"rsvps"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"invite"}},{"kind":"Field","name":{"kind":"Name","value":"rsvpAt"}},{"kind":"Field","name":{"kind":"Name","value":"rsvp"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"event"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"owner"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"scName"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"verified"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"startAt"}},{"kind":"Field","name":{"kind":"Name","value":"endedAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetCurrentRsvpsQuery, GetCurrentRsvpsQueryVariables>;
 export const GetCurrentUserDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetCurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"user"},"name":{"kind":"Name","value":"getCurrentUser"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserFragment"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"status"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"activity"}},{"kind":"Field","name":{"kind":"Name","value":"ship"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"scName"}},{"kind":"Field","name":{"kind":"Name","value":"discordId"}},{"kind":"Field","name":{"kind":"Name","value":"discordName"}},{"kind":"Field","name":{"kind":"Name","value":"discordUsername"}},{"kind":"Field","name":{"kind":"Name","value":"verified"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"primaryRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"roles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<GetCurrentUserQuery, GetCurrentUserQueryVariables>;
 export const GetAllRolesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetAllRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"roles"},"name":{"kind":"Name","value":"getRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"RoleFragment"}},{"kind":"Field","name":{"kind":"Name","value":"users"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"RoleFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"UserRole"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"primary"}},{"kind":"Field","name":{"kind":"Name","value":"discordId"}},{"kind":"Field","name":{"kind":"Name","value":"permissions"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<GetAllRolesQuery, GetAllRolesQueryVariables>;
+export const GetContentContainerDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetContentContainer"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"identifier"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"container"},"name":{"kind":"Name","value":"getContentContainer"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"identifier"},"value":{"kind":"Variable","name":{"kind":"Name","value":"identifier"}}},{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ContentContainerFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ContentContainerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ContentContainer"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"fileSizeKb"}},{"kind":"Field","name":{"kind":"Name","value":"previewUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"fileSizeKb"}},{"kind":"Field","name":{"kind":"Name","value":"previewUrl"}}]}}]}}]}}]} as unknown as DocumentNode<GetContentContainerQuery, GetContentContainerQueryVariables>;
+export const GetContentContainerByIdDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetContentContainerById"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"container"},"name":{"kind":"Name","value":"getContentContainerById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ContentContainerFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ContentContainerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ContentContainer"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"fileSizeKb"}},{"kind":"Field","name":{"kind":"Name","value":"previewUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"fileSizeKb"}},{"kind":"Field","name":{"kind":"Name","value":"previewUrl"}}]}}]}}]}}]} as unknown as DocumentNode<GetContentContainerByIdQuery, GetContentContainerByIdQueryVariables>;
+export const GetContentContainerChildrenDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetContentContainerChildren"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"container"},"name":{"kind":"Name","value":"getContentContainerById"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ContentContainerFragment"}}]}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ContentContainerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ContentContainer"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"fileSizeKb"}},{"kind":"Field","name":{"kind":"Name","value":"previewUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"fileSizeKb"}},{"kind":"Field","name":{"kind":"Name","value":"previewUrl"}}]}}]}}]}}]} as unknown as DocumentNode<GetContentContainerChildrenQuery, GetContentContainerChildrenQueryVariables>;
+export const GetContentContainersOfTypeDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetContentContainersOfType"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"type"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"containers"},"name":{"kind":"Name","value":"getContentContainersOfType"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"type"},"value":{"kind":"Variable","name":{"kind":"Name","value":"type"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ContentContainerFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ContentContainerFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"ContentContainer"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"fileSizeKb"}},{"kind":"Field","name":{"kind":"Name","value":"previewUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"type"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"files"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"identifier"}},{"kind":"Field","name":{"kind":"Name","value":"fileName"}},{"kind":"Field","name":{"kind":"Name","value":"fileSizeKb"}},{"kind":"Field","name":{"kind":"Name","value":"previewUrl"}}]}}]}}]}}]} as unknown as DocumentNode<GetContentContainersOfTypeQuery, GetContentContainersOfTypeQueryVariables>;
 export const GetEventDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEvent"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"event"},"name":{"kind":"Name","value":"getEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventFragment"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ChannelFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DiscordChannel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"scName"}},{"kind":"Field","name":{"kind":"Name","value":"discordId"}},{"kind":"Field","name":{"kind":"Name","value":"discordName"}},{"kind":"Field","name":{"kind":"Name","value":"discordUsername"}},{"kind":"Field","name":{"kind":"Name","value":"verified"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"primaryRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"roles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventMemberFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventMember"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pending"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"rsvp"}},{"kind":"Field","name":{"kind":"Name","value":"rsvpAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Event"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"channel"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ChannelFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"owner"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"rsvp"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pending"}},{"kind":"Field","name":{"kind":"Name","value":"rsvp"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"rsvpRoles"},"name":{"kind":"Name","value":"roles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"emoji"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"image"}}]}},{"kind":"Field","name":{"kind":"Name","value":"limit"}}]}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventMemberFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"posted"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"startAt"}},{"kind":"Field","name":{"kind":"Name","value":"endedAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<GetEventQuery, GetEventQueryVariables>;
 export const GetEventSettingsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEventSettings"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"event"},"name":{"kind":"Name","value":"getEvent"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"eventId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventSettingsFragment"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"eventChannels"},"name":{"kind":"Name","value":"getAllEventChannels"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ChannelFragment"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"customEmojis"},"name":{"kind":"Name","value":"getAllDiscordEmojis"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"serverName"}},{"kind":"Field","name":{"kind":"Name","value":"serverAvatar"}},{"kind":"Field","name":{"kind":"Name","value":"emojis"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"image"}}]}}]}},{"kind":"Field","alias":{"kind":"Name","value":"discordRoles"},"name":{"kind":"Name","value":"getAllDiscordRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"color"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventSettingsFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Event"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mentions"}},{"kind":"Field","name":{"kind":"Name","value":"settings"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hideLocation"}},{"kind":"Field","name":{"kind":"Name","value":"inviteOnly"}},{"kind":"Field","name":{"kind":"Name","value":"openToJoinRequests"}},{"kind":"Field","name":{"kind":"Name","value":"allowTeamSwitching"}}]}},{"kind":"Field","name":{"kind":"Name","value":"accessType"}},{"kind":"Field","name":{"kind":"Name","value":"accessRoles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ChannelFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DiscordChannel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}}]} as unknown as DocumentNode<GetEventSettingsQuery, GetEventSettingsQueryVariables>;
 export const GetEventsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetEvents"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"filter"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"EventFilterInput"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"page"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","alias":{"kind":"Name","value":"events"},"name":{"kind":"Name","value":"getEvents"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"Variable","name":{"kind":"Name","value":"filter"}}},{"kind":"Argument","name":{"kind":"Name","value":"page"},"value":{"kind":"Variable","name":{"kind":"Name","value":"page"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"items"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"itemsPerPage"}},{"kind":"Field","name":{"kind":"Name","value":"page"}},{"kind":"Field","name":{"kind":"Name","value":"nextPage"}},{"kind":"Field","name":{"kind":"Name","value":"prevPage"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"ChannelFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"DiscordChannel"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"type"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"UserFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"User"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"scName"}},{"kind":"Field","name":{"kind":"Name","value":"discordId"}},{"kind":"Field","name":{"kind":"Name","value":"discordName"}},{"kind":"Field","name":{"kind":"Name","value":"discordUsername"}},{"kind":"Field","name":{"kind":"Name","value":"verified"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}},{"kind":"Field","name":{"kind":"Name","value":"primaryRole"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"roles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventMemberFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"EventMember"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"pending"}},{"kind":"Field","name":{"kind":"Name","value":"user"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"avatarUrl"}}]}},{"kind":"Field","name":{"kind":"Name","value":"rsvp"}},{"kind":"Field","name":{"kind":"Name","value":"rsvpAt"}}]}},{"kind":"FragmentDefinition","name":{"kind":"Name","value":"EventFragment"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Event"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"channel"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"ChannelFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"owner"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"UserFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"summary"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"imageUrl"}},{"kind":"Field","name":{"kind":"Name","value":"eventType"}},{"kind":"Field","name":{"kind":"Name","value":"location"}},{"kind":"Field","name":{"kind":"Name","value":"rsvp"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pending"}},{"kind":"Field","name":{"kind":"Name","value":"rsvp"}}]}},{"kind":"Field","alias":{"kind":"Name","value":"rsvpRoles"},"name":{"kind":"Name","value":"roles"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"emoji"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"image"}}]}},{"kind":"Field","name":{"kind":"Name","value":"limit"}}]}},{"kind":"Field","name":{"kind":"Name","value":"members"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"FragmentSpread","name":{"kind":"Name","value":"EventMemberFragment"}}]}},{"kind":"Field","name":{"kind":"Name","value":"posted"}},{"kind":"Field","name":{"kind":"Name","value":"duration"}},{"kind":"Field","name":{"kind":"Name","value":"startAt"}},{"kind":"Field","name":{"kind":"Name","value":"endedAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]} as unknown as DocumentNode<GetEventsQuery, GetEventsQueryVariables>;
