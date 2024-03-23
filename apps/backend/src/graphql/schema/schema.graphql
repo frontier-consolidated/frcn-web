@@ -356,7 +356,7 @@ type Query {
 	getContentContainer(identifier: String!, type: String!): ContentContainer
 		@permission(has: CmsRead)
 	getContentContainerById(id: ID!): ContentContainer @permission(has: CmsRead)
-	getContentIndexes: [ContentContainer!]! @permission(has: CmsRead)
+	getContentContainersOfType(type: String!): [ContentContainer!]! @permission(has: CmsRead)
 }
 
 type Mutation {
@@ -406,7 +406,8 @@ type Mutation {
 	deleteAccessKey(id: Int!): Boolean! @permission(has: ManageSystem)
 
 	# CMS
-	createContentContainer(type: String!, parent: ID): ContentContainer! @permission(has: CmsWrite)
+	createContentContainer(type: String!, identifier: String, parent: ID): ContentContainer!
+		@permission(has: CmsWrite)
 	editContentContainer(id: ID!, data: ContentContainerEditInput!): ContentContainer
 		@permission(has: CmsWrite)
 	reorderContentContainerChildren(id: ID!, order: [ID!]!): ContentContainer
