@@ -1,9 +1,13 @@
 import { CmsContainer } from "./CmsContainer";
 
 export abstract class CmsJsonContainer<T extends object> extends CmsContainer {
+    protected getDefaultData(): T {
+        return {} as T
+    }
+
     protected getData(): T {
         if (!this.content) {
-            return {} as T
+            return this.getDefaultData()
         }
         return JSON.parse(this.content) as T
     }
