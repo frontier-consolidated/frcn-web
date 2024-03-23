@@ -1,5 +1,5 @@
 
-import { CMSEvents } from "@frcn/cms"
+import { CMSEvents } from "@frcn/cms/events"
 import { createEventHandler, createTBus } from "pg-tbus"
 
 import { CMS_BUS_SCHEMA, CMS_BUS_DATABASE_URL } from "$env/static/private"
