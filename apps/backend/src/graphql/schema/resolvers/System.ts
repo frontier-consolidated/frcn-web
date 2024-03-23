@@ -1,3 +1,4 @@
+import { hasAdmin } from "@frcn/shared";
 import type { AccessKey, SystemSettings } from "@prisma/client";
 
 import { resolveDiscordChannel } from "./Discord";
@@ -11,7 +12,8 @@ import type {
 	AccessKey as GQLAccessKey,
 	Resolvers,
 } from "../../__generated__/resolvers-types";
-import { gqlErrorBadInput } from "../gqlError";
+import { calculatePermissions } from "../calculatePermissions";
+import { gqlErrorBadInput, gqlErrorPermission } from "../gqlError";
 
 export function resolveSystemSettings(settings: SystemSettings) {
 	return {
@@ -36,17 +38,21 @@ export const systemResolvers: Resolvers = {
 	SystemSettings: {
 		async discordGuild(source, args, context) {
 			const { _model } = source as WithModel<GQLSystemSettings, SystemSettings>;
-			try {
-				const guild = await context.app.discordClient.guilds.fetch(_model.discordGuildId)
-				return {
-					id: guild.id,
-					name: guild.name,
+			if (_model.discordGuildId) {
+				try {
+					const guild = await context.app.discordClient.guilds.fetch(_model.discordGuildId)
+					return {
+						id: guild.id,
+						name: guild.name,
+					}
+				} catch (err) {
+					//	
 				}
-			} catch (err) {
-				return {
-					id: _model.discordGuildId,
-					name: "!UNKNOWN"
-				}
+			}
+
+			return {
+				id: _model.discordGuildId,
+				name: "!UNKNOWN"
 			}
 		},
 		async defaultEventChannel(source, args, context) {
@@ -109,11 +115,15 @@ export const systemResolvers: Resolvers = {
 			const [accessKey, key] = await $system.createAccessKey()
 			return resolveAccessKey(accessKey, key)
 		},
-		async editAccessKey(source, args) {
+		async editAccessKey(source, args, context) {
 			const accessKey = await database.accessKey.findUnique({
 				where: { id: args.id }
 			})
 			if (!accessKey) return null;
+
+			if (args.data.permissions && !hasAdmin(await calculatePermissions(context)) && hasAdmin(args.data.permissions)) {
+				throw gqlErrorPermission("Admin")
+			}
 
 			const updatedAccessKey = await database.accessKey.update({
 				where: { id: args.id },
