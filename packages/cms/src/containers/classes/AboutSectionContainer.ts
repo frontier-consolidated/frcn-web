@@ -12,4 +12,16 @@ export class AboutSectionContainer extends CmsContainer {
     override getAllowedChildren() {
         return []
     }
+
+    getDefaultImageFile() {
+        const file = this.files.find(f => f.getIdentifier() === "default")
+        if (!file) return null;
+        return file
+    }
+
+    getDesktopImageFile() {
+        const file = this.files.find(f => f.getIdentifier() === "desktop")
+        if (!file) return null;
+        return file
+    }
 }
