@@ -1,4 +1,4 @@
-import { CMSContainerType, IndexContainer } from "@frcn/cms/containers";
+import { CMSContainerType, IndexContainer } from "@frcn/cms";
 
 import { transformContainer } from "$lib/cms/transformContainer";
 import { createApolloClient, Queries, type TypedApolloClient } from "$lib/graphql";
