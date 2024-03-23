@@ -2,10 +2,10 @@
 	import { CMSContainerType } from "@frcn/cms";
 	import { Heading } from "flowbite-svelte";
 
+	import { PageHero } from "$lib/components";
 	import heroImageSrcset from "$lib/images/stock/community/hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
 
 	import type { PageData } from "./$types";
-	import PageHero from "../../../lib/components/PageHero.svelte";
 	import CmsAboutSectionRenderer from "../CmsAboutSectionRenderer.svelte";
 
 	export let data: PageData;

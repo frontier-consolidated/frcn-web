@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Heading } from "flowbite-svelte";
 
+	import { PageHero } from "$lib/components";
 	import image1 from "$lib/images/stock/activities/1.png"
 	import image2Desktop from "$lib/images/stock/activities/2-desktop.jpg"
 	import image2Mobile from "$lib/images/stock/activities/2-mobile.jpg"
@@ -14,7 +15,6 @@
 	import image9 from "$lib/images/stock/activities/9.png"
 	import heroImageSrcset from "$lib/images/stock/activities/hero.jpg?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
 
-	import PageHero from "../../../lib/components/PageHero.svelte";
 	import AboutSection from "../AboutSection.svelte";
 </script>
 
