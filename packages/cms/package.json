@@ -10,12 +10,12 @@
       "types": "./dist/index.d.ts"
     },
     "./containers": {
-      "import": "./dist/containers.js",
-      "types": "./dist/containers.d.ts"
+      "import": "./dist/containers/index.js",
+      "types": "./dist/containers/index.d.ts"
     }
   },
   "scripts": {
-    "build": "tsc"
+    "build": "rm -rf dist && tsc"
   },
   "devDependencies": {
     "@types/node": "^20.11.5"
