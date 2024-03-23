@@ -12,7 +12,6 @@
 	import image7 from "$lib/images/stock/activities/7.jpg"
 	import image8 from "$lib/images/stock/activities/8.png"
 	import image9 from "$lib/images/stock/activities/9.png"
-	import heroImageFallback from "$lib/images/stock/activities/hero.jpg"
 	import heroImageSrcset from "$lib/images/stock/activities/hero.jpg?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
 
 	import AboutHero from "../AboutHero.svelte";
@@ -23,10 +22,7 @@
 	<title>Our Activities - About | Frontier Consolidated</title>
 </svelte:head>
 
-<AboutHero
-	srcset={heroImageSrcset}
-	fallback={heroImageFallback}
->
+<AboutHero srcset={heroImageSrcset}>
 	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">Frontier Activities</Heading>
 	<p class="text-slate-400 drop-shadow-md">Be a part of something great</p>
 </AboutHero>
