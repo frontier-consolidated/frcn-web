@@ -196,7 +196,7 @@ type Resource {
 }
 
 type ContentContainer {
-	id: Int!
+	id: ID!
 	identifier: String
 	type: String!
 	title: String!
@@ -206,8 +206,9 @@ type ContentContainer {
 }
 
 type ContentContainerFile {
-	id: String!
 	identifier: String
+	fileName: String!
+	fileSizeKb: Int!
 	previewUrl: String
 }
 
@@ -274,8 +275,8 @@ input SystemEditInput {
 }
 
 input AccessKeyEditInput {
-	description: String
-	permissions: Int
+	description: String @constraint(maxLength: 255)
+	permissions: Int @constraint(min: 0, max: 2147483647)
 }
 
 input RoleEditInput {
@@ -305,9 +306,9 @@ input ResourceEditInput {
 }
 
 input ContentContainerEditInput {
-	identifier: String
-	title: String
-	content: String
+	identifier: String @constraint(maxLength: 255)
+	title: String @constraint(maxLength: 255)
+	content: String @constraint(maxLength: 2048)
 }
 
 # Root types:
@@ -351,7 +352,7 @@ type Query {
 	getAllAccessKeys: [AccessKey!]! @permission(has: ManageSystem)
 
 	# CMS
-	getContentContainer(identifier: String!): ContentContainer @permission(has: AccessCms)
+	getContentContainer(identifier: String!): ContentContainer @permission(has: CmsRead)
 }
 
 type Mutation {
@@ -401,14 +402,17 @@ type Mutation {
 	deleteAccessKey(id: Int!): Boolean! @permission(has: ManageSystem)
 
 	# CMS
-	createContentContainer(type: String!, parent: Int): ContentContainer!
-		@permission(has: AccessCms)
-	editContentContainer(id: Int!, data: ContentContainerEditInput!): ContentContainer
-		@permission(has: AccessCms)
-	reorderContentContainerChildren(id: Int!, order: [Int!]!): ContentContainer
-		@permission(has: AccessCms)
-	deleteContentContainer(id: Int!): Boolean! @permission(has: AccessCms)
+	createContentContainer(type: String!, parent: ID): ContentContainer! @permission(has: CmsWrite)
+	editContentContainer(id: ID!, data: ContentContainerEditInput!): ContentContainer
+		@permission(has: CmsWrite)
+	reorderContentContainerChildren(id: ID!, order: [Int!]!): ContentContainer
+		@permission(has: CmsWrite)
+	reorderContentContainerFiles(id: ID!, order: [Int!]!): ContentContainer
+		@permission(has: CmsWrite)
+	deleteContentContainer(id: ID!): Boolean! @permission(has: CmsWrite)
 }
+
+# Subscriptions
 
 type UpdatedUserRoles {
 	userId: ID!

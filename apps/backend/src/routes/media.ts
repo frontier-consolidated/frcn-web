@@ -35,7 +35,7 @@ const attachmentConfigs = {
         allowedFiles: ["image/*", "pdf"]
     },
     cms_container: {
-        permission: Permission.AccessCms,
+        permission: Permission.CmsWrite,
         allowedFiles: ["image/*"]
     }
 } as Record<string, { permission: Permission, allowedFiles?: string[] }>

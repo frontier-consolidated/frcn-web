@@ -196,11 +196,20 @@ type Resource {
 }
 
 type ContentContainer {
+	id: ID!
 	identifier: String
 	type: String!
 	title: String!
 	content: String
+	files: [ContentContainerFile!]!
 	children: [ContentContainer!]!
+}
+
+type ContentContainerFile {
+	identifier: String
+	fileName: String!
+	fileSizeKb: Int!
+	previewUrl: String
 }
 
 # Inputs:
@@ -266,8 +275,8 @@ input SystemEditInput {
 }
 
 input AccessKeyEditInput {
-	description: String
-	permissions: Int
+	description: String @constraint(maxLength: 255)
+	permissions: Int @constraint(min: 0, max: 2147483647)
 }
 
 input RoleEditInput {
@@ -294,6 +303,12 @@ input ResourceEditInput {
 	name: String @constraint(maxLength: 255)
 	shortDescription: String @constraint(maxLength: 512)
 	tags: [String!]
+}
+
+input ContentContainerEditInput {
+	identifier: String @constraint(maxLength: 255)
+	title: String @constraint(maxLength: 255)
+	content: String @constraint(maxLength: 2048)
 }
 
 # Root types:
@@ -337,7 +352,7 @@ type Query {
 	getAllAccessKeys: [AccessKey!]! @permission(has: ManageSystem)
 
 	# CMS
-	getContentContainer(identifier: String!): ContentContainer @permission(has: AccessCms)
+	getContentContainer(identifier: String!): ContentContainer @permission(has: CmsRead)
 }
 
 type Mutation {
@@ -385,7 +400,19 @@ type Mutation {
 	editAccessKey(id: Int!, data: AccessKeyEditInput!): AccessKey @permission(has: ManageSystem)
 	regenerateAccessKey(id: Int!): AccessKey @permission(has: ManageSystem)
 	deleteAccessKey(id: Int!): Boolean! @permission(has: ManageSystem)
+
+	# CMS
+	createContentContainer(type: String!, parent: ID): ContentContainer! @permission(has: CmsWrite)
+	editContentContainer(id: ID!, data: ContentContainerEditInput!): ContentContainer
+		@permission(has: CmsWrite)
+	reorderContentContainerChildren(id: ID!, order: [Int!]!): ContentContainer
+		@permission(has: CmsWrite)
+	reorderContentContainerFiles(id: ID!, order: [Int!]!): ContentContainer
+		@permission(has: CmsWrite)
+	deleteContentContainer(id: ID!): Boolean! @permission(has: CmsWrite)
 }
+
+# Subscriptions
 
 type UpdatedUserRoles {
 	userId: ID!
@@ -419,8 +446,8 @@ type PagedResource {
 enum Permission {
 	CreateEvents
 	UploadResources
-	AccessCms
-	Unassigned3
+	CmsRead
+	CmsWrite
 	Unassigned4
 	Unassigned5
 	Unassigned6
