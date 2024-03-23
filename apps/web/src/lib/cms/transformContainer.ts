@@ -1,4 +1,4 @@
-import { CMSContainerType, CmsContainer, CmsFile, type CmsContainerInit, IndexContainer, type ContainerTypeMap } from "@frcn/cms/containers";
+import { CMSContainerType, CmsContainer, CmsFile, type CmsContainerInit, IndexContainer, type ContainerTypeMap } from "@frcn/cms";
 
 import { getApollo, Queries, type TypedApolloClient } from "$lib/graphql";
 import type { ContentContainerFragmentFragment } from "$lib/graphql/__generated__/graphql";
