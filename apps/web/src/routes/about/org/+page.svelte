@@ -20,6 +20,7 @@
 
 <svelte:head>
 	<title>Our Organisation - About | Frontier Consolidated</title>
+	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
 </svelte:head>
 
 <PageHero srcset={heroImageSrcset}>

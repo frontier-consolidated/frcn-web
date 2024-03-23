@@ -54,6 +54,7 @@
 <svelte:head>
 	<title>Resources | Frontier Consolidated</title>
 	<meta name="description" content="Frontier Consolidated - Search for Guides & Resources" />
+	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
 </svelte:head>
 
 <PageHero srcset={heroImageSrcset}>
