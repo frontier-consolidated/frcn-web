@@ -11,7 +11,7 @@ import multer, { MulterError } from "multer";
 
 import type { Context, RouteConfig } from "../context";
 import { database } from "../database";
-import { $cms } from "../services/cms";
+import { $cms, type CmsAttachFileMetadata } from "../services/cms";
 import { $files } from "../services/files";
 import { $resources } from "../services/resources";
 import { $users } from "../services/users";
@@ -155,6 +155,8 @@ export default function route(context: Context, config: RouteConfig) {
                 attach_to?: string
             }
 
+            const metadata = req.body.metadata
+
             if (!type) return res.status(400).send({ message: "Missing 'type' query param" })
             if (!attach_to) return res.status(400).send({ message: "Missing 'attach_to' query param" })
 
@@ -189,7 +191,12 @@ export default function route(context: Context, config: RouteConfig) {
                             return res.status(404).send({ message: `Could not find cms container 'attach_to=${attach_to}'` })
                         }
 
-                        await $cms.attachFile(context.s3Client, config.files.bucketName, file, req.user!, container.id)
+                        const fileMetadata: CmsAttachFileMetadata = {}
+                        if (typeof metadata === "object" && "identifier" in metadata && typeof metadata.identifier === "string") {
+                            fileMetadata.identifier = metadata.identifier as string
+                        }
+
+                        await $cms.attachFile(context.s3Client, config.files.bucketName, file, req.user!, container.id, fileMetadata)
                         break;
                     }
                     default:
