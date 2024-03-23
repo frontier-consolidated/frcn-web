@@ -5,7 +5,7 @@ import path from "path";
 
 import { DeleteObjectCommand, type S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-import type { FileUpload } from "@prisma/client";
+import type { FileUpload, User } from "@prisma/client";
 import * as mime from "mime-types";
 
 import { database, transaction } from "../database";
@@ -16,7 +16,7 @@ const FILE_UPLOAD_DIR = path.join(os.tmpdir(), "frcn-web-uploads")
 const MAX_FILE_SIZE_MB = 100;
 const MAX_IMAGE_DIMENSION = 1600;
 
-export async function uploadFile(s3Client: S3Client, bucket: string, file: Express.Multer.File, effect: (tx: typeof database, fileUpload: FileUpload) => Promise<void>) {
+export async function uploadFile(s3Client: S3Client, bucket: string, file: Express.Multer.File, owner: User, effect: (tx: typeof database, fileUpload: FileUpload) => Promise<void>) {
     const filesToCleanup = [file.path]
 
     function cleanup() {
@@ -83,7 +83,10 @@ export async function uploadFile(s3Client: S3Client, bucket: string, file: Expre
                     key: uploadKey,
                     fileName: fileName,
                     fileSizeKb: Math.ceil(file.size / 1024),
-                    contentType: contentType ?? "application/octet-stream"
+                    contentType: contentType ?? "application/octet-stream",
+                    owner: {
+                        connect: owner
+                    }
                 }
             })
 
