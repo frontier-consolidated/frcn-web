@@ -12,6 +12,17 @@ export class CmsClient {
         this.apollo = apollo
     }
 
+    async getIndexes() {
+        const { data } = await this.apollo.query({
+            query: Queries.GET_CONTENT_CONTAINERS_OF_TYPE,
+            variables: {
+                type: CMSContainerType.Index
+            }
+        })
+        
+        return (await Promise.all(data.containers.map(async (container) => await transformContainer(container, this.apollo)))) as IndexContainer[]
+    }
+
     async getIndex(identifier: string) {
         const { data } = await this.apollo.query({
             query: Queries.GET_CONTENT_CONTAINER,
