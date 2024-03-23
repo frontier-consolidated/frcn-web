@@ -11,6 +11,7 @@ import multer, { MulterError } from "multer";
 
 import type { Context, RouteConfig } from "../context";
 import { database } from "../database";
+import { $cms } from "../services/cms";
 import { $files } from "../services/files";
 import { $resources } from "../services/resources";
 import { $users } from "../services/users";
@@ -167,7 +168,7 @@ export default function route(context: Context, config: RouteConfig) {
                             return res.status(404).send({ message: `Could not find resource 'attach_to=${attach_to}'` })
                         }
     
-                        await $files.uploadFile(context.s3Client, config.files.bucketName, file, async (tx, fileUpload) => {
+                        await $files.uploadFile(context.s3Client, config.files.bucketName, file, req.user!, async (tx, fileUpload) => {
                             await tx.resource.update({
                                 where: { id: resource.id },
                                 data: {
@@ -180,8 +181,17 @@ export default function route(context: Context, config: RouteConfig) {
                         })
                         break;
                     }
-                    case "cms_container":
-                        return res.status(501).send({ message: "Method not implemented" })
+                    case "cms_container": {
+                        const container = await database.contentContainer.findUnique({
+                            where: { id: attach_to }
+                        })
+                        if (!container) {
+                            return res.status(404).send({ message: `Could not find cms container 'attach_to=${attach_to}'` })
+                        }
+
+                        await $cms.attachFile(context.s3Client, config.files.bucketName, file, req.user!, container.id)
+                        break;
+                    }
                     default:
                         return res.status(400).send({ message: `Disallowed attachment 'type=${type}'` })
                 }
