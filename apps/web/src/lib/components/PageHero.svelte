@@ -4,7 +4,7 @@
 </script>
 
 <div class="relative">
-	<img {srcset} {alt} class="w-full object-cover h-[50vh] brightness-90 bg-slate-950 mask-fade-bottom" />
+	<img {srcset} {alt} class="w-full object-cover min-h-[20rem] h-[50vh] brightness-90 bg-slate-950 mask-fade-bottom" />
 	<div class="absolute top-0 left-0 h-full w-full flex flex-col justify-center items-center gap-4 text-center">
 		<slot />
 	</div>
