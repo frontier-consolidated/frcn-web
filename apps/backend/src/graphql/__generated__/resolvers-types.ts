@@ -507,6 +507,7 @@ export type Query = {
   getAllDiscordRoles: Array<DiscordRole>;
   getAllEventChannels: Array<DiscordChannel>;
   getContentContainer?: Maybe<ContentContainer>;
+  getContentContainerById?: Maybe<ContentContainer>;
   getContentIndexes: Array<ContentContainer>;
   getCurrentAccessKey?: Maybe<AccessKey>;
   getCurrentUser?: Maybe<User>;
@@ -534,6 +535,12 @@ export type QueryGetAllDiscordRolesArgs = {
 
 export type QueryGetContentContainerArgs = {
   identifier: Scalars['String']['input'];
+  type: Scalars['String']['input'];
+};
+
+
+export type QueryGetContentContainerByIdArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -1071,7 +1078,8 @@ export type QueryResolvers<ContextType = GQLContext, ParentType extends Resolver
   getAllDiscordEmojis?: Resolver<ResolversTypes['DiscordEmojis'], ParentType, ContextType>;
   getAllDiscordRoles?: Resolver<Array<ResolversTypes['DiscordRole']>, ParentType, ContextType, Partial<QueryGetAllDiscordRolesArgs>>;
   getAllEventChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
-  getContentContainer?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainerArgs, 'identifier'>>;
+  getContentContainer?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainerArgs, 'identifier' | 'type'>>;
+  getContentContainerById?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainerByIdArgs, 'id'>>;
   getContentIndexes?: Resolver<Array<ResolversTypes['ContentContainer']>, ParentType, ContextType>;
   getCurrentAccessKey?: Resolver<Maybe<ResolversTypes['AccessKey']>, ParentType, ContextType>;
   getCurrentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
