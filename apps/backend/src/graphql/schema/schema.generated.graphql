@@ -206,6 +206,7 @@ type ContentContainer {
 }
 
 type ContentContainerFile {
+	id: ID!
 	identifier: String
 	fileName: String!
 	fileSizeKb: Int!
@@ -405,9 +406,9 @@ type Mutation {
 	createContentContainer(type: String!, parent: ID): ContentContainer! @permission(has: CmsWrite)
 	editContentContainer(id: ID!, data: ContentContainerEditInput!): ContentContainer
 		@permission(has: CmsWrite)
-	reorderContentContainerChildren(id: ID!, order: [Int!]!): ContentContainer
+	reorderContentContainerChildren(id: ID!, order: [ID!]!): ContentContainer
 		@permission(has: CmsWrite)
-	reorderContentContainerFiles(id: ID!, order: [Int!]!): ContentContainer
+	reorderContentContainerFiles(id: ID!, order: [ID!]!): ContentContainer
 		@permission(has: CmsWrite)
 	deleteContentContainer(id: ID!): Boolean! @permission(has: CmsWrite)
 }

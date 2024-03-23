@@ -64,6 +64,7 @@ export type ContentContainerFile = {
   __typename?: 'ContentContainerFile';
   fileName: Scalars['String']['output'];
   fileSizeKb: Scalars['Int']['output'];
+  id: Scalars['ID']['output'];
   identifier?: Maybe<Scalars['String']['output']>;
   previewUrl?: Maybe<Scalars['String']['output']>;
 };
@@ -396,13 +397,13 @@ export type MutationRemoveUserRoleArgs = {
 
 export type MutationReorderContentContainerChildrenArgs = {
   id: Scalars['ID']['input'];
-  order: Array<Scalars['Int']['input']>;
+  order: Array<Scalars['ID']['input']>;
 };
 
 
 export type MutationReorderContentContainerFilesArgs = {
   id: Scalars['ID']['input'];
-  order: Array<Scalars['Int']['input']>;
+  order: Array<Scalars['ID']['input']>;
 };
 
 
@@ -896,6 +897,7 @@ export type ContentContainerResolvers<ContextType = GQLContext, ParentType exten
 export type ContentContainerFileResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ContentContainerFile'] = ResolversParentTypes['ContentContainerFile']> = ResolversObject<{
   fileName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   fileSizeKb?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   identifier?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   previewUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

@@ -297,13 +297,13 @@ model ContentContainer {
 }
 
 model ContentContainerFile {
+  id          String           @id @default(uuid())
   identifier  String?
   container   ContentContainer @relation(fields: [containerId], references: [id], onDelete: Cascade)
   containerId String           @map("container_id")
   file        FileUpload       @relation(fields: [fileId], references: [id], onDelete: Cascade)
   fileId      String           @map("file_id")
 
-  @@id(name: "id", fields: [containerId, fileId])
   @@unique([identifier, containerId])
   @@map("container__file_uploads")
   @@schema("cms")
