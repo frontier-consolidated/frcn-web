@@ -354,6 +354,7 @@ type Query {
 
 	# CMS
 	getContentContainer(identifier: String!): ContentContainer @permission(has: CmsRead)
+	getContentIndexes: [ContentContainer!]! @permission(has: CmsRead)
 }
 
 type Mutation {
