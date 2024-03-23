@@ -15,7 +15,7 @@ export class IndexContainer extends CmsJsonContainer<IndexContainerContent> {
     }
 
     override getAllowedChildren() {
-        return [CMSContainerType.Section, CMSContainerType.Gallery]
+        return [CMSContainerType.Section, CMSContainerType.AboutSection, CMSContainerType.Gallery]
     }
 
     getSubTitle() {
