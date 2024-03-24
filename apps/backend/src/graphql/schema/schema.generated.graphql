@@ -416,6 +416,7 @@ type Mutation {
 	reorderContentContainerFiles(id: ID!, order: [ID!]!): ContentContainer
 		@permission(has: CmsWrite)
 	deleteContentContainer(id: ID!): Boolean! @permission(has: CmsWrite)
+	deleteContentContainerFile(id: ID!): Boolean! @permission(has: CmsWrite)
 }
 
 # Subscriptions

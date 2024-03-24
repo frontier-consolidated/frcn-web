@@ -257,6 +257,17 @@ export const cmsResolvers: Resolvers = {
 			})
 			
 			return true;
+		},
+		async deleteContentContainerFile(source, args) {
+			const fileLink = await database.contentContainerFile.findUnique({
+				where: { id: args.id }
+			})
+			if (!fileLink) return false;
+
+			await database.contentContainerFile.delete({
+				where: { id: args.id }
+			})
+			return true;
 		}
 	}
 };

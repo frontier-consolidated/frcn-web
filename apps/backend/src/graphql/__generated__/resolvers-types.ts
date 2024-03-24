@@ -239,6 +239,7 @@ export type Mutation = {
   createRole: Scalars['ID']['output'];
   deleteAccessKey: Scalars['Boolean']['output'];
   deleteContentContainer: Scalars['Boolean']['output'];
+  deleteContentContainerFile: Scalars['Boolean']['output'];
   deleteEvent: Scalars['Boolean']['output'];
   deleteEventTeam: Scalars['Boolean']['output'];
   deleteResource: Scalars['Boolean']['output'];
@@ -293,6 +294,11 @@ export type MutationDeleteAccessKeyArgs = {
 
 
 export type MutationDeleteContentContainerArgs = {
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationDeleteContentContainerFileArgs = {
   id: Scalars['ID']['input'];
 };
 
@@ -1030,6 +1036,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   createRole?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   deleteAccessKey?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteAccessKeyArgs, 'id'>>;
   deleteContentContainer?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteContentContainerArgs, 'id'>>;
+  deleteContentContainerFile?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteContentContainerFileArgs, 'id'>>;
   deleteEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteEventArgs, 'id'>>;
   deleteEventTeam?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteEventTeamArgs, 'id' | 'team'>>;
   deleteResource?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteResourceArgs, 'id'>>;
