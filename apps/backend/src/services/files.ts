@@ -16,6 +16,18 @@ const FILE_UPLOAD_DIR = path.join(os.tmpdir(), "frcn-web-uploads")
 const MAX_FILE_SIZE_MB = 100;
 const MAX_IMAGE_DIMENSION = 1600;
 
+const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+function toHTTPTimestamp(date: Date): string {
+	return `${DAY_NAMES[date.getUTCDay()]}, ${date.getUTCDate().toString().padStart(2, "0")} ${
+		MONTHS[date.getUTCMonth()]
+	} ${date.getUTCFullYear()} ${date.getUTCHours().toString().padStart(2, "0")}:${date
+		.getUTCMinutes()
+		.toString()
+		.padStart(2, "0")}:${date.getUTCSeconds().toString().padStart(2, "0")} GMT`;
+}
+
 export async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Express.Multer.File, owner: User, effect: (tx: typeof database, fileUpload: FileUpload) => Promise<T>) {
     const filesToCleanup = [file.path]
 
@@ -137,5 +149,6 @@ export const $files = {
     MAX_FILE_SIZE_MB,
     MAX_IMAGE_DIMENSION,
     uploadFile,
-    deleteFile
+    deleteFile,
+    toHTTPTimestamp
 };

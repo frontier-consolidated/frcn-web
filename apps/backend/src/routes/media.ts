@@ -134,18 +134,6 @@ function fileField(
     }
 }
 
-const DAY_NAMES = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-function toHTTPTimestamp(date: Date): string {
-	return `${DAY_NAMES[date.getUTCDay()]}, ${date.getUTCDate().toString().padStart(2, "0")} ${
-		MONTHS[date.getUTCMonth()]
-	} ${date.getUTCFullYear()} ${date.getUTCHours().toString().padStart(2, "0")}:${date
-		.getUTCMinutes()
-		.toString()
-		.padStart(2, "0")}:${date.getUTCSeconds().toString().padStart(2, "0")} GMT`;
-}
-
 export default function route(context: Context, config: RouteConfig) {
     context.expressApp.post(
         "/media/upload",
@@ -259,7 +247,7 @@ export default function route(context: Context, config: RouteConfig) {
             const headers = {
                 "Content-Type": response.ContentType,
                 "Content-Length": buffer.length,
-                "Last-Modified": toHTTPTimestamp(response.LastModified ?? new Date()),
+                "Last-Modified": $files.toHTTPTimestamp(response.LastModified ?? new Date()),
                 "ETag": response.ETag,
             } as OutgoingHttpHeaders
 
