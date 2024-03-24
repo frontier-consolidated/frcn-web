@@ -16,6 +16,7 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 	// @ts-ignore expect deep type error
 	return await $files.uploadFile(client, bucket, file, owner, async (tx, fileUpload) => {
+		let oldLinkId = ""
 		if (metadata.identifier) {
 			const currentFileLink = await tx.contentContainerFile.findFirst({
 				where: {
@@ -28,6 +29,8 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 			})
 
 			if (currentFileLink) {
+				oldLinkId = currentFileLink.id;
+
 				const command = new DeleteObjectCommand({
 					Bucket: bucket,
 					Key: currentFileLink.file.key,
@@ -57,7 +60,7 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 		await tx.contentContainer.update({
 			where: { id: containerId },
 			data: {
-				filesOrder: [...container.filesOrder, fileLink.id]
+				filesOrder: [...container.filesOrder.filter(id => id !== oldLinkId), fileLink.id]
 			}
 		})
 

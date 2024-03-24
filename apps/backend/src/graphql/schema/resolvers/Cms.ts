@@ -1,12 +1,11 @@
 
-import { DeleteObjectsCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { CMSContainerType, ContainerTypeMap } from "@frcn/cms";
 import type { ContentContainer, ContentContainerFile, FileUpload } from "@prisma/client";
 
 import type { WithModel } from "./types";
 import { database, transaction } from "../../../database";
 import { getOrigin } from "../../../env";
-import { $files } from "../../../services/files";
 import type {
 	ContentContainer as GQLContentContainer,
 	ContentContainerFile as GQLContentContainerFile,
@@ -294,10 +293,34 @@ export const cmsResolvers: Resolvers = {
 		async deleteContentContainerFile(source, args, context) {
 			const fileLink = await database.contentContainerFile.findUnique({
 				where: { id: args.id },
+				include: {
+					file: true,
+					container: true
+				}
 			})
 			if (!fileLink) return false;
 
-			await $files.deleteFile(context.app.s3Client, context.app.s3Bucket, fileLink.fileId)
+			const command = new DeleteObjectCommand({
+				Bucket: context.app.s3Bucket,
+				Key: fileLink.file.key,
+			})
+		
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore excessively deep type, but still resolves
+			await transaction(async (tx) => {
+				await tx.fileUpload.delete({
+					where: { id: fileLink.fileId }
+				})
+
+				await tx.contentContainer.update({
+					where: { id: fileLink.containerId },
+					data: {
+						filesOrder: fileLink.container.filesOrder.filter(id => id !== fileLink.id)
+					}
+				})
+				
+				await context.app.s3Client.send(command)
+			})
 			return true;
 		}
 	}
