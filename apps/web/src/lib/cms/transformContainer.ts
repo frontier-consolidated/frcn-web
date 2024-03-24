@@ -4,9 +4,11 @@ import type { ContentContainerFragmentFragment } from "$lib/graphql/__generated_
 
 type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
+export type ContentContainerData = Optional<ContentContainerFragmentFragment, "children">
+
 class NotImplementedContainer extends CmsContainer {}
 
-export function transformContainer<T extends CmsContainer = CmsContainer>(data: Optional<ContentContainerFragmentFragment, "children">) {
+export function transformContainer<T extends CmsContainer = CmsContainer>(data: ContentContainerData) {
     let container: CmsContainer
 
     const init = {
