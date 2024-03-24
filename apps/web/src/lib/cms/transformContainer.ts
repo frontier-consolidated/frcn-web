@@ -1,4 +1,4 @@
-import { CMSContainerType, CmsContainer, CmsFile, type CmsContainerInit, IndexContainer } from "@frcn/cms";
+import { CMSContainerType, CmsContainer, CmsFile, type CmsContainerInit, ContainerTypeMap } from "@frcn/cms";
 
 import type { ContentContainerFragmentFragment } from "$lib/graphql/__generated__/graphql";
 
@@ -16,18 +16,15 @@ export function transformContainer<T extends CmsContainer = CmsContainer>(data: 
         content: data.content ?? undefined,
     } satisfies Omit<CmsContainerInit, "type">
 
-    switch (data.type) {
-        case CMSContainerType.Index:
-            container = new IndexContainer({
-                ...init,
-            })
-            break;
-        default:
-            console.warn(`Container type '${data.type}' not implemented`)
-            container = new NotImplementedContainer({
-                type: data.type as CMSContainerType,
-                ...init
-            })
+    const ContainerClass = ContainerTypeMap[data.type as CMSContainerType]
+    if (ContainerClass) {
+        container = new ContainerClass({ ...init })
+    } else {
+        console.warn(`Container type '${data.type}' not implemented`)
+        container = new NotImplementedContainer({
+            type: data.type as CMSContainerType,
+            ...init
+        })
     }
 
     if (data.files.length > 0) {
