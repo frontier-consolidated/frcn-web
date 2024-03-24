@@ -115,6 +115,8 @@ async function deleteResource(client: S3Client, bucket: string, id: string) {
 	})
 	if (!resource) return;
 
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore excessively deep type, but still resolves
 	await transaction(async (tx) => {
 		await tx.resource.delete({
 			where: { id }
