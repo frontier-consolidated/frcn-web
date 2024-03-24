@@ -1,4 +1,4 @@
-import type { S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, type S3Client } from "@aws-sdk/client-s3";
 import type { User } from "@prisma/client";
 
 import { $files } from "./files";
@@ -12,8 +12,34 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 	const container = await database.contentContainer.findUniqueOrThrow({
 		where: { id: containerId }
 	})
-	
-	await $files.uploadFile(client, bucket, file, owner, async (tx, fileUpload) => {
+
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore expect deep type error
+	return await $files.uploadFile(client, bucket, file, owner, async (tx, fileUpload) => {
+		if (metadata.identifier) {
+			const currentFileLink = await tx.contentContainerFile.findFirst({
+				where: {
+					identifier: metadata.identifier,
+					containerId
+				},
+				include: {
+					file: true
+				}
+			})
+
+			if (currentFileLink) {
+				const command = new DeleteObjectCommand({
+					Bucket: bucket,
+					Key: currentFileLink.file.key,
+				})
+			
+				await tx.fileUpload.delete({
+					where: { id: currentFileLink.fileId }
+				})
+				
+				await client.send(command)
+			}
+		}
 		const fileLink = await tx.contentContainerFile.create({
 			data: {
 				identifier: metadata.identifier,
@@ -34,6 +60,11 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 				filesOrder: [...container.filesOrder, fileLink.id]
 			}
 		})
+
+		return {
+			fileLink,
+			file: fileUpload
+		}
 	})
 }
 
