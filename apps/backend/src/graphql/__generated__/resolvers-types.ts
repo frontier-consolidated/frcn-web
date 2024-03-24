@@ -269,6 +269,7 @@ export type Mutation = {
 
 
 export type MutationCreateContentContainerArgs = {
+  identifier?: InputMaybe<Scalars['String']['input']>;
   parent?: InputMaybe<Scalars['ID']['input']>;
   type: Scalars['String']['input'];
 };

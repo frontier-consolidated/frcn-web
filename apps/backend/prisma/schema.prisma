@@ -281,7 +281,7 @@ model ContentContainer {
   id            String                 @id @default(uuid())
   identifier    String?                @unique
   type          String
-  title         String
+  title         String                 @default("")
   content       String?                @db.VarChar(2048)
   files         ContentContainerFile[]
   filesOrder    String[]               @map("files_order")
