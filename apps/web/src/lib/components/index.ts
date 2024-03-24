@@ -8,6 +8,7 @@ import EmojiPickerInput from "./emoji/EmojiPickerInput.svelte"
 import Footer from "./Footer.svelte"
 import Header from "./Header.svelte"
 import Hr from "./Hr.svelte"
+import ImageInput from "./ImageInput.svelte"
 import JoinDiscordButton from "./JoinDiscordButton.svelte"
 import LocationBreadcrumbItem from "./location/LocationBreadcrumbItem.svelte"
 import LocationIcon from "./location/LocationIcon.svelte"
@@ -61,6 +62,7 @@ export {
     Footer,
     Header,
     Hr,
+    ImageInput,
     JoinDiscordButton,
     LoginButton,
     NavUser,
