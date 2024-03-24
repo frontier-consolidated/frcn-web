@@ -3,9 +3,10 @@
 	import { strings } from "@frcn/shared";
 	import { Accordion, AccordionItem, Dropdown, DropdownItem } from "flowbite-svelte";
 	import { ArrowUpRightFromSquareOutline, ChevronDownSolid, TrashBinSolid } from "flowbite-svelte-icons";
+	import { getContext } from "svelte";
 
 	import { transformContainer } from "$lib/cms/transformContainer";
-	import { Button } from "$lib/components";
+	import { Button, FieldValidator } from "$lib/components";
 	import ConfirmationModal from "$lib/components/modals/ConfirmationModal.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -13,6 +14,7 @@
 	import ContainerConfigRenderer from "./ContainerConfigRenderer.svelte";
 
     export let container: CmsContainer;
+    export let validator: FieldValidator;
     export let allowedChildren: CMSContainerType[];
     export let addName = "Add"
 
@@ -44,16 +46,12 @@
         const childContainer = transformContainer(data.container)
         container.pushChild(childContainer)
         children = container.getChildrenOfTypes(allowedChildren);
+        getContext<() => void>("containerchange")()
     }
 </script>
 
 <section class="flex flex-col gap-2 p-2 rounded border border-gray-200 dark:border-gray-800">
     <div class="flex justify-end gap-2">
-        <Button color="alternative" size="sm" on:click={() => {
-            console.log(children, container.getChildren())
-        }}>
-            Log
-        </Button>
         <Button disabled={allowedChildren.length === 0} size="sm" on:click={() => {
             if (allowedChildren.length > 1) return;
             addChild(allowedChildren[0]).catch(console.error)
@@ -92,7 +90,7 @@
                         <div class="self-stretch w-px ml-2 bg-gray-300 dark:bg-gray-600"></div>
                     </div>
                     <div class="flex flex-col gap-4">
-                        <ContainerConfigRenderer {container} isChild />
+                        <ContainerConfigRenderer {validator} {container} isChild />
                     </div>
                 </AccordionItem>
             {/each}
