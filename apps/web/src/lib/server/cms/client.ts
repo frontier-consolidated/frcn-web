@@ -1,7 +1,7 @@
 import { CMSContainerType } from "@frcn/cms";
 
+import type { ContentContainerData } from "$lib/cms/transformContainer";
 import { createApolloClient, Queries, type TypedApolloClient } from "$lib/graphql";
-import type { ContentContainerFragmentFragment } from "$lib/graphql/__generated__/graphql";
 
 import { CMS_ACCESS_KEY } from "$env/static/private";
 
@@ -49,7 +49,7 @@ export class CmsClient {
         return data.container ? await this.fetchAllChildren(data.container) : null;
     }
 
-    private async fetchAllChildren(container: ContentContainerFragmentFragment) {
+    private async fetchAllChildren(container: ContentContainerData) {
         if (Object.isFrozen(container)) container = { ...container };
 
         let children = container.children
@@ -66,7 +66,7 @@ export class CmsClient {
         }
 
         for (const child of children) {
-            await this.fetchAllChildren(child as ContentContainerFragmentFragment)
+            await this.fetchAllChildren(child)
         }
 
         container.children = children
