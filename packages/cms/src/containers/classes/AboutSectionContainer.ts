@@ -10,7 +10,7 @@ export class AboutSectionContainer extends CmsContainer {
     }
 
     override getAllowedChildren() {
-        return []
+        return [CMSContainerType.CallToAction]
     }
 
     getDefaultImageFile() {
