@@ -12,4 +12,13 @@ export class GalleryContainer extends CmsContainer {
     override getAllowedChildren() {
         return []
     }
+
+    clone(): GalleryContainer {
+        return new GalleryContainer({
+            id: this.id,
+            identifier: this.identifier,
+            title: this.title,
+            content: this.content,
+        })
+    }
 }
