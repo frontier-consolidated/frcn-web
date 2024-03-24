@@ -27,6 +27,16 @@ export abstract class CmsContainer {
         this.content = init.content;
     }
 
+    getRawData() {
+        return {
+            id: this.id,
+            type: this.type,
+            identifier: this.identifier,
+            title: this.title,
+            content: this.content
+        }
+    }
+
     getIdentifier() {
         return this.identifier
     }
@@ -107,4 +117,10 @@ export abstract class CmsContainer {
     removeChild(container: CmsContainer) {
         this.children = this.children.filter(c => c !== container)
     }
+
+    as<T extends CmsContainer>() {
+        return this as unknown as T
+    }
+
+    abstract clone(): CmsContainer
 }
