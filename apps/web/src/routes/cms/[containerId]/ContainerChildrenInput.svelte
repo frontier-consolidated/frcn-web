@@ -23,6 +23,8 @@
 
     $: children = container.getChildrenOfTypes(allowedChildren);
 
+    let changeFn = getContext<() => void>("containerchange")
+
     async function addChild(type: CMSContainerType) {
         openDropdown = false;
         const { data, errors } = await getApollo().mutate({
@@ -46,7 +48,7 @@
         const childContainer = transformContainer(data.container)
         container.pushChild(childContainer)
         children = container.getChildrenOfTypes(allowedChildren);
-        getContext<() => void>("containerchange")()
+        changeFn()
     }
 </script>
 
