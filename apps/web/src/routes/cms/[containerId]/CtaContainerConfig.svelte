@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { CallToActionPreset, type CtaContainer } from "@frcn/cms";
+	import { CallToActionPreset, CmsContainer, type CtaContainer } from "@frcn/cms";
 	import { Input, Label } from "flowbite-svelte";
+	import { getContext } from "svelte";
 
 	import { Field, FieldValidator, Select } from "$lib/components";
 
@@ -8,8 +9,6 @@
         name: CallToActionPreset[preset as CallToActionPreset],
         value: preset
     }))
-
-    const validator = new FieldValidator()
     
     function createEditData(container: CtaContainer) {
         return {
@@ -19,14 +18,19 @@
         }
     }
     
+    export let container_: CmsContainer;
+    export let validator: FieldValidator;
     export let isChild: boolean = false;
-    export let container: CtaContainer;
+
+    let container = container_.as<CtaContainer>()
+    $: container = container_.as<CtaContainer>()
 
     let editData = createEditData(container)
     $: {
         container.setIdentifier(editData.identifier)
         container.setTitle(editData.text)
         container.setPreset(editData.preset)
+        getContext<() => void>("containerchange")()
     }
 </script>
 
@@ -63,7 +67,7 @@
             id="cta-text-{container.id}"
             name="cta-text"
             type="text"
-            placeholder="Title"
+            placeholder="Text"
             pattern="[A-Za-z]"
             maxlength="255"
             bind:value={editData.text}
