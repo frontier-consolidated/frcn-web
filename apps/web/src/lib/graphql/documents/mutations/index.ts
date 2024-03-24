@@ -5,6 +5,7 @@ import { CREATE_RESOURCE } from "./createResource.mutation";
 import { CREATE_ROLE } from "./createRole.mutation";
 import { DELETE_ACCESS_KEY } from "./deleteAccessKey.mutation";
 import { DELETE_CONTENT_CONTAINER } from "./deleteContentContainer.mutation";
+import { DELETE_CONTENT_CONTAINER_FILE } from "./deleteContentContainerFile.mutation";
 import { DELETE_EVENT } from "./deleteEvent.mutation";
 import { DELETE_RESOURCE } from "./deleteResource.mutation";
 import { DELETE_ROLE } from "./deleteRole.mutation";
@@ -41,5 +42,6 @@ export const Mutations = {
 	DELETE_ACCESS_KEY,
 	CREATE_CONTENT_CONTAINER,
 	EDIT_CONTENT_CONTAINER,
-	DELETE_CONTENT_CONTAINER
+	DELETE_CONTENT_CONTAINER,
+	DELETE_CONTENT_CONTAINER_FILE
 };
