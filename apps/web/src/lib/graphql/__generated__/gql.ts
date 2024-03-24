@@ -14,7 +14,7 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  */
 const documents = {
     "\n    fragment ChannelFragment on DiscordChannel {\n        id\n        name\n        type\n    }\n": types.ChannelFragmentFragmentDoc,
-    "\n    fragment ContentContainerFragment on ContentContainer {\n        id\n        identifier\n        type\n        title\n        content\n        files {\n            id\n            identifier\n            fileName\n            fileSizeKb\n            previewUrl\n        }\n        children {\n            id\n            identifier\n            type\n            title\n            content\n            files {\n                id\n                identifier\n                fileName\n                fileSizeKb\n                previewUrl\n            }\n        }\n    }\n": types.ContentContainerFragmentFragmentDoc,
+    "\n    fragment ContentContainerFragment on ContentContainer {\n        id\n        identifier\n        type\n        title\n        content\n        files {\n            id\n            identifier\n            fileName\n            fileSizeKb\n            previewUrl\n        }\n        children {\n            id\n            identifier\n            type\n            title\n            content\n            files {\n                id\n                identifier\n                fileName\n                fileSizeKb\n                previewUrl\n            }\n            parent {\n                id\n            }\n        }\n        parent {\n            id\n        }\n    }\n": types.ContentContainerFragmentFragmentDoc,
     "\n    fragment EventFragment on Event {\n        id\n        channel {\n            ...ChannelFragment\n        }\n        owner {\n            ...UserFragment\n        }\n        name\n        summary\n        description\n        imageUrl\n        eventType\n        location\n        rsvp {\n            pending\n            rsvp\n        }\n        rsvpRoles: roles {\n            id\n            name\n            emoji {\n                id\n                name\n                image\n            }\n            limit\n        }\n        members {\n            ...EventMemberFragment\n        }\n        posted\n        duration\n        startAt\n        endedAt\n        updatedAt\n        createdAt\n    }\n": types.EventFragmentFragmentDoc,
     "\n    fragment EventMemberFragment on EventMember {\n        id\n        pending\n        user {\n            id\n            name\n            avatarUrl\n        }\n        rsvp\n        rsvpAt\n    }\n": types.EventMemberFragmentFragmentDoc,
     "\n    fragment EventSettingsFragment on Event {\n        mentions\n        settings {\n            hideLocation\n            inviteOnly\n            openToJoinRequests\n            allowTeamSwitching\n        }\n        accessType\n        accessRoles {\n            id\n            name\n        }\n    }\n": types.EventSettingsFragmentFragmentDoc,
@@ -22,10 +22,12 @@ const documents = {
     "\n    fragment RoleFragment on UserRole {\n        id\n        name\n        primary\n        discordId\n        permissions\n        updatedAt\n        createdAt\n    }\n": types.RoleFragmentFragmentDoc,
     "\n    fragment UserFragment on User {\n        id\n        name\n        scName\n        discordId\n        discordName\n        discordUsername\n        verified\n        avatarUrl\n        primaryRole {\n            id\n            name\n        }\n        roles {\n            id\n            name\n        }\n        updatedAt\n        createdAt\n    }\n": types.UserFragmentFragmentDoc,
     "\n\tmutation CreateAccessKey {\n\t\tkey: createAccessKey {\n\t\t\tid\n\t\t\tkey\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.CreateAccessKeyDocument,
+    "\n\tmutation CreateContentContainer($type: String!, $identifier: String, $parent: ID) {\n\t\tcontainer: createContentContainer(type: $type, identifier: $identifier, parent: $parent) {\n\t\t\t...ContentContainerFragment\n\t\t}\n\t}\n": types.CreateContentContainerDocument,
     "\n\tmutation CreateEvent {\n\t\tevent: createEvent\n\t}\n": types.CreateEventDocument,
     "\n\tmutation CreateResource($data: ResourceCreateInput!) {\n\t\tresource: createResource(data: $data) {\n\t\t\t...ResourceFragment\n\t\t}\n\t}\n": types.CreateResourceDocument,
     "\n\tmutation CreateRole {\n\t\trole: createRole\n\t}\n": types.CreateRoleDocument,
     "\n\tmutation DeleteAccessKey($id: Int!) {\n\t\tdeleted: deleteAccessKey(id: $id)\n\t}\n": types.DeleteAccessKeyDocument,
+    "\n\tmutation DeleteContentContainer($id: ID!) {\n\t\tdeleted: deleteContentContainer(id: $id)\n\t}\n": types.DeleteContentContainerDocument,
     "\n\tmutation DeleteEvent($id: ID!) {\n\t\tdeleted: deleteEvent(id: $id)\n\t}\n": types.DeleteEventDocument,
     "\n\tmutation DeleteResource($id: ID!) {\n\t\tdeleted: deleteResource(id: $id)\n\t}\n": types.DeleteResourceDocument,
     "\n\tmutation DeleteRole($roleId: ID!) {\n\t\tdeleted: deleteRole(id: $roleId)\n\t}\n": types.DeleteRoleDocument,
@@ -79,7 +81,7 @@ export function gql(source: "\n    fragment ChannelFragment on DiscordChannel {\
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n    fragment ContentContainerFragment on ContentContainer {\n        id\n        identifier\n        type\n        title\n        content\n        files {\n            id\n            identifier\n            fileName\n            fileSizeKb\n            previewUrl\n        }\n        children {\n            id\n            identifier\n            type\n            title\n            content\n            files {\n                id\n                identifier\n                fileName\n                fileSizeKb\n                previewUrl\n            }\n        }\n    }\n"): (typeof documents)["\n    fragment ContentContainerFragment on ContentContainer {\n        id\n        identifier\n        type\n        title\n        content\n        files {\n            id\n            identifier\n            fileName\n            fileSizeKb\n            previewUrl\n        }\n        children {\n            id\n            identifier\n            type\n            title\n            content\n            files {\n                id\n                identifier\n                fileName\n                fileSizeKb\n                previewUrl\n            }\n        }\n    }\n"];
+export function gql(source: "\n    fragment ContentContainerFragment on ContentContainer {\n        id\n        identifier\n        type\n        title\n        content\n        files {\n            id\n            identifier\n            fileName\n            fileSizeKb\n            previewUrl\n        }\n        children {\n            id\n            identifier\n            type\n            title\n            content\n            files {\n                id\n                identifier\n                fileName\n                fileSizeKb\n                previewUrl\n            }\n            parent {\n                id\n            }\n        }\n        parent {\n            id\n        }\n    }\n"): (typeof documents)["\n    fragment ContentContainerFragment on ContentContainer {\n        id\n        identifier\n        type\n        title\n        content\n        files {\n            id\n            identifier\n            fileName\n            fileSizeKb\n            previewUrl\n        }\n        children {\n            id\n            identifier\n            type\n            title\n            content\n            files {\n                id\n                identifier\n                fileName\n                fileSizeKb\n                previewUrl\n            }\n            parent {\n                id\n            }\n        }\n        parent {\n            id\n        }\n    }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -111,6 +113,10 @@ export function gql(source: "\n\tmutation CreateAccessKey {\n\t\tkey: createAcce
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n\tmutation CreateContentContainer($type: String!, $identifier: String, $parent: ID) {\n\t\tcontainer: createContentContainer(type: $type, identifier: $identifier, parent: $parent) {\n\t\t\t...ContentContainerFragment\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation CreateContentContainer($type: String!, $identifier: String, $parent: ID) {\n\t\tcontainer: createContentContainer(type: $type, identifier: $identifier, parent: $parent) {\n\t\t\t...ContentContainerFragment\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n\tmutation CreateEvent {\n\t\tevent: createEvent\n\t}\n"): (typeof documents)["\n\tmutation CreateEvent {\n\t\tevent: createEvent\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -124,6 +130,10 @@ export function gql(source: "\n\tmutation CreateRole {\n\t\trole: createRole\n\t
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n\tmutation DeleteAccessKey($id: Int!) {\n\t\tdeleted: deleteAccessKey(id: $id)\n\t}\n"): (typeof documents)["\n\tmutation DeleteAccessKey($id: Int!) {\n\t\tdeleted: deleteAccessKey(id: $id)\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tmutation DeleteContentContainer($id: ID!) {\n\t\tdeleted: deleteContentContainer(id: $id)\n\t}\n"): (typeof documents)["\n\tmutation DeleteContentContainer($id: ID!) {\n\t\tdeleted: deleteContentContainer(id: $id)\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

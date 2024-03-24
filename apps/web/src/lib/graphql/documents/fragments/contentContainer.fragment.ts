@@ -27,6 +27,12 @@ export const CONTENT_CONTAINER_FRAGMENT = gql(`
                 fileSizeKb
                 previewUrl
             }
+            parent {
+                id
+            }
+        }
+        parent {
+            id
         }
     }
 `);
