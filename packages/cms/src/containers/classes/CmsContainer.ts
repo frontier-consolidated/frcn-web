@@ -7,8 +7,6 @@ export type CmsContainerInit = {
     identifier?: string;
     title: string;
     content?: string;
-
-    childrenFetch?: () => Promise<CmsContainer[]>
 }
 
 export abstract class CmsContainer {
@@ -21,16 +19,12 @@ export abstract class CmsContainer {
     protected files: CmsFile[] = []
     protected children: CmsContainer[] = []
 
-    private childrenFetch?: (() => Promise<CmsContainer[]>)
-
     constructor(init: CmsContainerInit) {
         this.id = init.id;
         this.type = init.type;
         this.identifier = init.identifier;
         this.title = init.title;
         this.content = init.content;
-
-        this.childrenFetch = init.childrenFetch
     }
 
     getIdentifier() {
@@ -79,13 +73,6 @@ export abstract class CmsContainer {
 
     isAllowedChild(container: CmsContainer) {
         return this.getAllowedChildren().includes(container.type)
-    }
-
-    async fetchChildren() {
-        if (!this.childrenFetch) return this.children;
-        const children = await this.childrenFetch();
-        this.children = children;
-        return this.children
     }
 
     getChildren() {

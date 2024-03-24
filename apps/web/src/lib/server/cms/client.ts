@@ -1,7 +1,7 @@
-import { CMSContainerType, IndexContainer } from "@frcn/cms";
+import { CMSContainerType } from "@frcn/cms";
 
-import { transformContainer } from "$lib/cms/transformContainer";
 import { createApolloClient, Queries, type TypedApolloClient } from "$lib/graphql";
+import type { ContentContainerFragmentFragment } from "$lib/graphql/__generated__/graphql";
 
 import { CMS_ACCESS_KEY } from "$env/static/private";
 
@@ -20,7 +20,7 @@ export class CmsClient {
             }
         })
         
-        return (await Promise.all(data.containers.map(async (container) => await transformContainer(container, this.apollo)))) as IndexContainer[]
+        return await Promise.all(data.containers.map(async (container) => await this.fetchAllChildren(container)))
     }
 
     async getIndex(identifier: string) {
@@ -32,7 +32,23 @@ export class CmsClient {
             },
         })
 
-        return data.container ? await transformContainer(data.container, this.apollo) as IndexContainer : null;
+        return data.container ? await this.fetchAllChildren(data.container) : null;
+    }
+
+    private async fetchAllChildren(container: ContentContainerFragmentFragment) {
+        if (container.children && container.children?.length > 0) {
+            return container
+        }
+
+        const { data } = await this.apollo.query({
+            query: Queries.GET_CONTENT_CONTAINER_CHILDREN,
+            variables: {
+                id: container.id
+            }
+        })
+
+        container.children = data.container?.children ?? []
+        return container
     }
 }
 

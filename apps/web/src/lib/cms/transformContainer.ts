@@ -1,29 +1,12 @@
-import { CMSContainerType, CmsContainer, CmsFile, type CmsContainerInit, IndexContainer, type ContainerTypeMap } from "@frcn/cms";
+import { CMSContainerType, CmsContainer, CmsFile, type CmsContainerInit, IndexContainer } from "@frcn/cms";
 
-import { getApollo, Queries, type TypedApolloClient } from "$lib/graphql";
 import type { ContentContainerFragmentFragment } from "$lib/graphql/__generated__/graphql";
 
 type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 class NotImplementedContainer extends CmsContainer {}
 
-function createChildrenFetchFunction(apollo: TypedApolloClient, id: string) {
-    return async function () {
-        const { data } = await apollo.query({
-            query: Queries.GET_CONTENT_CONTAINER_CHILDREN,
-            variables: {
-                id
-            }
-        })
-
-        if (!data.container?.children) return []
-        return await Promise.all(data.container?.children.map(async child => await transformContainer(child, apollo)))
-    }
-}
-
-export async function transformContainer<T extends Optional<ContentContainerFragmentFragment, "children">>(data: T, apollo?: TypedApolloClient) {
-    apollo ??= getApollo()
-    
+export function transformContainer<T extends CmsContainer = CmsContainer>(data: Optional<ContentContainerFragmentFragment, "children">) {
     let container: CmsContainer
 
     const init = {
@@ -37,7 +20,6 @@ export async function transformContainer<T extends Optional<ContentContainerFrag
         case CMSContainerType.Index:
             container = new IndexContainer({
                 ...init,
-                childrenFetch: createChildrenFetchFunction(apollo, data.id)
             })
             break;
         default:
@@ -63,11 +45,9 @@ export async function transformContainer<T extends Optional<ContentContainerFrag
     }
 
     if (data.children && data.children?.length > 0) {
-        const children = await Promise.all(data.children.map(async (child) => await transformContainer(child, apollo)))
+        const children = data.children.map(transformContainer)
         container.setChildren(children)
-    } else {
-        await container.fetchChildren()
     }
 
-    return container as T["type"] extends keyof ContainerTypeMap ? ContainerTypeMap[T["type"]] : CmsContainer
+    return container as T
 }
