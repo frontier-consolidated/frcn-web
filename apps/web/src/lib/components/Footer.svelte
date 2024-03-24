@@ -25,21 +25,22 @@
         </div>
         <div class="grid min-[380px]:grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
             <div>
-                <h2 class="mb-6 text-sm font-semibold uppercase text-gray-900 dark:text-white">Social</h2>
+                <h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Quick Links</h2>
                 <FooterLinkGroup>
-                    <FooterLink liClass="mb-4" href={YOUTUBE_URL}>Youtube</FooterLink>
-                    <FooterLink liClass="mb-4" href={DISCORD_URL}>Discord</FooterLink>
-                    <FooterLink liClass="mb-4" href={GITHUB_URL}>GitHub</FooterLink>
-                </FooterLinkGroup>
-            </div>
-            <div>
-                <h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Resources</h2>
-                <FooterLinkGroup>
+                    <FooterLink liClass="mb-4" href="/">Home</FooterLink>
                     <FooterLink liClass="mb-4" href="/about/activities">Activities</FooterLink>
                     <FooterLink liClass="mb-4" href="/about/community">Community</FooterLink>
                     <FooterLink liClass="mb-4" href="/about/org">Organisation</FooterLink>
                     <FooterLink liClass="mb-4" href="/events">Events</FooterLink>
                     <FooterLink liClass="mb-4" href="/knowledge">Guides & Resources</FooterLink>
+                </FooterLinkGroup>
+            </div>
+            <div>
+                <h2 class="mb-6 text-sm font-semibold uppercase text-gray-900 dark:text-white">Social</h2>
+                <FooterLinkGroup>
+                    <FooterLink liClass="mb-4" href={YOUTUBE_URL}>Youtube</FooterLink>
+                    <FooterLink liClass="mb-4" href={DISCORD_URL}>Discord</FooterLink>
+                    <FooterLink liClass="mb-4" href={GITHUB_URL}>GitHub</FooterLink>
                 </FooterLinkGroup>
             </div>
             <div>
