@@ -106,7 +106,6 @@ export async function createApp(config: CreateAppOptions) {
     }
 
     app.use((err: Error | Error[], req: Request, res: Response, _next: NextFunction) => {
-        console.log("ERROR")
         const errors = Array.isArray(err) ? err : [err];
         for (const error of errors) {
             console.error(error);
