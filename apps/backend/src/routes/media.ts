@@ -11,6 +11,7 @@ import multer, { MulterError } from "multer";
 
 import type { Context, RouteConfig } from "../context";
 import { database } from "../database";
+import { getOrigin } from "../env";
 import { $cms, type CmsAttachFileMetadata } from "../services/cms";
 import { $files } from "../services/files";
 import { $resources } from "../services/resources";
@@ -155,7 +156,7 @@ export default function route(context: Context, config: RouteConfig) {
                 attach_to?: string
             }
 
-            const metadata = req.body.metadata
+            const metadata = req.body.metadata ? JSON.parse(req.body.metadata) as object : {}
 
             if (!type) return res.status(400).send({ message: "Missing 'type' query param" })
             if (!attach_to) return res.status(400).send({ message: "Missing 'attach_to' query param" })
@@ -181,7 +182,7 @@ export default function route(context: Context, config: RouteConfig) {
                                 }
                             })
                         })
-                        break;
+                        return res.sendStatus(200)
                     }
                     case "cms_container": {
                         const container = await database.contentContainer.findUnique({
@@ -192,12 +193,17 @@ export default function route(context: Context, config: RouteConfig) {
                         }
 
                         const fileMetadata: CmsAttachFileMetadata = {}
-                        if (typeof metadata === "object" && "identifier" in metadata && typeof metadata.identifier === "string") {
+                        if ("identifier" in metadata && typeof metadata.identifier === "string") {
                             fileMetadata.identifier = metadata.identifier as string
                         }
 
-                        await $cms.attachFile(context.s3Client, config.files.bucketName, file, req.user!, container.id, fileMetadata)
-                        break;
+                        const uploadedFile = await $cms.attachFile(context.s3Client, config.files.bucketName, file, req.user!, container.id, fileMetadata)
+                        return res.status(200).send({
+                            id: uploadedFile.fileLink.id,
+                            fileName: uploadedFile.file.fileName,
+                            fileSizeKb: uploadedFile.file.fileSizeKb,
+                            previewUrl: `${getOrigin(req.secure ? "https" : "http")}/media/${uploadedFile.file.id}/${uploadedFile.file.fileName}`
+                        })
                     }
                     default:
                         return res.status(400).send({ message: `Disallowed attachment 'type=${type}'` })
