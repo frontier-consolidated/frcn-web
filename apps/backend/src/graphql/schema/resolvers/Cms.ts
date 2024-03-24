@@ -5,6 +5,7 @@ import type { ContentContainer, ContentContainerFile, FileUpload } from "@prisma
 import type { WithModel } from "./types";
 import { database, transaction } from "../../../database";
 import { getOrigin } from "../../../env";
+import { $files } from "../../../services/files";
 import type {
 	ContentContainer as GQLContentContainer,
 	ContentContainerFile as GQLContentContainerFile,
@@ -258,15 +259,13 @@ export const cmsResolvers: Resolvers = {
 			
 			return true;
 		},
-		async deleteContentContainerFile(source, args) {
+		async deleteContentContainerFile(source, args, context) {
 			const fileLink = await database.contentContainerFile.findUnique({
-				where: { id: args.id }
+				where: { id: args.id },
 			})
 			if (!fileLink) return false;
 
-			await database.contentContainerFile.delete({
-				where: { id: args.id }
-			})
+			await $files.deleteFile(context.app.s3Client, context.app.s3Bucket, fileLink.fileId)
 			return true;
 		}
 	}
