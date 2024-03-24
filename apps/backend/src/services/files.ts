@@ -16,7 +16,7 @@ const FILE_UPLOAD_DIR = path.join(os.tmpdir(), "frcn-web-uploads")
 const MAX_FILE_SIZE_MB = 100;
 const MAX_IMAGE_DIMENSION = 1600;
 
-export async function uploadFile(s3Client: S3Client, bucket: string, file: Express.Multer.File, owner: User, effect: (tx: typeof database, fileUpload: FileUpload) => Promise<void>) {
+export async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Express.Multer.File, owner: User, effect: (tx: typeof database, fileUpload: FileUpload) => Promise<T>) {
     const filesToCleanup = [file.path]
 
     function cleanup() {
@@ -60,7 +60,7 @@ export async function uploadFile(s3Client: S3Client, bucket: string, file: Expre
     }
 
     const uploadId = randomUUID();
-    const uploadKey = `${getDomain()}-resource-${uploadId}`
+    const uploadKey = `${getDomain()}-${uploadId}`
     const s3Upload = new Upload({
         client: s3Client,
         params: {
@@ -78,7 +78,7 @@ export async function uploadFile(s3Client: S3Client, bucket: string, file: Expre
     try {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore excessively deep type, but still resolves
-        await transaction(async (tx) => {
+        return await transaction(async (tx) => {
             const fileUpload = await tx.fileUpload.create({
                 data: {
                     id: uploadId,
@@ -87,14 +87,17 @@ export async function uploadFile(s3Client: S3Client, bucket: string, file: Expre
                     fileSizeKb: Math.ceil(file.size / 1024),
                     contentType: contentType ?? "application/octet-stream",
                     owner: {
-                        connect: owner
+                        connect: {
+                            id: owner.id
+                        }
                     }
                 }
             })
 
-            await effect(tx, fileUpload);
+            const result = await effect(tx, fileUpload);
 
             await s3Upload.done()
+            return result
         })
     } catch (err) {
         await s3Upload.abort();
