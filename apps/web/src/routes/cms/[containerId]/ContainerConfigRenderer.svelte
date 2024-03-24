@@ -1,25 +1,24 @@
 <script lang="ts">
-	import { CMSContainerType, type CmsContainer, type ContainerInstanceTypeMap } from "@frcn/cms";
+	import { CMSContainerType, type CmsContainer } from "@frcn/cms";
 	import { Alert } from "flowbite-svelte";
+
+	import type { FieldValidator } from "$lib/components";
 
     import AboutSectionContainerConfig from "./AboutSectionContainerConfig.svelte";
 	import CtaContainerConfig from "./CtaContainerConfig.svelte";
 	import IndexContainerConfig from "./IndexContainerConfig.svelte";
-
-    function containerAs<T extends CMSContainerType>(container: CmsContainer, _type: T) {
-        return container as T extends keyof ContainerInstanceTypeMap ? ContainerInstanceTypeMap[T] : CmsContainer
-    }
     
-    export let isChild: boolean = false;
+    export let validator: FieldValidator
     export let container: CmsContainer
+    export let isChild: boolean = false;
 </script>
 
 {#if container.type === CMSContainerType.Index}
-    <IndexContainerConfig container={containerAs(container, CMSContainerType.Index)} {isChild} />
+    <IndexContainerConfig {validator} {isChild} bind:container_={container} />
 {:else if container.type === CMSContainerType.AboutSection}
-    <AboutSectionContainerConfig container={containerAs(container, CMSContainerType.AboutSection)} {isChild} />
+    <AboutSectionContainerConfig {validator} {isChild} bind:container_={container} />
 {:else if container.type === CMSContainerType.CallToAction}
-    <CtaContainerConfig container={containerAs(container, CMSContainerType.CallToAction)} {isChild} />
+    <CtaContainerConfig {validator} {isChild} bind:container_={container} />
 {:else}
     <Alert color="red">
         Container type '{container.type}' not implemented
