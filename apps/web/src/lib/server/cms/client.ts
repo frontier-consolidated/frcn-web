@@ -17,7 +17,8 @@ export class CmsClient {
             query: Queries.GET_CONTENT_CONTAINERS_OF_TYPE,
             variables: {
                 type: CMSContainerType.Index
-            }
+            },
+            fetchPolicy: "no-cache"
         })
         
         return await Promise.all(data.containers.map(async (container) => await this.fetchAllChildren(container)))
@@ -30,24 +31,45 @@ export class CmsClient {
                 identifier,
                 type: CMSContainerType.Index
             },
+            fetchPolicy: "no-cache"
+        })
+
+        return data.container ? await this.fetchAllChildren(data.container) : null;
+    }
+
+    async getContainer(id: string) {
+        const { data } = await this.apollo.query({
+            query: Queries.GET_CONTENT_CONTAINER_BY_ID,
+            variables: {
+                id
+            },
+            fetchPolicy: "no-cache"
         })
 
         return data.container ? await this.fetchAllChildren(data.container) : null;
     }
 
     private async fetchAllChildren(container: ContentContainerFragmentFragment) {
-        if (container.children && container.children?.length > 0) {
-            return container
+        if (Object.isFrozen(container)) container = { ...container };
+
+        let children = container.children
+        if (!children || children.length < 1) {
+            const { data } = await this.apollo.query({
+                query: Queries.GET_CONTENT_CONTAINER_CHILDREN,
+                variables: {
+                    id: container.id
+                },
+                fetchPolicy: "no-cache"
+            })
+
+            children = data.container?.children ?? []
         }
 
-        const { data } = await this.apollo.query({
-            query: Queries.GET_CONTENT_CONTAINER_CHILDREN,
-            variables: {
-                id: container.id
-            }
-        })
+        for (const child of children) {
+            await this.fetchAllChildren(child as ContentContainerFragmentFragment)
+        }
 
-        container.children = data.container?.children ?? []
+        container.children = children
         return container
     }
 }
