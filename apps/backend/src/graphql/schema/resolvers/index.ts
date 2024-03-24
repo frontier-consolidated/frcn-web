@@ -1,3 +1,4 @@
+import { cmsResolvers } from "./Cms";
 import { discordResolvers } from "./Discord";
 import { eventResolvers } from "./Event";
 import { resourceResolvers } from "./Resources";
@@ -14,5 +15,6 @@ export const resolvers = [
 	roleResolvers,
 	discordResolvers,
 	resourceResolvers,
-	systemResolvers
+	systemResolvers,
+	cmsResolvers
 ];

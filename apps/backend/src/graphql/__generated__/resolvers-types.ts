@@ -50,6 +50,7 @@ export type ContentContainer = {
   files: Array<ContentContainerFile>;
   id: Scalars['ID']['output'];
   identifier?: Maybe<Scalars['String']['output']>;
+  parent?: Maybe<ContentContainer>;
   title: Scalars['String']['output'];
   type: Scalars['String']['output'];
 };
@@ -903,6 +904,7 @@ export type ContentContainerResolvers<ContextType = GQLContext, ParentType exten
   files?: Resolver<Array<ResolversTypes['ContentContainerFile']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   identifier?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  parent?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

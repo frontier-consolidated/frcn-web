@@ -203,6 +203,7 @@ type ContentContainer {
 	content: String
 	files: [ContentContainerFile!]!
 	children: [ContentContainer!]!
+	parent: ContentContainer
 }
 
 type ContentContainerFile {
