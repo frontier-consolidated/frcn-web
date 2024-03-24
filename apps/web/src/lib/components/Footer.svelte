@@ -19,9 +19,6 @@
             <ScreenQuery size="sm" let:matches>
                 <FooterBrand href="/" src={logo} alt="Frontier Consolidated Logo" name={matches ? "Frontier Consolidated" : "FRCN"} classImg="drop-shadow" classSpan="text-gray-700" />
             </ScreenQuery>
-            <div class="flex-1 md:flex-none flex justify-end md:justify-center md:mt-4">
-                <img src={madeByTheCommunity} alt="Made by the Star Citizen community" class="aspect-square w-16" />
-            </div>
         </div>
         <div class="grid min-[380px]:grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
             <div>
@@ -58,12 +55,13 @@
         </div>
     </div>
     <Hr class="w-full my-8 bg-gray-300" />
-    <div class="w-full max-w-6xl sm:flex sm:items-center sm:justify-between sm:gap-4">
+    <div class="w-full max-w-6xl flex md:items-center gap-4 flex-col md:flex-row">
+        <img src={madeByTheCommunity} alt="Made by the Star Citizen community" class="aspect-square w-16 mx-auto md:mx-0" />
         <div class="max-w-xl">
             <FooterCopyright href="/" by="Frontier Consolidated" spanClass="block text-sm text-gray-500 dark:text-gray-400" />
             <span class="block text-xs text-gray-500 dark:text-gray-400">This is an unofficial Star Citizen site, not affiliated with the Cloud Imperium group of companies. All content on this site not authored by its host or users are property of their respective owners.</span>
         </div>
-        <div class="relative flex mt-4 space-x-6 rtl:space-x-reverse sm:justify-center sm:mt-0 pr-16">
+        <div class="relative flex space-x-6 rtl:space-x-reverse md:justify-center md:ml-auto pr-16">
             <FooterIcon href={YOUTUBE_URL}>
                 <YoutubeSolid class="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white" tabindex="-1" />
             </FooterIcon>
