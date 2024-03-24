@@ -1,5 +1,5 @@
 import { CmsFile } from "./CmsFile";
-import { CMSContainerType, ContainerTypeMap } from "../types";
+import { CMSContainerType, ContainerInstanceTypeMap } from "../types";
 
 export type CmsContainerInit = {
     id: string;
@@ -79,8 +79,12 @@ export abstract class CmsContainer {
         return this.children
     }
 
-    getChildrenOfType<T extends CMSContainerType>(type: T): (T extends keyof ContainerTypeMap ? ContainerTypeMap[T] : CmsContainer)[] {
-        return this.children.filter((child): child is T extends keyof ContainerTypeMap ? ContainerTypeMap[T] : CmsContainer => child.type === type)
+    getChildrenOfType<T extends CMSContainerType>(type: T): (T extends keyof ContainerInstanceTypeMap ? ContainerInstanceTypeMap[T] : CmsContainer)[] {
+        return this.children.filter((child): child is T extends keyof ContainerInstanceTypeMap ? ContainerInstanceTypeMap[T] : CmsContainer => child.type === type)
+    }
+
+    getChildrenOfTypes<T extends CMSContainerType>(types: T[]): (T extends keyof ContainerInstanceTypeMap ? ContainerInstanceTypeMap[T] : CmsContainer)[] {
+        return this.children.filter((child): child is T extends keyof ContainerInstanceTypeMap ? ContainerInstanceTypeMap[T] : CmsContainer => types.includes(child.type as T))
     }
 
     setChildren(containers: CmsContainer[]) {
