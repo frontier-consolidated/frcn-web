@@ -1,12 +1,11 @@
 <script lang="ts">
-	import type { IndexContainer } from "@frcn/cms";
+	import type { CmsContainer, IndexContainer } from "@frcn/cms";
 	import { Input, Label } from "flowbite-svelte";
+	import { getContext } from "svelte";
 
 	import { Field, FieldValidator } from "$lib/components";
 
 	import ContainerChildrenInput from "./ContainerChildrenInput.svelte";
-
-    const validator = new FieldValidator()
     
     function createEditData(container: IndexContainer) {
         return {
@@ -16,14 +15,19 @@
         }
     }
     
+    export let container_: CmsContainer;
+    export let validator: FieldValidator;
     export let isChild: boolean = false;
-    export let container: IndexContainer;
+
+    let container = container_.as<IndexContainer>()
+    $: container = container_.as<IndexContainer>()
 
     let editData = createEditData(container)
     $: {
         container.setIdentifier(editData.identifier)
         container.setTitle(editData.title)
         container.setSubTitle(editData.subTitle)
+        getContext<() => void>("containerchange")()
     }
 
 </script>
@@ -71,5 +75,5 @@
 </Field>
 <div>
     <Label class="mb-2">Sections</Label>
-    <ContainerChildrenInput {container} addName="Add Section" allowedChildren={container.getAllowedChildren()} />
+    <ContainerChildrenInput {validator} {container} addName="Add Section" allowedChildren={container.getAllowedChildren()} />
 </div>
