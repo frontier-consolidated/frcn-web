@@ -25,4 +25,13 @@ export class IndexContainer extends CmsJsonContainer<IndexContainerContent> {
     setSubTitle(value: string | null | undefined) {
         this.updateData(data => ({ ...data, subTitle: value ?? undefined }))
     }
+
+    clone(): IndexContainer {
+        return new IndexContainer({
+            id: this.id,
+            identifier: this.identifier,
+            title: this.title,
+            content: this.content,
+        })
+    }
 }
