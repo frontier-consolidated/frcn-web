@@ -8,10 +8,14 @@ export enum CMSContainerType {
     CallToAction = "cta"
 }
 
-export type ContainerTypeMap = {
-    [CMSContainerType.Index]: IndexContainer
-    [CMSContainerType.Section]: SectionContainer
-    [CMSContainerType.AboutSection]: AboutSectionContainer
-    [CMSContainerType.Gallery]: GalleryContainer
-    [CMSContainerType.CallToAction]: CtaContainer
+export const ContainerTypeMap = {
+    [CMSContainerType.Index]: IndexContainer,
+    [CMSContainerType.Section]: SectionContainer,
+    [CMSContainerType.AboutSection]: AboutSectionContainer,
+    [CMSContainerType.Gallery]: GalleryContainer,
+    [CMSContainerType.CallToAction]: CtaContainer,
+}
+
+export type ContainerInstanceTypeMap = {
+    [key in keyof typeof ContainerTypeMap]: InstanceType<(typeof ContainerTypeMap)[key]>
 }
