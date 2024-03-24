@@ -19,7 +19,7 @@
     sources={desktopImage ? {
         md: desktopImage.getSrc(),
     } : undefined}
-    position="top-right"
+    position={container.getPosition()}
 >
     <Markdown nowrap source={container.getContent() ?? ""} disabled={["space"]} />
     {#if ctas.length > 0}
