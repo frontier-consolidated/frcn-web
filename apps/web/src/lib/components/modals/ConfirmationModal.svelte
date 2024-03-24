@@ -10,7 +10,7 @@
     export let open: boolean = false;
 </script>
 
-<Modal {title} size="xs" bind:open>
+<Modal {title} size="xs" bind:open on:close>
     <slot />
     <svelte:fragment slot="footer">
 		<Button class="w-6/12" on:click={async () => {
