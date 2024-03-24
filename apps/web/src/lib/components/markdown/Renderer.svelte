@@ -13,8 +13,6 @@
 		if (components[type]) return components[type]
 		return renderers[type as keyof typeof renderers] as ComponentType<SvelteComponent>;
 	}
-
-	$: console.log(disabled, tokens)
 </script>
 
 {#if !token}
