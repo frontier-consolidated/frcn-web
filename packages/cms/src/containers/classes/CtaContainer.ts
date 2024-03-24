@@ -32,6 +32,15 @@ export class CtaContainer extends CmsJsonContainer<CtaContainerContent> {
         this.updateData(data => ({...data, preset}))
     }
 
+    clone(): CtaContainer {
+        return new CtaContainer({
+            id: this.id,
+            identifier: this.identifier,
+            title: this.title,
+            content: this.content,
+        })
+    }
+
     protected override getDefaultData(): CtaContainerContent {
         return {
             preset: CallToActionPreset.None
