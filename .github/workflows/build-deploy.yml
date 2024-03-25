@@ -15,10 +15,28 @@ on:
             backend_service:
                 type: string
                 required: true
+        secrets:
+            SSH_USER:
+                required: true
+            SSH_KEY:
+                required: true
+            SSH_HOST:
+                required: true
+            SSH_PORT:
+                required: true
+            AWS_ACCESS_KEY_ID:
+                required: true
+            AWS_SECRET_ACCESS_KEY:
+                required: true
+            AWS_REGION:
+                required: true
+            AWS_SECURITY_GROUP:
+                required: true
 
 jobs:
-    build:
-        name: Build artifacts
+    build-deploy:
+        name: Build and deploy apps
+        environment: ${{ inputs.environment }}
         runs-on: ubuntu-latest
         steps:
             - name: Setup node
@@ -52,49 +70,24 @@ jobs:
               run: |
                   ./.github/scripts/ec2-build.sh build ${{ inputs.hostname }}
 
-            - name: Archive build for artifact
-              run: |
-                  zip build.zip ./build -r
-
-            - name: Create artifacts
-              uses: actions/upload-artifact@v4
-              with:
-                  name: build-artifact
-                  path: build.zip
-                  retention-days: 1
-    deploy:
-        needs: build
-        name: Deploy artifacts
-        runs-on: ubuntu-latest
-        environment: ${{ inputs.environment }}
-        steps:
-            - name: Download artifacts
-              uses: actions/download-artifact@v4
-              with:
-                  name: build-artifact
-
-            - name: Unarchive artifact
-              run: |
-                  unzip build.zip
-
-            - name: Configure SSH
-              run: |
-                  mkdir -p ~/.ssh/
-                  echo "$SSH_KEY" > ~/.ssh/aws
-                  chmod 600 ~/.ssh/aws
-                  cat >>~/.ssh/config <<END
-                  Host server
-                      HostName $SSH_HOST
-                      User $SSH_USER
-                      Port $SSH_PORT
-                      IdentityFile ~/.ssh/aws
-                      StrictHostKeyChecking no
-                  END
-              env:
-                  SSH_USER: ${{ secrets.SSH_USER }}
-                  SSH_KEY: ${{ secrets.SSH_KEY }}
-                  SSH_HOST: ${{ secrets.SSH_HOST }}
-                  SSH_PORT: ${{ secrets.SSH_PORT }}
+                  - name: Configure SSH
+                  run: |
+                      mkdir -p ~/.ssh/
+                      echo "$SSH_KEY" > ~/.ssh/aws
+                      chmod 600 ~/.ssh/aws
+                      cat >>~/.ssh/config <<END
+                      Host server
+                          HostName $SSH_HOST
+                          User $SSH_USER
+                          Port $SSH_PORT
+                          IdentityFile ~/.ssh/aws
+                          StrictHostKeyChecking no
+                      END
+                  env:
+                      SSH_USER: ${{ secrets.SSH_USER }}
+                      SSH_KEY: ${{ secrets.SSH_KEY }}
+                      SSH_HOST: ${{ secrets.SSH_HOST }}
+                      SSH_PORT: ${{ secrets.SSH_PORT }}
 
             - name: Setup AWS credentials
               uses: aws-actions/configure-aws-credentials@v4
@@ -113,6 +106,7 @@ jobs:
                   aws ec2 authorize-security-group-ingress --group-name $AWS_SECURITY_GROUP --protocol tcp --port 22 --cidr $PUBLIC_IP/32
               env:
                   AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP }}
+
             - name: Deploy web
               uses: burnett01/rsync-deployments@7.0.0
               with:
