@@ -53,7 +53,7 @@ jobs:
                   ./.github/scripts/ec2-build.sh build ${{ inputs.hostname }}
 
             - name: Create artifacts
-              uses: actions/upload-artifact@v4
+              uses: actions/upload-artifact@v3
               with:
                   name: build-artifact
                   path: build
@@ -65,7 +65,7 @@ jobs:
         environment: ${{ inputs.environment }}
         steps:
             - name: Download artifacts
-              uses: actions/download-artifact@v4
+              uses: actions/download-artifact@v3
               with:
                   name: build-artifact
 
