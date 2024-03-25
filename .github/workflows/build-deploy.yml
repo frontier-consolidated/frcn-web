@@ -15,23 +15,6 @@ on:
             backend_service:
                 type: string
                 required: true
-        secrets:
-            SSH_USER:
-                required: true
-            SSH_KEY:
-                required: true
-            SSH_HOST:
-                required: true
-            SSH_PORT:
-                required: true
-            AWS_ACCESS_KEY_ID:
-                required: true
-            AWS_SECRET_ACCESS_KEY:
-                required: true
-            AWS_REGION:
-                required: true
-            AWS_SECURITY_GROUP:
-                required: true
 
 jobs:
     build-deploy:
