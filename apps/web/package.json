@@ -45,7 +45,6 @@
     "@floating-ui/dom": "^1.6.1",
     "@frcn/cms": "workspace:^",
     "@frcn/shared": "workspace:^",
-    "@selemondev/svelte-marquee": "^0.0.2",
     "@uiw/codemirror-theme-github": "^4.21.25",
     "axios": "^1.6.8",
     "graphql": "^16.8.1",

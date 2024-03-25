@@ -18,6 +18,7 @@ import LocationSelectUl from "./location/LocationSelectUl.svelte"
 import LoginButton from "./LoginButton.svelte"
 import Markdown from "./markdown/Markdown.svelte"
 import MarkdownEditor from "./markdown/MarkdownEditor.svelte"
+import Marquee from "./Marquee.svelte"
 import ConfirmationModal from "./modals/ConfirmationModal.svelte"
 import CookieConsentModal from "./modals/CookieConsentModal.svelte"
 import RsvpModal from "./modals/RSVPModal.svelte"
@@ -65,6 +66,7 @@ export {
     ImageInput,
     JoinDiscordButton,
     LoginButton,
+    Marquee,
     NavUser,
     Notifications,
     PageHero,
