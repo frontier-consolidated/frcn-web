@@ -1,0 +1,16 @@
+name: Development
+
+on:
+    push:
+        branches:
+            - dev
+
+jobs:
+    call-deploy:
+        name: Deploy to dev
+        uses: ./.github/workflows/build-deploy.yml
+        with:
+            environment: frontierconsolidated.com
+            hostname: dev.frontierconsolidated.com
+            frontend_service: frcn-dev-frontend.service
+            backend_service: frcn-dev-backend.service

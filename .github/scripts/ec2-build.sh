@@ -3,6 +3,7 @@
 export PRISMA_SKIP_POSTINSTALL_GENERATE=true
 
 BUILD_DIR=$1
+HOSTNAME=$2
 
 mkdir -p $BUILD_DIR
 
@@ -11,6 +12,8 @@ find . -name ".gitignore" -exec rm {} \;
 
 pnpm install --frozen-lockfile
 pnpm --filter=backend db-generate
+
+echo 'VITE_API_BASEURL="https://$HOSTNAME/api"' > apps/web/.env.production
 
 pnpm run -r build
 pnpm deploy --filter=backend --prod $BUILD_DIR/backend
