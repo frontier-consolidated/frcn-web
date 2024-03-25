@@ -1,17 +1,16 @@
 <script lang="ts">
 	import { Heading } from "flowbite-svelte";
-	import { BookSolid, BuildingSolid, DiscordSolid, MapPinAltSolid, UsersSolid } from "flowbite-svelte-icons";
+	import { BookSolid, BuildingSolid, MapPinAltSolid, UsersSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
 	import { Button, Hr, JoinDiscordButton } from "$lib/components";
-	import { DISCORD_URL, MERCH_URL } from "$lib/constants";
-	import activitiesImage from "$lib/images/stock/activities.png"
-	import communityImage from "$lib/images/stock/community.jpg"
-	import heroImageFallback from "$lib/images/stock/joinus.jpg"
-	import heroImageSrcset from "$lib/images/stock/joinus.jpg?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
-	import knowledgeImage from "$lib/images/stock/knowledge.png"
+	import { MERCH_URL } from "$lib/constants";
+	import activitiesImage from "$lib/images/stock/activities.png?w=580&imagetools"
+	import communityImage from "$lib/images/stock/community.png?w=580&imagetools"
+	import heroImageSrcset from "$lib/images/stock/hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
+	import knowledgeImage from "$lib/images/stock/knowledge.png?w=580&imagetools"
 	import merchImage from "$lib/images/stock/merch.png"
-	import orgImage from "$lib/images/stock/org.png"
+	import orgImage from "$lib/images/stock/org.png?w=580&imagetools"
 
 	import { galleryImages } from "./galleryImages";
 
@@ -39,6 +38,7 @@
 <svelte:head>
 	<title>Frontier Consolidated</title>
 	<meta name="description" content="Get involved with the latest community events" />
+	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
 	{#each pageCards as card}
 		<link rel="preload" href={card.src} as="image" />
 	{/each}
@@ -48,13 +48,10 @@
 </svelte:head>
 
 <div class="relative">
-	<picture>
-		<source srcset={heroImageSrcset} type="image/webp" />
-		<img src={heroImageFallback} alt="index hero" class="w-full object-cover h-[80vh] brightness-90 bg-slate-950" />
-	</picture>
-	<div class="absolute top-0 left-0 h-full w-full p-4 sm:px-[20%] flex items-center justify-center sm:!justify-end">
-		<div class="max-w-[24rem] w-full p-8 text-gray-900 dark:text-white flex flex-col gap-3 backdrop-blur-xl clip-opposite-reverse-8 bg-white/50 dark:bg-black/30 sm:min-w-[24rem] sm:max-w-[50rem] sm:!w-6/12">
-			<span class="font-medium text-lg">
+	<img srcset={heroImageSrcset} alt="index hero" class="w-full object-cover min-h-[32rem] h-[75vh] brightness-90 bg-slate-950" />
+	<div class="absolute top-0 left-0 h-full w-full p-4 pt-28 flex items-start justify-center">
+		<div class="w-full p-6 sm:p-8 text-gray-900 dark:text-white flex flex-col gap-3 backdrop-blur-xl clip-opposite-reverse-8 bg-white/50 dark:bg-black/30 max-w-[36rem]">
+			<span class="font-medium text-xl">
 				<span class="me-4 text-primary-700 dark:text-primary-500">///</span> Welcome to the Frontier!
 			</span>
 			<p>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Heading } from "flowbite-svelte";
 
+	import { PageHero } from "$lib/components";
 	import image1Desktop from "$lib/images/stock/org/1-desktop.jpg"
 	import image1Mobile from "$lib/images/stock/org/1-mobile.jpg"
 	import image2Desktop from "$lib/images/stock/org/2-desktop.jpg"
@@ -12,24 +13,20 @@
 	import image5Mobile from "$lib/images/stock/org/5-mobile.jpg"
 	import image6Desktop from "$lib/images/stock/org/6-desktop.jpg"
 	import image6Mobile from "$lib/images/stock/org/6-mobile.jpg"
-	import heroImageFallback from "$lib/images/stock/org/hero.png"
 	import heroImageSrcset from "$lib/images/stock/org/hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
 
-	import AboutHero from "../AboutHero.svelte";
 	import AboutSection from "../AboutSection.svelte";
 </script>
 
 <svelte:head>
 	<title>Our Organisation - About | Frontier Consolidated</title>
+	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
 </svelte:head>
 
-<AboutHero
-	srcset={heroImageSrcset}
-	fallback={heroImageFallback}
->
+<PageHero srcset={heroImageSrcset}>
 	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">Frontier Organisation</Heading>
 	<p class="text-slate-400 drop-shadow-md">Be a part of something great</p>
-</AboutHero>
+</PageHero>
 
 <section class="mt-2 flex flex-col gap-8 p-4 w-full max-w-6xl mx-auto">
 	<AboutSection

@@ -1,6 +1,7 @@
 import { createFragmentRegistry } from "@apollo/client/cache";
 
 import { CHANNEL_FRAGMENT } from "./channel.fragment";
+import { CONTENT_CONTAINER_FRAGMENT } from "./contentContainer.fragment";
 import { EVENT_FRAGMENT } from "./event.fragment";
 import { EVENT_MEMBER_FRAGMENT } from "./eventMember.fragment";
 import { EVENT_SETTINGS_FRAGMENT } from "./eventSettings.fragment";
@@ -15,5 +16,6 @@ export const fragments = createFragmentRegistry(
 	CHANNEL_FRAGMENT,
 	RESOURCE_FRAGMENT,
 	USER_FRAGMENT,
-	ROLE_FRAGMENT
+	ROLE_FRAGMENT,
+	CONTENT_CONTAINER_FRAGMENT
 );

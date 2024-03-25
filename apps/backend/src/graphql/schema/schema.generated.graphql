@@ -35,8 +35,17 @@ directive @permission(has: Permission, one: [Permission!], all: [Permission!]) o
 # Types
 
 type SystemSettings {
-	discordGuildId: String!
+	discordGuild: DiscordGuild!
 	defaultEventChannel: DiscordChannel
+}
+
+type AccessKey {
+	id: Int!
+	key: String
+	description: String!
+	permissions: Int!
+	updatedAt: Timestamp!
+	createdAt: Timestamp!
 }
 
 type UserRole {
@@ -119,7 +128,7 @@ type EventTeam {
 
 type Event {
 	id: ID!
-	channel: DiscordChannel!
+	channel: DiscordChannel
 	owner: User
 	name: String!
 	summary: String!
@@ -142,6 +151,11 @@ type Event {
 	settings: EventSettings! @permission(has: CreateEvents)
 	accessType: EventAccessType! @permission(has: CreateEvents)
 	accessRoles: [UserRole!]! @permission(has: CreateEvents)
+}
+
+type DiscordGuild {
+	id: ID!
+	name: String!
 }
 
 type DiscordChannel {
@@ -179,6 +193,25 @@ type Resource {
 	tags: [String!]!
 	updatedAt: Timestamp!
 	createdAt: Timestamp!
+}
+
+type ContentContainer {
+	id: ID!
+	identifier: String
+	type: String!
+	title: String!
+	content: String
+	files: [ContentContainerFile!]!
+	children: [ContentContainer!]!
+	parent: ContentContainer
+}
+
+type ContentContainerFile {
+	id: ID!
+	identifier: String
+	fileName: String!
+	fileSizeKb: Int!
+	previewUrl: String
 }
 
 # Inputs:
@@ -240,6 +273,12 @@ input EventTeamEditInput {
 
 input SystemEditInput {
 	discordGuildId: ID
+	defaultEventChannelId: ID
+}
+
+input AccessKeyEditInput {
+	description: String @constraint(maxLength: 255)
+	permissions: Int @constraint(min: 0, max: 2147483647)
 }
 
 input RoleEditInput {
@@ -266,6 +305,12 @@ input ResourceEditInput {
 	name: String @constraint(maxLength: 255)
 	shortDescription: String @constraint(maxLength: 512)
 	tags: [String!]
+}
+
+input ContentContainerEditInput {
+	identifier: String @constraint(maxLength: 255)
+	title: String @constraint(maxLength: 255)
+	content: String @constraint(maxLength: 2048)
 }
 
 # Root types:
@@ -297,12 +342,22 @@ type Query {
 	getRoleOrder: [ID!]! @permission(has: ManageRoles)
 
 	# System
-	getAllEventChannels: [DiscordChannel]! @permission(one: [CreateEvents, ManageSystem])
+	getAllEventChannels: [DiscordChannel!]! @permission(one: [CreateEvents, ManageSystem])
 	getAllDiscordChannels: [DiscordChannel!]! @permission(has: ManageSystem)
 	getAllDiscordEmojis: DiscordEmojis! @permission(has: CreateEvents)
 	getAllDiscordRoles(everyone: Boolean): [DiscordRole!]!
 		@permission(one: [CreateEvents, ManageRoles])
 	getSystemSettings: SystemSettings! @permission(has: ManageSystem)
+
+	getCurrentAccessKey: AccessKey
+	getAccessKey(id: Int!): AccessKey @permission(has: ManageSystem)
+	getAllAccessKeys: [AccessKey!]! @permission(has: ManageSystem)
+
+	# CMS
+	getContentContainer(identifier: String!, type: String!): ContentContainer
+		@permission(has: CmsRead)
+	getContentContainerById(id: ID!): ContentContainer @permission(has: CmsRead)
+	getContentContainersOfType(type: String!): [ContentContainer!]! @permission(has: CmsRead)
 }
 
 type Mutation {
@@ -345,7 +400,26 @@ type Mutation {
 	# System
 	editEventChannels(channels: [ID!]!): [DiscordChannel!]! @permission(has: ManageSystem)
 	editSystemSettings(data: SystemEditInput!): SystemSettings! @permission(has: ManageSystem)
+
+	createAccessKey: AccessKey! @permission(has: ManageSystem)
+	editAccessKey(id: Int!, data: AccessKeyEditInput!): AccessKey @permission(has: ManageSystem)
+	regenerateAccessKey(id: Int!): AccessKey @permission(has: ManageSystem)
+	deleteAccessKey(id: Int!): Boolean! @permission(has: ManageSystem)
+
+	# CMS
+	createContentContainer(type: String!, identifier: String, parent: ID): ContentContainer!
+		@permission(has: CmsWrite)
+	editContentContainer(id: ID!, data: ContentContainerEditInput!): ContentContainer
+		@permission(has: CmsWrite)
+	reorderContentContainerChildren(id: ID!, order: [ID!]!): ContentContainer
+		@permission(has: CmsWrite)
+	reorderContentContainerFiles(id: ID!, order: [ID!]!): ContentContainer
+		@permission(has: CmsWrite)
+	deleteContentContainer(id: ID!): Boolean! @permission(has: CmsWrite)
+	deleteContentContainerFile(id: ID!): Boolean! @permission(has: CmsWrite)
 }
+
+# Subscriptions
 
 type UpdatedUserRoles {
 	userId: ID!
@@ -379,8 +453,8 @@ type PagedResource {
 enum Permission {
 	CreateEvents
 	UploadResources
-	Unassigned2
-	Unassigned3
+	CmsRead
+	CmsWrite
 	Unassigned4
 	Unassigned5
 	Unassigned6

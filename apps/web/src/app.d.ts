@@ -1,6 +1,6 @@
 
 import type { TypedApolloClient } from "$lib/graphql";
-import type { GetAllRolesQuery, GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
+import type { CreateAccessKeyMutation, GetAllRolesQuery, GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -16,7 +16,9 @@ declare global {
 		interface PageData {
 			roles: GetAllRolesQuery["roles"]
 		}
-		// interface PageState {}
+		interface PageState {
+			newAccessKey?: CreateAccessKeyMutation["key"]
+		}
 		// interface Platform {}
 	}
 	

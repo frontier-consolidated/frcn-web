@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { AboutSectionContainerPosition } from "@frcn/cms";
 	import { twMerge } from "tailwind-merge";
 
     const positions = {
@@ -6,7 +7,7 @@
         "top-left": "top-0 left-0",
         "bottom-right": "bottom-0 right-0",
         "bottom-left": "bottom-0 left-0"
-    }
+    } satisfies Record<AboutSectionContainerPosition, string>
 
     const breakpoints = {
 		sm: "640px",
@@ -17,7 +18,8 @@
 	};
 
     export let title: string;
-    export let src: string;
+    export let src: string | undefined = undefined;
+    export let srcset: string | undefined = undefined;
     export let alt: string = "";
     
     export let sources: Partial<Record<keyof typeof breakpoints, string>> = {};
@@ -35,7 +37,7 @@
         {#each sourceEntries as [breakpoint, src]}
             <source media="(min-width: {breakpoints[breakpoint]})" srcset={src} />
         {/each}
-        <img class={imgClass} {src} {alt} />
+        <img class={imgClass} {src} {srcset} {alt} />
     </picture>
     <figcaption class={twMerge(captionClass, positions[position])}>
         <div class="text-xl font-medium -mt-8 w-max max-w-full clip-tr-8 py-4 pl-8 pr-12 bg-white dark:bg-gray-900 md:mt-0 md:pt-0 md:bg-transparent md:dark:bg-transparent">

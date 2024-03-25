@@ -1,6 +1,7 @@
-import { DeleteObjectCommand, type S3Client } from "@aws-sdk/client-s3";
+import { S3Client } from "@aws-sdk/client-s3";
 import type { Prisma, User } from "@prisma/client";
 
+import { $files } from "./files";
 import { database, transaction } from "../database";
 import type { ResourceCreateInput, ResourceEditInput } from "../graphql/__generated__/resolvers-types";
 
@@ -36,7 +37,9 @@ async function getResources(
 		tags: tags ? {
 			hasEvery: tags
 		} : undefined,
-		fileAttached: true
+		fileId: {
+			not: null
+		}
 	}
 
 	const count = await database.resource.count({
@@ -75,7 +78,6 @@ async function createResource(owner: User, data: ResourceCreateInput) {
 			shortDescription: data.shortDescription,
 			tags: data.tags,
 			canPreview: false,
-			fileAttached: false,
 		}
 	})
 
@@ -108,22 +110,21 @@ async function deleteResource(client: S3Client, bucket: string, id: string) {
 		where: { id },
 		select: {
 			id: true,
-			fileAttached: true
+			file: true
 		}
 	})
-	if (!resource || !resource.fileAttached) return;
+	if (!resource) return;
 
-	const command = new DeleteObjectCommand({
-		Bucket: bucket,
-		Key: resource.id,
-	})
-
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore excessively deep type, but still resolves
 	await transaction(async (tx) => {
 		await tx.resource.delete({
 			where: { id }
 		})
-	
-		await client.send(command)
+
+		if (resource.file) {
+			await $files.deleteFile(client, bucket, resource.file.id)
+		}
 	})
 }
 

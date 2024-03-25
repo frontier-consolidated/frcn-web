@@ -9,14 +9,13 @@ import { database } from "../../../database";
 import { $discord } from "../../../services/discord";
 import { $events } from "../../../services/events";
 import type {
-	User as GQLUser,
-	Event as GQLEvent,
-	EventRsvp as GQLEventRsvp,
-	EventRsvpRole as GQLEventRsvpRole,
-	EventMember as GQLEventMember,
-	EventSettings as GQLEventSettings,
-	Resolvers,
-	DiscordChannel,
+    User as GQLUser,
+    Event as GQLEvent,
+    EventRsvp as GQLEventRsvp,
+    EventRsvpRole as GQLEventRsvpRole,
+    EventMember as GQLEventMember,
+    EventSettings as GQLEventSettings,
+    Resolvers
 } from "../../__generated__/resolvers-types";
 import { EventAccessType } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
@@ -26,7 +25,7 @@ export function resolveEvent(event: Event) {
 	return {
 		_model: event,
 		id: event.id,
-		channel: null as unknown as DiscordChannel, // field-resolved
+		channel: null, // field-resolved
 		owner: null, // field-resolved
 		name: event.name,
 		summary: event.summary,
@@ -103,6 +102,7 @@ export const eventResolvers: Resolvers = {
 		async channel(source, args, context) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const channel = await database.event.getChannel(_model);
+			if (!channel) return null;
 			return await resolveDiscordChannel(channel, context);
 		},
 		async owner(source): Promise<WithModel<GQLUser, User> | null> {
@@ -246,8 +246,10 @@ export const eventResolvers: Resolvers = {
 
 	Mutation: {
 		async createEvent(source, args, context) {
+			if (!context.user) throw gqlErrorUnauthenticated();
+
 			const event = await $events.createEvent(
-				context.user!,
+				context.user,
 				context.app.discordClient
 			);
 			return event.id;

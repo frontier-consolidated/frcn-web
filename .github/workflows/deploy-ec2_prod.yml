@@ -1,0 +1,16 @@
+name: Production
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    call-deploy:
+        name: Deploy to prod
+        uses: ./.github/workflows/build-deploy.yml
+        with:
+            environment: frontierconsolidated.com
+            hostname: frontierconsolidated.com
+            frontend_service: frcn-prod-frontend.service
+            backend_service: frcn-prod-backend.service

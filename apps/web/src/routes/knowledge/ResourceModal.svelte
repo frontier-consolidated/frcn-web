@@ -98,7 +98,7 @@
 		const formData = new FormData()
 		formData.append("file", uploadFiles[0])
 		try {
-			await api.post(Routes.resource(createData!.resource.id), formData, {
+			await api.post(Routes.upload("resource", createData!.resource.id), formData, {
 				headers: {
 					"Content-Type": "multipart/form-data"
 				},

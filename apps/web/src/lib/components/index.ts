@@ -8,6 +8,7 @@ import EmojiPickerInput from "./emoji/EmojiPickerInput.svelte"
 import Footer from "./Footer.svelte"
 import Header from "./Header.svelte"
 import Hr from "./Hr.svelte"
+import ImageInput from "./ImageInput.svelte"
 import JoinDiscordButton from "./JoinDiscordButton.svelte"
 import LocationBreadcrumbItem from "./location/LocationBreadcrumbItem.svelte"
 import LocationIcon from "./location/LocationIcon.svelte"
@@ -23,6 +24,8 @@ import RsvpModal from "./modals/RSVPModal.svelte"
 import UserProfileModal from "./modals/UserProfileModal.svelte"
 import NavUser from "./NavUser.svelte"
 import Notifications from "./Notifications.svelte"
+import PageHero from "./PageHero.svelte"
+import PermissionToggles from "./PermissionToggles.svelte"
 import SectionHeading from "./SectionHeading.svelte"
 import Select from "./select/Select.svelte"
 import Tooltip from "./Tooltip.svelte"
@@ -59,10 +62,13 @@ export {
     Footer,
     Header,
     Hr,
+    ImageInput,
     JoinDiscordButton,
     LoginButton,
     NavUser,
     Notifications,
+    PageHero,
+    PermissionToggles,
     SectionHeading,
     Tooltip,
     ViewMore
