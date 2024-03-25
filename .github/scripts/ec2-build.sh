@@ -13,7 +13,7 @@ find . -name ".gitignore" -exec rm {} \;
 pnpm install --frozen-lockfile
 pnpm --filter=backend db-generate
 
-echo 'VITE_API_BASEURL="https://$HOSTNAME/api"' > apps/web/.env.production
+echo "VITE_API_BASEURL=https://$HOSTNAME/api" > apps/web/.env.production
 
 pnpm run -r build
 pnpm deploy --filter=backend --prod $BUILD_DIR/backend
