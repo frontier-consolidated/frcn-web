@@ -29,7 +29,7 @@
     }
   },
   "scripts": {
-    "build": "tsc"
+    "build": "rm -rf dist && tsc"
   },
   "devDependencies": {
     "@types/node": "^20.11.5"
