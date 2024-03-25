@@ -12,8 +12,8 @@
 
 </script>
 
-<Footer footerType="socialmedia" class="relative flex flex-col items-center bg-gray-200 dark:bg-gray-900 mt-12">
-    <div class="absolute -top-[1.9rem] right-0 clip-tl-8 w-[40%] h-8 bg-gray-200 dark:bg-gray-900"></div>
+<Footer footerType="socialmedia" class="relative flex flex-col items-center bg-zinc-200 dark:bg-gray-900 mt-12">
+    <div class="absolute -top-[1.9rem] right-0 clip-tl-8 w-[40%] h-8 bg-zinc-200 dark:bg-gray-900"></div>
     <div class="w-full max-w-6xl md:flex md:justify-between mt-4 gap-8">
         <div class="flex md:flex-col shrink-0 mb-6 md:mb-0">
             <ScreenQuery size="sm" let:matches>
