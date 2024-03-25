@@ -3,14 +3,12 @@
 	import { BookSolid, BuildingSolid, MapPinAltSolid, UsersSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
-	import { Button, Hr, JoinDiscordButton, Marquee } from "$lib/components";
-	import { MERCH_URL } from "$lib/constants";
+	import { Hr, JoinDiscordButton, Marquee } from "$lib/components";
 	import logo from "$lib/images/logo.png";
 	import activitiesImage from "$lib/images/stock/activities.png?w=580&imagetools"
 	import communityImage from "$lib/images/stock/community.png?w=580&imagetools"
 	import heroImageSrcset from "$lib/images/stock/hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
 	import knowledgeImage from "$lib/images/stock/knowledge.png?w=580&imagetools"
-	import merchImage from "$lib/images/stock/merch.png"
 	import orgImage from "$lib/images/stock/org.png?w=580&imagetools"
 	import welcomeImage from "$lib/images/stock/welcome.png"
 
@@ -51,10 +49,10 @@
 		</div>
 	</div>
 </div>
-<section class="relative p-4 pt-0 border-y border-gray-400 dark:border-primary-600 bg-gray-300 dark:bg-gray-900">
+<section class="relative p-4 pt-0 border-y border-primary-400 dark:border-primary-600 bg-neutral-200 dark:bg-gray-900">
 	<div class="-mt-10 grid sm:grid-cols-2 xl:grid-cols-4 gap-4 mx-auto max-w-7xl">
 		{#each pageCards as card}
-			<a href={card.href} class="group/card relative rounded p-px clip-tr-8 bg-gray-700">
+			<a href={card.href} class="group/card relative rounded clip-tr-8">
 				<figure class="h-36 min-[480px]:h-48 sm:h-60 cursor-pointer">
 					<img class="clip-tr-8 rounded h-full w-full object-cover transition-[filter] group-hover/card:grayscale" src={card.src} alt={card.name} />
 					<figcaption class="absolute rounded-b flex items-center w-full bottom-0 left-0 p-2 sm:p-4 bg-white/50 dark:bg-black/30 backdrop-blur-lg text-gray-900 dark:text-white font-semibold text-md">
@@ -64,19 +62,19 @@
 			</a>
 		{/each}
 	</div>
-	<div class="absolute -bottom-[2rem] left-0 clip-br-8 w-[20%] h-8 bg-gray-400 dark:bg-primary-600"></div>
-	<div class="absolute -bottom-[2rem] right-0 clip-bl-8 w-[20%] h-8 bg-gray-400 dark:bg-primary-600"></div>
-	<div class="absolute -bottom-[calc(2rem-1px)] left-0 clip-br-8 w-[calc(20%-1px)] h-8 bg-gray-300 dark:bg-gray-900"></div>
-	<div class="absolute -bottom-[calc(2rem-1px)] right-0 clip-bl-8 w-[calc(20%-1px)] h-8 bg-gray-300 dark:bg-gray-900"></div>
+	<div class="absolute -bottom-[2rem] left-0 clip-br-8 w-[20%] h-8 bg-primary-400 dark:bg-primary-600"></div>
+	<div class="absolute -bottom-[2rem] right-0 clip-bl-8 w-[20%] h-8 bg-primary-400 dark:bg-primary-600"></div>
+	<div class="absolute -bottom-[calc(2rem-1px)] left-0 clip-br-8 w-[calc(20%-1px)] h-8 bg-neutral-200 dark:bg-gray-900"></div>
+	<div class="absolute -bottom-[calc(2rem-1px)] right-0 clip-bl-8 w-[calc(20%-1px)] h-8 bg-neutral-200 dark:bg-gray-900"></div>
 </section>
-<section class="w-full bg-slate-950 bg-triangle-pattern px-4 py-16">
+<section class="w-full bg-white dark:bg-slate-950 bg-triangle-pattern px-4 py-16">
 	<div class="mx-auto w-full max-w-5xl flex flex-col md:flex-row gap-2 md:gap-8">
 		<div class="shrink-0 overflow-hidden rounded clip-opposite-12 h-[500px] md:self-stretch w-full md:w-[350px] lg:w-[400px] p-px dark:bg-gray-700">
 			<img src={welcomeImage} alt="welcome to the frontier" class="h-full w-full object-cover clip-opposite-12" />
 		</div>
 		<div class="self-stretch flex flex-col p-6">
-			<h2 class="text-3xl lg:text-4xl text-white font-semibold"><span class="me-4 text-primary-700 dark:text-primary-500">///</span> Welcome to the Frontier!</h2>
-			<div class="mt-6 flex flex-col gap-4 text-lg dark:text-gray-300">
+			<h2 class="text-3xl lg:text-4xl font-semibold text-black dark:text-white"><span class="me-4 text-primary-700 dark:text-primary-500">///</span> Welcome to the Frontier!</h2>
+			<div class="mt-6 flex flex-col gap-4 text-lg text-gray-800 dark:text-gray-300">
 				<p>
 					Frontier Consolidated is a growing Star Citizen organisation and we want to bring the joy of multiplayer action to as many people as we can.
 				</p>
@@ -90,8 +88,8 @@
 		</div>
 	</div>
 </section>
-<section class="border-y border-gray-400 dark:border-primary-600 bg-gray-400/70 dark:bg-gray-900 py-8">
-	<h2 class="text-center text-3xl dark:text-gray-300 font-medium">Our Partners</h2>
+<section class="border-y border-primary-400 dark:border-primary-600 bg-slate-300 dark:bg-gray-900 py-8">
+	<h2 class="text-center text-3xl font-medium text-primary-600 dark:text-gray-300">Our Partners</h2>
 	<Marquee fade class="mt-8">
 		{#each partners as partner}
 			<a href={partner.href} class="shrink-0 rounded-lg h-32 w-32">
