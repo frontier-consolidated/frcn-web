@@ -12,6 +12,15 @@ const config = {
 		adapter: adapter({
 			out: "build",
 		}),
+		prerender: {
+			entries: [
+				"/",
+				"/about/activities",
+				"/about/org",
+				"/legal/cookies",
+				"/legal/privacy"
+			]
+		}
 	},
 };
 
