@@ -40,6 +40,25 @@ jobs:
               env:
                   AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP }}
 
+            - name: Configure SSH
+              run: |
+                  mkdir -p ~/.ssh/
+                  echo "$SSH_KEY" > ~/.ssh/aws
+                  chmod 600 ~/.ssh/aws
+                  cat >>~/.ssh/config <<END
+                  Host server
+                      HostName $SSH_HOST
+                      User $SSH_USER
+                      Port $SSH_PORT
+                      IdentityFile ~/.ssh/aws
+                      StrictHostKeyChecking no
+                  END
+              env:
+                  SSH_USER: ${{ secrets.SSH_USER }}
+                  SSH_KEY: ${{ secrets.SSH_KEY }}
+                  SSH_HOST: ${{ secrets.SSH_HOST }}
+                  SSH_PORT: ${{ secrets.SSH_PORT }}
+
             - name: Setup node
               uses: actions/setup-node@v4
               with:
@@ -70,25 +89,6 @@ jobs:
               shell: bash
               run: |
                   ./.github/scripts/ec2-build.sh build ${{ inputs.hostname }}
-
-                  - name: Configure SSH
-                  run: |
-                      mkdir -p ~/.ssh/
-                      echo "$SSH_KEY" > ~/.ssh/aws
-                      chmod 600 ~/.ssh/aws
-                      cat >>~/.ssh/config <<END
-                      Host server
-                          HostName $SSH_HOST
-                          User $SSH_USER
-                          Port $SSH_PORT
-                          IdentityFile ~/.ssh/aws
-                          StrictHostKeyChecking no
-                      END
-                  env:
-                      SSH_USER: ${{ secrets.SSH_USER }}
-                      SSH_KEY: ${{ secrets.SSH_KEY }}
-                      SSH_HOST: ${{ secrets.SSH_HOST }}
-                      SSH_PORT: ${{ secrets.SSH_PORT }}
 
             - name: Deploy web
               uses: burnett01/rsync-deployments@7.0.0
