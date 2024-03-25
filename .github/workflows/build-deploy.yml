@@ -52,11 +52,15 @@ jobs:
               run: |
                   ./.github/scripts/ec2-build.sh build ${{ inputs.hostname }}
 
+            - name: Archive build for artifact
+              run: |
+                  zip build.zip ./build -r
+
             - name: Create artifacts
               uses: actions/upload-artifact@v3
               with:
                   name: build-artifact
-                  path: build
+                  path: build.zip
                   retention-days: 1
     deploy:
         needs: build
@@ -68,6 +72,10 @@ jobs:
               uses: actions/download-artifact@v3
               with:
                   name: build-artifact
+
+            - name: Unarchive artifact
+              run: |
+                  unzip build.zip
 
             - name: Configure SSH
               run: |
