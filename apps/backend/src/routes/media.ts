@@ -190,6 +190,7 @@ export default function route(context: Context, config: RouteConfig) {
                             id: uploadedFile.fileLink.id,
                             fileName: uploadedFile.file.fileName,
                             fileSizeKb: uploadedFile.file.fileSizeKb,
+                            contentType: uploadedFile.file.contentType,
                             previewUrl: `${getOrigin(req.secure ? "https" : "http")}/media/${uploadedFile.file.id}/${uploadedFile.file.fileName}`
                         })
                     }
