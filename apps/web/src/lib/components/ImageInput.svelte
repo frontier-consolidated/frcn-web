@@ -6,8 +6,8 @@
 
     let uploadInput: HTMLInputElement | null = null;
     export let src: string | undefined = undefined;
-    export let upload: (file: File) => Promise<void>
-    export let remove: () => Promise<void>
+    export let upload: (file: File) => void | Promise<void>
+    export let remove: (() => Promise<void>) | undefined = undefined;
 
 	let files: FileList;
     let uploading = false;
@@ -22,7 +22,7 @@
     $: {
         if (files && files.length > 0 && !uploading) {
             uploading = true;
-            upload(files[0]).catch(console.error).finally(() => {
+            Promise.resolve(upload(files[0])).catch(console.error).finally(() => {
                 if (uploadInput) uploadInput.value = ""
                 uploading = false;
             })
@@ -44,8 +44,9 @@
         bind:this={uploadInput} 
         bind:files
     />
-    {#if (files?.length ?? 0) > 0 || src}
+    {#if remove && ((files?.length ?? 0) > 0 || src)}
         <button class="absolute top-4 right-4 rounded p-2 dark:text-white dark:bg-gray-700 dark:hover:bg-red-600" on:click={async (e) => {
+            if (!remove) return;
             e.stopPropagation()
             if (src) {
                 await remove()
