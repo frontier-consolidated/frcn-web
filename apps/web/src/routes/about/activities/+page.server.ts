@@ -1,4 +1,3 @@
-import { error } from '@sveltejs/kit';
 
 import { cmsClient } from '$lib/server/cms';
 
@@ -6,7 +5,6 @@ import type { PageServerLoad } from './$types';
 
 export const load = (async () => {
     const index = await cmsClient.getIndex("/about/activities")
-    if (!index) error(500, "CMS INDEX MISSING")
 
     return {
         index,
