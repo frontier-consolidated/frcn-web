@@ -78,8 +78,13 @@
                 <AccordionItem class="group-first-of-type:rounded-t group-last-of-type:rounded-b" paddingDefault="px-4 py-3">
                     <div slot="header" class="flex-1 flex items-center gap-4 pr-4">
                         <div class="flex flex-col">
-                            <span class="font-medium"><strong>[{strings.toTitleCase(container.type)}]</strong> {container.getTitle()}</span>
-                            <span class="text-gray-500 text-xs">{container.id}</span>
+                            <span class="font-medium text-black dark:text-white">
+                                <strong>[{strings.toTitleCase(container.type)}]</strong> {container.getTitle()}
+                                {#if container.getIdentifier()}
+                                    <span class="text-sm text-gray-400"> #{container.getIdentifier()}</span>
+                                {/if}
+                            </span>
+                            <span class="text-gray-300 dark:text-gray-500 text-xs">{container.id}</span>
                         </div>
                         <a href="/cms/{container.id}" target="_blank" class="ml-auto text-black hover:text-gray-800 dark:text-white dark:hover:text-gray-400" on:click={(e) => e.stopPropagation()}>
                             <ArrowUpRightFromSquareOutline size="sm" />
