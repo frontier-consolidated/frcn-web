@@ -3,6 +3,8 @@ import { CmsJsonContainer } from "./CmsJsonContainer";
 import { CMSContainerType } from "../types";
 
 type IndexContainerContent = {
+    metaTitle?: string;
+    metaDescription?: string;
     subTitle?: string;
 }
 
@@ -16,6 +18,22 @@ export class IndexContainer extends CmsJsonContainer<IndexContainerContent> {
 
     override getAllowedChildren() {
         return [CMSContainerType.Section, CMSContainerType.AboutSection, CMSContainerType.Gallery]
+    }
+
+    getMetaTitle() {
+        return this.getData().metaTitle
+    }
+
+    setMetaTitle(value: string | null | undefined) {
+        this.updateData(data => ({ ...data, metaTitle: value ?? undefined }))
+    }
+
+    getMetaDescription() {
+        return this.getData().metaDescription
+    }
+
+    setMetaDescription(value: string | null | undefined) {
+        this.updateData(data => ({ ...data, metaDescription: value ?? undefined }))
     }
 
     getSubTitle() {

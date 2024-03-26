@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { goto, invalidate } from '$app/navigation';
-	import { CMSContainerType, CmsContainer } from '@frcn/cms';
+	import { CMSContainerType, CmsContainer, CmsFile } from '@frcn/cms';
     import { strings } from "@frcn/shared"
     import { ArrowLeftSolid, CloseSolid, EditOutline } from "flowbite-svelte-icons"
 	import { setContext } from 'svelte';
@@ -17,7 +18,22 @@
     const validator = new FieldValidator()
 
     export let data: PageData;
+    if (browser) {
+        console.log(data.container)
+    }
     $: container = transformContainer(data.container)
+
+    function checkIfFileDirty(source: ContentContainerData["files"][number], mutable: CmsFile, prefix = "", diff?: string[]) {
+        let clean = true;
+		diff ??= [];
+
+        let valueClean;
+        valueClean = source.identifier == mutable.getIdentifier()
+        if (!valueClean) diff.push(prefix + mutable.id + ".identifier")
+        clean &&= valueClean;
+
+        return !clean
+    }
 
     function checkIfDirty(source: ContentContainerData, mutable: CmsContainer, traverseChildren = true, prefix = "", diff?: string[]) {
         let clean = true;
@@ -68,12 +84,11 @@
                 continue;
             }
 
-            valueClean = sourceFile.identifier === file.getIdentifier()
-            if (!valueClean) diff.push(prefix + "files." + file.id + ".identifier")
-            clean &&= valueClean;
+            const fileClean = !checkIfFileDirty(sourceFile, file, prefix + "files.", diff)
+            clean &&= fileClean;
         }
 		
-        // if (!prefix) console.log("DIFF", diff);
+        // if (!prefix && traverseChildren) console.log("DIFF", diff);
 		return !clean;
 	}
 
@@ -95,7 +110,7 @@
         if (!validator.validate()) return;
 
         let promises: Promise<any>[] = []
-        function makePromise(container: CmsContainer) {
+        function makeContainerEditPromise(container: CmsContainer) {
             const rawData = container.getRawData()
             promises.push(getApollo().mutate({
                 mutation: Mutations.EDIT_CONTENT_CONTAINER,
@@ -110,14 +125,33 @@
             }))
         }
 
+        function makeContainerFileEditPromise(file: CmsFile) {
+            promises.push(getApollo().mutate({
+                mutation: Mutations.EDIT_CONTENT_CONTAINER_FILE,
+                variables: {
+                    id: file.id,
+                    data: {
+                        identifier: file.getIdentifier(),
+                    }
+                }
+            }))
+        }
+
         function makePromises(source: ContentContainerData, container: CmsContainer) {
             const dirty = checkIfDirty(source, container, false)
-            if (dirty) makePromise(container)
+            if (dirty) makeContainerEditPromise(container)
+
+            for (const file of container.getFiles()) {
+                const sourceFile = source.files.find(f => f.id === file.id)
+                if (!sourceFile || checkIfFileDirty(sourceFile, file)) {
+                    makeContainerFileEditPromise(file)
+                }
+            }
 
             for (const child of container.getChildren()) {
                 const sourceChild = (source.children ?? []).find(c => c.id === child.id)
                 if (!sourceChild) {
-                    makePromise(child)
+                    makeContainerEditPromise(child)
                     continue;
                 }
                 makePromises(sourceChild, child)

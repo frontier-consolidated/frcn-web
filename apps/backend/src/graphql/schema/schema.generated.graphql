@@ -211,6 +211,7 @@ type ContentContainerFile {
 	identifier: String
 	fileName: String!
 	fileSizeKb: Int!
+	contentType: String!
 	previewUrl: String
 }
 
@@ -313,6 +314,10 @@ input ContentContainerEditInput {
 	content: String @constraint(maxLength: 2048)
 }
 
+input ContentContainerFileEditInput {
+	identifier: String @constraint(maxLength: 255)
+}
+
 # Root types:
 
 type Query {
@@ -354,10 +359,11 @@ type Query {
 	getAllAccessKeys: [AccessKey!]! @permission(has: ManageSystem)
 
 	# CMS
-	getContentContainer(identifier: String!, type: String!): ContentContainer
+	getContentContainer(identifier: String!, type: String!, parentId: ID): ContentContainer
 		@permission(has: CmsRead)
 	getContentContainerById(id: ID!): ContentContainer @permission(has: CmsRead)
-	getContentContainersOfType(type: String!): [ContentContainer!]! @permission(has: CmsRead)
+	getContentContainersOfType(type: String!, parentId: ID): [ContentContainer!]!
+		@permission(has: CmsRead)
 }
 
 type Mutation {
@@ -416,6 +422,8 @@ type Mutation {
 	reorderContentContainerFiles(id: ID!, order: [ID!]!): ContentContainer
 		@permission(has: CmsWrite)
 	deleteContentContainer(id: ID!): Boolean! @permission(has: CmsWrite)
+	editContentContainerFile(id: ID!, data: ContentContainerFileEditInput!): ContentContainerFile
+		@permission(has: CmsWrite)
 	deleteContentContainerFile(id: ID!): Boolean! @permission(has: CmsWrite)
 }
 

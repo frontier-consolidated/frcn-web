@@ -10,20 +10,23 @@
 	import CmsAboutSectionRenderer from "../CmsAboutSectionRenderer.svelte";
 
 	export let data: PageData;
-	$: index = transformContainer<IndexContainer>(data.index)
+	$: index = data.index ? transformContainer<IndexContainer>(data.index) : null
 </script>
 
 <svelte:head>
-	<title>Our Community - About | Frontier Consolidated</title>
+	<title>{index?.getMetaTitle() ?? "Our Community - About"} | Frontier Consolidated</title>
+	<meta name="description" content={index?.getMetaDescription() ?? ""} />
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
 </svelte:head>
 
 <PageHero srcset={heroImageSrcset}>
-	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">{index.getTitle()}</Heading>
-	<p class="text-slate-400 drop-shadow-md">{index.getSubTitle()}</p>
+	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">{index?.getTitle() ?? "Frontier Community"}</Heading>
+	<p class="text-slate-400 drop-shadow-md">{index?.getSubTitle() ?? ""}</p>
 </PageHero>
 <section class="mt-2 flex flex-col gap-8 p-4 w-full max-w-6xl mx-auto">
-	{#each index.getChildrenOfType(CMSContainerType.AboutSection) as section}
-		<CmsAboutSectionRenderer container={section} />
-	{/each}
+	{#if index}
+		{#each index.getChildrenOfType(CMSContainerType.AboutSection) as section}
+			<CmsAboutSectionRenderer container={section} />
+		{/each}
+	{/if}
 </section>

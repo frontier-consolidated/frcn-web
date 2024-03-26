@@ -33,6 +33,7 @@ export function resolveContentContainerFile(link: ContentContainerFile, file: Fi
 		identifier: link.identifier,
 		fileName: file.fileName,
 		fileSizeKb: file.fileSizeKb,
+		contentType: file.contentType,
 		previewUrl: `${getOrigin(context.req.secure ? "https" : "http")}/media/${file.id}/${file.fileName}`
 	} satisfies GQLContentContainerFile
 }
@@ -74,7 +75,7 @@ export const cmsResolvers: Resolvers = {
 	Query: {
 		async getContentContainer(source, args) {
 			const container = await database.contentContainer.findFirst({
-				where: { identifier: args.identifier, type: args.type }
+				where: { identifier: args.identifier, type: args.type, parentId: args.parentId ?? null }
 			})
 			if (!container) return null;
 			return resolveContentContainer(container)
@@ -88,7 +89,7 @@ export const cmsResolvers: Resolvers = {
 		},
 		async getContentContainersOfType(source, args) {
 			const containers = await database.contentContainer.findMany({
-				where: { type: args.type, parentId: null }
+				where: { type: args.type, parentId: args.parentId ?? null }
 			})
 			return containers.map(resolveContentContainer)
 		}
@@ -244,28 +245,32 @@ export const cmsResolvers: Resolvers = {
 			}
 			await traverseCollectFiles(container)
 
-			const command = new DeleteObjectsCommand({
-				Bucket: context.app.s3Bucket,
-				Delete: {
-					Objects: collectedFiles.map(f => ({
-						Key: f.key
-					}))
-				}
-			})
+			
 			
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore excessively deep type, but still resolves
 			await transaction(async (tx) => {
-				await tx.fileUpload.deleteMany({
-					where: {
-						id: {
-							in: collectedFiles.map(f => f.id)
+				if (collectedFiles.length > 0) {
+					const command = new DeleteObjectsCommand({
+						Bucket: context.app.s3Bucket,
+						Delete: {
+							Objects: collectedFiles.map(f => ({
+								Key: f.key
+							}))
 						}
-					}
-				})
+					})
 
-				await context.app.s3Client.send(command)
-				
+					await tx.fileUpload.deleteMany({
+						where: {
+							id: {
+								in: collectedFiles.map(f => f.id)
+							}
+						}
+					})
+
+					await context.app.s3Client.send(command)
+				}
+
 				await tx.contentContainer.delete({
 					where: { id: args.id }
 				})
@@ -289,6 +294,24 @@ export const cmsResolvers: Resolvers = {
 			})
 			
 			return true;
+		},
+		async editContentContainerFile(source, args, context) {
+			const fileLink = await database.contentContainerFile.findUnique({
+				where: { id: args.id }
+			})
+			if (!fileLink) return null;
+
+			const updatedFileLink = await database.contentContainerFile.update({
+				where: { id: args.id },
+				data: {
+					identifier: args.data.identifier ?? undefined,
+				},
+				include: {
+					file: true
+				}
+			})
+
+			return resolveContentContainerFile(updatedFileLink, updatedFileLink.file, context)
 		},
 		async deleteContentContainerFile(source, args, context) {
 			const fileLink = await database.contentContainerFile.findUnique({

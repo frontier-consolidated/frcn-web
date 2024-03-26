@@ -39,6 +39,7 @@ export async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Ex
 
     let targetFile = file.path
     let fileName = file.originalname;
+    let fileSize = file.size;
     // use file.mimetype here?
     let contentType = mime.contentType(fileName) || undefined
     const parsedFileName = path.parse(fileName);
@@ -65,6 +66,9 @@ export async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Ex
                 command.saveToFile(targetFile)
                 return command;
             })
+
+            const stats = fs.statSync(targetFile)
+            fileSize = stats.size
         } catch (err) {
             cleanup()
             throw err;
@@ -96,7 +100,7 @@ export async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Ex
                     id: uploadId,
                     key: uploadKey,
                     fileName: fileName,
-                    fileSizeKb: Math.ceil(file.size / 1024),
+                    fileSizeKb: Math.ceil(fileSize / 1024),
                     contentType: contentType ?? "application/octet-stream",
                     owner: {
                         connect: {

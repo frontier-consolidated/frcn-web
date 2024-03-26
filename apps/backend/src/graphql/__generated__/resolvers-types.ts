@@ -63,11 +63,16 @@ export type ContentContainerEditInput = {
 
 export type ContentContainerFile = {
   __typename?: 'ContentContainerFile';
+  contentType: Scalars['String']['output'];
   fileName: Scalars['String']['output'];
   fileSizeKb: Scalars['Int']['output'];
   id: Scalars['ID']['output'];
   identifier?: Maybe<Scalars['String']['output']>;
   previewUrl?: Maybe<Scalars['String']['output']>;
+};
+
+export type ContentContainerFileEditInput = {
+  identifier?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type DiscordChannel = {
@@ -246,6 +251,7 @@ export type Mutation = {
   deleteRole: Scalars['Boolean']['output'];
   editAccessKey?: Maybe<AccessKey>;
   editContentContainer?: Maybe<ContentContainer>;
+  editContentContainerFile?: Maybe<ContentContainerFile>;
   editEvent?: Maybe<Event>;
   editEventChannels: Array<DiscordChannel>;
   editEventTeam: EventTeam;
@@ -332,6 +338,12 @@ export type MutationEditAccessKeyArgs = {
 
 export type MutationEditContentContainerArgs = {
   data: ContentContainerEditInput;
+  id: Scalars['ID']['input'];
+};
+
+
+export type MutationEditContentContainerFileArgs = {
+  data: ContentContainerFileEditInput;
   id: Scalars['ID']['input'];
 };
 
@@ -543,6 +555,7 @@ export type QueryGetAllDiscordRolesArgs = {
 
 export type QueryGetContentContainerArgs = {
   identifier: Scalars['String']['input'];
+  parentId?: InputMaybe<Scalars['ID']['input']>;
   type: Scalars['String']['input'];
 };
 
@@ -553,6 +566,7 @@ export type QueryGetContentContainerByIdArgs = {
 
 
 export type QueryGetContentContainersOfTypeArgs = {
+  parentId?: InputMaybe<Scalars['ID']['input']>;
   type: Scalars['String']['input'];
 };
 
@@ -782,6 +796,7 @@ export type ResolversTypes = ResolversObject<{
   ContentContainer: ResolverTypeWrapper<ContentContainer>;
   ContentContainerEditInput: ContentContainerEditInput;
   ContentContainerFile: ResolverTypeWrapper<ContentContainerFile>;
+  ContentContainerFileEditInput: ContentContainerFileEditInput;
   DiscordChannel: ResolverTypeWrapper<DiscordChannel>;
   DiscordEmoji: ResolverTypeWrapper<DiscordEmoji>;
   DiscordEmojis: ResolverTypeWrapper<DiscordEmojis>;
@@ -833,6 +848,7 @@ export type ResolversParentTypes = ResolversObject<{
   ContentContainer: ContentContainer;
   ContentContainerEditInput: ContentContainerEditInput;
   ContentContainerFile: ContentContainerFile;
+  ContentContainerFileEditInput: ContentContainerFileEditInput;
   DiscordChannel: DiscordChannel;
   DiscordEmoji: DiscordEmoji;
   DiscordEmojis: DiscordEmojis;
@@ -917,6 +933,7 @@ export type ContentContainerResolvers<ContextType = GQLContext, ParentType exten
 }>;
 
 export type ContentContainerFileResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['ContentContainerFile'] = ResolversParentTypes['ContentContainerFile']> = ResolversObject<{
+  contentType?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   fileName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   fileSizeKb?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -1043,6 +1060,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   deleteRole?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteRoleArgs, 'id'>>;
   editAccessKey?: Resolver<Maybe<ResolversTypes['AccessKey']>, ParentType, ContextType, RequireFields<MutationEditAccessKeyArgs, 'data' | 'id'>>;
   editContentContainer?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<MutationEditContentContainerArgs, 'data' | 'id'>>;
+  editContentContainerFile?: Resolver<Maybe<ResolversTypes['ContentContainerFile']>, ParentType, ContextType, RequireFields<MutationEditContentContainerFileArgs, 'data' | 'id'>>;
   editEvent?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<MutationEditEventArgs, 'data' | 'id'>>;
   editEventChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType, RequireFields<MutationEditEventChannelsArgs, 'channels'>>;
   editEventTeam?: Resolver<ResolversTypes['EventTeam'], ParentType, ContextType, RequireFields<MutationEditEventTeamArgs, 'data' | 'id'>>;

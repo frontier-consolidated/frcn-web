@@ -11,6 +11,7 @@ import { DELETE_RESOURCE } from "./deleteResource.mutation";
 import { DELETE_ROLE } from "./deleteRole.mutation";
 import { EDIT_ACCESS_KEY } from "./editAccessKey.mutation";
 import { EDIT_CONTENT_CONTAINER } from "./editContentContainer.mutation";
+import { EDIT_CONTENT_CONTAINER_FILE } from "./editContentContainerFile.mutation";
 import { EDIT_EVENT } from "./editEvent.mutation";
 import { EDIT_RESOURCE } from "./editResource.mutation";
 import { EDIT_ROLE } from "./editRole.mutation";
@@ -43,5 +44,6 @@ export const Mutations = {
 	CREATE_CONTENT_CONTAINER,
 	EDIT_CONTENT_CONTAINER,
 	DELETE_CONTENT_CONTAINER,
+	EDIT_CONTENT_CONTAINER_FILE,
 	DELETE_CONTENT_CONTAINER_FILE
 };
