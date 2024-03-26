@@ -244,28 +244,32 @@ export const cmsResolvers: Resolvers = {
 			}
 			await traverseCollectFiles(container)
 
-			const command = new DeleteObjectsCommand({
-				Bucket: context.app.s3Bucket,
-				Delete: {
-					Objects: collectedFiles.map(f => ({
-						Key: f.key
-					}))
-				}
-			})
+			
 			
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore excessively deep type, but still resolves
 			await transaction(async (tx) => {
-				await tx.fileUpload.deleteMany({
-					where: {
-						id: {
-							in: collectedFiles.map(f => f.id)
+				if (collectedFiles.length > 0) {
+					const command = new DeleteObjectsCommand({
+						Bucket: context.app.s3Bucket,
+						Delete: {
+							Objects: collectedFiles.map(f => ({
+								Key: f.key
+							}))
 						}
-					}
-				})
+					})
 
-				await context.app.s3Client.send(command)
-				
+					await tx.fileUpload.deleteMany({
+						where: {
+							id: {
+								in: collectedFiles.map(f => f.id)
+							}
+						}
+					})
+
+					await context.app.s3Client.send(command)
+				}
+
 				await tx.contentContainer.delete({
 					where: { id: args.id }
 				})
