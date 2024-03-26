@@ -6,8 +6,7 @@
 	import { getContext } from "svelte";
 
 	import { transformContainer } from "$lib/cms/transformContainer";
-	import { Button, FieldValidator } from "$lib/components";
-	import ConfirmationModal from "$lib/components/modals/ConfirmationModal.svelte";
+	import { Button, FieldValidator, ConfirmationModal } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
