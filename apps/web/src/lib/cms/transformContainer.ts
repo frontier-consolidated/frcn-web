@@ -6,7 +6,11 @@ type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
 export type ContentContainerData = Optional<ContentContainerFragmentFragment, "children">
 
-class NotImplementedContainer extends CmsContainer {}
+class NotImplementedContainer extends CmsContainer {
+    clone(): CmsContainer {
+        throw new Error("Method not implemented.");
+    }
+}
 
 export function transformContainer<T extends CmsContainer = CmsContainer>(data: ContentContainerData) {
     let container: CmsContainer
@@ -37,6 +41,7 @@ export function transformContainer<T extends CmsContainer = CmsContainer>(data: 
                 identifier: file.identifier ?? undefined,
                 fileName: file.fileName,
                 fileSizeKb: file.fileSizeKb,
+                contentType: file.contentType,
                 fileSrc: file.previewUrl ?? undefined
             }))
         }

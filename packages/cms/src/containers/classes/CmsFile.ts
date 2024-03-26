@@ -4,12 +4,14 @@ export type CmsFileInit = {
     fileSrc?: string;
     fileName: string;
     fileSizeKb: number;
+    contentType: string;
 }
 
 export class CmsFile {
     readonly id: string;
     readonly name: string;
     readonly sizeKb: number;
+    readonly contentType: string;
 
     private identifier?: string;
     private src?: string;
@@ -20,6 +22,7 @@ export class CmsFile {
         this.src = init.fileSrc;
         this.name = init.fileName;
         this.sizeKb = init.fileSizeKb
+        this.contentType = init.contentType
     }
 
     getIdentifier() {

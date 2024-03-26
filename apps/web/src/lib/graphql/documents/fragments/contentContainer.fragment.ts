@@ -8,11 +8,7 @@ export const CONTENT_CONTAINER_FRAGMENT = gql(`
         title
         content
         files {
-            id
-            identifier
-            fileName
-            fileSizeKb
-            previewUrl
+            ...ContentContainerFileFragment
         }
         children {
             id
@@ -21,11 +17,7 @@ export const CONTENT_CONTAINER_FRAGMENT = gql(`
             title
             content
             files {
-                id
-                identifier
-                fileName
-                fileSizeKb
-                previewUrl
+                ...ContentContainerFileFragment
             }
             parent {
                 id

@@ -63,6 +63,7 @@
                 id: response.data.id,
                 fileName: response.data.fileName,
                 fileSizeKb: response.data.fileSizeKb,
+                contentType: response.data.contentType,
                 fileSrc: response.data.previewUrl,
                 identifier
             })
