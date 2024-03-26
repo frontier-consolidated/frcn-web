@@ -13,26 +13,32 @@ export class CmsClient {
     }
 
     async getIndexes() {
-        const { data } = await this.apollo.query({
+        const { data, error } = await this.apollo.query({
             query: Queries.GET_CONTENT_CONTAINERS_OF_TYPE,
             variables: {
                 type: CMSContainerType.Index
             },
-            fetchPolicy: "no-cache"
+            fetchPolicy: "no-cache",
+            errorPolicy: "all"
         })
+
+        if (error) console.error(error)
         
-        return await Promise.all(data.containers.map(async (container) => await this.fetchAllChildren(container)))
+        return await Promise.all((data.containers ?? []).map(async (container) => await this.fetchAllChildren(container)))
     }
 
     async getIndex(identifier: string) {
-        const { data } = await this.apollo.query({
+        const { data, error } = await this.apollo.query({
             query: Queries.GET_CONTENT_CONTAINER,
             variables: {
                 identifier,
                 type: CMSContainerType.Index
             },
-            fetchPolicy: "no-cache"
+            fetchPolicy: "no-cache",
+            errorPolicy: "all"
         })
+
+        if (error) console.error(error)
 
         return data.container ? await this.fetchAllChildren(data.container) : null;
     }
