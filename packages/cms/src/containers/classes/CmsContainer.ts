@@ -97,6 +97,10 @@ export abstract class CmsContainer {
         return this.children.filter((child): child is T extends keyof ContainerInstanceTypeMap ? ContainerInstanceTypeMap[T] : CmsContainer => types.includes(child.type as T))
     }
 
+    findFirstChild(identifier: string) {
+        return this.children.find(c => c.identifier === identifier)
+    }
+
     setChildren(containers: CmsContainer[]) {
         for (const container of containers) {
             if (!this.isAllowedChild(container)) {
