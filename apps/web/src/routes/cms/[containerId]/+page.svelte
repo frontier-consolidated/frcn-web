@@ -28,7 +28,7 @@
 		diff ??= [];
 
         let valueClean;
-        valueClean = source.identifier === mutable.getIdentifier()
+        valueClean = source.identifier == mutable.getIdentifier()
         if (!valueClean) diff.push(prefix + mutable.id + ".identifier")
         clean &&= valueClean;
 
@@ -88,7 +88,7 @@
             clean &&= fileClean;
         }
 		
-        if (!prefix) console.log("DIFF", diff);
+        if (!prefix && traverseChildren) console.log("DIFF", diff);
 		return !clean;
 	}
 
@@ -129,7 +129,7 @@
             promises.push(getApollo().mutate({
                 mutation: Mutations.EDIT_CONTENT_CONTAINER_FILE,
                 variables: {
-                    id: container.id,
+                    id: file.id,
                     data: {
                         identifier: file.getIdentifier(),
                     }
