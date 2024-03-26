@@ -88,7 +88,7 @@
             clean &&= fileClean;
         }
 		
-        if (!prefix && traverseChildren) console.log("DIFF", diff);
+        // if (!prefix && traverseChildren) console.log("DIFF", diff);
 		return !clean;
 	}
 
