@@ -354,10 +354,11 @@ type Query {
 	getAllAccessKeys: [AccessKey!]! @permission(has: ManageSystem)
 
 	# CMS
-	getContentContainer(identifier: String!, type: String!): ContentContainer
+	getContentContainer(identifier: String!, type: String!, parentId: ID): ContentContainer
 		@permission(has: CmsRead)
 	getContentContainerById(id: ID!): ContentContainer @permission(has: CmsRead)
-	getContentContainersOfType(type: String!): [ContentContainer!]! @permission(has: CmsRead)
+	getContentContainersOfType(type: String!, parentId: ID): [ContentContainer!]!
+		@permission(has: CmsRead)
 }
 
 type Mutation {

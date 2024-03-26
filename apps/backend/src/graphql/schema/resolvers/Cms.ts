@@ -74,7 +74,7 @@ export const cmsResolvers: Resolvers = {
 	Query: {
 		async getContentContainer(source, args) {
 			const container = await database.contentContainer.findFirst({
-				where: { identifier: args.identifier, type: args.type }
+				where: { identifier: args.identifier, type: args.type, parentId: args.parentId ?? null }
 			})
 			if (!container) return null;
 			return resolveContentContainer(container)
@@ -88,7 +88,7 @@ export const cmsResolvers: Resolvers = {
 		},
 		async getContentContainersOfType(source, args) {
 			const containers = await database.contentContainer.findMany({
-				where: { type: args.type, parentId: null }
+				where: { type: args.type, parentId: args.parentId ?? null }
 			})
 			return containers.map(resolveContentContainer)
 		}

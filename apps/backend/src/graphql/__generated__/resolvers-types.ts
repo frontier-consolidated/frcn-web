@@ -543,6 +543,7 @@ export type QueryGetAllDiscordRolesArgs = {
 
 export type QueryGetContentContainerArgs = {
   identifier: Scalars['String']['input'];
+  parentId?: InputMaybe<Scalars['ID']['input']>;
   type: Scalars['String']['input'];
 };
 
@@ -553,6 +554,7 @@ export type QueryGetContentContainerByIdArgs = {
 
 
 export type QueryGetContentContainersOfTypeArgs = {
+  parentId?: InputMaybe<Scalars['ID']['input']>;
   type: Scalars['String']['input'];
 };
 
