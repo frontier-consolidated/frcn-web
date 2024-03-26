@@ -14,7 +14,8 @@
 </script>
 
 <svelte:head>
-	<title>Our Activities - About | Frontier Consolidated</title>
+	<title>{index.getMetaTitle() ?? "Our Activities - About"} | Frontier Consolidated</title>
+	<meta name="description" content={index.getMetaDescription() ?? ""} />
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
 </svelte:head>
 

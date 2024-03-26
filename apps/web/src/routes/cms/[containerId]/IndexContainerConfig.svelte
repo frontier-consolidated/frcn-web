@@ -11,7 +11,9 @@
         return {
             identifier: container.getIdentifier(),
             title: container.getTitle(),
-            subTitle: container.getSubTitle()
+            subTitle: container.getSubTitle(),
+            metaTitle: container.getMetaTitle(),
+            metaDescription: container.getMetaDescription()
         }
     }
     
@@ -27,6 +29,8 @@
         container.setIdentifier(editData.identifier)
         container.setTitle(editData.title)
         container.setSubTitle(editData.subTitle)
+        container.setMetaTitle(editData.metaTitle)
+        container.setMetaDescription(editData.metaDescription)
         getContext<() => void>("containerchange")()
     }
 
@@ -71,6 +75,32 @@
         pattern="[A-Za-z]"
         maxlength="255"
         bind:value={editData.subTitle}
+    />
+</Field>
+<Field {validator} for="index-meta-title-{container.id}" value={editData.metaTitle}>
+    <Label for="index-meta-title-{container.id}" class="mb-2">Meta Title</Label>
+    <Input
+        class="rounded"
+        id="index-meta-title-{container.id}"
+        name="index-meta-title"
+        type="text"
+        placeholder="Meta title"
+        pattern="[A-Za-z]"
+        maxlength="255"
+        bind:value={editData.metaTitle}
+    />
+</Field>
+<Field {validator} for="index-meta-description-{container.id}" value={editData.metaDescription}>
+    <Label for="index-meta-description-{container.id}" class="mb-2">Meta Description</Label>
+    <Input
+        class="rounded"
+        id="index-meta-description-{container.id}"
+        name="index-meta-description"
+        type="text"
+        placeholder="Meta description"
+        pattern="[A-Za-z]"
+        maxlength="255"
+        bind:value={editData.metaDescription}
     />
 </Field>
 <div>
