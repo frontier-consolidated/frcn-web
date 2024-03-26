@@ -9,7 +9,7 @@
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
-	import ContainerConfigRenderer from "./ContainerConfigRenderer.svelte";
+	import ContainerFileConfig from "./ContainerFileConfig.svelte";
 
     export let container: CmsContainer;
     export let validator: FieldValidator;
@@ -71,10 +71,10 @@
     {#if files.length > 0}
         <Accordion>
             {#each files as file}
-                <AccordionItem class="group-first-of-type:rounded-t group-last-of-type:rounded-b" paddingDefault="px-4 py-3">
+                <AccordionItem class="group-first-of-type:rounded-t group-last-of-type:rounded-b" paddingDefault="px-4 py-2">
                     <div slot="header" class="flex-1 flex items-center gap-4 pr-4">
                         {#if file.contentType.startsWith("image/")}
-                            <img src={file.getSrc()} alt="Container file preview" class="rounded h-full" />
+                            <img src={file.getSrc()} alt="Container file preview" class="rounded h-full max-h-[4rem]" />
                         {/if}
                         <div class="flex flex-col">
                             <span class="font-medium">{file.name}</span>
@@ -88,7 +88,7 @@
                         <div class="self-stretch w-px ml-2 bg-gray-300 dark:bg-gray-600"></div>
                     </div>
                     <div class="flex flex-col gap-4">
-                        <ContainerConfigRenderer {validator} {container} isChild />
+                        <ContainerFileConfig {validator} {file} />
                     </div>
                 </AccordionItem>
             {/each}
@@ -99,16 +99,18 @@
 </section>
 
 <Modal title="Upload file" open={openUploadModal}>
-    <Label for="upload-file-{container.id}" class="mb-2">Image</Label>
-    <ImageInput id="upload-file-{container.id}" name="upload-file" 
-        upload={async (file) => {
-            await uploadFile(file)
-            openUploadModal = false;
-        }}
-    />
-    <Helper>
-        Images will be scaled down such that their major axis is {"<"}1600px.
-    </Helper>
+    <div>
+        <Label for="upload-file-{container.id}" class="mb-2">Image</Label>
+        <ImageInput id="upload-file-{container.id}" name="upload-file" class="max-w-none"
+            upload={async (file) => {
+                await uploadFile(file)
+                openUploadModal = false;
+            }}
+        />
+        <Helper>
+            Images will be scaled down such that their major axis is {"<"}1600px.
+        </Helper>
+    </div>
 </Modal>
 
 <ConfirmationModal title="Delete file" open={!!deleteFile} on:close={() => (deleteFile = null)} on:confirm={async () => {

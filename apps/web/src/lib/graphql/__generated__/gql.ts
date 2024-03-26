@@ -35,6 +35,7 @@ const documents = {
     "\n\tmutation DeleteRole($roleId: ID!) {\n\t\tdeleted: deleteRole(id: $roleId)\n\t}\n": types.DeleteRoleDocument,
     "\n\tmutation EditAccessKey($id: Int!, $data: AccessKeyEditInput!) {\n\t\tkey: editAccessKey(id: $id, data: $data) {\n\t\t\tid\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.EditAccessKeyDocument,
     "\n\tmutation EditContentContainer($id: ID!, $data: ContentContainerEditInput!) {\n\t\tcontainer: editContentContainer(id: $id, data: $data) {\n\t\t\tid\n\t\t}\n\t}\n": types.EditContentContainerDocument,
+    "\n\tmutation EditContentContainerFile($id: ID!, $data: ContentContainerFileEditInput!) {\n\t\tfile: editContentContainerFile(id: $id, data: $data) {\n\t\t\tid\n\t\t}\n\t}\n": types.EditContentContainerFileDocument,
     "\n\tmutation EditEvent($eventId: ID!, $data: EventEditInput!) {\n\t\tevent: editEvent(id: $eventId, data: $data) {\n\t\t\t...EventFragment\n\t\t\t...EventSettingsFragment\n\t\t}\n\t}\n": types.EditEventDocument,
     "\n\tmutation EditResource($id: ID!, $data: ResourceEditInput!) {\n\t\tresource: editResource(id: $id, data: $data) {\n\t\t\t...ResourceFragment\n\t\t}\n\t}\n": types.EditResourceDocument,
     "\n\tmutation EditRole($roleId: ID!, $data: RoleEditInput!) {\n\t\trole: editRole(id: $roleId, data: $data) {\n\t\t\tid\n\t\t\tname\n\t\t\tdiscordId\n\t\t\tprimary\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.EditRoleDocument,
@@ -165,6 +166,10 @@ export function gql(source: "\n\tmutation EditAccessKey($id: Int!, $data: Access
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n\tmutation EditContentContainer($id: ID!, $data: ContentContainerEditInput!) {\n\t\tcontainer: editContentContainer(id: $id, data: $data) {\n\t\t\tid\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation EditContentContainer($id: ID!, $data: ContentContainerEditInput!) {\n\t\tcontainer: editContentContainer(id: $id, data: $data) {\n\t\t\tid\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tmutation EditContentContainerFile($id: ID!, $data: ContentContainerFileEditInput!) {\n\t\tfile: editContentContainerFile(id: $id, data: $data) {\n\t\t\tid\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation EditContentContainerFile($id: ID!, $data: ContentContainerFileEditInput!) {\n\t\tfile: editContentContainerFile(id: $id, data: $data) {\n\t\t\tid\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
