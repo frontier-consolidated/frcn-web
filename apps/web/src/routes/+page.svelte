@@ -1,18 +1,26 @@
 <script lang="ts">
+	import { CMSContainerType, SectionContainer, type IndexContainer } from "@frcn/cms";
 	import { Heading } from "flowbite-svelte";
 	import { BookSolid, BuildingSolid, MapPinAltSolid, UsersSolid } from "flowbite-svelte-icons";
-	import { twMerge } from "tailwind-merge";
 
-	import { Hr, JoinDiscordButton, Marquee } from "$lib/components";
+	import CallToActionRenderer from "$lib/cms/CallToActionRenderer.svelte";
+	import { transformContainer } from "$lib/cms/transformContainer";
+	import { Hr, Markdown, Marquee } from "$lib/components";
 	import logo from "$lib/images/logo.png";
 	import activitiesImage from "$lib/images/stock/activities.png?w=580&imagetools"
 	import communityImage from "$lib/images/stock/community.png?w=580&imagetools"
 	import heroImageSrcset from "$lib/images/stock/hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
 	import knowledgeImage from "$lib/images/stock/knowledge.png?w=580&imagetools"
 	import orgImage from "$lib/images/stock/org.png?w=580&imagetools"
-	import welcomeImage from "$lib/images/stock/welcome.png"
+	import placeholder from "$lib/images/stock/placeholder.jpg"
 
-	import { galleryImages } from "./galleryImages";
+	import type { PageData } from "./$types";
+
+	export let data: PageData
+	$: index = data.index ? transformContainer<IndexContainer>(data.index) : null
+	$: welcomeSection = index?.findFirstChild("welcome")?.as<SectionContainer>()
+	$: welcomeCtas = welcomeSection?.getChildrenOfType(CMSContainerType.CallToAction) ?? []
+	$: galleryImages = index?.findFirstChildOfType(CMSContainerType.Gallery)?.getFiles().map(f => f.getSrc()).filter((src): src is string => !!src) ?? []
 
 	const pageCards = [
 		{ src: communityImage, name: "COMMUNITY", href: "/about/community", icon: UsersSolid },
@@ -35,7 +43,7 @@
 		<link rel="preload" href={card.src} as="image" />
 	{/each}
 	{#each galleryImages as image}
-		<link rel="preload" href={image.src} as="image" />
+		<link rel="preload" href={image} as="image" />
 	{/each}
 </svelte:head>
 
@@ -70,21 +78,20 @@
 <section class="w-full bg-white dark:bg-slate-950 bg-triangle-pattern px-4 py-16">
 	<div class="mx-auto w-full max-w-5xl flex flex-col md:flex-row gap-2 md:gap-8">
 		<div class="shrink-0 overflow-hidden rounded clip-opposite-12 h-[500px] md:self-stretch w-full md:w-[350px] lg:w-[400px] p-px dark:bg-gray-700">
-			<img src={welcomeImage} alt="welcome to the frontier" class="h-full w-full object-cover clip-opposite-12" />
+			<img src={welcomeSection?.getFiles()[0]?.getSrc() ?? placeholder} alt="welcome to the frontier" class="h-full w-full object-cover clip-opposite-12" />
 		</div>
 		<div class="self-stretch flex flex-col p-6">
-			<h2 class="text-3xl lg:text-4xl font-semibold text-black dark:text-white"><span class="me-4 text-primary-700 dark:text-primary-500">///</span> Welcome to the Frontier!</h2>
+			<h2 class="text-3xl lg:text-4xl font-semibold text-black dark:text-white"><span class="me-4 text-primary-700 dark:text-primary-500">///</span> {welcomeSection?.getTitle() ?? ""}</h2>
 			<div class="mt-6 flex flex-col gap-4 text-lg text-gray-800 dark:text-gray-300">
-				<p>
-					Frontier Consolidated is a growing Star Citizen organisation and we want to bring the joy of multiplayer action to as many people as we can.
-				</p>
-				<p>
-					Check out our community and org pages to see what we're about and come say hi over on Discord if you want to get involved.
-				</p>
+				<Markdown nowrap source={welcomeSection?.getContent() ?? ""} disabled={["space"]} />
 			</div>
-			<div class="flex-1 w-full pt-12 flex justify-center items-center gap-4">
-				<JoinDiscordButton />
-			</div>
+			{#if welcomeCtas.length > 0}
+				<div class="flex-1 w-full pt-12 flex justify-center items-center gap-4">
+					{#each welcomeCtas as cta}
+						<CallToActionRenderer container={cta} />
+					{/each}
+				</div>
+			{/if}
 		</div>
 	</div>
 </section>
@@ -106,16 +113,16 @@
 		<Hr class="my-4 bg-primary-300 dark:bg-primary-600" />
 		<div class="grid md:grid-cols-2 gap-4">
 			<div class="grid gap-4 h-min">
-				{#each galleryImages.slice(0, 6) as item}
+				{#each galleryImages.slice(0, Math.ceil(galleryImages.length / 2)) as image}
 					<div class="rounded clip-tr-8 p-px bg-gray-400 dark:bg-gray-800">
-						<img src={item.src} alt="" class={twMerge("w-full max-w-full clip-tr-8 rounded object-cover", `h-${item.height}`)} />
+						<img src={image} alt="" class="w-full max-w-full clip-tr-8 rounded object-cover" />
 					</div>
 				{/each}
 			</div>
 			<div class="grid gap-4 h-min">
-				{#each galleryImages.slice(6) as item}
+				{#each galleryImages.slice(Math.ceil(galleryImages.length / 2)) as image}
 					<div class="rounded clip-tr-8 p-px bg-gray-400 dark:bg-gray-800">
-						<img src={item.src} alt="" class={twMerge("w-full max-w-full clip-tr-8 rounded object-cover", `h-${item.height}`)} />
+						<img src={image} alt="" class="w-full max-w-full clip-tr-8 rounded object-cover" />
 					</div>
 				{/each}
 			</div>

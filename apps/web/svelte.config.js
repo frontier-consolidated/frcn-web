@@ -14,7 +14,6 @@ const config = {
 		}),
 		prerender: {
 			entries: [
-				"/",
 				"/legal/cookies",
 				"/legal/privacy"
 			]
