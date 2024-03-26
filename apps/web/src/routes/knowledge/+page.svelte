@@ -93,7 +93,7 @@
 			</div>
 		</div>
 		<div class="flex flex-col items-center self-start w-full">
-			<div class="grid min-[580px]:grid-cols-2 lg:grid-cols-3 gap-2 p-4">
+			<div class="w-full grid min-[580px]:grid-cols-2 lg:grid-cols-3 gap-2 p-4">
 				{#each data.resources as resource}
 					<ResourceCard {resource} on:edit={(ev) => {
 						fileModal.edit = ev.detail
