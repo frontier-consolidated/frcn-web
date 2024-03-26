@@ -102,21 +102,19 @@
     }
 </script>
 
-{#if !isChild}
-    <Field {validator} for="about-section-identifier-{container.id}" value={editData.identifier}>
-        <Label for="about-section-identifier-{container.id}" class="mb-2">Identifier</Label>
-        <Input
-            class="rounded"
-            id="about-section-identifier-{container.id}"
-            name="about-section-identifier"
-            type="text"
-            placeholder="/"
-            pattern="[A-Za-z]"
-            maxlength="255"
-            bind:value={editData.identifier}
-        />
-    </Field>
-{/if}
+<Field {validator} for="about-section-identifier-{container.id}" value={editData.identifier} required={!isChild}>
+    <Label for="about-section-identifier-{container.id}" class="mb-2">Identifier</Label>
+    <Input
+        class="rounded"
+        id="about-section-identifier-{container.id}"
+        name="about-section-identifier"
+        type="text"
+        placeholder="/"
+        pattern="[A-Za-z]"
+        maxlength="255"
+        bind:value={editData.identifier}
+    />
+</Field>
 <Field {validator} for="about-section-position-{container.id}" value={editData.position}>
     <Label for="about-section-position-{container.id}" class="mb-2">Position</Label>
     <Select

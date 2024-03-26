@@ -36,21 +36,19 @@
 
 </script>
 
-{#if !isChild}
-    <Field {validator} for="index-identifier-{container.id}" value={editData.identifier}>
-        <Label for="index-identifier-{container.id}" class="mb-2">Identifier</Label>
-        <Input
-            class="rounded"
-            id="index-identifier-{container.id}"
-            name="index-identifier"
-            type="text"
-            placeholder="/"
-            pattern="[A-Za-z]"
-            maxlength="255"
-            bind:value={editData.identifier}
-        />
-    </Field>
-{/if}
+<Field {validator} for="index-identifier-{container.id}" value={editData.identifier} required={!isChild}>
+    <Label for="index-identifier-{container.id}" class="mb-2">Identifier</Label>
+    <Input
+        class="rounded"
+        id="index-identifier-{container.id}"
+        name="index-identifier"
+        type="text"
+        placeholder="/"
+        pattern="[A-Za-z]"
+        maxlength="255"
+        bind:value={editData.identifier}
+    />
+</Field>
 <Field {validator} for="index-title-{container.id}" value={editData.title}>
     <Label for="index-title-{container.id}" class="mb-2">Title</Label>
     <Input

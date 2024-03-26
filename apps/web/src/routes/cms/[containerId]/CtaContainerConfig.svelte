@@ -34,21 +34,19 @@
     }
 </script>
 
-{#if !isChild}
-    <Field {validator} for="cta-identifier-{container.id}" value={editData.identifier}>
-        <Label for="cta-identifier-{container.id}" class="mb-2">Identifier</Label>
-        <Input
-            class="rounded"
-            id="cta-identifier-{container.id}"
-            name="cta-identifier"
-            type="text"
-            placeholder="/"
-            pattern="[A-Za-z]"
-            maxlength="255"
-            bind:value={editData.identifier}
-        />
-    </Field>
-{/if}
+<Field {validator} for="cta-identifier-{container.id}" value={editData.identifier} required={!isChild}>
+    <Label for="cta-identifier-{container.id}" class="mb-2">Identifier</Label>
+    <Input
+        class="rounded"
+        id="cta-identifier-{container.id}"
+        name="cta-identifier"
+        type="text"
+        placeholder="/"
+        pattern="[A-Za-z]"
+        maxlength="255"
+        bind:value={editData.identifier}
+    />
+</Field>
 <Field {validator} for="cta-preset-{container.id}" value={editData.preset}>
     <Label for="cta-preset-{container.id}" class="mb-2">Preset</Label>
     <Select
