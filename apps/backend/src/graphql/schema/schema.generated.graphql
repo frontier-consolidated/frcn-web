@@ -211,6 +211,7 @@ type ContentContainerFile {
 	identifier: String
 	fileName: String!
 	fileSizeKb: Int!
+	contentType: String!
 	previewUrl: String
 }
 
@@ -311,6 +312,10 @@ input ContentContainerEditInput {
 	identifier: String @constraint(maxLength: 255)
 	title: String @constraint(maxLength: 255)
 	content: String @constraint(maxLength: 2048)
+}
+
+input ContentContainerFileEditInput {
+	identifier: String @constraint(maxLength: 255)
 }
 
 # Root types:
@@ -417,6 +422,8 @@ type Mutation {
 	reorderContentContainerFiles(id: ID!, order: [ID!]!): ContentContainer
 		@permission(has: CmsWrite)
 	deleteContentContainer(id: ID!): Boolean! @permission(has: CmsWrite)
+	editContentContainerFile(id: ID!, data: ContentContainerFileEditInput!): ContentContainerFile
+		@permission(has: CmsWrite)
 	deleteContentContainerFile(id: ID!): Boolean! @permission(has: CmsWrite)
 }
 

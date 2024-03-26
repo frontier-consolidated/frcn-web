@@ -33,6 +33,7 @@ export function resolveContentContainerFile(link: ContentContainerFile, file: Fi
 		identifier: link.identifier,
 		fileName: file.fileName,
 		fileSizeKb: file.fileSizeKb,
+		contentType: file.contentType,
 		previewUrl: `${getOrigin(context.req.secure ? "https" : "http")}/media/${file.id}/${file.fileName}`
 	} satisfies GQLContentContainerFile
 }
@@ -293,6 +294,24 @@ export const cmsResolvers: Resolvers = {
 			})
 			
 			return true;
+		},
+		async editContentContainerFile(source, args, context) {
+			const fileLink = await database.contentContainerFile.findUnique({
+				where: { id: args.id }
+			})
+			if (!fileLink) return null;
+
+			const updatedFileLink = await database.contentContainerFile.update({
+				where: { id: args.id },
+				data: {
+					identifier: args.data.identifier ?? undefined,
+				},
+				include: {
+					file: true
+				}
+			})
+
+			return resolveContentContainerFile(updatedFileLink, updatedFileLink.file, context)
 		},
 		async deleteContentContainerFile(source, args, context) {
 			const fileLink = await database.contentContainerFile.findUnique({
