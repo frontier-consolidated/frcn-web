@@ -40,7 +40,7 @@
 </svelte:head>
 
 <div class="relative">
-	<img srcset={heroImageSrcset} alt="index hero" class="w-full object-cover min-h-[40rem] h-[50vh] brightness-90 bg-slate-950" />
+	<img srcset={heroImageSrcset} alt="index hero" class="w-full object-cover min-h-[25rem] h-[50vh] brightness-90 bg-slate-950" />
 	<div class="absolute top-0 left-0 h-full w-full flex items-center justify-center gap-12">
 		<div class="flex items-center px-4 sm:px-0">
 			<img src={logo} class="drop-shadow-md h-16 sm:h-24 md:h-32 mr-4" alt="Frontier Consolidated logo" />
