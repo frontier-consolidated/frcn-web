@@ -15,9 +15,9 @@ export function createResourceExtension(define: typeof Prisma.defineExtension, c
 					const value = (await cacheGet(
 						model,
 						() => {
-							return client.user.findUnique({
-								where: { id: model.ownerId! },
-							});
+							return client.resource.findUnique({
+								where: { id: model.id },
+							}).owner();
 						},
 						{
 							prefix: "User",
@@ -34,9 +34,9 @@ export function createResourceExtension(define: typeof Prisma.defineExtension, c
 					const value = (await cacheGet(
 						model,
 						() => {
-							return client.fileUpload.findUnique({
-								where: { id: model.fileId! },
-							});
+							return client.resource.findUnique({
+								where: { id: model.id },
+							}).file();
 						},
 						{
 							prefix: "FileUpload",
