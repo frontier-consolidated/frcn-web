@@ -110,6 +110,10 @@ jobs:
                   remote_user: ${{ secrets.SSH_USER }}
                   remote_key: ${{ secrets.SSH_KEY }}
 
+            - name: Set permissions
+              run: |
+                  ssh server "cd /var/www/${{ inputs.hostname }} && chmod -R +x backend"
+
             - name: Restart services
               run: |
                   ssh server "cd /var/www/${{ inputs.hostname }} && sudo /bin/systemctl restart ${{ inputs.frontend_service }} && sudo /bin/systemctl restart ${{ inputs.backend_service }}"
