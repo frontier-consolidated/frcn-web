@@ -9,6 +9,10 @@
       "types": "./types/index.d.ts",
       "import": "./index.js"
     },
+    "./isr": {
+      "types": "./types/isr/index.d.ts",
+      "import": "./isr.js"
+    },
     "./package.json": "./package.json"
   },
   "files": [
