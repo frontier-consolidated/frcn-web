@@ -1,10 +1,25 @@
 <script lang="ts">
 	import "../app.css";
-	import { Banner } from "flowbite-svelte";
+	import { navigating } from "$app/stores";
+	import { Banner, Spinner } from "flowbite-svelte";
 	import { CodeSolid } from "flowbite-svelte-icons";
 
 	import { CookieConsentModal, Footer, Header, Notifications, UserProfileModal } from "$lib/components";
 	import JoinGuildModal from "$lib/components/modals/JoinGuildModal.svelte";
+
+	let showSpinner = false;
+	// eslint-disable-next-line no-undef
+	let spinnerTimeout: NodeJS.Timeout | null = null; 
+	$: {
+		if (!showSpinner && !spinnerTimeout && $navigating) {
+			spinnerTimeout = setTimeout(() => {
+				if ($navigating) showSpinner = true;
+				spinnerTimeout = null;
+			}, 200)
+		} else if (showSpinner && !$navigating) {
+			showSpinner = false;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -18,10 +33,16 @@
 			<CodeSolid class="me-2" tabindex="-1" /> Currently Under Construction
 		</Banner>
 	</div>
-	<main class="flex flex-1 flex-col w-full box-border">
-		<slot />
-	</main>
-	<Footer />
+	{#if showSpinner}
+		<main class="flex-1 flex flex-col w-full box-border justify-center items-center">
+			<Spinner />
+		</main>
+	{:else}
+		<main class="flex flex-1 flex-col w-full box-border">	
+			<slot />
+		</main>
+		<Footer />
+	{/if}
 	<UserProfileModal />
 	<JoinGuildModal />
 	<CookieConsentModal />
