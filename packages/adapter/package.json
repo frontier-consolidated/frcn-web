@@ -46,10 +46,12 @@
     "vitest": "^1.2.0"
   },
   "dependencies": {
+    "@frcn/cms-events": "workspace:^",
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
+    "pg-tbus": "^1.0.0",
     "rollup": "^4.9.5"
   }
 }
