@@ -36,8 +36,8 @@
 </script>
 
 <svelte:head>
-	<title>Frontier Consolidated</title>
-	<meta name="description" content="Get involved with the latest community events" />
+	<title>Frontier Consolidated{index?.getMetaTitle() ? ` | ${index?.getMetaTitle()}` : ""}</title>
+	<meta name="description" content={index?.getMetaDescription() ? index?.getMetaDescription() : "The 'verse is dark and full of dangers, but you don't have to face the void alone. Come with us and explore the possibilities!"} />
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
 	{#each galleryImages as image}
 		<link rel="preload" href={image} as="image" />
@@ -93,14 +93,14 @@
 	</div>
 </section>
 <section class="border-y border-primary-400 dark:border-primary-600 bg-slate-300 dark:bg-gray-900 py-8">
-	<h2 class="text-center text-3xl font-medium text-primary-600 dark:text-gray-300">Our Partners</h2>
+	<!-- <h2 class="text-center text-3xl font-medium text-primary-600 dark:text-gray-300">Our Partners</h2>
 	<Marquee fade class="mt-8">
 		{#each partners as partner}
 			<a href={partner.href} class="shrink-0 rounded-lg h-32 w-32">
 				<img src={partner.src} alt={partner.alt} class="w-full h-full object-contain" />
 			</a>
 		{/each}
-	</Marquee>
+	</Marquee> -->
 </section>
 <div class="mt-24 flex flex-col mx-auto w-full max-w-5xl p-4 pt-0 gap-24">
 	<section>
