@@ -12,7 +12,9 @@ const expected = new Set([
 	'PORT_HEADER',
 	'BODY_SIZE_LIMIT',
 	'SHUTDOWN_TIMEOUT',
-	'IDLE_TIMEOUT'
+	'IDLE_TIMEOUT',
+	'CMS_BUS_DATABASE_URL',
+	'CMS_BUS_SCHEMA'
 ]);
 
 const expected_unprefixed = new Set(['LISTEN_PID', 'LISTEN_FDS']);
