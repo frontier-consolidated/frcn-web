@@ -59,7 +59,7 @@ export default function (opts: AdapterOptions = {}) {
 
 			builder.writeServer(tmp);
 
-			const isrPaths = isrRoutes.map(route => route.pattern.toString())
+			const isrPaths = isrRoutes.map(route => getPathname(route))
 
 			fs.writeFileSync(
 				`${tmp}/manifest.js`,
@@ -118,4 +118,44 @@ export default function (opts: AdapterOptions = {}) {
 			read: () => true
 		}
     } satisfies Adapter
+}
+
+function getPathname(route: RouteDefinition) {
+	let i = 1;
+
+	return route.segments
+		.map((segment) => {
+			if (!segment.dynamic) {
+				return '/' + segment.content;
+			}
+
+			const parts = segment.content.split(/\[(.+?)\](?!\])/);
+			let result = '';
+
+			if (
+				parts.length === 3 &&
+				!parts[0] &&
+				!parts[2] &&
+				(parts[1].startsWith('...') || parts[1][0] === '[')
+			) {
+				// Special case: segment is a single optional or rest parameter.
+				// In that case we don't prepend a slash (also see comment in pattern_to_src).
+				result = `$${i++}`;
+			} else {
+				result =
+					'/' +
+					parts
+						.map((content, j) => {
+							if (j % 2) {
+								return `$${i++}`;
+							} else {
+								return content;
+							}
+						})
+						.join('');
+			}
+
+			return result;
+		})
+		.join('');
 }

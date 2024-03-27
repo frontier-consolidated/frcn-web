@@ -14,6 +14,7 @@ declare module "MANIFEST" {
 	export const base: string;
 	export const manifest: SSRManifest;
 	export const prerendered: Set<string>;
+	export const isr: Set<string>;
 }
 
 declare module "SERVER" {

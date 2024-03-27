@@ -13,6 +13,8 @@ import type { Middleware } from 'polka';
 import { Server } from "SERVER";
 import sirv from "sirv";
 
+import { is_prerender_valid } from './isr';
+
 /* global ENV_PREFIX */
 
 const server = new Server(manifest);
@@ -70,6 +72,11 @@ function serve_prerendered(): Middleware {
 			pathname = decodeURIComponent(pathname);
 		} catch {
 			// ignore invalid URI
+		}
+
+		if (!is_prerender_valid(pathname)) {
+			next();
+			return;
 		}
 
 		if (handler && prerendered.has(pathname)) {
