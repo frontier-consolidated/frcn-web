@@ -1,0 +1,105 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+import commonjs from '@rollup/plugin-commonjs';
+import json from '@rollup/plugin-json';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import type { Adapter } from "@sveltejs/kit";
+import { rollup } from "rollup";
+
+interface AdapterOptions {
+    out?: string;
+    precompress?: boolean;
+    envPrefix?: string;
+}
+
+const files = path.join(fileURLToPath(import.meta.url), "files")
+
+export default function (opts: AdapterOptions = {}) {
+    const { out = "build", precompress = true, envPrefix = "" } = opts;
+
+    return {
+        name: "@frcn/adapter",
+
+        async adapt(builder) {
+            const tmp = builder.getBuildDirectory("adapter-frcn")
+
+            builder.rimraf(out)
+            builder.rimraf(tmp)
+            builder.mkdirp(tmp)
+
+            builder.log.minor("Copying assets")
+            builder.writeClient(`${out}/client${builder.config.kit.paths.base}`);
+			builder.writePrerendered(`${out}/prerendered${builder.config.kit.paths.base}`);
+
+			if (precompress) {
+				builder.log.minor('Compressing assets');
+				await Promise.all([
+					builder.compress(`${out}/client`),
+					builder.compress(`${out}/prerendered`)
+				]);
+			}
+
+			builder.log.minor('Building server');
+
+			builder.writeServer(tmp);
+
+			fs.writeFileSync(
+				`${tmp}/manifest.js`,
+				[
+					`export const manifest = ${builder.generateManifest({ relativePath: './' })};`,
+					`export const prerendered = new Set(${JSON.stringify(builder.prerendered.paths)});`,
+					`export const base = ${JSON.stringify(builder.config.kit.paths.base)};`
+				].join('\n\n')
+			);
+
+			const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+
+			// we bundle the Vite output so that deployments only need
+			// their production dependencies. Anything in devDependencies
+			// will get included in the bundled code
+			const bundle = await rollup({
+				input: {
+					index: `${tmp}/index.js`,
+					manifest: `${tmp}/manifest.js`
+				},
+				external: [
+					// dependencies could have deep exports, so we need a regex
+					...Object.keys(pkg.dependencies || {}).map((d) => new RegExp(`^${d}(\\/.*)?$`))
+				],
+				plugins: [
+					nodeResolve({
+						preferBuiltins: true,
+						exportConditions: ['node']
+					}),
+					(commonjs as any)({ strictRequires: true }),
+					(json as any)()
+				]
+			});
+
+			await bundle.write({
+				dir: `${out}/server`,
+				format: 'esm',
+				sourcemap: true,
+				chunkFileNames: 'chunks/[name]-[hash].js'
+			});
+
+			builder.copy(files, out, {
+				replace: {
+					ENV: './env.js',
+					HANDLER: './handler.js',
+					MANIFEST: './server/manifest.js',
+					SERVER: './server/index.js',
+					SHIMS: './shims.js',
+					ENV_PREFIX: JSON.stringify(envPrefix)
+				}
+			});
+        },
+
+        supports: {
+			read: () => true
+		}
+    } satisfies Adapter
+}

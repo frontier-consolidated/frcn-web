@@ -1,0 +1,10 @@
+{
+	"rules": {
+		"import/no-unresolved": [
+			"error",
+			{
+				"ignore": ["ENV", "MANIFEST", "SERVER", "SHIMS", "HANDLER"]
+			}
+		]
+	}
+}
