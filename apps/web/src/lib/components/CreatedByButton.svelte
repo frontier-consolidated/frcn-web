@@ -3,7 +3,7 @@
 	import { twMerge } from "tailwind-merge";
 
 	import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";
-	import { userProfileView } from "$lib/stores/UserProfileViewStore";
+	import { viewUserProfile } from "$lib/stores/UserProfileViewStore";
 
     export let user: UserFragmentFragment | null | undefined;
 </script>
@@ -12,9 +12,9 @@
     e.preventDefault()
     e.stopPropagation()
     if (!user) return;
-    userProfileView.set(user)
+    viewUserProfile(user)
 }}>
     <span class="text-sm dark:text-white">By</span>
     <Avatar rounded size="xs" src={user?.avatarUrl} />
-    <span class="text-sm font-semibold text-gray-200 group-hover/owner:text-white">{user?.name ?? "[DELETED USER]"}</span>
+    <span class="text-sm font-semibold text-gray-500 group-hover/owner:text-gray-700 dark:text-gray-200 dark:group-hover/owner:text-white">{user?.name ?? "[DELETED USER]"}</span>
 </button>

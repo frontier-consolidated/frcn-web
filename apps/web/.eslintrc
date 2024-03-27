@@ -25,7 +25,7 @@
 		"import/no-unresolved": [
 			"error",
 			{
-				"ignore": ["^\\$app/.+"]
+				"ignore": ["^\\$app/.+", "^\\$env/.+"]
 			}
 		],
 		"import/order": [

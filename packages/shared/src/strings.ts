@@ -6,3 +6,7 @@ export function toTitleCase(str: string) {
 		.map((word) => word[0].toUpperCase() + word.slice(1))
 		.join(" ");
 }
+
+export function kebabCaseToTitleCase(str: string) {
+	return toTitleCase(str.replace(/-/g, " "))
+}

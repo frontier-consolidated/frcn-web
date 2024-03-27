@@ -37,12 +37,13 @@ export function createEventExtension(define: typeof Prisma.defineExtension, clie
 				},
 				async getChannel(model: FullModel<Event>) {
 					if (model.channel) return model.channel;
+					if (!model.channelId) return null;
 
 					const value = (await cacheGet(
 						model,
 						() => {
 							return client.eventChannel.findUnique({
-								where: { id: model.channelId },
+								where: { id: model.channelId! },
 							});
 						},
 						{

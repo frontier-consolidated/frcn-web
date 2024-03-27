@@ -280,7 +280,7 @@ async function postEvent(id: string, discordClient: DiscordClient) {
 			channel: true,
 		},
 	});
-	if (!event) return;
+	if (!event || !event.channel) return;
 	
 	await postEventMessage(discordClient, event)
 }
@@ -418,6 +418,7 @@ async function canSeeEvent(event: Event, user: User | undefined, discordClient: 
 		}
 		case EventAccessType.Channel: {
 			const channel = await database.event.getChannel(event);
+			if (!channel) return false;
 			return await $discord.canUserViewChannel(discordClient, user, channel.discordId);
 		}
 	}

@@ -102,7 +102,7 @@
 	}
 </script>
 
-<Dropdown {...$$restProps} containerClass="absolute" class="p-1">
+<Dropdown {...$$restProps} containerClass="absolute z-50" class="p-1">
 	<Search
 		bind:value={search}
 		placeholder=":{currentEmoji.name}:"

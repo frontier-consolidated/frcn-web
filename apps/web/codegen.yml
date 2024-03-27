@@ -11,6 +11,5 @@ generates:
         config:
             useTypeImports: true
             useIndexSignature: true
-            contextType: "../context#Context"
 config:
     scalars: "@frcn/graphql-scalar-types/client"

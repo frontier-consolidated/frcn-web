@@ -91,7 +91,7 @@
 	<div class="flex justify-between items-center mb-2 p-1">
 		<Input
 			bind:value={inputHour}
-			class="w-14 text-center no-inner-spin"
+			class="w-14 text-center no-inner-spin rounded"
 			type="number"
 			min="0"
 			max="23"
@@ -99,7 +99,7 @@
 		<span class="font-bold">:</span>
 		<Input
 			bind:value={inputMinute}
-			class="w-14 text-center no-inner-spin"
+			class="w-14 text-center no-inner-spin rounded"
 			type="number"
 			min="0"
 			max="59"

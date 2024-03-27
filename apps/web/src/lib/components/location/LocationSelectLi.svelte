@@ -5,10 +5,10 @@
 	import { createEventDispatcher } from "svelte";
 	import { twMerge } from "tailwind-merge";
 
-	import BetterSelect from "$lib/components/select/BetterSelect.svelte";
-	import type { Option } from "$lib/components/select/types";
-
 	import LocationOption from "./LocationOption.svelte";
+	import Select from "../select/Select.svelte";
+	import type { Option } from "../select/types";
+
 
 	const dispatch = createEventDispatcher();
 
@@ -19,7 +19,7 @@
 </script>
 
 <li class="flex gap-2 h-12">
-	<BetterSelect
+	<Select
 		{options}
 		{disabled}
 		placeholder="Choose location ..."
@@ -29,13 +29,13 @@
 		let:option
 	>
 		<LocationOption value={option.value} />
-	</BetterSelect>
+	</Select>
 	{#if deletable}
 		<Button
 			on:click={(ev) => {
 				dispatch("delete", ev);
 			}}
-			class={twMerge("aspect-square h-full dark:hover:bg-red-600", disabled ? "dark:bg-gray-500" : "dark:bg-red-500")}
+			class={twMerge("aspect-square h-full rounded dark:hover:bg-red-600", disabled ? "bg-gray-500 dark:bg-gray-500" : "bg-red-500 dark:bg-red-500")}
 			size="sm"
 			{disabled}
 		>

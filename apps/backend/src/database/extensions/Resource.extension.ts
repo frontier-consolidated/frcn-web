@@ -27,6 +27,25 @@ export function createResourceExtension(define: typeof Prisma.defineExtension, c
 					model.owner = value;
 					return value;
 				},
+				async getFile(model: FullModel<Resource>) {
+					if (model.file) return model.file;
+					if (!model.fileId) return null;
+
+					const value = (await cacheGet(
+						model,
+						() => {
+							return client.fileUpload.findUnique({
+								where: { id: model.fileId! },
+							});
+						},
+						{
+							prefix: "FileUpload",
+							id: model.fileId,
+						}
+					))!;
+					model.file = value;
+					return value;
+				},
 			},
 		},
 	});

@@ -5,7 +5,7 @@ import type { Event } from "@prisma/client";
 import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadAutoArchiveDuration } from "discord.js";
 
 import { database } from "../../database";
-import { getWebOrigin } from "../../env";
+import { getWebURL } from "../../env";
 import { $discord } from "../../services/discord";
 import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
@@ -141,7 +141,7 @@ export async function buildEventMessage(id: string, client: Client) {
 
 	const weblinkButton = new ButtonBuilder()
 		.setLabel("View")
-		.setURL(new URL(`/event/${event.id}`, getWebOrigin()).href)
+		.setURL(getWebURL(`/event/${event.id}`).href)
 		.setStyle(ButtonStyle.Link);
 	buttonsRow.addComponents(weblinkButton);
 
@@ -155,6 +155,7 @@ export async function buildEventMessage(id: string, client: Client) {
 async function getEventMessage(client: Client, event: Event) {
 	if (!event.discordEventMessageId) return null;
 	const eventChannel = await database.event.getChannel(event);
+	if (!eventChannel) return null;
 
 	const channel = await $discord.getChannel(
 		client,
@@ -166,9 +167,10 @@ async function getEventMessage(client: Client, event: Event) {
 
 export async function postEventMessage(client: Client, event: Event) {
 	const eventChannel = await database.event.getChannel(event)
+	if (!eventChannel) throw new Error("Could not find event channel")
 
 	const channel = await $discord.getChannel(client, eventChannel.discordId);
-	if (!channel?.isTextBased()) throw new Error();
+	if (!channel?.isTextBased()) throw new Error("Could not find event channel, or channel is somehow not text based");
 
 	const payload = await buildEventMessage(event.id, client);
 	const eventMessage = await channel.send(payload);

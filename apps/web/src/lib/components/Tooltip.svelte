@@ -5,7 +5,7 @@
 
 	export let id: string | undefined = undefined;
 	export let triggeredBy: string | undefined = undefined;
-	export let size: "xs" | "sm" | "md" | "lg" | "xl" = "md";
+	export let size: "xs" | "sm" | "md" | "lg" | "xl" = "sm";
 	export let iconPlacement: "left" | "right" = "right";
 </script>
 

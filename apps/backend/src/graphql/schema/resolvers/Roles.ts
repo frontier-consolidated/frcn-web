@@ -9,6 +9,7 @@ import { $system } from "../../../services/system";
 import { $users } from "../../../services/users";
 import type { UserRole as GQLUserRole, UpdatedUserRoles as GQLUpdatedUserRoles, Resolvers } from "../../__generated__/resolvers-types";
 import { pubsub, withFilter } from "../../pubsub";
+import { calculatePermissions } from "../calculatePermissions";
 import { gqlErrorBadInput } from "../gqlError";
 
 export function resolveUserRole(role: UserRole) {
@@ -164,10 +165,10 @@ export const roleResolvers: Resolvers = {
 				seen.push(roleId)
 			}
 
-			const permissions = await $users.getPermissions(context.user!);
+			const permissions = await calculatePermissions(context)
 			
-			if (!hasAdmin(permissions)) {
-				const roles = await $users.getAllRoles(context.user!)
+			if (!hasAdmin(permissions) && context.user) {
+				const roles = await $users.getAllRoles(context.user)
 	
 				let highest = 0;
 				for (const [i, role] of roleOrder.entries()) {

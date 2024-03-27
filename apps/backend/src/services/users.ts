@@ -1,8 +1,11 @@
+import { Permission } from "@frcn/shared";
 import type { User } from "@prisma/client";
-import { type APIUser, CDNRoutes, ImageFormat } from "discord.js";
+import { type APIUser, CDNRoutes, ImageFormat, Client as DiscordClient } from "discord.js";
 
+import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { database } from "../database";
+import { getAdminIds } from "../env";
 
 async function getUser(id: string) {
 	const user = await database.user.findUnique({
@@ -11,14 +14,28 @@ async function getUser(id: string) {
 	return user;
 }
 
-async function getOrCreateUser(discordUser: APIUser) {
+async function getUserByDiscordId(id: string) {
+	const user = await database.user.findUnique({
+		where: { discordId: id }
+	})
+	return user;
+}
+
+async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClient) {
 	const defaultPrimaryRole = await $roles.getDefaultPrimaryRole();
 
-	const username = discordUser.global_name
-		? discordUser.global_name
-		: discordUser.discriminator === "0"
+	const discordUsername = discordUser.discriminator === "0"
 		? `@${discordUser.username}`
-			: `${discordUser.username}#${discordUser.discriminator}`
+		: `${discordUser.username}#${discordUser.discriminator}`
+	
+	let discordName = discordUser.global_name ?? discordUsername
+	try {
+		const guild = await $discord.getGuild(discordClient)
+		const member = await guild.members.fetch(discordUser.id)
+		discordName = member.nickname ?? member.displayName
+	} catch (err) {
+		console.error(err)
+	}
 	
 	const avatarUrl = discordUser.avatar ? "https://cdn.discordapp.com" +
 		CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP) : ""
@@ -28,12 +45,14 @@ async function getOrCreateUser(discordUser: APIUser) {
 			discordId: discordUser.id,
 		},
 		update: {
-			discordName: username,
+			discordName,
+			discordUsername,
 			avatarUrl
 		},
 		create: {
 			discordId: discordUser.id,
-			discordName: username,
+			discordName,
+			discordUsername,
 			scName: null,
 			scVerified: false,
 			avatarUrl,
@@ -54,20 +73,31 @@ async function getOrCreateUser(discordUser: APIUser) {
 	return user;
 }
 
-async function getAllRoles(user: User) {
+async function getAllRolesUnordered(user: User) {
 	const primaryRole = await database.user.getPrimaryRole(user);
 	const roles = await database.user.getRoles(user);
 	return [primaryRole, ...roles]
 }
 
+async function getAllRoles(user: User) {
+	return $roles.sort(await getAllRolesUnordered(user))
+}
+
 async function getPermissions(user: User) {
-	const roles = await getAllRoles(user);
-	const permissions = await $roles.resolvePermissions(roles);
+	const roles = await getAllRolesUnordered(user);
+	let permissions = $roles.resolvePermissions(roles);
+
+	const adminIds = getAdminIds()
+	if (adminIds.includes(user.discordId)) {
+		permissions |= Permission.Admin
+	}
+
 	return permissions
 }
 
 export const $users = {
 	getUser,
+	getUserByDiscordId,
 	getOrCreateUser,
 	getAllRoles,
 	getPermissions,

@@ -2,10 +2,10 @@
 import { REST, Routes, type RESTPostOAuth2AccessTokenResult, type APIUser } from "discord.js";
 
 import type { Context, RouteConfig } from "../context";
-import { getOrigin } from "../env";
+import { getAdminIds, getURL } from "../env";
+import { getConsent } from "../middleware/session/middleware/consent.middleware";
 import { $discord } from "../services/discord";
 import { $users } from "../services/users";
-import { getConsent } from "../session/middleware/consent.middleware";
 
 export default function route(context: Context, config: RouteConfig) {
 	const clientId = config.auth.clientId;
@@ -38,7 +38,7 @@ export default function route(context: Context, config: RouteConfig) {
 
 		const params = new URLSearchParams({
 			client_id: clientId,
-			redirect_uri: new URL("/oauth/callback", getOrigin(req.protocol)).href,
+			redirect_uri: getURL(req.protocol, "/oauth/callback").href,
 			response_type: "code",
 			scope: scope.join(","),
 			state,
@@ -74,7 +74,7 @@ export default function route(context: Context, config: RouteConfig) {
 				body: new URLSearchParams({
 					client_id: clientId,
 					client_secret: clientSecret,
-					redirect_uri: new URL("/oauth/callback", getOrigin(req.protocol)).href,
+					redirect_uri: getURL(req.protocol, "/oauth/callback").href,
 					grant_type: "authorization_code",
 					scope: scope.join(","),
 					code,
@@ -91,7 +91,8 @@ export default function route(context: Context, config: RouteConfig) {
 				authPrefix: "Bearer",
 			})) as APIUser;
 
-			if (!(await $discord.isInGuild(context.discordClient, discordUser.id))) {
+			const adminIds = getAdminIds()
+			if (!adminIds.includes(discordUser.id) && !(await $discord.isInGuild(context.discordClient, discordUser.id))) {
 				if (!redirect_uri) {
 					return res.status(400).send({
 						message: "Not in guild"
@@ -102,7 +103,7 @@ export default function route(context: Context, config: RouteConfig) {
 				return res.redirect(url.toString())
 			}
 
-			const user = await $users.getOrCreateUser(discordUser);
+			const user = await $users.getOrCreateUser(discordUser, context.discordClient);
 			await req.login(user);
 		} catch (err) {
 			if (!redirect_uri) {

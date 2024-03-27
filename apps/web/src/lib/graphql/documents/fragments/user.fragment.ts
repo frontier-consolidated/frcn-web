@@ -5,7 +5,9 @@ export const USER_FRAGMENT = gql(`
         id
         name
         scName
+        discordId
         discordName
+        discordUsername
         verified
         avatarUrl
         primaryRole {

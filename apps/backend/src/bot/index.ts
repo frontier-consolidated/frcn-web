@@ -33,7 +33,7 @@ async function eventInteraction(interaction: ButtonInteraction | AnySelectMenuIn
         return
     }
 
-    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user))
+    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
     
     const currentRsvp = await $events.getUserRsvp(event, user);
 
@@ -83,7 +83,7 @@ async function eventDmInteraction(interaction: ButtonInteraction | AnySelectMenu
         return;
     }
 
-    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user))
+    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
     await $events.unrsvpForEvent(event, user, interaction.client);
 
     const payload = buildUnrsvpMessage()
@@ -108,5 +108,32 @@ export function load(client: Client) {
             }
         }
 
+    })
+
+    client.on("guildMemberRemove", async (member) => {
+        const user = await $users.getUserByDiscordId(member.user.id)
+        if (!user) return;
+
+        const sessions = await database.user.getSessions(user)
+        for (const session of sessions) {
+            try {
+                const data = JSON.parse(session.data);
+                delete data["user"]
+
+                await database.userSession.update({
+                    where: { sid: session.sid },
+                    data: {
+                        user: {
+                            disconnect: session.userId ? {
+                                id: session.userId
+                            } : undefined
+                        },
+                        data: JSON.stringify(data)
+                    }
+                })
+            } catch (err) {
+                console.error("Failed to unauthenticate session", err)
+            }
+        }
     })
 }

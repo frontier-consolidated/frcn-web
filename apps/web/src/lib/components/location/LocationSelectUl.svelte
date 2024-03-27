@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { locations, getChildren, type AnyLocation } from "@frcn/shared/locations";
-	import { Button } from "flowbite-svelte";
-
-	import type { Option } from "$lib/components/select/types";
 
 	import LocationSelectLi from "./LocationSelectLi.svelte";
+	import Button from "../Button.svelte";
+	import type { Option } from "../select/types";
+
 
 	const rootOptions = locations.map((location) => ({
 		name: location.name,

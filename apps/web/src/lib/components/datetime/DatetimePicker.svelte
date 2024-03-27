@@ -2,6 +2,7 @@
 	import { Input, Dropdown, DropdownHeader } from "flowbite-svelte";
 	import { CalendarEditSolid } from "flowbite-svelte-icons";
 	import { locale } from "svelte-i18n";
+	import { twMerge } from "tailwind-merge";
 
 	import DateControls from "./date/DateControls.svelte";
 	import TimeControls from "./time/TimeControls.svelte";
@@ -70,6 +71,7 @@
 		{...$$restProps}
 		{id}
 		placeholder="Select date and time"
+		class={twMerge("rounded", $$restProps.class)}
 		bind:value={inputValue}
 	>
 		<CalendarEditSolid slot="left" size="sm" class="ms-1" tabindex="-1" />
@@ -78,7 +80,8 @@
 <Dropdown
 	bind:open={dropdownOpen}
 	triggeredBy="#{id}-ref"
-	class="border rounded-lg border-gray-300 dark:border-gray-600 p-4"
+	containerClass="divide-y z-50 rounded"
+	class="border rounded border-gray-300 dark:border-gray-600 p-4"
 >
 	{#if title}
 		<DropdownHeader class="text-center">

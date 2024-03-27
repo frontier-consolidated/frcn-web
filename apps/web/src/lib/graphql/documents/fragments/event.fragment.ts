@@ -19,7 +19,7 @@ export const EVENT_FRAGMENT = gql(`
             pending
             rsvp
         }
-        roles {
+        rsvpRoles: roles {
             id
             name
             emoji {

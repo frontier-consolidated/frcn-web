@@ -12,6 +12,12 @@ const config = {
 		adapter: adapter({
 			out: "build",
 		}),
+		prerender: {
+			entries: [
+				"/legal/cookies",
+				"/legal/privacy"
+			]
+		}
 	},
 };
 

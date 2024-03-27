@@ -2,7 +2,7 @@ import { dates } from "@frcn/shared";
 import type { Event, EventRsvpRole } from "@prisma/client";
 import { type BaseMessageOptions, ButtonStyle, ButtonBuilder, ActionRowBuilder, EmbedBuilder } from "discord.js";
 
-import { getWebOrigin } from "../../env";
+import { getWebURL } from "../../env";
 import { PRIMARY_COLOR } from "../constants";
 
 export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | null) {
@@ -28,7 +28,7 @@ export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | nu
 		
 	const weblinkButton = new ButtonBuilder()
 		.setLabel("View")
-		.setURL(new URL(`/event/${rsvp.eventId}`, getWebOrigin()).href)
+		.setURL(getWebURL(`/event/${rsvp.eventId}`).href)
 		.setStyle(ButtonStyle.Link);
 		
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
@@ -62,7 +62,7 @@ export function buildRsvpDmMessage(event: Event, rsvp: EventRsvpRole, eventMessa
 		
 	const weblinkButton = new ButtonBuilder()
 		.setLabel("View")
-		.setURL(new URL(`/event/${event.id}`, getWebOrigin()).href)
+		.setURL(getWebURL(`/event/${event.id}`).href)
 		.setStyle(ButtonStyle.Link);
 		
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
