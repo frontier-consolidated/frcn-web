@@ -13,7 +13,7 @@ import type { Middleware } from 'polka';
 import { Server } from "SERVER";
 import sirv from "sirv";
 
-import { is_prerender_valid } from './isr';
+import { is_prerender_valid, invalidate_isr_route } from './isr';
 
 /* global ENV_PREFIX */
 
@@ -183,6 +183,8 @@ function get_origin(headers: IncomingHttpHeaders) {
 		return `${protocol}://${host}`;
 	}
 }
+
+export { invalidate_isr_route };
 
 export const handler = sequence(
 	[
