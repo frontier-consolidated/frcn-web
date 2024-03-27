@@ -1,4 +1,4 @@
-import "./global.js";
+import "./ambient.js";
 import type adapter from "./types/index.d.ts";
 
 export default adapter;

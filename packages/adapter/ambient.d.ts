@@ -1,8 +1,4 @@
-export { }
-
 declare global {
-	const ENV_PREFIX: string;
-
 	namespace App {
 		export interface Platform {
 			/**
