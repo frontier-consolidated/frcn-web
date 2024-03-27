@@ -15,7 +15,7 @@ export async function invalidateRoute(pathname: string) {
     if (!import.meta.env.PROD) return;
 
     console.log("Invalidating route...")
-    const { invalidate_isr_route } = await import(path.join(__dirname, "../../", "handler.js"))
+    const { invalidate_isr_route } = await import(/* @vite-ignore */ path.join(__dirname, "../../", "handler.js"))
     invalidate_isr_route(pathname);
 }
 
