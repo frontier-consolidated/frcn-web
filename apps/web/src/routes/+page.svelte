@@ -39,9 +39,6 @@
 	<title>Frontier Consolidated</title>
 	<meta name="description" content="Get involved with the latest community events" />
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
-	{#each pageCards as card}
-		<link rel="preload" href={card.src} as="image" />
-	{/each}
 	{#each galleryImages as image}
 		<link rel="preload" href={image} as="image" />
 	{/each}
