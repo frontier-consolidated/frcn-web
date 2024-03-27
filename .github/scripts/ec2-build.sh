@@ -11,6 +11,9 @@ mkdir -p $BUILD_DIR
 find . -name ".gitignore" -exec rm {} \;
 
 pnpm install --frozen-lockfile
+pnpm --filter ./packages/adapter build
+pnpm install --frozen-lockfile
+
 pnpm --filter=backend db-generate
 
 echo "VITE_API_BASEURL=https://$HOSTNAME/api" > apps/web/.env.production
