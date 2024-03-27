@@ -10,7 +10,7 @@ mkdir -p $BUILD_DIR
 # Remove .gitignore files as pnpm will respect these by default
 find . -name ".gitignore" -exec rm {} \;
 
-pnpm install --frozen-lockfile
+pnpm --config.dedupe-peer-dependents=false --filter ./packages/adapter install
 pnpm --filter ./packages/adapter build
 pnpm install --frozen-lockfile
 
