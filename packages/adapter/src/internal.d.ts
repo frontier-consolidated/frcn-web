@@ -14,7 +14,13 @@ declare module "MANIFEST" {
 	export const base: string;
 	export const manifest: SSRManifest;
 	export const prerendered: Set<string>;
-	export const isr: Set<string>;
+	export const isr: {
+		paths: Set<string>;
+		configs: {
+			pathname: string;
+			cmsIdentifier: string;
+		}[]
+	};
 }
 
 declare module "SERVER" {
