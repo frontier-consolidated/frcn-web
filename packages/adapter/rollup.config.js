@@ -12,7 +12,7 @@ export default [
 			file: 'index.js',
 			format: 'esm'
 		},
-		plugins: [typescript()],
+		plugins: [typescript({ declaration: true, declarationDir: "types" })],
 		external: ["rollup", "@rollup/plugin-node-resolve", "@rollup/plugin-json", "@rollup/plugin-commonjs", "./global.d.ts", ...builtinModules]
 	},
 	{
@@ -51,5 +51,14 @@ export default [
 		},
 		plugins: [typescript(), nodeResolve(), commonjs()],
 		external: builtinModules
+	},
+	{
+		input: "src/isr/index.ts",
+		output: {
+			file: "isr.js",
+			format: "esm"
+		},
+		plugins: [typescript({ declaration: true, declarationDir: "types" }), nodeResolve(), commonjs()],
+		external: [...builtinModules]
 	}
 ];
