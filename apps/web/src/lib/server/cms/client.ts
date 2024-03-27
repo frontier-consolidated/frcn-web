@@ -22,9 +22,12 @@ export class CmsClient {
             errorPolicy: "all"
         })
 
-        if (error) console.error(error)
+        if (error) {
+            console.error(error)
+            return [];
+        }
         
-        return await Promise.all((data.containers ?? []).map(async (container) => await this.fetchAllChildren(container)))
+        return await Promise.all((data?.containers ?? []).map(async (container) => await this.fetchAllChildren(container)))
     }
 
     async getIndex(identifier: string) {
@@ -38,9 +41,12 @@ export class CmsClient {
             errorPolicy: "all"
         })
 
-        if (error) console.error(error)
+        if (error) {
+            console.error(error)
+            return null;
+        }
 
-        return data.container ? await this.fetchAllChildren(data.container) : null;
+        return data?.container ? await this.fetchAllChildren(data.container) : null;
     }
 
     async getContainer(id: string) {
@@ -52,7 +58,7 @@ export class CmsClient {
             fetchPolicy: "no-cache"
         })
 
-        return data.container ? await this.fetchAllChildren(data.container) : null;
+        return data?.container ? await this.fetchAllChildren(data.container) : null;
     }
 
     private async fetchAllChildren(container: ContentContainerData) {
