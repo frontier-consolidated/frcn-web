@@ -4,28 +4,7 @@
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./containers": {
-      "import": "./dist/containers/index.js",
-      "types": "./dist/containers/index.d.ts"
-    },
-    "./events": {
-      "import": "./dist/events/index.js",
-      "types": "./dist/events/index.d.ts"
-    }
-  },
   "scripts": {
     "build": "rm -rf dist && tsc"
-  },
-  "devDependencies": {
-    "@types/node": "^20.11.5",
-    "@types/pg": "^8.11.4"
-  },
-  "dependencies": {
-    "pg-tbus": "^1.0.0"
   }
 }

@@ -53,6 +53,9 @@ importers:
       '@frcn/cms':
         specifier: workspace:^
         version: link:../../packages/cms
+      '@frcn/cms-events':
+        specifier: workspace:^
+        version: link:../../packages/cms-events
       '@frcn/shared':
         specifier: workspace:^
         version: link:../../packages/shared
@@ -331,6 +334,9 @@ importers:
 
   packages/adapter:
     dependencies:
+      '@frcn/cms-events':
+        specifier: workspace:^
+        version: link:../cms-events
       '@rollup/plugin-commonjs':
         specifier: ^25.0.7
         version: 25.0.7(rollup@4.9.5)
@@ -343,6 +349,9 @@ importers:
       '@rollup/plugin-typescript':
         specifier: ^11.1.6
         version: 11.1.6(rollup@4.9.5)(tslib@2.6.2)(typescript@5.4.3)
+      pg-tbus:
+        specifier: ^1.0.0
+        version: 1.0.0
       rollup:
         specifier: ^4.9.5
         version: 4.9.5
@@ -378,7 +387,9 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0(@types/node@18.19.3)
 
-  packages/cms:
+  packages/cms: {}
+
+  packages/cms-events:
     dependencies:
       pg-tbus:
         specifier: ^1.0.0
