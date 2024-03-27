@@ -113,7 +113,8 @@ function fileField(
                     
 					if (!(allowedFiles.includes(ext) || allowedFiles.includes(mimeType) || allowedFiles.includes(`${baseMimeType}/*`))) {
 						return res.status(415).send({
-							message: `File not allowed: ${file.originalname}`,
+                            message: `File not allowed: ${file.originalname}`,
+                            allowed: allowedFiles
 						});
                     }
                     

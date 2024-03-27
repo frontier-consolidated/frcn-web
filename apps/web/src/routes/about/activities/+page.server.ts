@@ -1,10 +1,16 @@
 
-import { cmsClient } from '$lib/server/cms';
+import { building } from '$app/environment';
+
+import { getCmsClient } from '$lib/server/cms';
 
 import type { PageServerLoad } from './$types';
 
+export const prerender = false;
+export const config = { isr: true }
+
 export const load = (async () => {
-    const index = await cmsClient.getIndex("/about/activities")
+    if (building) return {};
+    const index = await getCmsClient().getIndex("/about/activities")
 
     return {
         index,

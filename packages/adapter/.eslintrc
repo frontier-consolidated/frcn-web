@@ -1,0 +1,11 @@
+{
+	"ignorePatterns": ["./index.js", "./isr.js", "./files/*.js"],
+	"rules": {
+		"import/no-unresolved": [
+			"error",
+			{
+				"ignore": ["ENV", "MANIFEST", "SERVER", "SHIMS", "HANDLER"]
+			}
+		]
+	}
+}

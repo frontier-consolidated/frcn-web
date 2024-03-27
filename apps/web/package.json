@@ -25,11 +25,11 @@
     }
   },
   "devDependencies": {
+    "@frcn/adapter": "workspace:^",
     "@frcn/graphql-scalar-types": "workspace:^",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@sveltejs/adapter-node": "^4.0.1",
     "@sveltejs/kit": "^2.5.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@types/sortablejs": "^1.15.7",

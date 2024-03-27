@@ -23,7 +23,7 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<main class="flex flex-1 flex-col p-4 w-full max-w-3xl my-0 mx-auto box-border">
+<div class="flex flex-1 flex-col p-4 w-full max-w-3xl my-0 mx-auto box-border">
 	<div class="h-screen pt-[20vh]">
 		<div class="flex flex-col">
 			<div class="relative w-max">
@@ -47,7 +47,7 @@
 						<Button href="/">BACK TO SAFETY</Button>
 					</div>
 				{:else}
-					<p class="mt-4 text-gray-400">We encountered and issue with your request, please try again later.</p>
+					<p class="mt-4 text-gray-400">We encountered an issue with your request, please try again later.</p>
 					<div class="flex justify-center mt-4">
 						<Button href="/">BACK TO SAFETY</Button>
 					</div>
@@ -55,7 +55,7 @@
 			</div>
 		</div>
 	</div>
-</main>
+</div>
 
 <style>
 	.animate-glow {

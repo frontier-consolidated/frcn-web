@@ -27,20 +27,26 @@ export function createContentContainerExtension(define: typeof Prisma.defineExte
 					model.parent = value;
 					return value;
 				},
-				async getChildren(model: FullModel<ContentContainer>) {
+				async getChildren(model: FullModel<ContentContainer>, args?: Prisma.ContentContainer$childrenArgs) {
 					if (model.children) return model.children;
 
 					const value = await cacheGetMany<ContentContainer>(
 						model,
-						(cached) => {
-							return client.contentContainer.findMany({
+						async (cached) => {
+							const result = await client.contentContainer.findUnique({
+								where: { id: model.id },
+								select: { id: true }
+							}).children({
+								...args,
 								where: {
-									parentId: model.id,
+									...args?.where,
 									id: {
 										notIn: cached.map((c) => c.id),
-									},
+									}
 								},
+
 							});
+							return result ?? []
 						},
 						{
 							prefix: "ContentContainer",
@@ -56,15 +62,18 @@ export function createContentContainerExtension(define: typeof Prisma.defineExte
 					
 					const value = await cacheGetMany<ContentContainerFile>(
 						model,
-						(cached) => {
-							return client.contentContainerFile.findMany({
+						async (cached) => {
+							const result = await client.contentContainer.findUnique({
+								where: { id: model.id },
+								select: { id: true }
+							}).files({
 								where: {
-									containerId: model.id,
-									fileId: {
-										notIn: cached.map((c) => c.fileId),
+									id: {
+										notIn: cached.map((c) => c.id),
 									},
-								},
+								}
 							});
+							return result ?? []
 						},
 						{
 							prefix: "ContentContainerFile",
