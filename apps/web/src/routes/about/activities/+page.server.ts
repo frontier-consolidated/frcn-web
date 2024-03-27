@@ -5,7 +5,7 @@ import { getCmsClient } from '$lib/server/cms';
 
 import type { PageServerLoad } from './$types';
 
-export const prerender = "auto";
+export const prerender = false;
 export const config = { isr: true }
 
 export const load = (async () => {
