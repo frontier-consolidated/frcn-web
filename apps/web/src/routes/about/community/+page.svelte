@@ -14,14 +14,14 @@
 </script>
 
 <svelte:head>
-	<title>{index?.getMetaTitle() ?? "Our Community - About"} | Frontier Consolidated</title>
-	<meta name="description" content={index?.getMetaDescription() ?? ""} />
+	<title>{index?.getMetaTitle() ? index?.getMetaTitle() : "Our Community - About"} | Frontier Consolidated</title>
+	<meta name="description" content={index?.getMetaDescription() ? index?.getMetaDescription() : ""} />
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
 </svelte:head>
 
 <PageHero srcset={heroImageSrcset}>
-	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">{index?.getTitle() ?? "Frontier Community"}</Heading>
-	<p class="text-slate-400 drop-shadow-md">{index?.getSubTitle() ?? ""}</p>
+	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">{index?.getTitle() ? index?.getTitle() : "Frontier Community"}</Heading>
+	<p class="text-slate-400 drop-shadow-md">{index?.getSubTitle() ? index?.getSubTitle() : ""}</p>
 </PageHero>
 <section class="mt-2 flex flex-col gap-8 p-4 w-full max-w-6xl mx-auto">
 	{#if index}
