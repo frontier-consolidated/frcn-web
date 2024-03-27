@@ -57,7 +57,7 @@
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
 </svelte:head>
 
-<PageHero srcset={heroImageSrcset}>
+<PageHero srcset={heroImageSrcset} height="h-[30vh]">
 	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">Resources</Heading>
 </PageHero>
 <div class="flex flex-col mx-auto w-full max-w-6xl p-4">
