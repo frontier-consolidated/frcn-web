@@ -238,7 +238,9 @@ export const cmsResolvers: Resolvers = {
 				const files = await database.contentContainer.getFiles(container)
 				collectedFiles.push(...files)
 
-				const children = await database.contentContainer.getChildren(container)
+				const children = await database.contentContainer.getChildren(container, {
+					select: { id: true }
+				})
 				for (const child of children) {
 					await traverseCollectFiles(child)
 				}
