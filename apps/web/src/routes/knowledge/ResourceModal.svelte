@@ -176,7 +176,6 @@
 			{validator}
 			for="resource-upload-description"
 			value={editData.shortDescription}
-			required
 		>
 			<Label for="resource-upload-description" class="mb-2">Description</Label>
 			<Textarea
@@ -185,7 +184,6 @@
 				name="Resource Upload Description"
 				type="text"
 				placeholder="Resource description"
-				required
                 maxlength="512"
 				bind:value={editData.shortDescription}
 			/>
