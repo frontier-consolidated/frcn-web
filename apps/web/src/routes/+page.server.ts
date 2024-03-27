@@ -5,12 +5,14 @@ import { getCmsClient } from '$lib/server/cms';
 
 import type { PageServerLoad } from './$types';
 
+const cmsIdentifier = "/home"
+
 export const prerender = "auto";
-export const config = { isr: true }
+export const config = { isr: { cmsIdentifier } }
 
 export const load = (async () => {
     if (building) return {};
-    const index = await getCmsClient().getIndex("/home")
+    const index = await getCmsClient().getIndex(cmsIdentifier)
 
     return {
         index,
