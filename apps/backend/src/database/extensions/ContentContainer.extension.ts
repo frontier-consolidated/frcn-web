@@ -27,20 +27,24 @@ export function createContentContainerExtension(define: typeof Prisma.defineExte
 					model.parent = value;
 					return value;
 				},
-				async getChildren(model: FullModel<ContentContainer>) {
+				async getChildren(model: FullModel<ContentContainer>, args?: Prisma.ContentContainer$childrenArgs) {
 					if (model.children) return model.children;
 
 					const value = await cacheGetMany<ContentContainer>(
 						model,
 						async (cached) => {
 							const result = await client.contentContainer.findUnique({
-								where: { id: model.id }
+								where: { id: model.id },
+								select: { id: true }
 							}).children({
+								...args,
 								where: {
+									...args?.where,
 									id: {
 										notIn: cached.map((c) => c.id),
 									}
-								}
+								},
+
 							});
 							return result ?? []
 						},
@@ -60,7 +64,8 @@ export function createContentContainerExtension(define: typeof Prisma.defineExte
 						model,
 						async (cached) => {
 							const result = await client.contentContainer.findUnique({
-								where: { id: model.id }
+								where: { id: model.id },
+								select: { id: true }
 							}).files({
 								where: {
 									id: {
