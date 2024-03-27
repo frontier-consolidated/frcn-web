@@ -12,6 +12,18 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "gql-generate": "graphql-codegen --config codegen.yml"
   },
+  "pnpm": {
+    "supportedArchitectures": {
+      "os": [
+        "win32",
+        "current"
+      ],
+      "cpu": [
+        "x64",
+        "current"
+      ]
+    }
+  },
   "devDependencies": {
     "@frcn/adapter": "workspace:^",
     "@frcn/graphql-scalar-types": "workspace:^",
