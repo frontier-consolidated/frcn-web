@@ -32,7 +32,8 @@ jobs:
             - name: Get runner public ip
               shell: bash
               run: |
-                  echo "PUBLIC_IP=$(curl -s https://ipinfo.io/ip)" >> $GITHUB_ENV
+                chmod +x ./.github/scripts/ipv4-request.sh
+                echo "PUBLIC_IP=$(./.github/scripts/ipv4-request.sh)" >> $GITHUB_ENV
 
             - name: Add runner ip to AWS security group
               run: |
