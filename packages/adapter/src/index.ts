@@ -15,7 +15,9 @@ interface AdapterOptions {
 }
 
 export interface AdapterPageConfig {
-    isr?: boolean;
+	isr?: {
+		cmsIdentifier: string
+	} | false;
 }
 
 export default function (opts: AdapterOptions = {}) {
@@ -47,26 +49,38 @@ export default function (opts: AdapterOptions = {}) {
 
 			builder.log.minor('Building server');
 
-			const isrRoutes: RouteDefinition[] = []
+			const isrConfigs = new Map<RouteDefinition, NonNullable<Exclude<AdapterPageConfig["isr"], false>>>()
 
 			for (const route of builder.routes) {
 				const config = { ...route.config } as AdapterPageConfig
 
 				if (config.isr) {
-					isrRoutes.push(route)
+					isrConfigs.set(route, config.isr)
 				}
 			}
 
 			builder.writeServer(tmp);
 
-			const isrPaths = isrRoutes.map(route => getPathname(route))
+			const isrConfigsArray: {
+				pathname: string;
+				cmsIdentifier: string;
+			}[] = []
+
+			for (const [route, config] of isrConfigs.entries()) {
+				isrConfigsArray.push({
+					pathname: getPathname(route),
+					cmsIdentifier: config.cmsIdentifier
+				})
+			}
+
+			const isrPaths = Array.from(isrConfigs.keys()).map(r => getPathname(r))
 
 			fs.writeFileSync(
 				`${tmp}/manifest.js`,
 				[
 					`export const manifest = ${builder.generateManifest({ relativePath: './' })};`,
 					`export const prerendered = new Set(${JSON.stringify(builder.prerendered.paths)});`,
-					`export const isr = new Set(${JSON.stringify(isrPaths)});`,
+					`export const isr = {\n\tpaths: new Set(${JSON.stringify(isrPaths)}),\n\tconfigs: ${JSON.stringify(isrConfigsArray)}\n}`,
 					`export const base = ${JSON.stringify(builder.config.kit.paths.base)};`
 				].join('\n\n')
 			);
