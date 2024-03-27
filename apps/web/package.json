@@ -12,6 +12,18 @@
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "gql-generate": "graphql-codegen --config codegen.yml"
   },
+  "pnpm": {
+    "supportedArchitectures": {
+      "os": [
+        "win32",
+        "current"
+      ],
+      "cpu": [
+        "x64",
+        "current"
+      ]
+    }
+  },
   "devDependencies": {
     "@frcn/adapter": "workspace:^",
     "@frcn/graphql-scalar-types": "workspace:^",
@@ -35,6 +47,7 @@
     "tailwindcss": "^3.3.6",
     "tslib": "^2.4.1",
     "vite": "^5.0.12",
+    "vite-imagetools": "^6.2.9",
     "zen-observable-ts": "^1.1.0"
   },
   "dependencies": {
@@ -57,7 +70,6 @@
     "sveltekit-search-params": "^2.1.0",
     "tailwind-merge": "^2.2.1",
     "uuid": "^9.0.1",
-    "validator": "^13.11.0",
-    "vite-imagetools": "^6.2.9"
+    "validator": "^13.11.0"
   }
 }
