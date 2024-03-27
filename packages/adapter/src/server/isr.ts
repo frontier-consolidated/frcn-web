@@ -3,7 +3,7 @@ import { isr } from "MANIFEST";
 const isrCache = new Map<string, boolean>()
 
 export function is_isr_rendered(pathname: string) {
-    return isr.has(pathname);
+    return isr.paths.has(pathname);
 }
 
 export function is_isr_valid(pathname: string) {
