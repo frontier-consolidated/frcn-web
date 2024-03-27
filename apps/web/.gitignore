@@ -12,3 +12,5 @@ regolith.rocks-*.*
 !.env.*
 .env.local
 .env.*.local
+
+/serve.sh
