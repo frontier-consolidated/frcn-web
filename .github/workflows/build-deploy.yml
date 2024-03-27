@@ -31,8 +31,9 @@ jobs:
 
             - name: Get runner public ip
               shell: bash
+              # https://ipinfo.io/ip
               run: |
-                  echo "PUBLIC_IP=$(curl -s https://ipinfo.io/ip)" >> $GITHUB_ENV
+                  echo "PUBLIC_IP=$(curl -s https://api.ipify.org/)" >> $GITHUB_ENV
 
             - name: Add runner ip to AWS security group
               run: |
