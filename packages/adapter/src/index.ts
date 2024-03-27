@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
-import type { Adapter } from "@sveltejs/kit";
+import type { Adapter, RouteDefinition } from "@sveltejs/kit";
 import { rollup } from "rollup";
 
 interface AdapterOptions {
@@ -14,6 +14,9 @@ interface AdapterOptions {
     envPrefix?: string;
 }
 
+export interface AdapterPageConfig {
+    isr?: boolean;
+}
 
 export default function (opts: AdapterOptions = {}) {
     const { out = "build", precompress = true, envPrefix = "" } = opts;
@@ -44,13 +47,26 @@ export default function (opts: AdapterOptions = {}) {
 
 			builder.log.minor('Building server');
 
+			const isrRoutes: RouteDefinition[] = []
+
+			for (const route of builder.routes) {
+				const config = { ...route.config } as AdapterPageConfig
+
+				if (config.isr) {
+					isrRoutes.push(route)
+				}
+			}
+
 			builder.writeServer(tmp);
+
+			const isrPaths = isrRoutes.map(route => route.pattern.toString())
 
 			fs.writeFileSync(
 				`${tmp}/manifest.js`,
 				[
 					`export const manifest = ${builder.generateManifest({ relativePath: './' })};`,
 					`export const prerendered = new Set(${JSON.stringify(builder.prerendered.paths)});`,
+					`export const isr = new Set(${JSON.stringify(isrPaths)});`,
 					`export const base = ${JSON.stringify(builder.config.kit.paths.base)};`
 				].join('\n\n')
 			);
