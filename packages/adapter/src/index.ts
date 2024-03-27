@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
-import path from "path";
 import { fileURLToPath } from "url";
 
 import commonjs from '@rollup/plugin-commonjs';
@@ -15,7 +14,6 @@ interface AdapterOptions {
     envPrefix?: string;
 }
 
-const files = path.join(fileURLToPath(import.meta.url), "files")
 
 export default function (opts: AdapterOptions = {}) {
     const { out = "build", precompress = true, envPrefix = "" } = opts;
@@ -28,7 +26,9 @@ export default function (opts: AdapterOptions = {}) {
 
             builder.rimraf(out)
             builder.rimraf(tmp)
-            builder.mkdirp(tmp)
+			builder.mkdirp(tmp)
+			
+			const files = fileURLToPath(new URL('./files', import.meta.url).href);
 
             builder.log.minor("Copying assets")
             builder.writeClient(`${out}/client${builder.config.kit.paths.base}`);
