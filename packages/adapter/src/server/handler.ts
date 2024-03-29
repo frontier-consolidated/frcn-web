@@ -13,7 +13,7 @@ import type { Middleware } from 'polka';
 import { Server } from "SERVER";
 import sirv from "sirv";
 
-import { is_prerender_valid, invalidate_isr_route } from './isr';
+import { invalidate_isr_route, render_isr_routes, configure_isr } from './isr';
 
 /* global ENV_PREFIX */
 
@@ -42,13 +42,16 @@ await server.init({
 	read: (file) => createReadableStream(`${asset_dir}/${file}`)
 });
 
-function serve(path: string, client: boolean = false): Middleware | null {
+configure_isr({ server, asset_dir })
+
+function serve(path: string, client: boolean = false, prerendered = false): Middleware | null {
     if (!fs.existsSync(path)) return null;
 
 	return sirv(path, {
         etag: true,
         gzip: true,
-        brotli: true,
+		brotli: true,
+		dev: prerendered,
         setHeaders: client
             ? ((res, pathname) => {
                 // only apply to build directory, not e.g. version.json
@@ -62,7 +65,7 @@ function serve(path: string, client: boolean = false): Middleware | null {
 
 // required because the static file server ignores trailing slashes
 function serve_prerendered(): Middleware {
-	const handler = serve(path.join(dir, "prerendered"));
+	const handler = serve(path.join(dir, "prerendered"), false, true);
 
 	return (req, res, next) => {
 		// eslint-disable-next-line prefer-const
@@ -72,11 +75,6 @@ function serve_prerendered(): Middleware {
 			pathname = decodeURIComponent(pathname);
 		} catch {
 			// ignore invalid URI
-		}
-
-		if (!is_prerender_valid(pathname)) {
-			next();
-			return;
 		}
 
 		if (handler && prerendered.has(pathname)) {
@@ -95,7 +93,6 @@ function serve_prerendered(): Middleware {
 }
 
 const ssr: Middleware = async (req, res) => {
-	/** @type {Request} */
 	let request: Request;
 
 	try {
@@ -183,8 +180,18 @@ function get_origin(headers: IncomingHttpHeaders) {
 		return `${protocol}://${host}`;
 	}
 }
+	
+export async function on_start() {
+	await render_isr_routes();
 
-export { invalidate_isr_route };
+	const main = "MAIN_ENTRYPOINT" as string
+	if (main === "false") return;
+
+	const mainModule = await import(/* @vite-ignore */ main) as { default?: () => void | Promise<void> }
+	if (!mainModule.default) throw new Error("No default export from main server module: " + main);
+	console.log("Starting main server module...")
+	await Promise.resolve(mainModule.default())
+}
 
 export const handler = sequence(
 	[
@@ -194,3 +201,5 @@ export const handler = sequence(
 		ssr
 	].filter((m): m is Middleware => Boolean(m))
 );
+
+export { invalidate_isr_route };
