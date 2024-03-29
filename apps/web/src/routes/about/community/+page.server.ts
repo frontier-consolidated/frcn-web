@@ -7,8 +7,8 @@ import type { PageServerLoad } from './$types';
 
 const cmsIdentifier = "/about/community"
 
-export const prerender = "auto";
-export const config = { isr: { cmsIdentifier } }
+export const prerender = "auto"
+export const config = { isr: true }
 
 export const load = (async () => {
     if (building) return {};
