@@ -1,6 +1,13 @@
 import { CMSEvents } from "@frcn/cms-events"
 import { createTBus, createEventHandler } from "pg-tbus"
 
+const indexToRoute = {
+    "/home": "/",
+    "/about/activities": "/about/activities",
+    "/about/org": "/about/org",
+    "/about/community": "/about/community"
+}
+
 async function invalidateRoute(pathname) {
     const handlerPath = "../handler.js"
     const { invalidate_isr_route } = await import(/* @vite-ignore */ handlerPath)
@@ -18,30 +25,22 @@ export default async function () {
         throw new Error("expected CMS_BUS_SCHEMA to be set")
     }
 
-    console.log("CMS Database:", bus_database_url)
-    console.log("CMS Event Schema:", bus_schema)
-
-
     const bus = createTBus("cms", {
         db: { connectionString: bus_database_url },
         schema: bus_schema
     })
 
-    const cms_update_handler = createEventHandler({
-        task_name: "handle_cms_update",
-        eventDef: CMSEvents.cms_update_event,
+    bus.registerHandler(createEventHandler({
+        task_name: "handle_index_updated",
+        eventDef: CMSEvents.IndexUpdated,
         handler: async (props) => {
             console.log("CMS UPDATE", props)
-        }
-    })
+            const pathname = indexToRoute[props.input]
+            if (!pathname) return;
 
-    bus.registerHandler(cms_update_handler)
+            invalidateRoute(pathname)
+        }
+    }))
 
     await bus.start()
-
-    console.log("server start!")
-
-    setTimeout(() => {
-        invalidateRoute("/")
-    }, 5000)
 }
