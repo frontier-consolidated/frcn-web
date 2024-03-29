@@ -116,8 +116,9 @@ jobs:
                   ssh server "cd /var/www/${{ inputs.hostname }} && chmod -R +x backend && chmod -R a+rw web"
 
             - name: Restart services
+              # TODO: Switch this to use /health endpoint instead of sleeping
               run: |
-                  ssh server "cd /var/www/${{ inputs.hostname }} && sudo /bin/systemctl restart ${{ inputs.backend_service }} && sudo /bin/systemctl restart ${{ inputs.frontend_service }}"
+                  ssh server "cd /var/www/${{ inputs.hostname }} && sudo /bin/systemctl restart ${{ inputs.backend_service }} && sleep 10 && sudo /bin/systemctl restart ${{ inputs.frontend_service }}"
 
             - name: Remove runner ip from AWS security group
               run: |

@@ -137,14 +137,9 @@ async function deleteFile(client: S3Client, bucket: string, id: string) {
         Key: file.key,
     })
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore excessively deep type, but still resolves
-    await transaction(async (tx) => {
-        await tx.fileUpload.delete({
-            where: { id }
-        })
-        
-        await client.send(command)
+    await client.send(command)
+    await database.fileUpload.delete({
+        where: { id }
     })
 }
 

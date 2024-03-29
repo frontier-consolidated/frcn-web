@@ -2,7 +2,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import type { Prisma, User } from "@prisma/client";
 
 import { $files } from "./files";
-import { database, transaction } from "../database";
+import { database } from "../database";
 import type { ResourceCreateInput, ResourceEditInput } from "../graphql/__generated__/resolvers-types";
 
 async function getResource(id: string) {
@@ -115,17 +115,14 @@ async function deleteResource(client: S3Client, bucket: string, id: string) {
 	})
 	if (!resource) return;
 
-	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-	// @ts-ignore excessively deep type, but still resolves
-	await transaction(async (tx) => {
-		await tx.resource.delete({
-			where: { id }
-		})
-
-		if (resource.file) {
-			await $files.deleteFile(client, bucket, resource.file.id)
-		}
+	// TODO: Look at why transactions here was causing long process time
+	await database.resource.delete({
+		where: { id }
 	})
+
+	if (resource.file) {
+		await $files.deleteFile(client, bucket, resource.file.id)
+	}
 }
 
 export const $resources = {

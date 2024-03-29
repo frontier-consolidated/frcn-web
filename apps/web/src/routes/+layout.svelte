@@ -1,8 +1,7 @@
 <script lang="ts">
 	import "../app.css";
 	import { navigating } from "$app/stores";
-	import { Banner, Spinner } from "flowbite-svelte";
-	import { CodeSolid } from "flowbite-svelte-icons";
+	import { Spinner } from "flowbite-svelte";
 
 	import { CookieConsentModal, Footer, Header, Notifications, UserProfileModal } from "$lib/components";
 	import JoinGuildModal from "$lib/components/modals/JoinGuildModal.svelte";
@@ -29,9 +28,9 @@
 <div class="bg-triangle-pattern bg-cover font-fractul relative flex flex-col min-h-screen bg-white dark:bg-gray-950">
 	<div class="fixed top-0 left-0 w-full z-20">
 		<Header />
-		<Banner id="wip-banner" bannerType="default" classDiv="z-20 bg-orange-50 dark:bg-orange-800 text-orange-800 dark:text-orange-400 dark:border-orange-700">
+		<!-- <Banner id="wip-banner" bannerType="default" classDiv="z-20 bg-orange-50 dark:bg-orange-800 text-orange-800 dark:text-orange-400 dark:border-orange-700">
 			<CodeSolid class="me-2" tabindex="-1" /> Currently Under Construction
-		</Banner>
+		</Banner> -->
 	</div>
 	{#if showSpinner}
 		<main class="flex-1 flex flex-col w-full box-border justify-center items-center">
