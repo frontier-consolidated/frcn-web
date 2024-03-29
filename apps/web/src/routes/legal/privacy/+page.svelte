@@ -23,7 +23,7 @@ import { A, Li, List } from "flowbite-svelte";
         </p>
         <List tag="ul">
             <Li>
-                Visit our website at frcn.space, or any website of ours that links to this privacy notice
+                Visit our website at frontierconsolidated.com, or any website of ours that links to this privacy notice
             </Li>
             <Li>
                 Engage with us in other related ways, including any sales, marketing, or events
@@ -67,7 +67,7 @@ import { A, Li, List } from "flowbite-svelte";
         </p>
         <p>
             <strong>How do you exercise your rights?</strong>
-            The easiest way to exercise your rights is by visiting <A aClass="hover:underline" href="/account">frcn.space/account</A>, or by contacting us. We will consider and act upon any request in accordance with applicable data protection laws.
+            The easiest way to exercise your rights is by visiting <A aClass="hover:underline" href="/account">frontierconsolidated.com/account</A>, or by contacting us. We will consider and act upon any request in accordance with applicable data protection laws.
         </p>
         <p>
             Want to learn more about what we do with any information we collect? <A aClass="hover:underline" href="#table-of-contents">Review the privacy notice in full.</A>
@@ -265,7 +265,7 @@ import { A, Li, List } from "flowbite-svelte";
             </em>
         </p>
         <p>
-            We may use cookies and similar tracking technologies (like web beacons and pixels) to access or store information. Specific information about how we use such technologies and how you can refuse certain cookies is set out in our Cookie Policy: <A aClass="hover:underline" href="/legal/cookies">frcn.space/legal/cookies</A>.
+            We may use cookies and similar tracking technologies (like web beacons and pixels) to access or store information. Specific information about how we use such technologies and how you can refuse certain cookies is set out in our Cookie Policy: <A aClass="hover:underline" href="/legal/cookies">frontierconsolidated.com/legal/cookies</A>.
         </p>
     </LegalSection>
     <LegalSection id="social-logins" title="6. How do we handle your social logins?">
@@ -347,7 +347,7 @@ import { A, Li, List } from "flowbite-svelte";
         </p>
         <p>
             <strong class="underline">Cookies and similar technologies:</strong>
-            Most Web browsers are set to accept cookies by default. If you prefer, you can usually choose to set your browser to remove cookies and to reject cookies. If you choose to remove cookies or reject cookies, this could affect certain features or services of our Services. You may also <A aClass="hover:underline" href="https://optout.aboutads.info/?c=2&lang=EN">opt out of interest-based advertising by advertisers</A> on our Services. For further information, please see our Cookie Notice: <A aClass="hover:underline" href="/legal/cookies">frcn.space/legal/cookies</A>.
+            Most Web browsers are set to accept cookies by default. If you prefer, you can usually choose to set your browser to remove cookies and to reject cookies. If you choose to remove cookies or reject cookies, this could affect certain features or services of our Services. You may also <A aClass="hover:underline" href="https://optout.aboutads.info/?c=2&lang=EN">opt out of interest-based advertising by advertisers</A> on our Services. For further information, please see our Cookie Notice: <A aClass="hover:underline" href="/legal/cookies">frontierconsolidated.com/legal/cookies</A>.
         </p>
     </LegalSection>
     <LegalSection id="do-not-track" title="10. Controls for do-not-track features">
@@ -372,7 +372,7 @@ import { A, Li, List } from "flowbite-svelte";
     </LegalSection>
     <LegalSection id="delete-data" title="13. How can you review, update, or delete the data we collect from you?">
         <p>
-            You have the right to request access to the personal information we collect from you, change that information, or delete it. To request to review, update, or delete your personal information, please visit: <A aClass="hover:underline" href="/account">frcn.space/account</A>.
+            You have the right to request access to the personal information we collect from you, change that information, or delete it. To request to review, update, or delete your personal information, please visit: <A aClass="hover:underline" href="/account">frontierconsolidated.com/account</A>.
         </p>
     </LegalSection>
 </LegalSectionWrapper>

@@ -19,7 +19,7 @@ import { A, Li, List, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, 
 <LegalSectionWrapper>
     <LegalSection>
         <p>
-            This Cookie Policy explains how Frontier Consolidated ("Organisation," "we," "us," and "our") uses cookies and similar technologies to recognize you when you visit our website at <A aClass="hover:underline" href="https://frcn.space">https://frcn.space</A> ("Website"). It explains what these technologies are and why we use them, as well as your rights to control our use of them.
+            This Cookie Policy explains how Frontier Consolidated ("Organisation," "we," "us," and "our") uses cookies and similar technologies to recognize you when you visit our website at <A aClass="hover:underline" href="https://frontierconsolidated.com">https://frontierconsolidated.com</A> ("Website"). It explains what these technologies are and why we use them, as well as your rights to control our use of them.
         </p>
         <p>
             In some cases we may use cookies to collect personal information, or that becomes personal information if we combine it with other information.
