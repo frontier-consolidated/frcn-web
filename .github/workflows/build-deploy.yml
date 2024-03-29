@@ -113,11 +113,11 @@ jobs:
 
             - name: Set permissions
               run: |
-                  ssh server "cd /var/www/${{ inputs.hostname }} && chmod -R +x backend"
+                  ssh server "cd /var/www/${{ inputs.hostname }} && chmod -R +x backend && chmod -R a+rw web"
 
             - name: Restart services
               run: |
-                  ssh server "cd /var/www/${{ inputs.hostname }} && sudo /bin/systemctl restart ${{ inputs.frontend_service }} && sudo /bin/systemctl restart ${{ inputs.backend_service }}"
+                  ssh server "cd /var/www/${{ inputs.hostname }} && sudo /bin/systemctl restart ${{ inputs.backend_service }} && sudo /bin/systemctl restart ${{ inputs.frontend_service }}"
 
             - name: Remove runner ip from AWS security group
               run: |
