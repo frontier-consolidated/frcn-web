@@ -6,6 +6,7 @@ import path from "path";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
 import { Permission, hasPermission } from "@frcn/shared";
 import type { RequestHandler } from "express";
+import { Cache as FileSystemCache } from "file-system-cache";
 import * as mime from "mime-types";
 import multer, { MulterError } from "multer";
 
@@ -136,7 +137,17 @@ function fileField(
 }
 
 export default function route(context: Context, config: RouteConfig) {
-    const FILE_CACHE: Record<string, { etag: string, filename: string }> = {}
+    const FILE_DATA_CACHE: Record<string, { etag: string, filename: string }> = {}
+    const fileCache = new FileSystemCache({
+        basePath: "./.cache",
+        ns: "media",
+        hash: "sha1",
+        ttl: 3600,
+    })
+
+    fileCache.clear().catch(err => {
+        console.error("Error clearing media cache", err)
+    })
 
     context.expressApp.post(
         "/media/upload",
@@ -209,22 +220,31 @@ export default function route(context: Context, config: RouteConfig) {
     );
 
     context.expressApp.get("/media/:id", async (req, res) => {
-        const file = await database.fileUpload.findUnique({
-            where: { id: req.params.id }
-        })
-        if (!file) {
-            return res.status(404).send({
-                message: "No file"
+        const cached = FILE_DATA_CACHE[req.params.id];
+
+        let filename: string;
+        if (cached) {
+            filename = cached.filename
+        } else {
+            const file = await database.fileUpload.findUnique({
+                where: { id: req.params.id }
             })
+            if (!file) {
+                return res.status(404).send({
+                    message: "No file"
+                })
+            }
+
+            filename = file.fileName
         }
 
-        res.redirect(308, req.baseUrl + `/media/${req.params.id}/${file.fileName}`)
+        res.redirect(308, req.baseUrl + `/media/${req.params.id}/${filename}`)
     })
 
     context.expressApp.get("/media/:id/:slug", async (req, res, next) => {
         const { download } = req.query as { download?: string }
 
-        const cached = FILE_CACHE[req.params.id];
+        let cached = FILE_DATA_CACHE[req.params.id];
         if (cached && req.headers['if-none-match'] === cached.etag) {
             res.writeHead(304, download !== undefined ? {
                 "Content-Disposition": `attachment; filename=${cached.filename}`
@@ -236,48 +256,71 @@ export default function route(context: Context, config: RouteConfig) {
             where: { id: req.params.id }
         })
         if (!file) {
+            delete FILE_DATA_CACHE[req.params.id]
+            try {
+                await fileCache.remove(req.params.id)
+            } catch (err) {
+                // do nothing
+            }
+
             return res.status(404).send({
                 message: "No file"
             })
         }
 
-        const command = new GetObjectCommand({
-            Bucket: config.files.bucketName,
-            Key: file.key,
-        })
-
-        try {
-            const response = await context.s3Client.send(command)
-            if (!response.Body) {
-                return res.sendStatus(404)
+        let buffer: Buffer | null = null;
+        if (cached) {
+            try {
+                const cachedFile = await fileCache.get(req.params.id)
+                buffer = Buffer.from(cachedFile, "base64")
+            } catch (err) {
+                // do nothing
             }
-
-            if (response.ETag) {
-                FILE_CACHE[req.params.id] = {
-                    etag: response.ETag,
-                    filename: file.fileName ?? "file"
-                }
-            }
-            
-            const blob = await response.Body.transformToByteArray()
-            const buffer = Buffer.from(blob)
-
-            const headers = {
-                "Content-Type": response.ContentType,
-                "Content-Length": buffer.length,
-                "Last-Modified": $files.toHTTPTimestamp(response.LastModified ?? new Date()),
-                "ETag": response.ETag,
-                "Cache-Control": "public, max-age=31536000, immutable"
-            } as OutgoingHttpHeaders
-
-            if (download !== undefined) {
-                headers["Content-Disposition"] = `attachment; filename=${file.fileName ?? "file"}`
-            }
-
-            res.writeHead(200, headers)
-            res.end(buffer)
-        } catch (err) {
-            next(err)
         }
+
+        if (!buffer) {
+            try {
+                const command = new GetObjectCommand({
+                    Bucket: config.files.bucketName,
+                    Key: file.key,
+                })
+    
+                const response = await context.s3Client.send(command)
+                if (!response.Body) {
+                    return res.sendStatus(404)
+                }
+    
+                if (response.ETag) {
+                    cached = {
+                        etag: response.ETag,
+                        filename: file.fileName ?? "file"
+                    }
+                    FILE_DATA_CACHE[req.params.id] = cached;
+                }
+                
+                const blob = await response.Body.transformToByteArray()
+                buffer = Buffer.from(blob)
+
+                await fileCache.set(req.params.id, buffer.toString("base64"))
+            } catch (err) {
+                next(err)
+                return;
+            }
+        }
+        
+        const headers = {
+            "Content-Type": file.contentType,
+            "Content-Length": buffer.length,
+            "Last-Modified": $files.toHTTPTimestamp(file.updatedAt ?? new Date()),
+            "ETag": cached?.etag,
+            "Cache-Control": "public, max-age=31536000, immutable"
+        } as OutgoingHttpHeaders
+
+        if (download !== undefined) {
+            headers["Content-Disposition"] = `attachment; filename=${file.fileName ?? "file"}`
+        }
+
+        res.writeHead(200, headers)
+        res.end(buffer)
     })
 }
