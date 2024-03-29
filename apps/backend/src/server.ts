@@ -7,7 +7,12 @@ validateEnvironment()
 
 await seedDatabase()
 
-const { server, discordClient } = await createApp({
+process.env.CMS_BUS_DATABASE_URL = process.env.CMS_BUS_DATABASE_URL ? process.env.CMS_BUS_DATABASE_URL : (() => {
+	const url = new URL(process.env.DATABASE_URL)
+	return `${url.protocol}//${url.username}:${url.password}@${url.host}${url.pathname}`
+})()
+
+const { context: { server, discordClient }, onStart } = await createApp({
 	origins: getOrigins(),
 	routeConfig: {
 		auth: {
@@ -47,10 +52,7 @@ const { server, discordClient } = await createApp({
 		clientSecret: process.env.AWS_S3_SECRET
 	},
 	cmsConfig: {
-		databaseUrl: process.env.CMS_BUS_DATABASE_URL ? process.env.CMS_BUS_DATABASE_URL : (() => {
-			const url = new URL(process.env.DATABASE_URL)
-			return `${url.protocol}//${url.username}:${url.password}@${url.host}${url.pathname}`
-		})(),
+		databaseUrl: process.env.CMS_BUS_DATABASE_URL!,
 		schema: process.env.CMS_BUS_SCHEMA
 	}
 });
@@ -70,3 +72,5 @@ console.log(
 \x1b[32m➜\x1b[0m\x1b[1m  Network:   \x1b[0m\x1b[36m${getOrigin("http")}/
 \x1b[32m➜\x1b[0m\x1b[2m  Env:       \x1b[0m\x1b[36m\x1b[2m${process.env.NODE_ENV}\x1b[0m`
 );
+
+await onStart()

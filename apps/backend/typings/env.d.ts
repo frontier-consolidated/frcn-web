@@ -6,6 +6,8 @@ declare global {
 			TZ?: string;
 			NODE_ENV?: string;
 
+			SERVE_WEB?: string;
+
 			PORT: string;
 			EXTERNAL_PORT?: string;
 			DOMAIN: string;
