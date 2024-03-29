@@ -5,6 +5,8 @@ import json from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
 
+const rollupModules = ["rollup", "@rollup/plugin-typescript", "@rollup/plugin-node-resolve", "@rollup/plugin-json", "@rollup/plugin-commonjs"]
+
 export default [
 	{
 		input: 'src/index.ts',
@@ -13,7 +15,7 @@ export default [
 			format: 'esm'
 		},
 		plugins: [typescript({ declaration: true, declarationDir: "types" })],
-		external: ["rollup", "@rollup/plugin-node-resolve", "@rollup/plugin-json", "@rollup/plugin-commonjs", "./global.d.ts", ...builtinModules]
+		external: [...rollupModules, "./global.d.ts", ...builtinModules]
 	},
 	{
 		input: 'src/server/index.ts',
@@ -51,14 +53,5 @@ export default [
 		},
 		plugins: [typescript(), nodeResolve(), commonjs()],
 		external: builtinModules
-	},
-	{
-		input: "src/isr/index.ts",
-		output: {
-			file: "isr.js",
-			format: "esm"
-		},
-		plugins: [typescript({ declaration: true, declarationDir: "types" }), nodeResolve(), commonjs()],
-		external: [...builtinModules]
 	}
 ];
