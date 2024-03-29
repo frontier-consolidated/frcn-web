@@ -47,7 +47,7 @@ model UserSession {
   sid       String   @id
   data      String   @db.VarChar(4096)
   deviceId  String   @map("device_id")
-  user      User?    @relation(fields: [userId], references: [id])
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String?  @map("user_id")
   expiresAt DateTime @map("expires_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -59,7 +59,7 @@ model UserSession {
 
 model UserSettings {
   id        Int      @id @default(autoincrement())
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @unique @map("user_id")
   updatedAt DateTime @updatedAt @map("updated_at")
   createdAt DateTime @default(now()) @map("created_at")
@@ -72,7 +72,7 @@ model UserStatus {
   id        Int      @id @default(autoincrement())
   activity  String?
   ship      String?
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @unique @map("user_id")
   updatedAt DateTime @updatedAt @map("updated_at")
   createdAt DateTime @default(now()) @map("created_at")
