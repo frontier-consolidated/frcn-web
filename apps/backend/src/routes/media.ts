@@ -136,6 +136,8 @@ function fileField(
 }
 
 export default function route(context: Context, config: RouteConfig) {
+    const FILE_CACHE: Record<string, { etag: string, filename: string }> = {}
+
     context.expressApp.post(
         "/media/upload",
         fileField("file", { maxFiles: 1 }),
@@ -222,6 +224,14 @@ export default function route(context: Context, config: RouteConfig) {
     context.expressApp.get("/media/:id/:slug", async (req, res, next) => {
         const { download } = req.query as { download?: string }
 
+        const cached = FILE_CACHE[req.params.id];
+        if (cached && req.headers['if-none-match'] === cached.etag) {
+            res.writeHead(304, download !== undefined ? {
+                "Content-Disposition": `attachment; filename=${cached.filename}`
+            } : undefined);
+			return res.end();
+		}
+
         const file = await database.fileUpload.findUnique({
             where: { id: req.params.id }
         })
@@ -239,8 +249,14 @@ export default function route(context: Context, config: RouteConfig) {
         try {
             const response = await context.s3Client.send(command)
             if (!response.Body) {
-
                 return res.sendStatus(404)
+            }
+
+            if (response.ETag) {
+                FILE_CACHE[req.params.id] = {
+                    etag: response.ETag,
+                    filename: file.fileName ?? "file"
+                }
             }
             
             const blob = await response.Body.transformToByteArray()
@@ -251,7 +267,7 @@ export default function route(context: Context, config: RouteConfig) {
                 "Content-Length": buffer.length,
                 "Last-Modified": $files.toHTTPTimestamp(response.LastModified ?? new Date()),
                 "ETag": response.ETag,
-                "Cache-Control": "public, max-age=31536000"
+                "Cache-Control": "public, max-age=31536000, immutable"
             } as OutgoingHttpHeaders
 
             if (download !== undefined) {
