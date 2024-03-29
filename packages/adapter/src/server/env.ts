@@ -13,8 +13,6 @@ const expected = new Set([
 	'BODY_SIZE_LIMIT',
 	'SHUTDOWN_TIMEOUT',
 	'IDLE_TIMEOUT',
-	'CMS_BUS_DATABASE_URL',
-	'CMS_BUS_SCHEMA'
 ]);
 
 const expected_unprefixed = new Set(['LISTEN_PID', 'LISTEN_FDS']);
