@@ -10,6 +10,9 @@ const config = {
 	kit: {
 		adapter: adapter({
 			out: "build",
+			main: {
+				input: "server/index.js",
+			}
 		}),
 		prerender: {
 			entries: [
