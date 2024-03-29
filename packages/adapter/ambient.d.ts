@@ -1,3 +1,5 @@
+export {}
+
 declare global {
 	namespace App {
 		export interface Platform {

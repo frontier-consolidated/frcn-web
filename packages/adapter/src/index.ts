@@ -1,25 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
+import path from "path";
 import { fileURLToPath } from "url";
 
 import commonjs from '@rollup/plugin-commonjs';
 import json from '@rollup/plugin-json';
 import { nodeResolve } from '@rollup/plugin-node-resolve';
+import typescript from "@rollup/plugin-typescript";
 import type { Adapter, RouteDefinition } from "@sveltejs/kit";
 import { rollup } from "rollup";
 
 interface AdapterOptions {
     out?: string;
     precompress?: boolean;
-    envPrefix?: string;
+	envPrefix?: string;
+	main?: {
+		input: string;
+		tsconfig?: string;
+	};
 }
 
 export interface AdapterPageConfig {
-    isr?: boolean;
+	isr?: boolean;
 }
 
 export default function (opts: AdapterOptions = {}) {
-    const { out = "build", precompress = true, envPrefix = "" } = opts;
+    const { out = "build", precompress = true, envPrefix = "", main } = opts;
 
     return {
         name: "@frcn/adapter",
@@ -47,19 +53,22 @@ export default function (opts: AdapterOptions = {}) {
 
 			builder.log.minor('Building server');
 
-			const isrRoutes: RouteDefinition[] = []
+			const isrRoutes = new Map<RouteDefinition, boolean>()
 
 			for (const route of builder.routes) {
 				const config = { ...route.config } as AdapterPageConfig
 
 				if (config.isr) {
-					isrRoutes.push(route)
+					if (route.prerender !== "auto") {
+						builder.log.error(`Isr route ${getPathname(route)} must export prerender="auto"`)
+					}
+					isrRoutes.set(route, config.isr)
 				}
 			}
 
 			builder.writeServer(tmp);
 
-			const isrPaths = isrRoutes.map(route => getPathname(route))
+			const isrPaths = Array.from(isrRoutes.keys()).map(r => getPathname(r))
 
 			fs.writeFileSync(
 				`${tmp}/manifest.js`,
@@ -76,10 +85,10 @@ export default function (opts: AdapterOptions = {}) {
 			// we bundle the Vite output so that deployments only need
 			// their production dependencies. Anything in devDependencies
 			// will get included in the bundled code
-			const bundle = await rollup({
+			const serverBundle = await rollup({
 				input: {
 					index: `${tmp}/index.js`,
-					manifest: `${tmp}/manifest.js`
+					manifest: `${tmp}/manifest.js`,
 				},
 				external: [
 					// dependencies could have deep exports, so we need a regex
@@ -95,12 +104,41 @@ export default function (opts: AdapterOptions = {}) {
 				]
 			});
 
-			await bundle.write({
+			await serverBundle.write({
 				dir: `${out}/server`,
 				format: 'esm',
 				sourcemap: true,
 				chunkFileNames: 'chunks/[name]-[hash].js'
 			});
+
+			if (main) {
+				const tsconfigPath = main.tsconfig ?? "tsconfig.json"
+
+				const mainBundle = await rollup({
+					input: {
+						main: path.join(process.cwd(), main.input)
+					},
+					external: [
+						...Object.keys(pkg.dependencies || {}).map((d) => new RegExp(`^${d}(\\/.*)?$`)),
+					],
+					plugins: [
+						...(main.input.endsWith(".ts") ? [typescript({ project: tsconfigPath, skipLibCheck: true })] : []),
+						nodeResolve({
+							preferBuiltins: true,
+							exportConditions: ['node']
+						}),
+						(commonjs as any)({ strictRequires: true }),
+						(json as any)()
+					]
+				})
+
+				await mainBundle.write({
+					dir: `${out}/main`,
+					format: "esm",
+					sourcemap: true,
+					chunkFileNames: 'chunks/[name]-[hash].js'
+				})
+			}
 
 			builder.copy(files, out, {
 				replace: {
@@ -109,7 +147,8 @@ export default function (opts: AdapterOptions = {}) {
 					MANIFEST: './server/manifest.js',
 					SERVER: './server/index.js',
 					SHIMS: './shims.js',
-					ENV_PREFIX: JSON.stringify(envPrefix)
+					ENV_PREFIX: JSON.stringify(envPrefix),
+					MAIN_ENTRYPOINT: main ? "./main/main.js" : "false"
 				}
 			});
         },

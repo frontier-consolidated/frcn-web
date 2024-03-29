@@ -1,5 +1,5 @@
 {
-	"ignorePatterns": ["./index.js", "./isr.js", "./files/*.js"],
+	"ignorePatterns": ["./index.js", "./files/*.js"],
 	"rules": {
 		"import/no-unresolved": [
 			"error",

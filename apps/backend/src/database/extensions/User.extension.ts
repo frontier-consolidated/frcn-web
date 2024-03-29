@@ -23,9 +23,9 @@ export function createUserExtension(define: typeof Prisma.defineExtension, clien
 					const value = (await cacheGet(
 						model,
 						() => {
-							return client.userRole.findUnique({
-								where: { id: model.primaryRoleId },
-							});
+							return client.user.findUnique({
+								where: { id: model.id },
+							}).primaryRole();
 						},
 						{
 							prefix: "UserRole",
@@ -40,15 +40,17 @@ export function createUserExtension(define: typeof Prisma.defineExtension, clien
 					
 					const value = await cacheGetMany<UsersInUserRoles>(
 						model,
-						(cached) => {
-							return client.usersInUserRoles.findMany({
+						async (cached) => {
+							const result = await client.user.findUnique({
+								where: { id: model.id }
+							}).roles({
 								where: {
-									userId: model.id,
 									roleId: {
 										notIn: cached.map((c) => c.roleId),
 									},
 								},
 							});
+							return result ?? []
 						},
 						{
 							prefix: "UsersInUserRoles",
@@ -112,15 +114,17 @@ export function createUserExtension(define: typeof Prisma.defineExtension, clien
 
 					const value = await cacheGetMany<Event>(
 						model,
-						(cached) => {
-							return client.event.findMany({
+						async (cached) => {
+							const result = await client.user.findUnique({
+								where: { id: model.id }
+							}).events({
 								where: {
-									ownerId: model.id,
 									id: {
 										notIn: cached.map((c) => c.id),
 									},
 								},
 							});
+							return result ?? []
 						},
 						{
 							prefix: "Event",
@@ -136,15 +140,17 @@ export function createUserExtension(define: typeof Prisma.defineExtension, clien
 
 					const value = await cacheGetMany<UserSession>(
 						model,
-						(cached) => {
-							return client.userSession.findMany({
+						async (cached) => {
+							const result = await client.user.findUnique({
+								where: { id: model.id }
+							}).sessions({
 								where: {
-									userId: model.id,
 									sid: {
 										notIn: cached.map((c) => c.sid),
 									},
 								},
 							});
+							return result ?? []
 						},
 						{
 							prefix: "UserSession",

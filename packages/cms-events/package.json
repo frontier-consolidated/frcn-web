@@ -1,0 +1,17 @@
+{
+  "name": "@frcn/cms-events",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist && tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@types/pg": "^8.11.4"
+  },
+  "dependencies": {
+    "pg-tbus": "^1.0.0"
+  }
+}

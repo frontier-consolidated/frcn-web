@@ -6,6 +6,7 @@ declare module "ENV" {
 
 declare module "HANDLER" {
 	export const handler: import('polka').Middleware;
+	export const on_start: () => Promise<void>;
 }
 
 declare module "MANIFEST" {

@@ -45,6 +45,7 @@
     "@codemirror/view": "^6.23.0",
     "@floating-ui/dom": "^1.6.1",
     "@frcn/cms": "workspace:^",
+    "@frcn/cms-events": "workspace:^",
     "@frcn/shared": "workspace:^",
     "@uiw/codemirror-theme-github": "^4.21.25",
     "axios": "^1.6.8",

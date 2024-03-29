@@ -3,10 +3,12 @@ import http from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import { Permission, hasPermission } from "@frcn/shared";
 import timeout from "connect-timeout";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, { type NextFunction, type Request, type Response } from "express";
+import express, { type NextFunction, type Request, type RequestHandler, type Response } from "express";
+import statusMonitor from "express-status-monitor";
 
 import { createCmsEventBus } from "./cmsEvents";
 import type { Context, RouteConfig } from "./context";
@@ -15,6 +17,7 @@ import { createApolloServer } from "./graphql";
 import { accesskeyMiddleware, type AccessKeyMiddlewareConfig } from "./middleware/accesskey.middleware";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/session";
 import { createS3Client } from "./s3Client";
+import { $users } from "./services/users";
 
 interface CreateAppOptions {
     origins: string[];
@@ -44,6 +47,9 @@ export async function createApp(config: CreateAppOptions) {
 
     app.set("trust proxy", true);
 
+    const monitor = statusMonitor() as RequestHandler & { middleware: RequestHandler, pageRoute: RequestHandler }
+    app.use(monitor.middleware)
+
     app.get("/health", (_req, res) => {
         res.setHeader("Cache-Control", "private, no-cache, no-store, max-ages=0");
         res.sendStatus(200);
@@ -69,6 +75,22 @@ export async function createApp(config: CreateAppOptions) {
 
     app.use(sessionMiddlewares(config.sessionConfig));
     app.use(accesskeyMiddleware(config.accesskeyConfig))
+
+    app.get("/metrics", async (req, res, next) => {
+        if (!req.user) {
+            return res.status(401).send({
+                message: "Must be authenticated"
+            })
+        }
+
+        if (!hasPermission(await $users.getPermissions(req.user), Permission.Admin)) {
+            return res.status(403).send({
+                message: "Missing permissions"
+            })
+        }
+
+        next()
+    }, monitor.pageRoute)
 
     const apolloServer = createApolloServer(server, {
         introspection: true,

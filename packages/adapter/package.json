@@ -9,10 +9,6 @@
       "types": "./types/index.d.ts",
       "import": "./index.js"
     },
-    "./isr": {
-      "types": "./types/isr/index.d.ts",
-      "import": "./isr.js"
-    },
     "./package.json": "./package.json"
   },
   "files": [
@@ -38,12 +34,10 @@
     "@sveltejs/kit": "^2.5.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.1",
     "@types/node": "^18.19.3",
-    "c8": "^9.0.0",
+    "devalue": "^4.3.2",
     "polka": "1.0.0-next.25",
     "sirv": "^2.0.4",
-    "tslib": "^2.4.1",
-    "vite": "^5.0.12",
-    "vitest": "^1.2.0"
+    "tslib": "^2.4.1"
   },
   "dependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",

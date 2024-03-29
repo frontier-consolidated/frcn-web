@@ -251,6 +251,7 @@ export default function route(context: Context, config: RouteConfig) {
                 "Content-Length": buffer.length,
                 "Last-Modified": $files.toHTTPTimestamp(response.LastModified ?? new Date()),
                 "ETag": response.ETag,
+                "Cache-Control": "public, max-age=31536000"
             } as OutgoingHttpHeaders
 
             if (download !== undefined) {
