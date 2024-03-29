@@ -41,12 +41,14 @@
             {resource.name}
         </span>
         <CreatedByButton class="mt-1" user={resource.owner} />
-        <span class="block text-sm font-semibold dark:text-white mt-3">
-            Description
-        </span>
-        <p class="text-sm dark:text-gray-400">
-            {resource.shortDescription}
-        </p>
+        {#if resource.shortDescription}
+            <span class="block text-sm font-semibold dark:text-white mt-3">
+                Description
+            </span>
+            <p class="text-sm dark:text-gray-400">
+                {resource.shortDescription}
+            </p>
+        {/if}
         <div class="flex gap-2 pt-4 mt-auto">
             <Button class="flex-1" on:click={() => {
                 if (!resource.downloadUrl) return;
