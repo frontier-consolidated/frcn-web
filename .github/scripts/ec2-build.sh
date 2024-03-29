@@ -16,7 +16,7 @@ pnpm install --frozen-lockfile
 
 pnpm --filter=backend db-generate
 
-echo "VITE_API_BASEURL=https://$HOSTNAME/api" > apps/web/.env.production
+echo "VITE_API_BASEURL=https://$HOSTNAME" > apps/web/.env.production
 
 pnpm run --filter=\!./packages/adapter build
 pnpm deploy --filter=backend --prod $BUILD_DIR/backend

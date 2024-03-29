@@ -130,6 +130,18 @@ export async function createApp(config: CreateAppOptions) {
         module.default(context, config.routeConfig);
     }
 
+    let webOnStart: (() => Promise<void>) | null = null;
+    const webHandler = path.join(__dirname, "../../web/build/handler.js")
+    if (fs.existsSync(webHandler) && process.env.SERVE_WEB === "true") {
+        const { handler, on_start } = await import(webHandler) as {
+            handler: RequestHandler;
+            on_start: () => Promise<void>;
+        }
+
+        app.use(handler)
+        webOnStart = on_start
+    }
+
     app.use((err: Error | Error[], req: Request, res: Response, _next: NextFunction) => {
         const errors = Array.isArray(err) ? err : [err];
         for (const error of errors) {
@@ -144,5 +156,12 @@ export async function createApp(config: CreateAppOptions) {
         });
     });
 
-    return context;
+    return {
+        context,
+        async onStart() {
+            if (webOnStart) {
+                await webOnStart()
+            }
+        }
+    };
 }

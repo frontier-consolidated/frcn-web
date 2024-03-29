@@ -9,10 +9,7 @@ on:
             hostname:
                 type: string
                 required: true
-            frontend_service:
-                type: string
-                required: true
-            backend_service:
+            service:
                 type: string
                 required: true
 
@@ -115,10 +112,9 @@ jobs:
               run: |
                   ssh server "cd /var/www/${{ inputs.hostname }} && chmod -R +x backend && chmod -R a+rw web"
 
-            - name: Restart services
-              # TODO: Switch this to use /health endpoint instead of sleeping
+            - name: Restart service
               run: |
-                  ssh server "cd /var/www/${{ inputs.hostname }} && sudo /bin/systemctl restart ${{ inputs.backend_service }} && sleep 10 && sudo /bin/systemctl restart ${{ inputs.frontend_service }}"
+                  ssh server "cd /var/www/${{ inputs.hostname }} && sudo /bin/systemctl restart ${{ inputs.service }}"
 
             - name: Remove runner ip from AWS security group
               run: |

@@ -95,6 +95,7 @@ export function validateEnvironment() {
 
 	// CMS_BUS_DATABASE_URL
 	expectEnvvar("CMS_BUS_SCHEMA")
+	if (process.env.SERVE_WEB === "true") expectEnvvar("CMS_ACCESS_KEY")
 
 	expectEnvvar("ACCESS_KEY_HEADER")
 	expectEnvvar("CONSENT_COOKIE")
