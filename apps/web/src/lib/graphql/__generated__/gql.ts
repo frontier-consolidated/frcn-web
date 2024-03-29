@@ -30,6 +30,7 @@ const documents = {
     "\n\tmutation DeleteAccessKey($id: Int!) {\n\t\tdeleted: deleteAccessKey(id: $id)\n\t}\n": types.DeleteAccessKeyDocument,
     "\n\tmutation DeleteContentContainer($id: ID!) {\n\t\tdeleted: deleteContentContainer(id: $id)\n\t}\n": types.DeleteContentContainerDocument,
     "\n\tmutation DeleteContentContainerFile($id: ID!) {\n\t\tdeleted: deleteContentContainerFile(id: $id)\n\t}\n": types.DeleteContentContainerFileDocument,
+    "\n\tmutation DeleteCurrentUser {\n\t\tdeleted: deleteCurrentUser\n\t}\n": types.DeleteCurrentUserDocument,
     "\n\tmutation DeleteEvent($id: ID!) {\n\t\tdeleted: deleteEvent(id: $id)\n\t}\n": types.DeleteEventDocument,
     "\n\tmutation DeleteResource($id: ID!) {\n\t\tdeleted: deleteResource(id: $id)\n\t}\n": types.DeleteResourceDocument,
     "\n\tmutation DeleteRole($roleId: ID!) {\n\t\tdeleted: deleteRole(id: $roleId)\n\t}\n": types.DeleteRoleDocument,
@@ -146,6 +147,10 @@ export function gql(source: "\n\tmutation DeleteContentContainer($id: ID!) {\n\t
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n\tmutation DeleteContentContainerFile($id: ID!) {\n\t\tdeleted: deleteContentContainerFile(id: $id)\n\t}\n"): (typeof documents)["\n\tmutation DeleteContentContainerFile($id: ID!) {\n\t\tdeleted: deleteContentContainerFile(id: $id)\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tmutation DeleteCurrentUser {\n\t\tdeleted: deleteCurrentUser\n\t}\n"): (typeof documents)["\n\tmutation DeleteCurrentUser {\n\t\tdeleted: deleteCurrentUser\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

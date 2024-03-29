@@ -371,6 +371,7 @@ type Mutation {
 	setUserScName(name: String!): User!
 	verifyUserScName(code: String!): User!
 	editUserStatus(data: UserStatusEditInput!): UserStatus!
+	deleteCurrentUser: Boolean!
 
 	# Events
 	createEvent: ID! @permission(has: CreateEvents)

@@ -116,4 +116,16 @@ export const userResolvers: Resolvers = {
 			return resolveUser(user);
 		},
 	},
+
+	Mutation: {
+		async deleteCurrentUser(source, args, context) {
+			if (!context.user) return false;
+
+			await database.user.delete({
+				where: { id: context.user.id }
+			})
+
+			return true;
+		}
+	}
 };
