@@ -1,5 +1,3 @@
-import { building } from "$app/environment";
-import { createPageProcessor } from "@frcn/adapter/isr";
 import type { Handle } from "@sveltejs/kit";
 import { locale } from "svelte-i18n";
 
@@ -31,7 +29,5 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	}
 
-	return resolve(event, {
-		transformPageChunk: createPageProcessor(event, building)
-	});
+	return resolve(event);
 };
