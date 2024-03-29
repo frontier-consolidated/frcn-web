@@ -34,6 +34,7 @@ rm -rf $BUILD_DIR/backend/src
 
 # Cleanup web folder
 rm -rf $BUILD_DIR/web/src
+rm -rf $BUILD_DIR/web/server
 rm -rf $BUILD_DIR/web/static
 rm -rf $BUILD_DIR/web/.svelte-kit
 rm -f $BUILD_DIR/web/.eslintrc $BUILD_DIR/web/codegen.yml $BUILD_DIR/web/postcss.config.cjs $BUILD_DIR/web/svelte.config.js $BUILD_DIR/web/tailwind.config.cjs $BUILD_DIR/web/tsconfig.json $BUILD_DIR/web/vite.config.ts
