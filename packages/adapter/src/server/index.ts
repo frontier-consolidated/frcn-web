@@ -1,5 +1,5 @@
 import { env } from "ENV";
-import { handler } from "HANDLER";
+import { handler, on_start } from "HANDLER";
 import polka from "polka";
 
 export const path = env('SOCKET_PATH', false);
@@ -31,12 +31,14 @@ let idle_timeout_id: NodeJS.Timeout | void;
 const server = polka().use(handler);
 
 if (socket_activation) {
-	server.listen({ fd: SD_LISTEN_FDS_START }, () => {
+	server.listen({ fd: SD_LISTEN_FDS_START }, async () => {
 		console.log(`Listening on file descriptor ${SD_LISTEN_FDS_START}`);
+		await on_start();
 	});
 } else {
-	server.listen({ path, host, port }, () => {
+	server.listen({ path, host, port }, async () => {
 		console.log(`Listening on ${path ? path : host + ':' + port}`);
+		await on_start();
 	});
 }
 
