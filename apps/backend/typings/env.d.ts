@@ -21,6 +21,7 @@ declare global {
 
 			CMS_BUS_DATABASE_URL?: string;
 			CMS_BUS_SCHEMA: string;
+			CMS_ACCESS_KEY?: string;
 
 			ACCESS_KEY_HEADER: string;
 			CONSENT_COOKIE: string;
