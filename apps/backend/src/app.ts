@@ -13,6 +13,7 @@ import statusMonitor from "express-status-monitor";
 import { createCmsEventBus } from "./cmsEvents";
 import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
+import { getBasePath } from "./env";
 import { createApolloServer } from "./graphql";
 import { accesskeyMiddleware, type AccessKeyMiddlewareConfig } from "./middleware/accesskey.middleware";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/session";
@@ -47,7 +48,9 @@ export async function createApp(config: CreateAppOptions) {
 
     app.set("trust proxy", true);
 
-    const monitor = statusMonitor() as RequestHandler & { middleware: RequestHandler, pageRoute: RequestHandler }
+    const monitor = statusMonitor({
+        socketPath: getBasePath() + "/socket.io"
+    }) as RequestHandler & { middleware: RequestHandler, pageRoute: RequestHandler }
     app.use(monitor.middleware)
 
     app.get("/health", (_req, res) => {

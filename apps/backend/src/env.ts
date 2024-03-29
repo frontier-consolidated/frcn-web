@@ -25,7 +25,7 @@ export function getHost() {
 	return `${subDomain}${subDomain ? "." : ""}${domain}${domain === "localhost" || hasExternalPort() ? `:${getExternalPort()}` : ""}`
 }
 
-function getBasePath() {
+export function getBasePath() {
 	let basePath = process.env.BASE_PATH;
 	if (basePath && !basePath.startsWith("/")) {
 		basePath = "/" + basePath;
