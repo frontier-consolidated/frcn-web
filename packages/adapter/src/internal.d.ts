@@ -6,6 +6,7 @@ declare module "ENV" {
 
 declare module "HANDLER" {
 	export const handler: import('polka').Middleware;
+	export const on_start: () => Promise<void>;
 }
 
 declare module "MANIFEST" {
@@ -14,13 +15,7 @@ declare module "MANIFEST" {
 	export const base: string;
 	export const manifest: SSRManifest;
 	export const prerendered: Set<string>;
-	export const isr: {
-		paths: Set<string>;
-		configs: {
-			pathname: string;
-			cmsIdentifier: string;
-		}[]
-	};
+	export const isr: Set<string>;
 }
 
 declare module "SERVER" {
