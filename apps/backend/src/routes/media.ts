@@ -146,7 +146,7 @@ async function setupCache(cache: FileSystemCache) {
     try {
 		fs.mkdirSync(cache.basePath, { recursive: true });
         // rw-rw-r--
-        fs.chmodSync(cache.basePath, 0o664)
+        fs.chmodSync(cache.basePath, 0o774)
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (e: any) {
 		if (e.code === 'EEXIST') {
