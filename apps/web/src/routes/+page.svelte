@@ -41,6 +41,7 @@
 	titleSide="right"
 	description={index?.getMetaDescription()}
 	image={metaImage}
+	imageSize="large"
 >
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
 	{#each galleryImages as image}

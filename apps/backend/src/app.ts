@@ -66,7 +66,7 @@ export async function createApp(config: CreateAppOptions) {
     );
 
     app.use(
-        timeout("15s", {
+        timeout("30s", {
             respond: true,
         }),
     );
