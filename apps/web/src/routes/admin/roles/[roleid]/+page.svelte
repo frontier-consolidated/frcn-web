@@ -119,7 +119,7 @@
 						<Input
 							class="rounded"
 							id="system-roles-role-name"
-							name="Role Name"
+							name="system-roles-role-name"
 							type="text"
 							placeholder="Role name"
 							pattern="[A-Za-z]"
@@ -149,7 +149,7 @@
 						</Label>
 						<Select
 							id="system-roles-role-discord-role"
-							name="Role Discord Role"
+							name="system-roles-role-discord-role"
 							options={[{
 								value: "",
 								name: "None",

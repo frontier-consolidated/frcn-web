@@ -21,7 +21,7 @@
 		<Label for="event-rsvp-role" class="mb-2">RSVP Role</Label>
 		<Select
 			id="event-rsvp-role"
-			name="Event RSVP Role"
+			name="event-rsvp-role"
 			options={event.rsvpRoles.map((role) => ({
 				value: role.id,
 				name: role.name,
