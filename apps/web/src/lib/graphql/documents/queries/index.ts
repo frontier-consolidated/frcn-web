@@ -4,8 +4,8 @@ import { GET_ALL_ACCESS_KEYS } from "./getAllAccessKeys.query";
 import { GET_ALL_ROLES } from "./getAllRoles.query";
 import { GET_CONTENT_CONTAINER } from "./getContentContainer.query";
 import { GET_CONTENT_CONTAINER_BY_ID } from "./getContentContainerById.query";
-import { GET_CONTENT_CONTAINER_CHILDREN } from "./getContentContainerChildren.query";
 import { GET_CONTENT_CONTAINERS_OF_TYPE } from "./getContentContainersOfType.query";
+import { GET_CONTENT_CONTAINER_WITH_DESCENDANTS } from "./getContentContainerWithDescendants.query";
 import { GET_EVENT } from "./getEvent.query";
 import { GET_EVENTS } from "./getEvents.query";
 import { GET_EVENT_SETTINGS } from "./getEventSettings.query";
@@ -30,6 +30,6 @@ export const Queries = {
 	GET_CONTENT_CONTAINER,
 	GET_CONTENT_CONTAINER_BY_ID,
 	GET_CONTENT_CONTAINERS_OF_TYPE,
-	GET_CONTENT_CONTAINER_CHILDREN,
+	GET_CONTENT_CONTAINER_WITH_DESCENDANTS,
 	GET_ALL_ACCESS_KEYS
 };

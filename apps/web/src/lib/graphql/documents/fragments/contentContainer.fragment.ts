@@ -10,19 +10,6 @@ export const CONTENT_CONTAINER_FRAGMENT = gql(`
         files {
             ...ContentContainerFileFragment
         }
-        children {
-            id
-            identifier
-            type
-            title
-            content
-            files {
-                ...ContentContainerFileFragment
-            }
-            parent {
-                id
-            }
-        }
         parent {
             id
         }

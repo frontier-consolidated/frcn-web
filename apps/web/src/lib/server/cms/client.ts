@@ -27,12 +27,12 @@ export class CmsClient {
             return [];
         }
         
-        return await Promise.all((data?.containers ?? []).map(async (container) => await this.fetchAllChildren(container)))
+        return data?.containers ?? []
     }
 
     async getIndex(identifier: string) {
         const { data, error } = await this.apollo.query({
-            query: Queries.GET_CONTENT_CONTAINER,
+            query: Queries.GET_CONTENT_CONTAINER_WITH_DESCENDANTS,
             variables: {
                 identifier,
                 type: CMSContainerType.Index
@@ -46,7 +46,7 @@ export class CmsClient {
             return null;
         }
 
-        return data?.container ? await this.fetchAllChildren(data.container) : null;
+        return data?.container ? this.transformContainerWithRecursiveChildren(data.container) : null;
     }
 
     async getContainer(id: string) {
@@ -58,31 +58,20 @@ export class CmsClient {
             fetchPolicy: "no-cache"
         })
 
-        return data?.container ? await this.fetchAllChildren(data.container) : null;
+        return data?.container ? this.transformContainerWithRecursiveChildren(data.container) : null;
     }
 
-    private async fetchAllChildren(container: ContentContainerData) {
+    transformContainerWithRecursiveChildren(container: ContentContainerData) {
         if (Object.isFrozen(container)) container = { ...container };
+        if (!container.recursiveChildren) return container;
 
-        let children = container.children
-        if (!children || children.length < 1) {
-            const { data } = await this.apollo.query({
-                query: Queries.GET_CONTENT_CONTAINER_CHILDREN,
-                variables: {
-                    id: container.id
-                },
-                fetchPolicy: "no-cache"
-            })
-
-            children = data.container?.children ?? []
+        const children: ContentContainerData[] = []
+        for (const child of container.recursiveChildren) {
+            children.push(this.transformContainerWithRecursiveChildren(child))
         }
-
-        for (const child of children) {
-            await this.fetchAllChildren(child)
-        }
-
-        container.children = children
-        return container
+        container.children = children;
+        delete container.recursiveChildren;
+        return container;
     }
 }
 

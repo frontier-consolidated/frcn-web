@@ -2,6 +2,7 @@ import type { ID } from '@frcn/graphql-scalar-types/server';
 import type { String } from '@frcn/graphql-scalar-types/server';
 import type { Boolean } from '@frcn/graphql-scalar-types/server';
 import type { Int } from '@frcn/graphql-scalar-types/server';
+import type { Object } from '@frcn/graphql-scalar-types/server';
 import type { Timestamp } from '@frcn/graphql-scalar-types/server';
 import type { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
 import type { GQLContext } from '../context';
@@ -20,6 +21,7 @@ export type Scalars = {
   Boolean: { input: Boolean['input']; output: Boolean['output']; }
   Int: { input: Int['input']; output: Int['output']; }
   Float: { input: number; output: number; }
+  Object: { input: Object['input']; output: Object['output']; }
   Timestamp: { input: Timestamp['input']; output: Timestamp['output']; }
 };
 
@@ -51,6 +53,7 @@ export type ContentContainer = {
   id: Scalars['ID']['output'];
   identifier?: Maybe<Scalars['String']['output']>;
   parent?: Maybe<ContentContainer>;
+  recursiveChildren: Array<Scalars['Object']['output']>;
   title: Scalars['String']['output'];
   type: Scalars['String']['output'];
 };
@@ -819,6 +822,7 @@ export type ResolversTypes = ResolversObject<{
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Mutation: ResolverTypeWrapper<{}>;
+  Object: ResolverTypeWrapper<Scalars['Object']['output']>;
   PagedEvent: ResolverTypeWrapper<PagedEvent>;
   PagedResource: ResolverTypeWrapper<PagedResource>;
   Permission: Permission;
@@ -870,6 +874,7 @@ export type ResolversParentTypes = ResolversObject<{
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   Mutation: {};
+  Object: Scalars['Object']['output'];
   PagedEvent: PagedEvent;
   PagedResource: PagedResource;
   Query: {};
@@ -928,6 +933,7 @@ export type ContentContainerResolvers<ContextType = GQLContext, ParentType exten
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   identifier?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   parent?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType>;
+  recursiveChildren?: Resolver<Array<ResolversTypes['Object']>, ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   type?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1086,6 +1092,10 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   verifyUserScName?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationVerifyUserScNameArgs, 'code'>>;
 }>;
 
+export interface ObjectScalarConfig extends GraphQLScalarTypeConfig<ResolversTypes['Object'], any> {
+  name: 'Object';
+}
+
 export type PagedEventResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PagedEvent'] = ResolversParentTypes['PagedEvent']> = ResolversObject<{
   items?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType>;
   itemsPerPage?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
@@ -1226,6 +1236,7 @@ export type Resolvers<ContextType = GQLContext> = ResolversObject<{
   EventSettings?: EventSettingsResolvers<ContextType>;
   EventTeam?: EventTeamResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  Object?: GraphQLScalarType;
   PagedEvent?: PagedEventResolvers<ContextType>;
   PagedResource?: PagedResourceResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
