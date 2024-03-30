@@ -1,4 +1,5 @@
 import { browser } from '$app/environment';
+import { isRedirect } from '@sveltejs/kit';
 
 import { getApollo } from '$lib/graphql';
 import { pushNotification } from '$lib/stores/NotificationStore';
@@ -14,6 +15,10 @@ export const load = (async ({ url, data }) => {
         }
         return await getResources(getApollo(), url)
     } catch (err) {
+        if (isRedirect(err)) {
+            throw err
+        }
+
         if (browser) {
             pushNotification({
                 type: "error",

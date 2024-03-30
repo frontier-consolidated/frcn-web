@@ -6,9 +6,9 @@ import { database } from "../../../database";
 import { getOrigin } from "../../../env";
 import { $resources } from "../../../services/resources";
 import type {
-    User as GQLUser,
-    Resource as GQLResource,
-    Resolvers,
+	User as GQLUser,
+	Resource as GQLResource,
+	Resolvers,
 } from "../../__generated__/resolvers-types";
 import { gqlErrorUnauthenticated } from "../gqlError";
 
@@ -58,6 +58,12 @@ export const resourceResolvers: Resolvers = {
 	},
 
 	Query: {
+		async getResource(source, { id }) {
+			const resource = await $resources.getResource(id);
+			if (!resource) return null;
+
+			return resolveResource(resource)
+		},
 		async getResources(source, { filter, page, limit }) {
 			const { search, tags } = filter ?? {};
 
@@ -71,7 +77,7 @@ export const resourceResolvers: Resolvers = {
 			);
 
 			return {
-				items: await Promise.all(result.items.map(resolveResource)),
+				items: result.items.map(resolveResource),
 				itemsPerPage: result.itemsPerPage,
 				page: result.page,
 				nextPage: result.nextPage,

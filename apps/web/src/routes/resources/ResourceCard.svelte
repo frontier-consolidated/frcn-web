@@ -2,7 +2,7 @@
 	import { invalidate } from "$app/navigation";
 	import { Permission, hasPermission } from "@frcn/shared";
 	import { Badge, Dropdown, DropdownItem, Toolbar, ToolbarButton } from "flowbite-svelte";
-	import { DotsVerticalOutline, DownloadSolid, EditOutline, FilePdfSolid, TrashBinSolid } from "flowbite-svelte-icons";
+	import { DotsVerticalOutline, DownloadSolid, EditOutline, FilePdfSolid, LinkSolid, TrashBinSolid } from "flowbite-svelte-icons";
     import { createEventDispatcher } from "svelte";
 
 	import { CreatedByButton, TimeBadge, ConfirmationModal, Button } from "$lib/components";
@@ -59,12 +59,23 @@
             }}>
                 <DownloadSolid class="me-2" tabindex="-1" /> Download
             </Button>
-            {#if hasPermission($user.data?.permissions ?? 0, Permission.UploadResources)}
-                <Toolbar embedded>
-                    <ToolbarButton name="Options">
-                        <DotsVerticalOutline tabindex="-1" />
-                    </ToolbarButton>
-                    <Dropdown containerClass="rounded divide-y z-50">
+            <Toolbar embedded>
+                <ToolbarButton name="Options">
+                    <DotsVerticalOutline tabindex="-1" />
+                </ToolbarButton>
+                <Dropdown containerClass="rounded divide-y z-50">
+                    <DropdownItem class="flex items-center" on:click={() => {
+                        const link = new URL(`/resources?id=${resource.id}`, window.location.origin);
+                        navigator.clipboard.writeText(link.href);
+                        pushNotification({
+                            type: "success",
+                            message: "Link copied to clipboard!",
+                            timeout: 5000
+                        })
+                    }}>
+                        <LinkSolid size="sm" class="me-2" tabindex="-1" /> Share
+                    </DropdownItem>
+                    {#if hasPermission($user.data?.permissions ?? 0, Permission.UploadResources)}
                         <DropdownItem class="flex items-center" on:click={() => {
                             dispatch("edit", resource)
                         }}>
@@ -73,9 +84,9 @@
                         <DropdownItem class="flex items-center dark:text-red-500 dark:hover:text-white dark:hover:bg-red-700" on:click={() => (deleteModalOpen = true)}>
                             <TrashBinSolid size="sm" class="me-2" tabindex="-1" /> Delete
                         </DropdownItem>
-                    </Dropdown>
-                </Toolbar>
-            {/if}
+                    {/if}
+                </Dropdown>
+            </Toolbar>
         </div>
     </div>
 </div>

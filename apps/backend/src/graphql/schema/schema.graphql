@@ -337,6 +337,7 @@ type Query {
 	): PagedEvent
 
 	# Resources
+	getResource(id: ID!): Resource
 	getResources(
 		filter: ResourceFilterInput
 		page: Int @constraint(min: 0)
