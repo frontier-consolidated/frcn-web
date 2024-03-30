@@ -178,7 +178,7 @@
 				</div>
 			</TabItem>
 			<TabItem title="Permissions" open={$page.url.hash === "#permissions"} on:click={() => window.location.hash = "#permissions"}>
-				<PermissionToggles disableToggles={{ [Permission.Admin]: canToggleAdmin }} bind:permissions={editData.permissions} let:info let:checked>
+				<PermissionToggles disableToggles={{ [Permission.Admin]: !canToggleAdmin }} bind:permissions={editData.permissions} let:info let:checked>
 					{#if info.permission === Permission.Admin && checked && !canToggleAdmin}
 						<Tooltip>
 							<ExclamationCircleSolid slot="icon" class="ms-2 text-orange-400" />
