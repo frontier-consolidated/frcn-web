@@ -1,11 +1,12 @@
 
-import { DeleteObjectCommand, DeleteObjectsCommand } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { CMSContainerType, ContainerTypeMap } from "@frcn/cms";
 import type { ContentContainer, ContentContainerFile, FileUpload } from "@prisma/client";
 
 import type { WithModel } from "./types";
 import { database, transaction } from "../../../database";
 import { getOrigin } from "../../../env";
+import { $cms } from "../../../services/cms";
 import type {
 	ContentContainer as GQLContentContainer,
 	ContentContainerFile as GQLContentContainerFile,
@@ -274,68 +275,7 @@ export const cmsResolvers: Resolvers = {
 			})
 			if (!container) return false;
 
-			const collectedFiles: FileUpload[] = []
-			async function traverseCollectFiles(container: ContentContainer) {
-				const files = await database.contentContainer.getFiles(container)
-				collectedFiles.push(...files)
-
-				const children = await database.contentContainer.getChildren(container, {
-					select: { id: true }
-				})
-				for (const child of children) {
-					await traverseCollectFiles(child)
-				}
-			}
-			await traverseCollectFiles(container)
-
-			
-			
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore excessively deep type, but still resolves
-			await transaction(async (tx) => {
-				if (collectedFiles.length > 0) {
-					const command = new DeleteObjectsCommand({
-						Bucket: context.app.s3Bucket,
-						Delete: {
-							Objects: collectedFiles.map(f => ({
-								Key: f.key
-							}))
-						}
-					})
-
-					await tx.fileUpload.deleteMany({
-						where: {
-							id: {
-								in: collectedFiles.map(f => f.id)
-							}
-						}
-					})
-
-					await context.app.s3Client.send(command)
-				}
-
-				await tx.contentContainer.delete({
-					where: { id: args.id }
-				})
-
-				if (container.parentId) {
-					const parent = await tx.contentContainer.findUnique({
-						where: { id: container.parentId }
-					})
-
-					if (parent) {
-						await tx.contentContainer.update({
-							where: { id: parent.id },
-							data: {
-								childrenOrder: parent.childrenOrder.filter(c => c !== args.id)
-							}
-						})
-					}
-				}
-
-				return container
-			})
-			
+			await $cms.deleteContainer(context.app.s3Client, context.app.s3Bucket, args.id)
 			return true;
 		},
 		async editContentContainerFile(source, args, context) {

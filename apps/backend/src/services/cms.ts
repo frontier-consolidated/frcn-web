@@ -1,8 +1,8 @@
 import { DeleteObjectCommand, type S3Client } from "@aws-sdk/client-s3";
-import type { User } from "@prisma/client";
+import type { ContentContainer, FileUpload, User } from "@prisma/client";
 
 import { $files } from "./files";
-import { database } from "../database";
+import { database, transaction } from "../database";
 
 export type CmsAttachFileMetadata = {
 	identifier?: string
@@ -71,6 +71,61 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 	})
 }
 
+async function deleteContainer(s3Client: S3Client, bucket: string, id: string, deleteFiles = true) {
+	const container = await database.contentContainer.findUnique({
+		where: { id }
+	})
+	if (!container) return;
+
+	const collectedFiles: FileUpload[] = []
+	async function traverseCollectFiles(container: ContentContainer) {
+		const files = await database.contentContainer.getFiles(container)
+		collectedFiles.push(...files)
+
+		const children = await database.contentContainer.getChildren(container, {
+			select: { id: true }
+		})
+		for (const child of children) {
+			await traverseCollectFiles(child)
+		}
+	}
+	await traverseCollectFiles(container)
+	
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-ignore excessively deep type, but still resolves
+	await transaction(async (tx) => {
+		if (deleteFiles && collectedFiles.length > 0) {
+			await $files.deleteManyFiles(s3Client, bucket, collectedFiles, tx)
+		}
+
+		await tx.contentContainer.delete({
+			where: { id: id }
+		})
+
+		if (container.parentId) {
+			const parent = await tx.contentContainer.findUnique({
+				where: { id: container.parentId }
+			})
+
+			if (parent) {
+				await tx.contentContainer.update({
+					where: { id: parent.id },
+					data: {
+						childrenOrder: parent.childrenOrder.filter(c => c !== id)
+					}
+				})
+			}
+		}
+
+		return container
+	})
+
+	return {
+		files: collectedFiles
+	}
+}
+
 export const $cms = {
-	attachFile
+	attachFile,
+	deleteContainer
 };

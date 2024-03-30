@@ -49,7 +49,7 @@ export default function route(context: Context, config: RouteConfig) {
 
     context.expressApp.post(
         "/media/upload",
-        fileField("file", { maxFiles: 1 }),
+        fileField("file", { maxFiles: 1, requireAttachment: true }),
         async (req, res, next) => {
             const { type, attach_to } = req.query as {
                 type?: string,

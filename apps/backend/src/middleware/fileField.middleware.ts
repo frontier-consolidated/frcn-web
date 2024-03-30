@@ -4,23 +4,33 @@ import path from "path";
 import { Permission, hasPermission } from "@frcn/shared";
 import type { RequestHandler } from "express";
 import * as mime from "mime-types";
-import multer, { MulterError } from "multer";
+import multer, { MulterError, type Options } from "multer";
 
 import { $files } from "../services/files";
 import { $users } from "../services/users";
 
-const storage = multer.diskStorage({
+const limits: Options["limits"] = {
+    fileSize: $files.MAX_FILE_SIZE_MB * 1024 * 1024,
+}
+
+const diskStorage = multer.diskStorage({
     destination: $files.FILE_UPLOAD_DIR,
     filename(req, file, callback) {
         const parsedFileName = path.parse(file.originalname);
         callback(null, `${randomUUID()}${parsedFileName.ext}`)
     }
 })
-const upload = multer({
-    storage,
-    limits: {
-        fileSize: $files.MAX_FILE_SIZE_MB * 1024 * 1024,
-    }
+
+const memStorage = multer.memoryStorage()
+
+const diskUpload = multer({
+    storage: diskStorage,
+    limits
+})
+
+const memUpload = multer({
+    storage: memStorage,
+    limits
 })
 
 const attachmentConfigs = {
@@ -39,10 +49,12 @@ export function fileField(
     field: string,
 	options?: {
 		maxFiles?: number;
-		allowedFiles?: string[];
+        allowedFiles?: string[];
+        disk?: boolean;
+        requireAttachment?: boolean;
 	}
 ): RequestHandler {
-    const handler = upload.array(field, options?.maxFiles);
+    const handler = options?.disk === false ? memUpload.array(field, options?.maxFiles) : diskUpload.array(field, options?.maxFiles);
 
     return async function (req, res, next) {
         if (!req.user) {
@@ -51,19 +63,21 @@ export function fileField(
             })
         }
 
-        const { type } = req.query as { type?: string }
-        
-        const config = type && attachmentConfigs[type]
-        if (!config) return res.status(400).send({ message: `Disallowed attachment 'type=${type}'` })
-        
-        const permissions = await $users.getPermissions(req.user)
-        if (!hasPermission(permissions, config.permission)) return res.status(403).send({
-            message: "Missing permissions required to upload files"
-        })
-
-        if (config.allowedFiles) {
-            options ??= {}
-            options.allowedFiles ??= config.allowedFiles
+        if (options?.requireAttachment) {
+            const { type } = req.query as { type?: string }
+            
+            const config = type && attachmentConfigs[type]
+            if (!config) return res.status(400).send({ message: `Disallowed attachment 'type=${type}'` })
+            
+            const permissions = await $users.getPermissions(req.user)
+            if (!hasPermission(permissions, config.permission)) return res.status(403).send({
+                message: "Missing permissions required to upload files"
+            })
+    
+            if (config.allowedFiles) {
+                options ??= {}
+                options.allowedFiles ??= config.allowedFiles
+            }
         }
 
         handler(req, res, (err) => {
