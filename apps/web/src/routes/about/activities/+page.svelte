@@ -18,6 +18,7 @@
 	title={index?.getMetaTitle() ? index?.getMetaTitle() : "Our Activities - About"}
 	description={index?.getMetaDescription()}
 	image={metaImage}
+	imageSize="large"
 >
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
 </Head>
