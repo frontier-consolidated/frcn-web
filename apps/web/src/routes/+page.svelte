@@ -5,14 +5,14 @@
 
 	import CallToActionRenderer from "$lib/cms/CallToActionRenderer.svelte";
 	import { transformContainer } from "$lib/cms/transformContainer";
-	import { Hr, Markdown, Marquee } from "$lib/components";
+	import { Hr, Markdown } from "$lib/components";
 	import logo from "$lib/images/logo.png";
 	import activitiesImage from "$lib/images/stock/activities.png?w=580&imagetools"
 	import communityImage from "$lib/images/stock/community.png?w=580&imagetools"
 	import heroImageSrcset from "$lib/images/stock/hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
-	import knowledgeImage from "$lib/images/stock/knowledge.png?w=580&imagetools"
 	import orgImage from "$lib/images/stock/org.png?w=580&imagetools"
 	import placeholder from "$lib/images/stock/placeholder.jpg"
+	import resourcesImage from "$lib/images/stock/resources.png?w=580&imagetools"
 
 	import type { PageData } from "./$types";
 
@@ -26,7 +26,7 @@
 		{ src: communityImage, name: "COMMUNITY", href: "/about/community", icon: UsersSolid },
 		{ src: orgImage, name: "ORGANISATION", href: "/about/org", icon: BuildingSolid },
 		{ src: activitiesImage, name: "ACTIVITES", href: "/about/activities", icon: MapPinAltSolid },
-		{ src: knowledgeImage, name: "GUIDES & RESOURCES", href: "/knowledge", icon: BookSolid }
+		{ src: resourcesImage, name: "GUIDES & RESOURCES", href: "/resources", icon: BookSolid }
 	]
 
 	const partners = [

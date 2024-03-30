@@ -145,7 +145,7 @@
 					<CalendarMonthSolid size="sm" tabindex="-1" />EVENTS
 				</NavLi>
 			{/if}
-			<NavLi href="/knowledge" class="flex gap-2 items-center">
+			<NavLi href="/resources" class="flex gap-2 items-center">
 				<BookSolid size="sm" tabindex="-1" />RESOURCES
 			</NavLi>
 		</NavUl>
