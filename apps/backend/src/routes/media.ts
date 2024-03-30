@@ -136,6 +136,29 @@ function fileField(
     }
 }
 
+async function setupCache(cache: FileSystemCache) {
+    try {
+        await cache.clear()
+    } catch (err) {
+        console.error("Error clearing media cache", err)
+    }
+
+    try {
+		fs.mkdirSync(cache.basePath, { recursive: true });
+        // rw-rw-r--
+        fs.chmodSync(cache.basePath, 0o664)
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (e: any) {
+		if (e.code === 'EEXIST') {
+			if (!fs.statSync(cache.basePath).isDirectory()) {
+				throw new Error(`Cannot create directory ${cache.basePath}, a file already exists at this position`);
+			}
+			return;
+		}
+		throw e;
+	}
+}
+
 export default function route(context: Context, config: RouteConfig) {
     const FILE_DATA_CACHE: Record<string, { etag: string, filename: string }> = {}
     const fileCacheDir = "./.cache"
@@ -146,12 +169,7 @@ export default function route(context: Context, config: RouteConfig) {
         ttl: 3600,
     })
 
-    fileCache.clear().catch(err => {
-        console.error("Error clearing media cache", err)
-    })
-
-    // rw-rw-r--
-    fs.chmodSync(fileCacheDir, 0o664)
+    setupCache(fileCache)
 
     context.expressApp.post(
         "/media/upload",
