@@ -4,7 +4,7 @@
 
 	import { transformContainer } from "$lib/cms/transformContainer";
 	import { PageHero } from "$lib/components";
-	import heroImageSrcset from "$lib/images/stock/activities/hero.jpg?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
+	import heroImageSrcset from "$lib/images/stock/activities-hero.jpg?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
 
 	import type { PageData } from "./$types";
 	import CmsAboutSectionRenderer from "../CmsAboutSectionRenderer.svelte";
