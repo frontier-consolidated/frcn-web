@@ -67,7 +67,7 @@ export class CmsClient {
 
         const children: ContentContainerData[] = []
         for (const child of container.recursiveChildren) {
-            children.push(this.transformContainerWithRecursiveChildren(child))
+            children.push(this.transformContainerWithRecursiveChildren(child as ContentContainerData))
         }
         container.children = children;
         delete container.recursiveChildren;

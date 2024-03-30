@@ -68,7 +68,7 @@
             <Input
                 class="rounded"
                 id="system-general-guildid"
-                name="Discord Guild Id"
+                name="system-general-guildid"
                 type="text"
                 placeholder="0"
                 pattern="[0-9]+"
@@ -83,7 +83,7 @@
             <Label for="system-general-default-channel" class="mb-2">Default Event Channel</Label>
             <Select
                 id="system-general-default-channel"
-                name="Default Event Channel"
+                name="system-general-default-channel"
                 options={data.options?.channels.map((channel) => ({
                     value: channel.id,
                     name: channel.name,

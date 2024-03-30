@@ -132,7 +132,7 @@
 					<Label for="event-type" class="mb-2">Event Type</Label>
 					<Select
 						id="event-type"
-						name="Event Type"
+						name="event-type"
 						options={EventTypeOptions}
 						required
 						bind:value={editData.eventType}
@@ -142,10 +142,11 @@
 					<Label for="event-name" class="mb-2">Event Name</Label>
 					<Input
 						id="event-name"
-						name="Event Name"
+						name="event-name"
 						type="text"
 						placeholder="Event name"
 						required
+						autocomplete="new-password"
 						class="rounded"
 						bind:value={editData.name}
 					/>
@@ -154,10 +155,11 @@
 					<Label for="event-summary" class="mb-2">Event Summary</Label>
 					<Input
 						id="event-summary"
-						name="Event Summary"
+						name="event-summary"
 						type="text"
 						placeholder="Event summary"
 						required
+						autocomplete="new-password"
 						class="rounded"
 						bind:value={editData.summary}
 					/>
@@ -179,11 +181,12 @@
 					<Label for="event-image" class="mb-2">Event Image</Label>
 					<Input
 						id="event-image"
-						name="Event Image"
+						name="event-image"
 						type="text"
 						placeholder="https://example.com/image.png"
 						pattern={urlPattern}
 						required
+						autocomplete="new-password"
 						class="rounded"
 						bind:value={editData.imageUrl}
 					/>
@@ -230,7 +233,7 @@
 					<Label for="event-start" class="mb-2">Event Start</Label>
 					<DatetimePicker
 						id="event-start"
-						name="Event Start Datetime"
+						name="event-start"
 						disable="past"
 						bind:value={startDate}
 					/>
@@ -239,7 +242,7 @@
 					<Label for="event-duration" class="mb-2">Event Duration</Label>
 					<DurationPicker
 						id="event-duration"
-						name="Event Duration"
+						name="event-duration"
 						bind:value={editData.duration}
 					/>
 				</Field>
@@ -275,7 +278,7 @@
 					<Label for="event-access" class="mb-2">Event Access</Label>
 					<Select
 						id="event-access"
-						name="Event Access Type"
+						name="event-access"
 						options={Object.values(EventAccessType).map((type) => ({
 							value: type,
 							name: strings.toTitleCase(type),
@@ -330,7 +333,7 @@
 					<Label for="event-channel" class="mb-2">Events Channel</Label>
 					<Select
 						id="event-channel"
-						name="Events Channel"
+						name="event-channel"
 						options={data.options?.channels.map((channel) => ({
 							value: channel.id,
 							name: channel.name,
@@ -343,7 +346,7 @@
 					<Label for="event-mentions" class="mb-2">Mentions</Label>
 					<Select
 						id="event-mentions"
-						name="Events Mentions"
+						name="event-mentions"
 						options={data.options?.discordRoles.map(role => ({
 							value: role.id,
 							name: role.name,

@@ -164,11 +164,12 @@
 			<Input
 				class="rounded"
 				id="resource-upload-name"
-				name="Resource Upload Name"
+				name="resource-upload-name"
 				type="text"
 				placeholder="Resource name"
 				required
                 maxlength="255"
+				autocomplete="new-password"
 				bind:value={editData.name}
 			/>
 		</Field>
@@ -181,10 +182,11 @@
 			<Textarea
                 class="rounded bg-gray-50 text-gray-900 dark:bg-gray-600 dark:text-white dark:placeholder-gray-400 border-gray-300 dark:border-gray-500"
 				id="resource-upload-description"
-				name="Resource Upload Description"
+				name="resource-upload-description"
 				type="text"
 				placeholder="Resource description"
                 maxlength="512"
+				autocomplete="new-password"
 				bind:value={editData.shortDescription}
 			/>
 		</Field>
@@ -197,7 +199,7 @@
 			<Label for="resource-upload-tags" class="mb-2">Tags</Label>
             <Select
                 id="resource-upload-tags"
-                name="Resource Upload Tags"
+                name="resource-upload-tags"
                 options={tags.map(tag => ({
                     value: tag,
                     name: tag,
@@ -235,7 +237,7 @@
 					<input 
 						type="file"
 						id="resource-upload"
-						name="File Upload"
+						name="resource-upload"
 						accept="image/*,.pdf"
 						class="absolute cursor-pointer top-0 left-0 h-full w-full z-0 opacity-0" 
 						bind:this={uploadInput} 

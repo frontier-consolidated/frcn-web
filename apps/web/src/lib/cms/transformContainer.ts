@@ -4,7 +4,7 @@ import type { ContentContainerFragmentFragment } from "$lib/graphql/__generated_
 
 export type ContentContainerData = ContentContainerFragmentFragment & {
     children?: ContentContainerData[]
-    recursiveChildren?: Omit<ContentContainerData, "children">[]
+    recursiveChildren?: unknown[]
 }
 
 class NotImplementedContainer extends CmsContainer {

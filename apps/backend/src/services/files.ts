@@ -3,7 +3,7 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 
-import { DeleteObjectCommand, type S3Client } from "@aws-sdk/client-s3";
+import { DeleteObjectCommand, DeleteObjectsCommand, GetObjectCommand, type S3Client } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
 import type { FileUpload, User } from "@prisma/client";
 import * as mime from "mime-types";
@@ -123,6 +123,61 @@ export async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Ex
     }
 }
 
+export async function copyFile(s3Client: S3Client, bucket: string, key: string, fileName: string) {
+    try {
+        const command = new GetObjectCommand({
+            Bucket: bucket,
+            Key: key,
+        })
+    
+        const response = await s3Client.send(command)
+        if (!response.Body) {
+            return null
+        }
+
+        const uploadId = randomUUID();
+        const uploadKey = `${getDomain()}-${uploadId}`
+        const s3Upload = new Upload({
+            client: s3Client,
+            params: {
+                Bucket: bucket,
+                Key: uploadKey,
+                ContentType: response.ContentType,
+                Body: response.Body,
+            },
+            tags: [],
+            queueSize: 4,
+            partSize: 5 * 1024 * 1024,
+            leavePartsOnError: false,
+        })
+
+        try {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore excessively deep type, but still resolves
+            return await transaction(async (tx) => {
+                const fileUpload = await tx.fileUpload.create({
+                    data: {
+                        id: uploadId,
+                        key: uploadKey,
+                        fileName: fileName,
+                        fileSizeKb: Math.ceil((response.ContentLength ?? 0) / 1024),
+                        contentType: response.ContentType ?? "application/octet-stream",
+                    }
+                })
+    
+                await s3Upload.done()
+                return fileUpload
+            })
+        } catch (err) {
+            await s3Upload.abort();
+            throw err
+        }
+    } catch (err) {
+        console.error(`Error copying file '${key}':`, err)
+        return null;
+    }
+}
+
 async function deleteFile(client: S3Client, bucket: string, id: string) {
     const file = await database.fileUpload.findUnique({
         where: { id },
@@ -143,11 +198,36 @@ async function deleteFile(client: S3Client, bucket: string, id: string) {
     })
 }
 
+async function deleteManyFiles(client: S3Client, bucket: string, files: { id: string, key: string }[], tx: typeof database = database) {
+    if (files.length === 0) return;
+    
+    const command = new DeleteObjectsCommand({
+        Bucket: bucket,
+        Delete: {
+            Objects: files.map(f => ({
+                Key: f.key
+            }))
+        }
+    })
+
+    await tx.fileUpload.deleteMany({
+        where: {
+            id: {
+                in: files.map(f => f.id)
+            }
+        }
+    })
+
+    await client.send(command)
+}
+
 export const $files = {
     FILE_UPLOAD_DIR,
     MAX_FILE_SIZE_MB,
     MAX_IMAGE_DIMENSION,
     uploadFile,
+    copyFile,
     deleteFile,
+    deleteManyFiles,
     toHTTPTimestamp
 };

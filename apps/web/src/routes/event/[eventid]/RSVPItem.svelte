@@ -70,7 +70,7 @@
 		<Field {validator} for="role-name-{role.id}" value={editRole.name} required>
 			<Input
 				id="role-name-{role.id}"
-				name="Event Role Name"
+				name="event-role-name"
 				class="!bg-transparent !border-transparent !p-1 text-ellipsis rounded"
 				placeholder="Role name"
 				bind:value={editRole.name}
@@ -79,7 +79,8 @@
 	</TableBodyCell>
 	<TableBodyCell class="text-center">
 		<Input
-			name="Event Role User Limit"
+			id="role-user-limit-{role.id}"
+			name="event-role-user-limit"
 			min="0"
 			pattern="([0-9]+|{INFINITY})"
 			class="!bg-transparent !border-transparent !p-1 no-inner-spin text-center rounded"
