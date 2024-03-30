@@ -88,10 +88,6 @@ jobs:
               run: |
                   ./.github/scripts/ec2-build.sh build ${{ inputs.hostname }}
 
-            - name: Clear backend cache
-              run: |
-                  ssh server "cd /var/www/${{ inputs.hostname }} && rm -rf backend/.cache/*"
-
             - name: Deploy web
               uses: burnett01/rsync-deployments@7.0.0
               with:
