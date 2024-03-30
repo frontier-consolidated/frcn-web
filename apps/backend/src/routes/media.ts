@@ -138,8 +138,9 @@ function fileField(
 
 export default function route(context: Context, config: RouteConfig) {
     const FILE_DATA_CACHE: Record<string, { etag: string, filename: string }> = {}
+    const fileCacheDir = "./.cache"
     const fileCache = new FileSystemCache({
-        basePath: "./.cache",
+        basePath: fileCacheDir,
         ns: "media",
         hash: "sha1",
         ttl: 3600,
@@ -148,6 +149,9 @@ export default function route(context: Context, config: RouteConfig) {
     fileCache.clear().catch(err => {
         console.error("Error clearing media cache", err)
     })
+
+    // rw-rw-r--
+    fs.chmodSync(fileCacheDir, 0o664)
 
     context.expressApp.post(
         "/media/upload",

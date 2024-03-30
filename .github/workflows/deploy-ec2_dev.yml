@@ -4,6 +4,9 @@ on:
     push:
         branches:
             - dev
+        paths-ignore:
+            - docs/**
+            - .gitignore
 
 jobs:
     call-deploy:
