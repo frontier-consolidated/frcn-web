@@ -169,6 +169,7 @@
 				placeholder="Resource name"
 				required
                 maxlength="255"
+				autocomplete="new-password"
 				bind:value={editData.name}
 			/>
 		</Field>
@@ -185,6 +186,7 @@
 				type="text"
 				placeholder="Resource description"
                 maxlength="512"
+				autocomplete="new-password"
 				bind:value={editData.shortDescription}
 			/>
 		</Field>

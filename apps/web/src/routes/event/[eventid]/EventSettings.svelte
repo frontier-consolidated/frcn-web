@@ -146,6 +146,7 @@
 						type="text"
 						placeholder="Event name"
 						required
+						autocomplete="new-password"
 						class="rounded"
 						bind:value={editData.name}
 					/>
@@ -158,6 +159,7 @@
 						type="text"
 						placeholder="Event summary"
 						required
+						autocomplete="new-password"
 						class="rounded"
 						bind:value={editData.summary}
 					/>
@@ -184,6 +186,7 @@
 						placeholder="https://example.com/image.png"
 						pattern={urlPattern}
 						required
+						autocomplete="new-password"
 						class="rounded"
 						bind:value={editData.imageUrl}
 					/>
