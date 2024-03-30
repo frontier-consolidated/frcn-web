@@ -25,8 +25,16 @@ export function getHost() {
 	return `${subDomain}${subDomain ? "." : ""}${domain}${domain === "localhost" || hasExternalPort() ? `:${getExternalPort()}` : ""}`
 }
 
+export function getBasePath() {
+	let basePath = process.env.BASE_PATH;
+	if (basePath && !basePath.startsWith("/")) {
+		basePath = "/" + basePath;
+	}
+	return basePath ?? ""
+}
+
 export function getOrigin(protocol: string = "") {
-	return `${protocol}://${getHost()}`;
+	return `${protocol}://${getHost()}${getBasePath()}`;
 }
 
 export function getWebOrigin() {
@@ -49,71 +57,64 @@ export function getOrigins() {
 	return origins
 }
 
+export function getURL(protocol: string = "", path: string) {
+	return new URL(getBasePath() + path, `${protocol}://${getHost()}`)
+}
+
+export function getWebURL(path: string) {
+	return new URL(path, getWebOrigin())
+}
+
 export function isProd() {
-	return process.env.NODE_ENV === "production"
+	if (!process.env.NODE_ENV) return false;
+	return process.env.NODE_ENV.trim() === "production"
+}
+
+export function getAdminIds() {
+	const envIds = process.env.ADMIN_DISCORD_IDS ?? ""
+	if (!envIds) return []
+	return envIds.split(",").map(id => id.trim())
+}
+
+function expectEnvvar(envvar: keyof NodeJS.ProcessEnv) {
+	assert(process.env[envvar] && (process.env[envvar]?.length ?? 0) > 0, `Environment: Expected var '${envvar}'`)
 }
 
 export function validateEnvironment() {
 	console.log("Validating environment...")
 
-	// PORT=
-	assert(!isNaN(getPort()), "Environment: Expected 'PORT' to be a number")
+	assert(!isNaN(getPort()), "Environment: Expected 'PORT' to be a number") // PORT
+	assert(!isNaN(getExternalPort()), "Environment: Expected 'EXTERNAL_PORT' to be a number") // EXTERNAL_PORT
+	expectEnvvar("DOMAIN")
+	// SUB_DOMAIN
+	// BASE_PATH
 
-	// EXTERNAL_PORT=
-	assert(!isNaN(getExternalPort()), "Environment: Expected 'EXTERNAL_PORT' to be a number")
+	expectEnvvar("WEB_ORIGIN")
+	expectEnvvar("ORIGINS")
 
-	// DOMAIN=
-	assert(process.env.DOMAIN && process.env.DOMAIN.length > 0, "Environment: Expected 'DOMAIN'")
-	
-	// SUB_DOMAIN=
-	// xxx
+	expectEnvvar("DATABASE_URL")
 
-	// WEB_ORIGIN=
-	assert(process.env.WEB_ORIGIN && process.env.WEB_ORIGIN.length > 0, "Environment: Expected 'WEB_ORIGIN'")
+	// CMS_BUS_DATABASE_URL
+	expectEnvvar("CMS_BUS_SCHEMA")
+	if (process.env.SERVE_WEB === "true") expectEnvvar("CMS_ACCESS_KEY")
 
-	// ORIGINS=
-	assert(process.env.ORIGINS && process.env.ORIGINS.length > 0, "Environment: Expected 'ORIGINS'")
+	expectEnvvar("ACCESS_KEY_HEADER")
+	expectEnvvar("CONSENT_COOKIE")
+	expectEnvvar("DEVICE_TRACK_COOKIE")
 
-	// DATABASE_URL=
-	assert(process.env.DATABASE_URL && process.env.DATABASE_URL.length > 0, "Environment: Expected 'DATABASE_URL'")
+	expectEnvvar("SESSION_COOKIE")
+	expectEnvvar("SESSION_SECRET")
 
-	// CONSENT_COOKIE=
-	assert(process.env.CONSENT_COOKIE && process.env.CONSENT_COOKIE.length > 0, "Environment: Expected 'CONSENT_COOKIE'")
+	if (isProd()) expectEnvvar("ADMIN_DISCORD_IDS")
 
-	// SESSION_COOKIE=
-	assert(process.env.SESSION_COOKIE && process.env.SESSION_COOKIE.length > 0, "Environment: Expected 'SESSION_COOKIE'")
+	expectEnvvar("DISCORD_CLIENTID")
+	expectEnvvar("DISCORD_SECRET")
+	expectEnvvar("DISCORD_TOKEN")
 
-	// SESSION_SECRET=
-	assert(process.env.SESSION_SECRET && process.env.SESSION_SECRET.length > 0, "Environment: Expected 'SESSION_SECRET'")
-
-	// DEVICE_TRACK_COOKIE=
-	assert(process.env.DEVICE_TRACK_COOKIE && process.env.DEVICE_TRACK_COOKIE.length > 0, "Environment: Expected 'DEVICE_TRACK_COOKIE'")
-
-	// ADMIN_DISCORD_ID=
-	if (isProd()) {
-		assert(process.env.ADMIN_DISCORD_ID && process.env.ADMIN_DISCORD_ID.length > 0, "Environment: Expected 'ADMIN_DISCORD_ID' in production")
-	}
-
-	// DISCORD_CLIENTID=
-	assert(process.env.DISCORD_CLIENTID && process.env.DISCORD_CLIENTID.length > 0, "Environment: Expected 'DISCORD_CLIENTID'")
-
-	// DISCORD_SECRET=
-	assert(process.env.DISCORD_SECRET && process.env.DISCORD_SECRET.length > 0, "Environment: Expected 'DISCORD_SECRET'")
-
-	// DISCORD_TOKEN=
-	assert(process.env.DISCORD_TOKEN && process.env.DISCORD_TOKEN.length > 0, "Environment: Expected 'DISCORD_TOKEN'")
-
-	// AWS_S3_BUCKET=
-	assert(process.env.AWS_S3_BUCKET && process.env.AWS_S3_BUCKET.length > 0, "Environment: Expected 'AWS_S3_BUCKET'")
-
-	// AWS_S3_REGION=
-	assert(process.env.AWS_S3_REGION && process.env.AWS_S3_REGION.length > 0, "Environment: Expected 'AWS_S3_REGION'")
-
-	// AWS_S3_KEY=
-	assert(process.env.AWS_S3_KEY && process.env.AWS_S3_KEY.length > 0, "Environment: Expected 'AWS_S3_KEY'")
-
-	// AWS_S3_SECRET=
-	assert(process.env.AWS_S3_SECRET && process.env.AWS_S3_SECRET.length > 0, "Environment: Expected 'AWS_S3_SECRET'")
+	expectEnvvar("AWS_S3_BUCKET")
+	expectEnvvar("AWS_S3_REGION")
+	expectEnvvar("AWS_S3_KEY")
+	expectEnvvar("AWS_S3_SECRET")
 
 	console.log("No issues with environment found")
 }

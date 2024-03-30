@@ -1,13 +1,15 @@
-import type { User as DatabaseUser } from "@prisma/client";
+import type { User as DatabaseUser, AccessKey as DatabaseAccessKey } from "@prisma/client";
 
 export {};
 
 declare global {
 	namespace Express {
-		interface User extends DatabaseUser {}
+		interface User extends DatabaseUser { }
+		interface AccessKey extends DatabaseAccessKey { }
 
 		interface Request {
 			user?: User;
+			accessKey?: AccessKey;
 
 			login(user: User): Promise<void>;
 			logout(): Promise<void>;

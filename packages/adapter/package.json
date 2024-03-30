@@ -1,0 +1,49 @@
+{
+  "name": "@frcn/adapter",
+  "version": "0.0.1",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "import": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "files",
+    "types",
+    "index.js",
+    "index.d.ts",
+    "global.d.ts"
+  ],
+  "scripts": {
+    "rm:files": "node -e \"fs.rmSync('files', { force: true, recursive: true })\"",
+    "rm:types": "node -e \"fs.rmSync('types', { force: true, recursive: true })\"",
+    "rm:all": "pnpm rm:files && pnpm rm:types",
+    "dev": "pnpm rm:all && rollup -cw",
+    "build": "pnpm rm:all && rollup -c",
+    "check": "tsc",
+    "lint": "prettier --check .",
+    "format": "pnpm lint --write",
+    "prepublishOnly": "pnpm build"
+  },
+  "devDependencies": {
+    "@polka/url": "1.0.0-next.25",
+    "@sveltejs/kit": "^2.5.0",
+    "@sveltejs/vite-plugin-svelte": "^3.0.1",
+    "@types/node": "^18.19.3",
+    "devalue": "^4.3.2",
+    "polka": "1.0.0-next.25",
+    "sirv": "^2.0.4",
+    "tslib": "^2.4.1"
+  },
+  "dependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.9.5"
+  }
+}

@@ -10,11 +10,12 @@ export const load = (async ({ locals, depends }) => {
     if (locals.user && hasPermission(locals.user.permissions, Permission.ManageRoles)) {
         const { data: rolesData } = await locals.apollo.query({
             query: Queries.GET_ALL_ROLES,
-            fetchPolicy: "no-cache"
+            fetchPolicy: "no-cache",
+            errorPolicy: "all"
         })
     
         return {
-            roles: rolesData.roles
+            roles: rolesData?.roles ?? []
         }
     }
     return {

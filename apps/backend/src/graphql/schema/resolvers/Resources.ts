@@ -6,22 +6,22 @@ import { database } from "../../../database";
 import { getOrigin } from "../../../env";
 import { $resources } from "../../../services/resources";
 import type {
-	User as GQLUser,
-	Resource as GQLResource,
-	Resolvers,
+    User as GQLUser,
+    Resource as GQLResource,
+    Resolvers,
 } from "../../__generated__/resolvers-types";
-import type { GQLContext } from "../../context";
+import { gqlErrorUnauthenticated } from "../gqlError";
 
-export function resolveResource(resource: Resource, context: GQLContext) {
+export function resolveResource(resource: Resource) {
 	return {
 		_model: resource,
 		id: resource.id,
 		owner: null, // field-resolved
 		name: resource.name,
-		sizeKb: resource.fileSizeKb ?? 0,
+		sizeKb: 0, // field-resolved
 		shortDescription: resource.shortDescription,
-		previewUrl: resource.canPreview && resource.fileAttached ? `${getOrigin(context.req.secure ? "https" : "http")}/res/${resource.id}` : null,
-		downloadUrl: resource.fileAttached ? `${getOrigin(context.req.secure ? "https" : "http")}/res/${resource.id}/download` : null,
+		previewUrl: null, // field-resolved
+		downloadUrl: null, // field-resolved
 		tags: resource.tags,
 		updatedAt: resource.updatedAt,
 		createdAt: resource.createdAt
@@ -36,10 +36,29 @@ export const resourceResolvers: Resolvers = {
 			if (!owner) return null;
 			return resolveUser(owner);
 		},
+		async sizeKb(source) {
+			const { _model } = source as WithModel<GQLResource, Resource>;
+			const file = await database.resource.getFile(_model)
+			if (!file) return 0;
+			return file.fileSizeKb;
+		},
+		async previewUrl(source, args, context) {
+			const { _model } = source as WithModel<GQLResource, Resource>;
+			if (!_model.canPreview) return null;
+			const file = await database.resource.getFile(_model)
+			if (!file) return null;
+			return `${getOrigin(context.req.secure ? "https" : "http")}/media/${file.id}/${file.fileName}`;
+		},
+		async downloadUrl(source, args, context) {
+			const { _model } = source as WithModel<GQLResource, Resource>;
+			const file = await database.resource.getFile(_model)
+			if (!file) return null;
+			return `${getOrigin(context.req.secure ? "https" : "http")}/media/${file.id}/${file.fileName}?download`;
+		}
 	},
 
 	Query: {
-		async getResources(source, { filter, page, limit }, context) {
+		async getResources(source, { filter, page, limit }) {
 			const { search, tags } = filter ?? {};
 
 			const result = await $resources.getResources(
@@ -52,7 +71,7 @@ export const resourceResolvers: Resolvers = {
 			);
 
 			return {
-				items: await Promise.all(result.items.map((res) => resolveResource(res, context))),
+				items: await Promise.all(result.items.map(resolveResource)),
 				itemsPerPage: result.itemsPerPage,
 				page: result.page,
 				nextPage: result.nextPage,
@@ -64,10 +83,12 @@ export const resourceResolvers: Resolvers = {
 
 	Mutation: {
 		async createResource(source, args, context) {
-			const resource = await $resources.createResource(context.user!, args.data)
-			return resolveResource(resource, context)
+			if (!context.user) throw gqlErrorUnauthenticated();
+
+			const resource = await $resources.createResource(context.user, args.data)
+			return resolveResource(resource)
 		},
-		async editResource(source, args, context) {
+		async editResource(source, args) {
 			const resource = await database.resource.findUnique({
 				where: { id: args.id },
 				select: {
@@ -78,7 +99,7 @@ export const resourceResolvers: Resolvers = {
 
 			const updatedResource = await $resources.editResource(args.id, args.data)
 			if (!updatedResource) return null;
-			return resolveResource(updatedResource, context)
+			return resolveResource(updatedResource)
 		},
 		async deleteResource(source, args, context) {
 			const resource = await database.resource.findUnique({

@@ -20,7 +20,9 @@ export function resolveUser(user: User) {
 		id: user.id,
 		name: user.scVerified ? user.scName! : user.discordName,
 		scName: user.scName,
+		discordId: user.discordId,
 		discordName: user.discordName,
+		discordUsername: user.discordUsername,
 		verified: user.scVerified,
 		avatarUrl: user.avatarUrl,
 		updatedAt: user.updatedAt,
@@ -114,4 +116,16 @@ export const userResolvers: Resolvers = {
 			return resolveUser(user);
 		},
 	},
+
+	Mutation: {
+		async deleteCurrentUser(source, args, context) {
+			if (!context.user) return false;
+
+			await database.user.delete({
+				where: { id: context.user.id }
+			})
+
+			return true;
+		}
+	}
 };

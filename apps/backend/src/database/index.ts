@@ -1,13 +1,14 @@
-import { Permission, permissions } from "@frcn/shared";
 // eslint-disable-next-line import/default
 import PrismaClientPkg from "@prisma/client";
 
+import { createContentContainerExtension } from "./extensions/ContentContainer.extension";
 import { createEventExtension } from "./extensions/Event.extension";
 import { createEventChannelExtension } from "./extensions/EventChannel.extension";
 import { createEventRsvpRoleExtension } from "./extensions/EventRsvpRole.extension";
 import { createEventSettingsExtension } from "./extensions/EventSettings.extension";
 import { createEventsWithUserRoleForAccessExtension } from "./extensions/EventsWithUserRoleForAccess.extension";
 import { createEventUserExtension } from "./extensions/EventUser.extension";
+import { createFileUploadExtension } from "./extensions/FileUpload.extension";
 import { createResourceExtension } from "./extensions/Resource.extension";
 import { createSystemSettingsExtension } from "./extensions/SystemSettings.extension";
 import { createUserExtension } from "./extensions/User.extension";
@@ -16,7 +17,7 @@ import { createUserSessionExtension } from "./extensions/UserSession.extension";
 import { createUserSettingsExtension } from "./extensions/UserSettings.extension";
 import { createUsersInUserRolesExtension } from "./extensions/UsersInUserRoles.extension";
 import { createUserStatusExtension } from "./extensions/UserStatus.extension";
-import { isProd } from "../env";
+import { seed } from "./seed";
 
 const PrismaClient = PrismaClientPkg.PrismaClient
 const Prisma = PrismaClientPkg.Prisma
@@ -25,12 +26,14 @@ export const prisma = new PrismaClient();
 const $prisma = prisma;
 
 const database = $prisma
+	.$extends(createContentContainerExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventChannelExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventRsvpRoleExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventSettingsExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventsWithUserRoleForAccessExtension(Prisma.defineExtension, $prisma))
 	.$extends(createEventUserExtension(Prisma.defineExtension, $prisma))
+	.$extends(createFileUploadExtension(Prisma.defineExtension, $prisma))
 	.$extends(createResourceExtension(Prisma.defineExtension, $prisma))
 	.$extends(createSystemSettingsExtension(Prisma.defineExtension, $prisma))
 	.$extends(createUserExtension(Prisma.defineExtension, $prisma))
@@ -49,59 +52,10 @@ export function transaction<R>(fn: (tx: typeof database) => Promise<R>): Promise
 	})
 }
 
-async function seedProduction() {
-	const roles = await database.userRole.findMany();
-
-	if (roles.length === 0 && process.env.ADMIN_DISCORD_ID) {
-		const adminRole = await database.userRole.upsert({
-			where: { id: "5740e3a4-20cd-43eb-b583-029cef2646a0" },
-			update: {},
-			create: {
-				id: "5740e3a4-20cd-43eb-b583-029cef2646a0",
-				name: "Admin",
-				primary: true,
-				permissions: permissions([Permission.Admin]),
-			},
-		});
-		roles.push(adminRole)
-		console.log("Created Admin role")
-
-		await database.user.upsert({
-			where: { discordId: process.env.ADMIN_DISCORD_ID },
-			update: {},
-			create: {
-				discordId: process.env.ADMIN_DISCORD_ID,
-				discordName: "Admin",
-				scVerified: false,
-				avatarUrl: "",
-				primaryRole: {
-					connect: {
-						id: adminRole.id,
-					},
-				},
-				status: {
-					create: {},
-				},
-				settings: {
-					create: {},
-				},
-			},
-		});
-		console.log("Created Admin user")
-	}
-
-	const systemValues = {
-		discordGuildId: "1188196981508689950",
-		roleOrder: roles.map((role) => role.id),
-	}
-
-	await database.systemSettings.upsert({
-		where: { unique: true },
-		update: {},
-		create: systemValues,
-	});
+export async function seedDatabase() {
+	console.log("Seeding database...")
+	await seed(database)
+	console.log("Seeding database completed")
 }
-
-if (isProd()) await seedProduction()
 
 export { database }

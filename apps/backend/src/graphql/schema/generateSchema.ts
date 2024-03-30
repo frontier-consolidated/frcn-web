@@ -4,6 +4,10 @@ import { fileURLToPath } from "url";
 
 import { Permission } from "@frcn/shared";
 
+const enums = {
+	Permission
+}
+
 function generatePagedTypes(typeDefs: string) {
 	let extTypeDefs = typeDefs;
 	const seen: string[] = [];
@@ -31,9 +35,6 @@ type ${match[0]} {
 }
 
 function generateEnumTypes(typeDefs: string) {
-	const enums = {
-		Permission
-	}
 	let extTypeDefs = typeDefs;
 
 	for (const [name, obj] of Object.entries(enums)) {

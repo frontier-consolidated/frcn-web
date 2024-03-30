@@ -3,6 +3,7 @@ import { locale } from "svelte-i18n";
 
 import { Queries, createApolloClient } from "$lib/graphql";
 
+
 export const handle: Handle = async ({ event, resolve }) => {
 	const lang = event.request.headers.get("accept-language")?.split(",")[0];
 	if (lang) {
@@ -10,7 +11,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	const cookie = event.request.headers.get("cookie")
-	// console.log("Request cookie:", cookie)
 	const apollo = createApolloClient(cookie ? {
 		cookie
 	} : undefined)
@@ -28,7 +28,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 			console.error(err)
 		}
 	}
-
 
 	return resolve(event);
 };

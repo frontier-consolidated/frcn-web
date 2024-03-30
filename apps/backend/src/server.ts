@@ -1,10 +1,18 @@
 import { createApp } from "./app";
+import { seedDatabase } from "./database";
 import { getDomain, getOrigin, getOrigins, getPort, validateEnvironment } from "./env";
 
 process.env.NODE_ENV ??= "development"
 validateEnvironment()
 
-const { server, discordClient } = await createApp({
+await seedDatabase()
+
+process.env.CMS_BUS_DATABASE_URL = process.env.CMS_BUS_DATABASE_URL ? process.env.CMS_BUS_DATABASE_URL : (() => {
+	const url = new URL(process.env.DATABASE_URL)
+	return `${url.protocol}//${url.username}:${url.password}@${url.host}${url.pathname}`
+})()
+
+const { context: { server, discordClient }, onStart } = await createApp({
 	origins: getOrigins(),
 	routeConfig: {
 		auth: {
@@ -31,6 +39,9 @@ const { server, discordClient } = await createApp({
 			cookie: process.env.DEVICE_TRACK_COOKIE,
 		},
 	},
+	accesskeyConfig: {
+		header: process.env.ACCESS_KEY_HEADER,
+	},
 	discordConfig: {
 		token: process.env.DISCORD_TOKEN
 	},
@@ -39,16 +50,27 @@ const { server, discordClient } = await createApp({
 		region: process.env.AWS_S3_REGION,
 		clientKey: process.env.AWS_S3_KEY,
 		clientSecret: process.env.AWS_S3_SECRET
+	},
+	cmsConfig: {
+		databaseUrl: process.env.CMS_BUS_DATABASE_URL!,
+		schema: process.env.CMS_BUS_SCHEMA
 	}
 });
 
 discordClient.login(process.env.DISCORD_TOKEN);
 
-const port = getPort();
-server.listen(port, () => {
-	console.log(`\n\n  \x1b[32m\x1b[1mAPI ready\x1b[0m
+const apiPort = getPort();
 
-  \x1b[32m➜\x1b[0m\x1b[1m  Local:  \x1b[0m\x1b[36mhttp://localhost:${port}/
-  \x1b[32m➜\x1b[0m\x1b[1m  Network:  \x1b[0m\x1b[36m${getOrigin("http")}/
-  \x1b[32m➜\x1b[0m\x1b[1m  Env:  \x1b[0m\x1b[36m${process.env.NODE_ENV}\x1b[0m`);
-});
+await new Promise<void>(resolve => {
+	server.listen(apiPort, () => resolve())
+})
+
+console.log(
+`\n\n  \x1b[32m\x1b[1mAPI ready\x1b[0m
+
+\x1b[32m➜\x1b[0m\x1b[1m  Local:     \x1b[0m\x1b[36mhttp://localhost:${apiPort}/
+\x1b[32m➜\x1b[0m\x1b[1m  Network:   \x1b[0m\x1b[36m${getOrigin("http")}/
+\x1b[32m➜\x1b[0m\x1b[2m  Env:       \x1b[0m\x1b[36m\x1b[2m${process.env.NODE_ENV}\x1b[0m`
+);
+
+await onStart()

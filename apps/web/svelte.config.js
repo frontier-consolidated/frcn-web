@@ -1,5 +1,4 @@
-// import adapter from "@sveltejs/adapter-auto";
-import adapter from "@sveltejs/adapter-node";
+import adapter from "@frcn/adapter";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -11,7 +10,16 @@ const config = {
 	kit: {
 		adapter: adapter({
 			out: "build",
+			main: {
+				input: "server/index.js",
+			}
 		}),
+		prerender: {
+			entries: [
+				"/legal/cookies",
+				"/legal/privacy"
+			]
+		}
 	},
 };
 

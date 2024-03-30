@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { Lexer } from "marked";
 	import type { Token } from "marked";
+	import type { ComponentType, SvelteComponent } from "svelte";
 
 	import Renderer from "./Renderer.svelte";
 
+	export let nowrap: boolean = false;
 	export let source: string | Token[];
 	export let isInline = false;
+	export let disabled: string[] = []
+	export let components: Record<string, ComponentType<SvelteComponent>> = {}
 
 	let tokens: Token[];
 	let lexer: Lexer;
@@ -27,6 +31,10 @@
 	}
 </script>
 
-<div {...$$restProps}>
-	<Renderer {tokens} />
-</div>
+{#if nowrap}
+	<Renderer {tokens} {disabled} {components} />
+{:else}
+	<div {...$$restProps}>
+		<Renderer {tokens} {disabled} {components} />
+	</div>
+{/if}

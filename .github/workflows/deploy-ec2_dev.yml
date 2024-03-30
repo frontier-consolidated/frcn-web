@@ -1,0 +1,19 @@
+name: Development
+
+on:
+    push:
+        branches:
+            - dev
+        paths-ignore:
+            - docs/**
+            - .gitignore
+
+jobs:
+    call-deploy:
+        name: Deploy to dev
+        uses: ./.github/workflows/build-deploy.yml
+        with:
+            environment: frontierconsolidated.com
+            hostname: dev.frontierconsolidated.com
+            service: frcn-dev.service
+        secrets: inherit

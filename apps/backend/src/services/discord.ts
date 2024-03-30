@@ -34,9 +34,13 @@ async function getAllTextChannels(client: Client) {
 }
 
 async function getChannel(client: Client, id: string) {
-	const guild = await getGuild(client);
-	const channel = await guild.channels.fetch(id);
-	return channel;
+	try {
+		const guild = await getGuild(client);
+		const channel = await guild.channels.fetch(id);
+		return channel;
+	} catch (err) {
+		return null;
+	}
 }
 
 async function canUserViewChannel(client: Client, user: User | undefined, channelId: string) {

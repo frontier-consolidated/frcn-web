@@ -46,15 +46,17 @@ export function createUserRoleExtension(define: typeof Prisma.defineExtension, c
 
 					const value = await cacheGetMany<User>(
 						model,
-						(cached) => {
-							return client.user.findMany({
+						async (cached) => {
+							const result = await client.userRole.findUnique({
+								where: { id: model.id }
+							}).primaryUsers({
 								where: {
-									primaryRoleId: model.id,
 									id: {
 										notIn: cached.map((c) => c.id),
 									},
-								},
+								}
 							});
+							return result ?? []
 						},
 						{
 							prefix: "User",

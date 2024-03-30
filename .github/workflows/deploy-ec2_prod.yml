@@ -1,0 +1,19 @@
+name: Production
+
+on:
+    push:
+        branches:
+            - main
+        paths-ignore:
+            - docs/**
+            - .gitignore
+
+jobs:
+    call-deploy:
+        name: Deploy to prod
+        uses: ./.github/workflows/build-deploy.yml
+        with:
+            environment: frontierconsolidated.com
+            hostname: frontierconsolidated.com
+            service: frcn.service
+        secrets: inherit

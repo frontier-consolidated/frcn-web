@@ -6,24 +6,31 @@ declare global {
 			TZ?: string;
 			NODE_ENV?: string;
 
+			SERVE_WEB?: string;
+
 			PORT: string;
 			EXTERNAL_PORT?: string;
 			DOMAIN: string;
 			SUB_DOMAIN?: string;
+			BASE_PATH?: string;
 
 			WEB_ORIGIN: string;
 			ORIGINS: string;
 
 			DATABASE_URL: string;
 
+			CMS_BUS_DATABASE_URL?: string;
+			CMS_BUS_SCHEMA: string;
+			CMS_ACCESS_KEY?: string;
+
+			ACCESS_KEY_HEADER: string;
 			CONSENT_COOKIE: string;
+			DEVICE_TRACK_COOKIE: string;
 
 			SESSION_COOKIE: string;
 			SESSION_SECRET: string;
 
-			DEVICE_TRACK_COOKIE: string;
-
-			ADMIN_DISCORD_ID?: string;
+			ADMIN_DISCORD_IDS?: string;
 
 			DISCORD_CLIENTID: string;
 			DISCORD_SECRET: string;

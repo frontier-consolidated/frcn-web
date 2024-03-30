@@ -13,11 +13,11 @@
     "gql-generate": "graphql-codegen --config codegen.yml"
   },
   "devDependencies": {
+    "@frcn/adapter": "workspace:^",
     "@frcn/graphql-scalar-types": "workspace:^",
     "@graphql-codegen/cli": "^5.0.0",
     "@graphql-codegen/client-preset": "^4.1.0",
     "@graphql-typed-document-node/core": "^3.2.0",
-    "@sveltejs/adapter-node": "^4.0.1",
     "@sveltejs/kit": "^2.5.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0",
     "@types/sortablejs": "^1.15.7",
@@ -35,26 +35,30 @@
     "tailwindcss": "^3.3.6",
     "tslib": "^2.4.1",
     "vite": "^5.0.12",
+    "vite-imagetools": "^6.2.9",
     "zen-observable-ts": "^1.1.0"
   },
   "dependencies": {
     "@apollo/client": "^3.8.10",
     "@codemirror/lang-markdown": "^6.2.4",
+    "@codemirror/state": "^6.4.1",
     "@codemirror/view": "^6.23.0",
     "@floating-ui/dom": "^1.6.1",
+    "@frcn/cms": "workspace:^",
+    "@frcn/cms-events": "workspace:^",
     "@frcn/shared": "workspace:^",
-    "@uiw/codemirror-theme-github": "^4.21.21",
-    "axios": "^1.6.5",
+    "@uiw/codemirror-theme-github": "^4.21.25",
+    "axios": "^1.6.8",
     "graphql": "^16.8.1",
     "graphql-ws": "^5.14.3",
     "marked": "^12.0.0",
+    "pg-tbus": "^1.0.0",
     "sortablejs": "^1.15.2",
     "svelte-codemirror-editor": "^1.2.0",
     "svelte-i18n": "^4.0.0",
     "sveltekit-search-params": "^2.1.0",
     "tailwind-merge": "^2.2.1",
     "uuid": "^9.0.1",
-    "validator": "^13.11.0",
-    "vite-imagetools": "^6.2.9"
+    "validator": "^13.11.0"
   }
 }
