@@ -12,5 +12,5 @@ jobs:
         with:
             environment: frontierconsolidated.com
             hostname: dev.frontierconsolidated.com
-            service: frcn-dev-backend.service
+            service: frcn-dev.service
         secrets: inherit
