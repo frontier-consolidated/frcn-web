@@ -57,6 +57,11 @@
 
 	const validator = new FieldValidator()
 
+	function clear() {
+		editData = cloneResourceData(data)
+		if (uploadInput) uploadInput.value = "";
+	}
+
 	async function upload() {
 		const valid = validator.validate()
 		if (!valid) return;
@@ -117,6 +122,7 @@
 			message: "Resource created!",
 		});
 
+		clear()
 		await invalidateAll()
 		open = false;
 	}
@@ -263,7 +269,7 @@
 		{/if}
 			<Button color="alternative" on:click={() => {
 				open = false
-				editData = cloneResourceData(data)
+				clear()
 			}}>
 				Cancel
 			</Button>
