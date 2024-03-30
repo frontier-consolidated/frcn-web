@@ -6,7 +6,7 @@
     import Sortable from "sortablejs"
 	import { queryParam } from "sveltekit-search-params";
 
-	import { Button, SectionHeading } from "$lib/components";
+	import { Button, Head, SectionHeading } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -89,9 +89,9 @@
 	}
 </script>
 
-<svelte:head>
-	<title>Roles - Admin | Frontier Consolidated</title>
-</svelte:head>
+<Head
+	title="Roles - Admin"
+/>
 
 <SectionHeading>
     User Roles

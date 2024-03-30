@@ -2,6 +2,8 @@
 	import { strings } from "@frcn/shared";
 	import { Tabs, TabItem } from "flowbite-svelte";
 
+	import { Head } from "$lib/components";
+
 	import type { PageData } from "./$types";
 	import EventDetails from "./EventDetails.svelte";
 	import EventSettings from "./EventSettings.svelte";
@@ -14,19 +16,15 @@
 	let settingsOpen = data.posted ? undefined : true
 </script>
 
-<svelte:head>
-	<title>{data.name ? `${data.name}` : "New Event"} - Event | Frontier Consolidated</title>
-	<meta
-		name="description"
-		content={data.posted
-			? `Name: ${data.name}\nType: ${eventType}\nSummary: ${data.summary}`
-			: "*Unposted Event*"}
-	/>
-	<!-- Preload image for improved responsivity -->
+<Head
+	title="{data.name ? `${data.name}` : "New Event"} - Event"
+	description={data.posted ? `Name: ${data.name}\nType: ${eventType}\nSummary: ${data.summary}` : "*Unposted Event*"}
+	image={data.imageUrl ?? undefined}
+>
 	{#if data.imageUrl}
 		<link rel="preload" href={data.imageUrl} as="image" />
 	{/if}
-</svelte:head>
+</Head>
 
 <section class="flex flex-col lg:flex-row gap-2 lg:gap-8 lg:items-stretch mt-[72px]">
 	<EventSidebar bind:data />

@@ -5,7 +5,7 @@
 	import { Helper, Input, Label } from "flowbite-svelte";
 	import { ArrowLeftSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
-	import { Button, Field, FieldValidator, Tooltip } from "$lib/components";
+	import { Button, Field, FieldValidator, Head, Tooltip } from "$lib/components";
 	import PermissionToggles from "$lib/components/PermissionToggles.svelte";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
@@ -94,9 +94,9 @@
     }
 </script>
 
-<svelte:head>
-	<title>Access Keys - Admin | Frontier Consolidated</title>
-</svelte:head>
+<Head
+	title="Edit Access Key - Admin"
+/>
 
 <a class="flex items-center text-gray-300 mb-2 p-2 cursor-pointer hover:text-gray-400" href="/admin/general/accesskeys">
 	<ArrowLeftSolid class="me-2" tabindex="-1" /> Back to Access Keys

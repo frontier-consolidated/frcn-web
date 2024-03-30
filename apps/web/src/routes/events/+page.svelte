@@ -4,7 +4,7 @@
 	import { Heading, TabItem, Tabs, Search } from "flowbite-svelte";
 	import { queryParam } from "sveltekit-search-params"
 
-	import { Button, Hr } from "$lib/components";
+	import { Button, Head, Hr } from "$lib/components";
 	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
@@ -17,10 +17,10 @@
 	let searchInput = $search
 </script>
 
-<svelte:head>
-	<title>Events | Frontier Consolidated</title>
-	<meta name="description" content="Frontier Consolidated - Search Events" />
-</svelte:head>
+<Head
+	title="Events"
+	description="Search our events"
+/>
 
 <div class="flex flex-col mx-auto w-full max-w-6xl p-4 mt-24">
 	<Heading tag="h1" class="font-medium text-4xl">Events</Heading>

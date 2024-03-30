@@ -3,7 +3,7 @@
 	import { Alert } from "flowbite-svelte";
 	import { CloseSolid } from "flowbite-svelte-icons";
 
-	import { Button, ConfirmationModal } from "$lib/components";
+	import { Button, ConfirmationModal, Head } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
@@ -11,10 +11,10 @@
     let deleteModalOpen = false
 </script>
 
-<svelte:head>
-    <title>My Account | Frontier Consolidated</title>
-    <meta name="description" content="Manage your account" />
-</svelte:head>
+<Head
+	title="My Account"
+	description="Manage your frontierconsolidated.com account"
+/>
 
 <div class="mt-20 flex flex-col mx-auto w-full max-w-6xl p-4">
     <Alert color="orange">

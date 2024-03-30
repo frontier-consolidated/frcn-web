@@ -6,8 +6,9 @@
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params"
 
-	import { Button, Hr, PageHero } from "$lib/components";
+	import { Button, Head, Hr, PageHero } from "$lib/components";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
+	import metaImage from "$lib/images/stock/resources-hero.png?w=1200&format=webp&imagetools"
 	import heroImageSrcset from "$lib/images/stock/resources-hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
 	import ccugameIcon from "$lib/images/tool-icons/ccugame.png"
 	import cstoneIcon from "$lib/images/tool-icons/cornerstone.png"
@@ -51,11 +52,13 @@
 	$: pages = getPages($page.url, currentPage, data.itemsPerPage, data.total);
 </script>
 
-<svelte:head>
-	<title>Resources | Frontier Consolidated</title>
-	<meta name="description" content="Frontier Consolidated - Search for Guides & Resources" />
+<Head
+	title="Resources"
+	description="Browse and search the official Frontier Consolidated guides and resources"
+	image={metaImage}
+>
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
-</svelte:head>
+</Head>
 
 <PageHero srcset={heroImageSrcset} height="h-[30vh]">
 	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">Resources</Heading>

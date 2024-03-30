@@ -2,7 +2,7 @@
 	import { page } from "$app/stores";
 	import { Heading } from "flowbite-svelte";
 
-	import { Button, LoginButton } from "$lib/components";
+	import { Button, Head, LoginButton } from "$lib/components";
 
 	let heading = "Critical Error"
 	$: switch ($page.status) {
@@ -18,10 +18,12 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{$page.status} | Frontier Consolidated</title>
+<Head
+	title={$page.status.toString()}
+	description={heading}
+>
 	<meta name="robots" content="noindex" />
-</svelte:head>
+</Head>
 
 <div class="flex flex-1 flex-col p-4 w-full max-w-3xl my-0 mx-auto box-border">
 	<div class="h-screen pt-[20vh]">
