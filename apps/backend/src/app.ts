@@ -13,7 +13,7 @@ import statusMonitor from "express-status-monitor";
 import { createCmsEventBus } from "./cmsEvents";
 import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
-import { getBasePath } from "./env";
+import { getBasePath, isProd } from "./env";
 import { createApolloServer } from "./graphql";
 import { accesskeyMiddleware, type AccessKeyMiddlewareConfig } from "./middleware/accesskey.middleware";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/session";
@@ -132,7 +132,7 @@ export async function createApp(config: CreateAppOptions) {
 
     let webOnStart: (() => Promise<void>) | null = null;
     const webHandler = path.join(__dirname, "../../web/build/handler.js")
-    if (fs.existsSync(webHandler) && process.env.SERVE_WEB === "true") {
+    if (fs.existsSync(webHandler) && process.env.SERVE_WEB === "true" && isProd()) {
         const { handler, on_start } = await import(webHandler) as {
             handler: RequestHandler;
             on_start: () => Promise<void>;
