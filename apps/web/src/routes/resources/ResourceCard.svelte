@@ -2,7 +2,7 @@
 	import { invalidate } from "$app/navigation";
 	import { Permission, hasPermission } from "@frcn/shared";
 	import { Badge, Dropdown, DropdownItem, Toolbar, ToolbarButton } from "flowbite-svelte";
-	import { DotsVerticalOutline, DownloadSolid, EditOutline, FileSolid, TrashBinSolid } from "flowbite-svelte-icons";
+	import { DotsVerticalOutline, DownloadSolid, EditOutline, FilePdfSolid, TrashBinSolid } from "flowbite-svelte-icons";
     import { createEventDispatcher } from "svelte";
 
 	import { CreatedByButton, TimeBadge, ConfirmationModal, Button } from "$lib/components";
@@ -25,7 +25,7 @@
         </a>
     {:else}
         <div class="flex flex-col items-center justify-center rounded-t-lg w-full aspect-video bg-gray-900">
-            <FileSolid class="w-16 h-16" />
+            <FilePdfSolid class="w-24 h-24" />
         </div>
     {/if}
     <div class="flex-1 flex flex-col px-4 py-2">
