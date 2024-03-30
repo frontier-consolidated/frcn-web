@@ -66,7 +66,8 @@ export function getWebURL(path: string) {
 }
 
 export function isProd() {
-	return process.env.NODE_ENV === "production"
+	if (!process.env.NODE_ENV) return false;
+	return process.env.NODE_ENV.trim() === "production"
 }
 
 export function getAdminIds() {
