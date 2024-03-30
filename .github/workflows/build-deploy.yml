@@ -110,7 +110,7 @@ jobs:
 
             - name: Set permissions
               run: |
-                  ssh server "cd /var/www/${{ inputs.hostname }} && chmod -R 774 backend && chmod -R 764 web"
+                  ssh server "cd /var/www/${{ inputs.hostname }} && chmod -R 774 backend && chmod -R 774 web"
 
             - name: Restart service
               run: |
