@@ -537,6 +537,7 @@ export type Query = {
   getCurrentUser?: Maybe<User>;
   getEvent?: Maybe<Event>;
   getEvents?: Maybe<PagedEvent>;
+  getResource?: Maybe<Resource>;
   getResources?: Maybe<PagedResource>;
   getRole?: Maybe<UserRole>;
   getRoleOrder: Array<Scalars['ID']['output']>;
@@ -584,6 +585,11 @@ export type QueryGetEventsArgs = {
   filter?: InputMaybe<EventFilterInput>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   page?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryGetResourceArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -1130,6 +1136,7 @@ export type QueryResolvers<ContextType = GQLContext, ParentType extends Resolver
   getCurrentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   getEvent?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<QueryGetEventArgs, 'id'>>;
   getEvents?: Resolver<Maybe<ResolversTypes['PagedEvent']>, ParentType, ContextType, Partial<QueryGetEventsArgs>>;
+  getResource?: Resolver<Maybe<ResolversTypes['Resource']>, ParentType, ContextType, RequireFields<QueryGetResourceArgs, 'id'>>;
   getResources?: Resolver<Maybe<ResolversTypes['PagedResource']>, ParentType, ContextType, Partial<QueryGetResourcesArgs>>;
   getRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<QueryGetRoleArgs, 'id'>>;
   getRoleOrder?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;

@@ -9,18 +9,7 @@
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
-    const tags = [
-        "Mining",
-        "Salvage",
-        "Cargo",
-        "Combat",
-        "Racing",
-        "Illegal",
-        "Misc",
-        "Medical",
-		"Support",
-		"Trading",
-    ]
+	import { tags } from "./tags";
 
 	function cloneResourceData(data?: ResourceFragmentFragment | null) {
 		return {

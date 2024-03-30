@@ -24,7 +24,7 @@ async function getResources(
 ) {
 	const { search, tags } = filter;
 
-	if (limit === -1) limit = 20;
+	if (limit === -1) limit = 15;
 	limit = Math.min(100, limit);
 
 	const where: Prisma.ResourceWhereInput = {
@@ -34,8 +34,8 @@ async function getResources(
 				mode: "insensitive"
 				}
 			: undefined,
-		tags: tags ? {
-			hasEvery: tags
+		tags: tags && tags.length > 0 ? {
+			hasSome: tags
 		} : undefined,
 		fileId: {
 			not: null
