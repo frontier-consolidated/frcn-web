@@ -2,7 +2,7 @@
 	import { Helper, Input, Label } from 'flowbite-svelte';
 	import { CloseSolid, EditOutline } from 'flowbite-svelte-icons';
 
-	import { SectionHeading, Select, Field, FieldValidator, Button } from '$lib/components';
+	import { SectionHeading, Select, Field, FieldValidator, Button, Head } from '$lib/components';
 	import { Mutations, getApollo } from '$lib/graphql';
 	import { pushNotification } from '$lib/stores/NotificationStore';
 
@@ -53,9 +53,9 @@
 	}
 </script>
 
-<svelte:head>
-	<title>General - Admin | Frontier Consolidated</title>
-</svelte:head>
+<Head
+	title="General - Admin"
+/>
 
 <SectionHeading>
     General Settings

@@ -5,7 +5,7 @@
 	import { Avatar, Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
 	import { ArrowLeftSolid, CloseCircleSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
-	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button, PermissionToggles } from "$lib/components";
+	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button, PermissionToggles, Head } from "$lib/components";
 	import { getApollo, Mutations } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
@@ -99,9 +99,9 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{data.role?.name} Role - Admin | Frontier Consolidated</title>
-</svelte:head>
+<Head
+	title="{data.role?.name} Role - Admin"
+/>
 
 <a class="flex items-center text-gray-300 mb-2 p-2 cursor-pointer hover:text-gray-400" href="/admin/roles" use:initNavigation>
 	<ArrowLeftSolid class="me-2" tabindex="-1" /> Back to Roles

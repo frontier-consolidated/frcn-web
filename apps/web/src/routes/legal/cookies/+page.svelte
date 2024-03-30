@@ -1,7 +1,7 @@
 <script lang="ts">
-import { A, Li, List, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from "flowbite-svelte";
+    import { A, Li, List, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, TableHeadCell } from "flowbite-svelte";
 
-	import { Hr } from "$lib/components";
+	import { Head, Hr } from "$lib/components";
 	import { DISCORD_URL } from "$lib/constants";
 
 	import LegalSection from "../LegalSection.svelte";
@@ -9,9 +9,9 @@ import { A, Li, List, Table, TableBody, TableBodyCell, TableBodyRow, TableHead, 
 	import LegalTitle from "../LegalTitle.svelte";
 </script>
 
-<svelte:head>
-    <title>Cookie Policy - Legal | Frontier Consolidated</title>
-</svelte:head>
+<Head
+	title="Cookie Policy - Legal"
+/>
 
 <LegalTitle>Cookie Policy</LegalTitle>
 <p class="font-medium text-gray-400">Last updated January 30, 2024</p>

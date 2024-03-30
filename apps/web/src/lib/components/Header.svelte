@@ -36,10 +36,10 @@
 	$: activeUrl = $page.url.pathname;
 
 	const aboutItems = [
-		{ name: "COMMUNITY", href: "/about/community", description: "< Something about community >", icon: UsersSolid },
-		{ name: "ORGANISATION", href: "/about/org", description: "< Something about org >", icon: BuildingSolid },
-		{ name: "ACTIVITIES", href: "/about/activities", description: "< Something about activities >", icon: MapPinAltSolid },
-		{ name: "MERCH STORE", href: MERCH_URL, target: "_blank", description: "< Something about merch >", icon: BagSolid },
+		{ name: "COMMUNITY", href: "/about/community", description: "Try before you fly", icon: UsersSolid },
+		{ name: "ORGANISATION", href: "/about/org", description: "Be part of something great", icon: BuildingSolid },
+		{ name: "ACTIVITIES", href: "/about/activities", description: "The joy of multiplayer action", icon: MapPinAltSolid },
+		{ name: "MERCH STORE", href: MERCH_URL, target: "_blank", description: "Show your true colours", icon: BagSolid },
 	]
 
 	let aboutOpen = false;
@@ -145,7 +145,7 @@
 					<CalendarMonthSolid size="sm" tabindex="-1" />EVENTS
 				</NavLi>
 			{/if}
-			<NavLi href="/knowledge" class="flex gap-2 items-center">
+			<NavLi href="/resources" class="flex gap-2 items-center">
 				<BookSolid size="sm" tabindex="-1" />RESOURCES
 			</NavLi>
 		</NavUl>

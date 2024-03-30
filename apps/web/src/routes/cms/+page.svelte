@@ -4,7 +4,7 @@
 	import { Heading, Input, Label, Modal } from 'flowbite-svelte';
 
 	import { transformContainer } from '$lib/cms/transformContainer';
-	import { Button, Field, FieldValidator, Hr } from '$lib/components';
+	import { Button, Field, FieldValidator, Head, Hr } from '$lib/components';
 	import { Mutations, getApollo } from '$lib/graphql';
 	import { pushNotification } from '$lib/stores/NotificationStore';
 
@@ -51,9 +51,9 @@
     }
 </script>
 
-<svelte:head>
-	<title>CMS | Frontier Consolidated</title>
-</svelte:head>
+<Head
+	title="CMS"
+/>
 
 <div class="mt-24 flex flex-col p-4 w-full max-w-4xl mx-auto">
     <Heading tag="h1" class="font-medium text-4xl">CMS</Heading>

@@ -6,6 +6,7 @@ import TimeBadge from "./datetime/TimeBadge.svelte"
 import EmojiPicker from "./emoji/EmojiPicker.svelte"
 import EmojiPickerInput from "./emoji/EmojiPickerInput.svelte"
 import Footer from "./Footer.svelte"
+import Head from "./Head.svelte"
 import Header from "./Header.svelte"
 import Hr from "./Hr.svelte"
 import ImageInput from "./ImageInput.svelte"
@@ -62,6 +63,7 @@ export {
     CreatedByButton,
     Footer,
     Header,
+    Head,
     Hr,
     ImageInput,
     JoinDiscordButton,

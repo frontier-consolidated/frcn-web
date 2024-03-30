@@ -7,7 +7,7 @@
 	import { setContext } from 'svelte';
 
 	import { transformContainer, type ContentContainerData } from '$lib/cms/transformContainer';
-	import { Button, ConfirmationModal, FieldValidator, SectionHeading } from '$lib/components';
+	import { Button, ConfirmationModal, FieldValidator, Head, SectionHeading } from '$lib/components';
 	import { Mutations, getApollo } from '$lib/graphql';
 	import preventNavigation from '$lib/preventNavigation';
 	import { pushNotification } from '$lib/stores/NotificationStore';
@@ -177,9 +177,9 @@
     let deleteModalOpen = false;
 </script>
 
-<svelte:head>
-	<title>Edit Container - CMS | Frontier Consolidated</title>
-</svelte:head>
+<Head
+	title="Edit Container - CMS"
+/>
 
 <div class="mt-24 flex flex-col min-h-[80vh] py-4 px-3 w-full max-w-4xl mx-auto bg-gray-50 rounded dark:bg-gray-900" use:initNavigation>
     {#if data.container.parent?.id}

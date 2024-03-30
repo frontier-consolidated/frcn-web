@@ -2,7 +2,7 @@
 	import { page } from "$app/stores";
 	import { Heading } from "flowbite-svelte";
 
-	import { Button, LoginButton } from "$lib/components";
+	import { Button, Head, LoginButton } from "$lib/components";
 
 	let heading = "Critical Error"
 	$: switch ($page.status) {
@@ -18,10 +18,12 @@
 	}
 </script>
 
-<svelte:head>
-	<title>{$page.status} | Frontier Consolidated</title>
+<Head
+	title={$page.status.toString()}
+	description={heading}
+>
 	<meta name="robots" content="noindex" />
-</svelte:head>
+</Head>
 
 <div class="flex flex-1 flex-col p-4 w-full max-w-3xl my-0 mx-auto box-border">
 	<div class="h-screen pt-[20vh]">
@@ -35,19 +37,19 @@
 				<div class="absolute bottom-0 -right-[2rem] skew-x-[-45deg] h-8 w-2 animate-glow"></div>
 			</div>
 			<p class="pl-2 text-gray-500">Error code: {$page.status}</p>
-			<div class="flex flex-col items-center mt-12">
+			<div class="flex flex-col items-center mt-4 p-6 bg-gray-50 dark:bg-gray-800 clip-opposite-reverse-8">
 				{#if $page.status === 401}
-					<p class="mt-4 text-gray-400">You must be authenticated in order to view this page</p>
+					<p class="text-gray-500 dark:text-gray-400">You must be authenticated in order to view this page</p>
 					<div class="flex justify-center mt-4">
 						<LoginButton />
 					</div>
 				{:else if $page.status === 404}
-					<p class="mt-4 text-gray-400">We could not find the page you were looking for.</p>
+					<p class="text-gray-500 dark:text-gray-400">We could not find the page you were looking for.</p>
 					<div class="flex justify-center mt-4">
 						<Button href="/">BACK TO SAFETY</Button>
 					</div>
 				{:else}
-					<p class="mt-4 text-gray-400">We encountered an issue with your request, please try again later.</p>
+					<p class="text-gray-500 dark:text-gray-400">We encountered an issue with your request, please try again later.</p>
 					<div class="flex justify-center mt-4">
 						<Button href="/">BACK TO SAFETY</Button>
 					</div>

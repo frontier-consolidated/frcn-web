@@ -3,8 +3,9 @@
 	import { Heading } from "flowbite-svelte";
 
 	import { transformContainer } from "$lib/cms/transformContainer";
-	import { PageHero } from "$lib/components";
-	import heroImageSrcset from "$lib/images/stock/community/hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
+	import { Head, PageHero } from "$lib/components";
+	import metaImage from "$lib/images/stock/community-hero.png?w=1200&format=webp&imagetools"
+	import heroImageSrcset from "$lib/images/stock/community-hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
 
 	import type { PageData } from "./$types";
 	import CmsAboutSectionRenderer from "../CmsAboutSectionRenderer.svelte";
@@ -13,11 +14,13 @@
 	$: index = data.index ? transformContainer<IndexContainer>(data.index) : null
 </script>
 
-<svelte:head>
-	<title>{index?.getMetaTitle() ? index?.getMetaTitle() : "Our Community - About"} | Frontier Consolidated</title>
-	<meta name="description" content={index?.getMetaDescription() ? index?.getMetaDescription() : ""} />
+<Head
+	title={index?.getMetaTitle() ? index?.getMetaTitle() : "Our Community - About"}
+	description={index?.getMetaDescription()}
+	image={metaImage}
+>
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
-</svelte:head>
+</Head>
 
 <PageHero srcset={heroImageSrcset}>
 	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">{index?.getTitle() ? index?.getTitle() : "Frontier Community"}</Heading>

@@ -4,6 +4,7 @@
 	import { ArrowLeftSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params";
 
+	import { Head } from "$lib/components";
 	import Button from "$lib/components/Button.svelte";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
@@ -17,9 +18,9 @@
 	export let data: PageData
 </script>
 
-<svelte:head>
-	<title>Access Keys - Admin | Frontier Consolidated</title>
-</svelte:head>
+<Head
+	title="Access Keys - Admin"
+/>
 
 <a class="flex items-center text-gray-300 mb-2 p-2 cursor-pointer hover:text-gray-400" href="/admin/general">
 	<ArrowLeftSolid class="me-2" tabindex="-1" /> Back to General
