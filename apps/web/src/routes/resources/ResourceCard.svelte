@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
 	import { Permission, hasPermission } from "@frcn/shared";
-	import { Badge, Dropdown, DropdownItem, Toolbar, ToolbarButton } from "flowbite-svelte";
+	import { Dropdown, DropdownItem, Frame, Toolbar, ToolbarButton } from "flowbite-svelte";
 	import { DotsVerticalOutline, DownloadSolid, EditOutline, FilePdfSolid, LinkSolid, TrashBinSolid } from "flowbite-svelte-icons";
     import { createEventDispatcher } from "svelte";
+	import type { Writable } from "svelte/store";
 
 	import { CreatedByButton, TimeBadge, ConfirmationModal, Button } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
@@ -13,6 +14,7 @@
 
     const dispatch = createEventDispatcher()
 
+    export let selectedTags: Writable<string[] | null>;
     export let resource: ResourceFragmentFragment;
     
     let deleteModalOpen = false;
@@ -32,9 +34,19 @@
         <div class="flex flex-wrap gap-1">
             <TimeBadge id="time-{resource.id}" format="datetime" value={resource.updatedAt} class="dark:bg-gray-900" />
             {#each resource.tags as tag}
-            <Badge>
-                {tag}
-            </Badge>
+                <Frame
+                    class="border-gray-200 dark:border-gray-700 divide-gray-200 dark:divide-gray-700 font-medium inline-flex items-center justify-center px-2.5 py-0.5 text-xs bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-300 rounded cursor-pointer"
+                    on:click={() => {
+                        console.log("click")
+                        if ($selectedTags?.includes(tag)) {
+                            selectedTags.update(tags => (tags ?? []).filter(t => t !== tag))
+                        } else {
+                            selectedTags.update(tags => [...(tags ?? []), tag])
+                        }
+                    }}
+                >
+                    {tag}
+                </Frame>
             {/each}
         </div>
         <span class="block mt-2 text-xl font-semibold text-gray-800 dark:text-white">

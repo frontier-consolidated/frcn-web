@@ -34,8 +34,8 @@ async function getResources(
 				mode: "insensitive"
 				}
 			: undefined,
-		tags: tags ? {
-			hasEvery: tags
+		tags: tags && tags.length > 0 ? {
+			hasSome: tags
 		} : undefined,
 		fileId: {
 			not: null

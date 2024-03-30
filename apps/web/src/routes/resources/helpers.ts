@@ -30,12 +30,14 @@ export async function getResources(apollo: TypedApolloClient, url: URL) {
     }
     
     const { page, limit } = getPageVars(url.searchParams)
+    const tags = url.searchParams.get("tags")?.split(",") ?? []
 
     const { data } = await apollo.query({
         query: Queries.GET_RESOURCES,
         variables: {
             filter: {
-                search: url.searchParams.get("q")
+                search: url.searchParams.get("q"),
+                tags
             },
             page,
             limit

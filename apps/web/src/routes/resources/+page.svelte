@@ -25,9 +25,20 @@
 	import type { PageData } from "./$types";
 	import ResourceCard from "./ResourceCard.svelte";
 	import ResourceModal from "./ResourceModal.svelte";
+	import { tags } from "./tags";
 	import ToolButton from "./ToolButton.svelte";
 
 	const search = queryParam("q")
+	const selectedTags = queryParam("tags", {
+		decode(value) {
+			if (!value) return [];
+			return value.split(",")
+		},
+		encode(value: string[]) {
+			if (value.length === 0) return undefined;
+			return value.join(",")
+		},
+	})
 	let searchInput = $search;
 
 	const tools = [
@@ -94,11 +105,29 @@
 					</Button>
 				{/if}
 			</div>
+			<div class="mt-4 flex flex-wrap gap-2">
+				{#each tags as tag}
+					<Button
+						color={$selectedTags?.includes(tag) ? "blue" : "dark"}
+						size="xs"
+						class="px-6 shrink-0"
+						on:click={() => {
+							if ($selectedTags?.includes(tag)) {
+								selectedTags.update(tags => (tags ?? []).filter(t => t !== tag))
+							} else {
+								selectedTags.update(tags => [...(tags ?? []), tag])
+							}
+						}}
+					>
+						{tag}
+					</Button>
+				{/each}
+			</div>
 		</div>
 		<div class="flex flex-col items-center self-start w-full">
 			<div class="w-full grid min-[580px]:grid-cols-2 lg:grid-cols-3 gap-2 p-4">
 				{#each data.resources as resource}
-					<ResourceCard {resource} on:edit={(ev) => {
+					<ResourceCard {selectedTags} {resource} on:edit={(ev) => {
 						fileModal.edit = ev.detail
 						fileModal.open = true
 					}} />
