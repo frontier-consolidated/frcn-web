@@ -24,6 +24,7 @@ export function resolveContentContainer(container: ContentContainer) {
 		content: container.content,
 		files: [], // field-resolved
 		children: [], // field-resolved
+		recursiveChildren: [], // field-resolved
 	} satisfies WithModel<GQLContentContainer, ContentContainer>
 }
 
@@ -62,6 +63,46 @@ export const cmsResolvers: Resolvers = {
 
 			const idToIndex = children.reduce((record, child) => ({ ...record, [child.id]: _model.childrenOrder.findIndex(id => id === child.id) }), {} as Record<string, number>)
 			return [...children].sort((a, b) => idToIndex[a.id] - idToIndex[b.id]).map(resolveContentContainer)
+		},
+		async recursiveChildren(source, args, context) {
+			const { _model } = source as WithModel<GQLContentContainer, ContentContainer>;
+
+			async function getChildrenRecursive(container: ContentContainer) {
+				const children = await database.contentContainer.getChildren(container, {
+					include: {
+						files: {
+							include: {
+								file: true
+							}
+						}
+					}
+				}) as (ContentContainer & { files: (ContentContainerFile & { file: FileUpload })[] })[]
+
+				const resolvedChildren = []
+				for (const child of children) {
+					const resolved = resolveContentContainer(child);
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					delete resolved._model;
+
+					const resolvedFiles = child.files.map((link) => {
+						return resolveContentContainerFile(link, link.file, context)
+					}).filter((f): f is NonNullable<typeof f> => !!f)
+					
+					const idToIndex = resolvedFiles.reduce((record, file) => ({ ...record, [file.id]: container.filesOrder.findIndex(id => id === file.id) }), {} as Record<string, number>)
+					resolvedFiles.sort((a, b) => idToIndex[a.id] - idToIndex[b.id])
+
+					resolved.files = resolvedFiles as never[];
+					resolved.recursiveChildren = (await getChildrenRecursive(child)) as never[]
+					resolvedChildren.push(resolved);
+				}
+
+				const idToIndex = resolvedChildren.reduce((record, child) => ({ ...record, [child.id]: container.childrenOrder.findIndex(id => id === child.id) }), {} as Record<string, number>)
+				return [...resolvedChildren].sort((a, b) => idToIndex[a.id] - idToIndex[b.id])
+			}
+
+			const children = await getChildrenRecursive(_model);
+			return children;
 		},
 		async parent(source) {
 			const { _model } = source as WithModel<GQLContentContainer, ContentContainer>;

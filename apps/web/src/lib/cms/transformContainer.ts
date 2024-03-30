@@ -2,9 +2,10 @@ import { CMSContainerType, CmsContainer, CmsFile, type CmsContainerInit, Contain
 
 import type { ContentContainerFragmentFragment } from "$lib/graphql/__generated__/graphql";
 
-type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
-
-export type ContentContainerData = Optional<ContentContainerFragmentFragment, "children">
+export type ContentContainerData = ContentContainerFragmentFragment & {
+    children?: ContentContainerData[]
+    recursiveChildren?: Omit<ContentContainerData, "children">[]
+}
 
 class NotImplementedContainer extends CmsContainer {
     clone(): CmsContainer {

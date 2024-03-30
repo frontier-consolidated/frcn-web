@@ -1,6 +1,7 @@
 # Scalars
 
 scalar Timestamp
+scalar Object
 
 # Enums
 
@@ -203,6 +204,7 @@ type ContentContainer {
 	content: String
 	files: [ContentContainerFile!]!
 	children: [ContentContainer!]!
+	recursiveChildren: [Object!]!
 	parent: ContentContainer
 }
 
