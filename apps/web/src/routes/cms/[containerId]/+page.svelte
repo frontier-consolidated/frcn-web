@@ -18,9 +18,6 @@
     const validator = new FieldValidator()
 
     export let data: PageData;
-    if (browser) {
-        console.log(data.container)
-    }
     $: container = transformContainer(data.container)
 
     function checkIfFileDirty(source: ContentContainerData["files"][number], mutable: CmsFile, prefix = "", diff?: string[]) {
