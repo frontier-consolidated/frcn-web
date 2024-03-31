@@ -2,7 +2,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import type { Prisma, User } from "@prisma/client";
 
 import { $files } from "./files";
-import { database } from "../database";
+import { database, type Transaction } from "../database";
 import type { ResourceCreateInput, ResourceEditInput } from "../graphql/__generated__/resolvers-types";
 
 async function getResource(id: string) {
@@ -66,6 +66,20 @@ async function getResources(
 	};
 }
 
+async function getResourceOwner<T extends Prisma.Resource$ownerArgs>(id: string, args?: Prisma.Subset<T, Prisma.Resource$ownerArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).resource.findUnique({
+		where: { id }
+	}).owner<T>(args)
+	return result
+}
+
+async function getResourceFile<T extends Prisma.Resource$fileArgs>(id: string, args?: Prisma.Subset<T, Prisma.Resource$fileArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).resource.findUnique({
+		where: { id }
+	}).file<T>(args)
+	return result
+}
+
 async function createResource(owner: User, data: ResourceCreateInput) {
 	const resource = await database.resource.create({
 		data: {
@@ -116,18 +130,22 @@ async function deleteResource(client: S3Client, bucket: string, id: string) {
 	if (!resource) return;
 
 	// TODO: Look at why transactions here was causing long process time
-	await database.resource.delete({
-		where: { id }
+	database.$transaction(async (tx) => {
+		await tx.resource.delete({
+			where: { id }
+		})
+	
+		if (resource.file) {
+			await $files.deleteFile(client, bucket, resource.file.id, tx)
+		}
 	})
-
-	if (resource.file) {
-		await $files.deleteFile(client, bucket, resource.file.id)
-	}
 }
 
 export const $resources = {
 	getResource,
 	getResources,
+	getResourceOwner,
+	getResourceFile,
 	createResource,
 	editResource,
 	deleteResource

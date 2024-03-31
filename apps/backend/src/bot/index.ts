@@ -3,7 +3,6 @@ import { type AnySelectMenuInteraction, ButtonInteraction, Client, InteractionTy
 import { buildErrorMessage } from "./messages/error.message";
 import { buildRsvpDmMessage, buildRsvpMessage } from "./messages/rsvp.message";
 import { buildUnrsvpMessage } from "./messages/unrsvp.message";
-import { database } from "../database";
 import { $discord } from "../services/discord";
 import { $events } from "../services/events";
 import { $users } from "../services/users";
@@ -17,7 +16,7 @@ async function eventInteraction(interaction: ButtonInteraction | AnySelectMenuIn
         return;
     }
 
-    const roles = await database.event.getRoles(event)
+    const roles = await $events.getRSVPRoles(event.id)
     const role = roles.find(r => r.id === interaction.customId)
     if (!role) {
         await interaction.editReply({
@@ -114,26 +113,6 @@ export function load(client: Client) {
         const user = await $users.getUserByDiscordId(member.user.id)
         if (!user) return;
 
-        const sessions = await database.user.getSessions(user)
-        for (const session of sessions) {
-            try {
-                const data = JSON.parse(session.data);
-                delete data["user"]
-
-                await database.userSession.update({
-                    where: { sid: session.sid },
-                    data: {
-                        user: {
-                            disconnect: session.userId ? {
-                                id: session.userId
-                            } : undefined
-                        },
-                        data: JSON.stringify(data)
-                    }
-                })
-            } catch (err) {
-                console.error("Failed to unauthenticate session", err)
-            }
-        }
+        await $users.unauthenticateSessions(user)
     })
 }

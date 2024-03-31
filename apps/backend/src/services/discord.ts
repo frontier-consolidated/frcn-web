@@ -4,14 +4,19 @@ import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuild
 import { $system } from "./system";
 
 async function getGuild(client: Client) {
-	const { discordGuildId } = await $system.getSystemSettings();
-
-	return await client.guilds.fetch(discordGuildId);
+	try {
+		const { discordGuildId } = await $system.getSystemSettings();
+	
+		return await client.guilds.fetch(discordGuildId);
+	} catch (err) {
+		return null;
+	}
 }
 
 async function isInGuild(client: Client, userId: string) {
 	try {
 		const guild = await getGuild(client);
+		if (!guild) return false;
 		await guild.members.fetch(userId);
 
 		return true;
@@ -24,18 +29,19 @@ const textChannelTypes: ChannelType[] = [ChannelType.GuildAnnouncement, ChannelT
 async function getAllTextChannels(client: Client) {
 	try {
 		const guild = await getGuild(client);
+		if (!guild) return [];
 		const channels = await guild.channels.fetch();
 
 		return Array.from(channels.values()).filter((channel) => !!channel && textChannelTypes.includes(channel.type)) as NonThreadGuildBasedChannel[];
 	} catch (err) {
-		// console.error("Discord Error:", err);
+		return [];
 	}
-	return [];
 }
 
 async function getChannel(client: Client, id: string) {
 	try {
 		const guild = await getGuild(client);
+		if (!guild) return null;
 		const channel = await guild.channels.fetch(id);
 		return channel;
 	} catch (err) {
@@ -46,6 +52,7 @@ async function getChannel(client: Client, id: string) {
 async function canUserViewChannel(client: Client, user: User | undefined, channelId: string) {
 	try {
 		const guild = await getGuild(client);
+		if (!guild) return false;
 
 		const channel = await guild.channels.fetch(channelId);
 		if (!channel) return false;
@@ -58,18 +65,17 @@ async function canUserViewChannel(client: Client, user: User | undefined, channe
 
 		if (channel.isThread()) {
 			return channel.guildMembers.has(guildMember.id);
-		} else {
-			return channel.members.has(guildMember.id);
 		}
+		return channel.members.has(guildMember.id);
 	} catch (err) {
-		// console.error("Discord Error:", err);
+		return false;
 	}
-	return false;
 }
 
 async function getAllRoles(client: Client, includeEveryone?: boolean) {
 	try {
 		const guild = await getGuild(client);
+		if (!guild) return [];
 		const roles = await guild.roles.fetch();
 
 		let arr = Array.from(roles.values());
@@ -79,45 +85,44 @@ async function getAllRoles(client: Client, includeEveryone?: boolean) {
 
 		return arr;
 	} catch (err) {
-		// console.error("Discord Error:", err);
+		return [];
 	}
-	return [];
 }
 
 async function getRole(client: Client, id: string) {
 	try {
 		const guild = await getGuild(client);
+		if (!guild) return null;
 		const role = await guild.roles.fetch(id);
 
 		return role;
 	} catch (err) {
-		// console.error("Discord Error:", err);
+		return null;
 	}
-	return null;
 }
 
 async function getAllEmojis(client: Client) {
 	try {
 		const guild = await getGuild(client);
+		if (!guild) return [];
 		const emojis = await guild.emojis.fetch();
 
 		return Array.from(emojis.values());
 	} catch (err) {
-		// console.error("Discord Error:", err);
+		return [];
 	}
-	return [];
 }
 
 async function getEmoji(client: Client, id: string) {
 	try {
 		const guild = await getGuild(client);
+		if (!guild) return null;
 		const emoji = await guild.emojis.fetch(id);
 
 		return emoji;
 	} catch (err) {
-		// console.error("Discord Error:", err);
+		return null;
 	}
-	return null;
 }
 
 function convertDJSUserToAPIUser(user: DJSUser) {

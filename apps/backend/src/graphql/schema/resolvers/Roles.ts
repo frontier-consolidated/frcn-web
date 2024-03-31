@@ -3,12 +3,11 @@ import type { User, UserRole } from "@prisma/client";
 
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
-import { database } from "../../../database";
 import { $roles } from "../../../services/roles";
 import { $system } from "../../../services/system";
 import { $users } from "../../../services/users";
 import type { UserRole as GQLUserRole, UpdatedUserRoles as GQLUpdatedUserRoles, Resolvers } from "../../__generated__/resolvers-types";
-import { pubsub, withFilter } from "../../pubsub";
+import { pubsub } from "../../pubsub";
 import { calculatePermissions } from "../calculatePermissions";
 import { gqlErrorBadInput } from "../gqlError";
 
@@ -44,47 +43,19 @@ export const roleResolvers: Resolvers = {
 	UserRole: {
 		async users(source) {
 			const { _model } = source as WithModel<GQLUserRole, UserRole>;
-			if (_model.primary) {
-				const primaryUsers = await database.userRole.getPrimaryUsers(_model);
-				return primaryUsers.map(resolveUser);
-			}
-
-			const usersInRole = await database.userRole.getUsers(_model);
-			const users = await Promise.all(
-				usersInRole.map((r) => database.usersInUserRoles.getUser(r))
-			);
-			return users.map((user) => resolveUser(user));
-		},
-	},
-
-	UpdatedUserRoles: {
-		async permissions(source) {
-			const { _model } = source as WithModel<GQLUpdatedUserRoles, User>;
-			const permissions = await $users.getPermissions(_model);
-			return permissions;
-		},
-		async primaryRole(source) {
-			const { _model } = source as WithModel<GQLUpdatedUserRoles, User>;
-			const primaryRole = await database.user.getPrimaryRole(_model);
-			return resolveUserRole(primaryRole);
-		},
-		async roles(source) {
-			const { _model } = source as WithModel<GQLUpdatedUserRoles, User>;
-			const roles = await database.user.getRoles(_model);
-			return roles.map(resolveUserRole);
+			const users = await $roles.getRoleUsers(_model)
+			return users.map(resolveUser);
 		},
 	},
 
 	Query: {
 		async getRoles() {
-			const roles = await database.userRole.findMany();
+			const roles = await $roles.getAllRoles()
 			const sortedRoles = await $roles.sort(roles);
 			return sortedRoles.map(resolveUserRole);
 		},
 		async getRole(source, args) {
-			const role = await database.userRole.findUnique({
-				where: { id: args.id }
-			})
+			const role = await $roles.getRole(args.id)
 			if (!role) return null;
 			return resolveUserRole(role)
 		},
@@ -100,19 +71,15 @@ export const roleResolvers: Resolvers = {
 			return role.id
 		},
 		async editRole(source, args) {
-			const role = await database.userRole.findUnique({
-				where: { id: args.id }
-			})
+			const role = await $roles.getRole(args.id)
 			if (!role) return null;
 
 			const data = args.data
 
+			const users = await $roles.getRoleUsers(role)
 			if (role.primary && data.primary === false) {
-				const users = await database.userRole.getPrimaryUsers(role)
 				if (users.length > 0) {
-					const newRole = data.newPrimaryRole && await database.userRole.findUnique({
-						where: { id: data.newPrimaryRole }
-					})
+					const newRole = data.newPrimaryRole && await $roles.getRole(data.newPrimaryRole)
 	
 					if (!newRole || !newRole.primary) {
 						throw gqlErrorBadInput(`Cannot switch primary role to non-primary role because there are users assigned and an invalid alternative was given: ${data.newPrimaryRole}`);
@@ -121,7 +88,6 @@ export const roleResolvers: Resolvers = {
 			}
 
 			if (!role.primary && data.primary) {
-				const users = await database.userRole.getPrimaryUsers(role)
 				if (users.length > 0) {
 					throw gqlErrorBadInput("Cannot switch non-primary role to primary role while it has users assigned");
 				}
@@ -132,18 +98,7 @@ export const roleResolvers: Resolvers = {
 		},
 		async deleteRole(source, args) {
 			// TODO: Add validation
-			const { roleOrder } = await $system.getSystemSettings()
-
-			await database.systemSettings.update({
-				where: { unique: true },
-				data: {
-					roleOrder: roleOrder.filter(id => id !== args.id)
-				}
-			})
-
-			await database.userRole.delete({
-				where: { id: args.id }
-			})
+			await $roles.deleteRole(args.id)
 			return true;
 		},
 		async reorderRoles(source, args, context) {
@@ -187,25 +142,8 @@ export const roleResolvers: Resolvers = {
 			}
 
 
-			await database.systemSettings.update({
-				where: { unique: true },
-				data: {
-					roleOrder: args.order
-				}
-			})
+			await $roles.reorderRoles(args.order)
 			return args.order
-		}
-	},
-
-	Subscription: {
-		userRolesUpdated: {
-			subscribe: withFilter(
-				() => pubsub.asyncIterator("USER_ROLES_UPDATED"),
-				async function (source, args) {
-					const value = await Promise.resolve(source.userRolesUpdated)
-					return value.userId === args.userId
-				}
-			)
 		}
 	}
 };

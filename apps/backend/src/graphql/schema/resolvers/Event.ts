@@ -5,17 +5,17 @@ import { resolveDiscordChannel, resolveDiscordEmoji } from "./Discord";
 import { resolveUserRole } from "./Roles";
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
-import { database } from "../../../database";
 import { $discord } from "../../../services/discord";
 import { $events } from "../../../services/events";
+import { $roles } from "../../../services/roles";
 import type {
-    User as GQLUser,
-    Event as GQLEvent,
-    EventRsvp as GQLEventRsvp,
-    EventRsvpRole as GQLEventRsvpRole,
-    EventMember as GQLEventMember,
-    EventSettings as GQLEventSettings,
-    Resolvers
+	User as GQLUser,
+	Event as GQLEvent,
+	EventRsvp as GQLEventRsvp,
+	EventRsvpRole as GQLEventRsvpRole,
+	EventMember as GQLEventMember,
+	EventSettings as GQLEventSettings,
+	Resolvers
 } from "../../__generated__/resolvers-types";
 import { EventAccessType } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
@@ -101,20 +101,20 @@ export const eventResolvers: Resolvers = {
 	Event: {
 		async channel(source, args, context) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
-			const channel = await database.event.getChannel(_model);
+			const channel = await $events.getEventChannel(_model.id);
 			if (!channel) return null;
 			return await resolveDiscordChannel(channel, context);
 		},
 		async owner(source): Promise<WithModel<GQLUser, User> | null> {
 			const { _model } = source as WithModel<GQLEvent, Event>;
-			const owner = await database.event.getOwner(_model);
+			const owner = await $events.getEventOwner(_model.id);
 			if (!owner) return null;
 			return resolveUser(owner);
 		},
 		async location(source, args, context) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
-			const owner = await database.event.getOwner(_model);
-			const settings = await database.event.getSettings(_model);
+			const owner = await $events.getEventOwner(_model.id);
+			const settings = await $events.getEventSettings(_model.id);
 
 			if (
 				settings!.hideLocation &&
@@ -135,31 +135,35 @@ export const eventResolvers: Resolvers = {
 		},
 		async roles(source, args, context) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
-			const rsvpRoles = await database.event.getRoles(_model);
+			const rsvpRoles = await $events.getRSVPRoles(_model.id);
 			rsvpRoles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
 			return rsvpRoles.map((role) => resolveEventRsvpRole(role, context));
 		},
 		async members(source) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
-			const members = await database.event.getMembers(_model);
+			const members = await $events.getEventMembers(_model.id);
 			return members.map(resolveEventMember);
 		},
 		async settings(source) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
-			const settings = await database.event.getSettings(_model);
+			const settings = await $events.getEventSettings(_model.id);
 			return resolveEventSettings(settings!);
 		},
 		async accessRoles(source) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
-			const accessRoles = await database.event.getAccessRoles(_model);
-			return accessRoles.map(resolveUserRole);
+			const accessRoles = await $events.getEventAccessRoles(_model.id, {
+				include: {
+					role: true
+				}
+			});
+			return accessRoles.map(r => r.role).map(resolveUserRole);
 		},
 	},
 
 	EventRsvpRole: {
 		async members(source) {
 			const { _model } = source as WithModel<GQLEventRsvpRole, EventRsvpRole>;
-			const members = await database.eventRsvpRole.getMembers(_model);
+			const members = await $events.getRSVPMembers(_model.id);
 			return members.map((member) => member.id);
 		},
 	},
@@ -167,20 +171,20 @@ export const eventResolvers: Resolvers = {
 	EventMember: {
 		async user(source) {
 			const { _model } = source as WithModel<GQLEventMember, EventUser>;
-			const user = await database.eventUser.getUser(_model);
-			return resolveUser(user);
+			const user = await $events.getEventMemberUser(_model.id);
+			return resolveUser(user!);
 		},
 	},
 
 	EventRsvp: {
 		async event(source) {
 			const { _model } = source as WithModel<GQLEventRsvp, EventUser>;
-			const event = await database.eventUser.getEvent(_model);
-			return resolveEvent(event);
+			const event = await $events.getEventMemberEvent(_model.id);
+			return resolveEvent(event!);
 		},
 		async rsvp(source, args, context) {
 			const { _model } = source as WithModel<GQLEventRsvp, EventUser>;
-			const rsvp = await database.eventUser.getRsvp(_model);
+			const rsvp = await $events.getEventMemberRsvp(_model.id);
 			if (!rsvp) return null;
 			return resolveEventRsvpRole(rsvp, context);
 		},
@@ -255,7 +259,8 @@ export const eventResolvers: Resolvers = {
 			return event.id;
 		},
 		async editEvent(source, args, context): Promise<WithModel<GQLEvent, Event> | null> {
-			if (!(await $events.eventExists(args.id))) return null;
+			const event = await $events.getEvent(args.id);
+			if (!event) return null;
 
 			const data = args.data;
 
@@ -314,7 +319,7 @@ export const eventResolvers: Resolvers = {
 							`Expected atleast 1 access role with accessType=SelectRoles`
 						);
 					}
-					const roles = await database.userRole.findMany({
+					const roles = await $roles.getAllRoles({
 						select: { id: true, primary: true },
 					});
 
@@ -333,7 +338,7 @@ export const eventResolvers: Resolvers = {
 			}
 
 			const updatedEvent = await $events.editEvent(
-				args.id,
+				event,
 				data,
 				context.app.discordClient
 			);
@@ -349,22 +354,25 @@ export const eventResolvers: Resolvers = {
 			if (!event.startAt) throw gqlErrorBadState("Event is missing start date");
 			if (!event.duration) throw gqlErrorBadState("Event is missing duration");
 
+			const eventChannel = await $events.getEventChannel(event.id)
+			if (!eventChannel) throw gqlErrorBadState("Event is missing channel");
+
 			if (
 				event.accessType === EventAccessType.PrimaryRole ||
 				event.accessType === EventAccessType.SelectRoles
 			) {
-				const accessRoles = await database.event.getAccessThroughRoles(event);
+				const accessRoles = await $events.getEventAccessRoles(event.id);
 				if (accessRoles.length < 1) {
 					throw gqlErrorBadState("Event expected an access role");
 				}
 			}
 
-			const roles = await database.event.getRoles(event);
+			const roles = await $events.getRSVPRoles(event.id);
 			if (roles.length < 1) {
 				throw gqlErrorBadState("Event expected atleast 1 role");
 			}
 
-			await $events.postEvent(args.id, context.app.discordClient);
+			await $events.postEvent(event, context.app.discordClient);
 
 			return true;
 		},
@@ -380,7 +388,7 @@ export const eventResolvers: Resolvers = {
 			const event = await $events.getEvent(args.id)
 			if (!event) return false;
 
-			const roles = await database.event.getRoles(event)
+			const roles = await $events.getRSVPRoles(event.id);
 			const role = roles.find(r => r.id === args.rsvp)
 			if (!role) throw gqlErrorBadInput("No such rsvp role with id")
 			if (!(await $events.canJoinRsvp(role))) throw gqlErrorBadInput(`RSVP '${role.name}' is full`)

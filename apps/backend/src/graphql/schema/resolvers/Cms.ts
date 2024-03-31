@@ -1,10 +1,8 @@
 
-import { DeleteObjectCommand } from "@aws-sdk/client-s3";
 import { CMSContainerType, ContainerTypeMap } from "@frcn/cms";
 import type { ContentContainer, ContentContainerFile, FileUpload } from "@prisma/client";
 
 import type { WithModel } from "./types";
-import { database, transaction } from "../../../database";
 import { getOrigin } from "../../../env";
 import { $cms } from "../../../services/cms";
 import type {
@@ -44,14 +42,14 @@ export const cmsResolvers: Resolvers = {
 	ContentContainer: {
 		async files(source, args, context) {
 			const { _model } = source as WithModel<GQLContentContainer, ContentContainer>;
-			const fileLinks = await database.contentContainer.getFileLinks(_model);
-			const files = await database.contentContainer.getFiles(_model);
+			const fileLinks = await $cms.getContainerFileLinks(_model.id, {
+				include: {
+					file: true
+				}
+			});
 
 			const resolved = fileLinks.map((link) => {
-				const file = files.find(f => f.id === link.fileId)
-				if (!file) return null;
-
-				return resolveContentContainerFile(link, file, context)
+				return resolveContentContainerFile(link, link.file, context)
 			}).filter((f): f is NonNullable<typeof f> => !!f)
 			
 			const idToIndex = resolved.reduce((record, file) => ({ ...record, [file.id]: _model.filesOrder.findIndex(id => id === file.id) }), {} as Record<string, number>)
@@ -60,7 +58,7 @@ export const cmsResolvers: Resolvers = {
 		},
 		async children(source) {
 			const { _model } = source as WithModel<GQLContentContainer, ContentContainer>;
-			const children = await database.contentContainer.getChildren(_model)
+			const children = await $cms.getContainerChildren(_model.id)
 
 			const idToIndex = children.reduce((record, child) => ({ ...record, [child.id]: _model.childrenOrder.findIndex(id => id === child.id) }), {} as Record<string, number>)
 			return [...children].sort((a, b) => idToIndex[a.id] - idToIndex[b.id]).map(resolveContentContainer)
@@ -69,7 +67,7 @@ export const cmsResolvers: Resolvers = {
 			const { _model } = source as WithModel<GQLContentContainer, ContentContainer>;
 
 			async function getChildrenRecursive(container: ContentContainer) {
-				const children = await database.contentContainer.getChildren(container, {
+				const children = await $cms.getContainerChildren(container.id, {
 					include: {
 						files: {
 							include: {
@@ -107,7 +105,7 @@ export const cmsResolvers: Resolvers = {
 		},
 		async parent(source) {
 			const { _model } = source as WithModel<GQLContentContainer, ContentContainer>;
-			const parent = await database.contentContainer.getParent(_model)
+			const parent = await $cms.getContainerParent(_model.id)
 			if (!parent) return null;
 
 			return resolveContentContainer(parent)
@@ -116,23 +114,17 @@ export const cmsResolvers: Resolvers = {
 
 	Query: {
 		async getContentContainer(source, args) {
-			const container = await database.contentContainer.findFirst({
-				where: { identifier: args.identifier, type: args.type, parentId: args.parentId ?? null }
-			})
+			const container = await $cms.getContainer(args.identifier, args.type, args.parentId ?? undefined)
 			if (!container) return null;
 			return resolveContentContainer(container)
 		},
 		async getContentContainerById(source, args) {
-			const container = await database.contentContainer.findUnique({
-				where: { id: args.id }
-			})
+			const container = await $cms.getContainerById(args.id)
 			if (!container) return null;
 			return resolveContentContainer(container)
 		},
 		async getContentContainersOfType(source, args) {
-			const containers = await database.contentContainer.findMany({
-				where: { type: args.type, parentId: args.parentId ?? null }
-			})
+			const containers = await $cms.getContainersOfType(args.type, args.parentId ?? undefined)
 			return containers.map(resolveContentContainer)
 		}
 	},
@@ -141,9 +133,7 @@ export const cmsResolvers: Resolvers = {
 		async createContentContainer(source, args) {
 			let parent: ContentContainer | null = null;
 			if (args.parent) {
-				parent = await database.contentContainer.findUnique({
-					where: { id: args.parent }
-				})
+				parent = await $cms.getContainerById(args.parent)
 				if (!parent) throw gqlErrorBadInput(`Could not find parent container '${args.parent}'`)
 
 				const ContainerClass = ContainerTypeMap[parent.type as CMSContainerType]
@@ -161,56 +151,18 @@ export const cmsResolvers: Resolvers = {
 				throw gqlErrorBadInput(`Invalid container type '${args.type}'`)
 			}
 
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore excessively deep type, but still resolves
-			const container = await transaction(async (tx) => {
-				const container = await tx.contentContainer.create({
-					data: {
-						type: args.type,
-						identifier: args.identifier,
-						parent: args.parent ? {
-							connect: {
-								id: args.parent
-							}
-						} : undefined
-					}
-				})
-
-				if (parent) {
-					await tx.contentContainer.update({
-						where: { id: parent.id },
-						data: {
-							childrenOrder: [...parent.childrenOrder, container.id]
-						}
-					})
-				}
-
-				return container
-			})
-
+			const container = await $cms.createContainer(args.type, args.identifier ?? undefined, parent ?? undefined)
 			return resolveContentContainer(container)
 		},
 		async editContentContainer(source, args) {
-			const container = await database.contentContainer.findUnique({
-				where: { id: args.id }
-			})
+			const container = await $cms.getContainerById(args.id)
 			if (!container) return null;
 
-			const updatedContainer = await database.contentContainer.update({
-				where: { id: args.id },
-				data: {
-					identifier: args.data.identifier ?? undefined,
-					title: args.data.title ?? undefined,
-					content: args.data.content ?? undefined
-				}
-			})
-
+			const updatedContainer = await $cms.editContainer(container, args.data)
 			return resolveContentContainer(updatedContainer)
 		},
 		async reorderContentContainerChildren(source, args) {
-			const container = await database.contentContainer.findUnique({
-				where: { id: args.id }
-			})
+			const container = await $cms.getContainerById(args.id)
 			if (!container) return null;
 
 			if (args.order.length !== container.childrenOrder.length) {
@@ -229,19 +181,11 @@ export const cmsResolvers: Resolvers = {
 				seen.push(id)
 			}
 
-			const updatedContainer = await database.contentContainer.update({
-				where: { id: args.id },
-				data: {
-					childrenOrder: args.order
-				}
-			})
-
+			const updatedContainer = await $cms.reorderContainerChildren(container, args.order)
 			return resolveContentContainer(updatedContainer)
 		},
 		async reorderContentContainerFiles(source, args) {
-			const container = await database.contentContainer.findUnique({
-				where: { id: args.id }
-			})
+			const container = await $cms.getContainerById(args.id)
 			if (!container) return null;
 
 			if (args.order.length !== container.filesOrder.length) {
@@ -260,73 +204,28 @@ export const cmsResolvers: Resolvers = {
 				seen.push(id)
 			}
 
-			const updatedContainer = await database.contentContainer.update({
-				where: { id: args.id },
-				data: {
-					filesOrder: args.order
-				}
-			})
-
+			const updatedContainer = await $cms.reorderContainerFiles(container, args.order)
 			return resolveContentContainer(updatedContainer)
 		},
 		async deleteContentContainer(source, args, context) {
-			const container = await database.contentContainer.findUnique({
-				where: { id: args.id }
-			})
+			const container = await $cms.getContainerById(args.id)
 			if (!container) return false;
 
 			await $cms.deleteContainer(context.app.s3Client, context.app.s3Bucket, args.id)
 			return true;
 		},
 		async editContentContainerFile(source, args, context) {
-			const fileLink = await database.contentContainerFile.findUnique({
-				where: { id: args.id }
-			})
+			const fileLink = await $cms.getContainerFileLink(args.id)
 			if (!fileLink) return null;
 
-			const updatedFileLink = await database.contentContainerFile.update({
-				where: { id: args.id },
-				data: {
-					identifier: args.data.identifier ?? undefined,
-				},
-				include: {
-					file: true
-				}
-			})
-
+			const updatedFileLink = await $cms.editContainerFileLink(fileLink, args.data)
 			return resolveContentContainerFile(updatedFileLink, updatedFileLink.file, context)
 		},
 		async deleteContentContainerFile(source, args, context) {
-			const fileLink = await database.contentContainerFile.findUnique({
-				where: { id: args.id },
-				include: {
-					file: true,
-					container: true
-				}
-			})
+			const fileLink = await $cms.getContainerFileLink(args.id)
 			if (!fileLink) return false;
 
-			const command = new DeleteObjectCommand({
-				Bucket: context.app.s3Bucket,
-				Key: fileLink.file.key,
-			})
-		
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore excessively deep type, but still resolves
-			await transaction(async (tx) => {
-				await tx.fileUpload.delete({
-					where: { id: fileLink.fileId }
-				})
-
-				await tx.contentContainer.update({
-					where: { id: fileLink.containerId },
-					data: {
-						filesOrder: fileLink.container.filesOrder.filter(id => id !== fileLink.id)
-					}
-				})
-				
-				await context.app.s3Client.send(command)
-			})
+			await $cms.deleteContainerFileLink(context.app.s3Client, context.app.s3Bucket, fileLink)
 			return true;
 		}
 	}

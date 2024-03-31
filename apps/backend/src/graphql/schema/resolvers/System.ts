@@ -1,9 +1,8 @@
 import { hasAdmin } from "@frcn/shared";
-import type { AccessKey, SystemSettings } from "@prisma/client";
+import type { AccessKey } from "@prisma/client";
 
 import { resolveDiscordChannel } from "./Discord";
 import type { WithModel } from "./types";
-import { database } from "../../../database";
 import { $events } from "../../../services/events";
 import { $system } from "../../../services/system";
 import type {
@@ -14,6 +13,8 @@ import type {
 } from "../../__generated__/resolvers-types";
 import { calculatePermissions } from "../calculatePermissions";
 import { gqlErrorBadInput, gqlErrorPermission } from "../gqlError";
+
+type SystemSettings = Awaited<ReturnType<(typeof $system)["getSystemSettings"]>>
 
 export function resolveSystemSettings(settings: SystemSettings) {
 	return {
@@ -55,13 +56,10 @@ export const systemResolvers: Resolvers = {
 				name: "!UNKNOWN"
 			}
 		},
-		async defaultEventChannel(source, args, context) {
+		defaultEventChannel(source, args, context) {
 			const { _model } = source as WithModel<GQLSystemSettings, SystemSettings>;
-			const eventChannel = await database.systemSettings.getDefaultEventChannel(
-				_model
-			);
-			if (!eventChannel) return null;
-			return resolveDiscordChannel(eventChannel, context);
+			if (!_model.defaultEventChannel) return null;
+			return resolveDiscordChannel(_model.defaultEventChannel, context);
 		},
 	},
 
@@ -75,14 +73,12 @@ export const systemResolvers: Resolvers = {
 			return resolveAccessKey(context.accesskey)
 		},
 		async getAccessKey(source, args) {
-			const accessKey = await database.accessKey.findUnique({
-				where: { id: args.id }
-			})
+			const accessKey = await $system.getAccessKeyById(args.id)
 			if (!accessKey) return null;
 			return resolveAccessKey(accessKey)
 		},
 		async getAllAccessKeys() {
-			const accessKeys = await database.accessKey.findMany()
+			const accessKeys = await $system.getAllAccessKeys()
 			return accessKeys.map(accessKey => resolveAccessKey(accessKey))
 		}
 	},
@@ -97,18 +93,7 @@ export const systemResolvers: Resolvers = {
 				throw gqlErrorBadInput(`Event channel not found: ${args.data.defaultEventChannelId}`);
 			}
 
-			const updatedSettings = await database.systemSettings.update({
-				where: { unique: true },
-				data: {
-					discordGuildId: args.data.discordGuildId ?? undefined,
-					defaultEventChannel: args.data.defaultEventChannelId ? {
-						connect: {
-							discordId: args.data.defaultEventChannelId
-						} 
-					} : undefined
-				}
-			})
-
+			const updatedSettings = await $system.editSystemSettings(args.data)
 			return resolveSystemSettings(updatedSettings)
 		},
 		async createAccessKey() {
@@ -116,42 +101,28 @@ export const systemResolvers: Resolvers = {
 			return resolveAccessKey(accessKey, key)
 		},
 		async editAccessKey(source, args, context) {
-			const accessKey = await database.accessKey.findUnique({
-				where: { id: args.id }
-			})
+			const accessKey = await $system.getAccessKeyById(args.id)
 			if (!accessKey) return null;
 
 			if (args.data.permissions && !hasAdmin(await calculatePermissions(context)) && hasAdmin(args.data.permissions)) {
 				throw gqlErrorPermission("Admin")
 			}
 
-			const updatedAccessKey = await database.accessKey.update({
-				where: { id: args.id },
-				data: {
-					description: args.data.description ?? undefined,
-					permissions: args.data.permissions ?? undefined
-				}
-			})
+			const updatedAccessKey = await $system.editAccessKey(accessKey, args.data)
 			return resolveAccessKey(updatedAccessKey)
 		},
 		async regenerateAccessKey(source, args) {
-			const accessKey = await database.accessKey.findUnique({
-				where: { id: args.id }
-			})
+			const accessKey = await $system.getAccessKeyById(args.id)
 			if (!accessKey) return null;
 
-			const key = await $system.regenerateAccessKey(args.id);
+			const key = await $system.regenerateAccessKey(accessKey);
 			return resolveAccessKey(accessKey, key)
 		},
 		async deleteAccessKey(source, args) {
-			const accessKey = await database.accessKey.findUnique({
-				where: { id: args.id }
-			})
+			const accessKey = await $system.getAccessKeyById(args.id)
 			if (!accessKey) return false;
 			
-			await database.accessKey.delete({
-				where: { id: args.id }
-			})
+			await $system.deleteAccessKey(accessKey)
 			return true
 		}
 	}

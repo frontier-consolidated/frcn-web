@@ -32,26 +32,26 @@ export const resourceResolvers: Resolvers = {
 	Resource: {
 		async owner(source): Promise<WithModel<GQLUser, User> | null> {
 			const { _model } = source as WithModel<GQLResource, Resource>;
-			const owner = await database.resource.getOwner(_model);
+			const owner = await $resources.getResourceOwner(_model.id);
 			if (!owner) return null;
 			return resolveUser(owner);
 		},
 		async sizeKb(source) {
 			const { _model } = source as WithModel<GQLResource, Resource>;
-			const file = await database.resource.getFile(_model)
+			const file = await $resources.getResourceFile(_model.id)
 			if (!file) return 0;
 			return file.fileSizeKb;
 		},
 		async previewUrl(source, args, context) {
 			const { _model } = source as WithModel<GQLResource, Resource>;
 			if (!_model.canPreview) return null;
-			const file = await database.resource.getFile(_model)
+			const file = await $resources.getResourceFile(_model.id)
 			if (!file) return null;
 			return `${getOrigin(context.req.secure ? "https" : "http")}/media/${file.id}/${file.fileName}`;
 		},
 		async downloadUrl(source, args, context) {
 			const { _model } = source as WithModel<GQLResource, Resource>;
-			const file = await database.resource.getFile(_model)
+			const file = await $resources.getResourceFile(_model.id)
 			if (!file) return null;
 			return `${getOrigin(context.req.secure ? "https" : "http")}/media/${file.id}/${file.fileName}?download`;
 		}

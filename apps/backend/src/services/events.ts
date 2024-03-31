@@ -8,16 +8,8 @@ import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { $system } from "./system";
 import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
-import { database } from "../database";
+import { database, type Transaction } from "../database";
 import { EventAccessType, type EventEditInput } from "../graphql/__generated__/resolvers-types";
-
-async function eventExists(id: string) {
-	const exists = await database.event.findUnique({
-		where: { id },
-		select: { id: true },
-	});
-	return !!exists;
-}
 
 async function getEvent(id: string) {
 	const event = await database.event.findUnique({
@@ -135,10 +127,99 @@ async function getEvents(
 	};
 }
 
+async function getAllEventChannels() {
+	return await database.eventChannel.findMany();
+}
+
+async function getEventChannel<T extends Prisma.Event$channelArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$channelArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).event.findUnique({
+		where: { id }
+	}).channel<T>(args)
+	return result
+}
+
+async function getEventThread(event: Event, discordClient: DiscordClient) {
+	if (!event.discordThreadId) throw new Error("Event has no thread!")
+
+	const thread = await $discord.getChannel(discordClient, event.discordThreadId)
+	if (!thread?.isThread()) throw new Error("Could not find thread or channel is not a thread")
+
+	return thread;
+}
+
+async function getEventOwner<T extends Prisma.Event$ownerArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$ownerArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).event.findUnique({
+		where: { id }
+	}).owner<T>(args)
+	return result
+}
+
+async function getEventSettings<T extends Prisma.Event$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$settingsArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).event.findUnique({
+		where: { id }
+	}).settings<T>(args)
+	return result
+}
+
+async function getEventMembers<T extends Prisma.Event$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$membersArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).event.findUnique({
+		where: { id }
+	}).members<T>(args)
+	return result ?? []
+}
+
+async function getEventMemberUser<T extends Prisma.UserDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserDefaultArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).eventUser.findUnique({
+		where: { id }
+	}).user<T>(args)
+	return result
+}
+
+async function getEventMemberEvent<T extends Prisma.EventDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventDefaultArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).eventUser.findUnique({
+		where: { id }
+	}).event<T>(args)
+	return result
+}
+
+async function getEventMemberRsvp<T extends Prisma.EventUser$rsvpArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventUser$rsvpArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).eventUser.findUnique({
+		where: { id }
+	}).rsvp<T>(args)
+	return result
+}
+
+async function getEventAccessRoles<T extends Prisma.Event$accessRolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$accessRolesArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).event.findUnique({
+		where: { id }
+	}).accessRoles<T>(args)
+	return result ?? []
+}
+
+async function getRSVPRoles<T extends Prisma.Event$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$rolesArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).event.findUnique({
+		where: { id }
+	}).roles<T>(args)
+	return result ?? []
+}
+
+async function getRSVPMembers<T extends Prisma.EventRsvpRole$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventRsvpRole$membersArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).eventRsvpRole.findUnique({
+		where: { id }
+	}).members<T>(args)
+	return result ?? []
+}
+
+async function getUserRsvp(event: Event, user: User) {
+	const members = await getEventMembers(event.id)
+	return members.find(member => member.userId === user.id) ?? null
+}
+
 async function createEvent(owner: User, discordClient: DiscordClient) {
 	const { defaultEventChannel } = await $system.getSystemSettings();
 	if (!defaultEventChannel) throw new Error("No default event channel")
 	const guild = await $discord.getGuild(discordClient);
+	if (!guild) throw new Error("Could not fetch guild")
 
 	const event = await database.event.create({
 		data: {
@@ -182,18 +263,11 @@ async function createEvent(owner: User, discordClient: DiscordClient) {
 	return event;
 }
 
-async function editEvent(id: string, data: EventEditInput, discordClient: DiscordClient) {
-	const event = await database.event.findUnique({
-		where: { id },
-		select: {
-			roles: true,
-		},
-	});
-
-	if (!event) return null;
+async function editEvent(event: Event, data: EventEditInput, discordClient: DiscordClient) {
+	const roles = await getRSVPRoles(event.id)
 
 	const updatedEvent = await database.event.update({
-		where: { id },
+		where: { id: event.id },
 		data: {
 			channel: data.channel
 				? {
@@ -214,7 +288,7 @@ async function editEvent(id: string, data: EventEditInput, discordClient: Discor
 				? {
 						createMany: {
 							data: data.roles
-								.filter((r) => !event.roles.find((r1) => r1.id === r.id))
+								.filter((r) => !roles.find((r1) => r1.id === r.id))
 								.map((r) => ({
 									id: randomUUID(),
 									name: r.name,
@@ -224,7 +298,7 @@ async function editEvent(id: string, data: EventEditInput, discordClient: Discor
 								})),
 						},
 						updateMany: data.roles
-							.filter((r) => !!event.roles.find((r1) => r1.id === r.id))
+							.filter((r) => !!roles.find((r1) => r1.id === r.id))
 							.map((r) => ({
 								where: { id: r.id },
 								data: {
@@ -234,7 +308,7 @@ async function editEvent(id: string, data: EventEditInput, discordClient: Discor
 									limit: r.limit,
 								},
 							})),
-					deleteMany: event.roles.filter(r => !data.roles!.find(r1 => r1.id === r.id)).map(r => ({
+					deleteMany: roles.filter(r => !data.roles!.find(r1 => r1.id === r.id)).map(r => ({
 							id: r.id
 						}))
 				  }
@@ -255,7 +329,7 @@ async function editEvent(id: string, data: EventEditInput, discordClient: Discor
 				? {
 						deleteMany: data.accessRoles.length === 0 ? {} : undefined,
 						connectOrCreate: data.accessRoles.map((roleId) => ({
-							where: { roleId_eventId: { eventId: id, roleId } },
+							where: { roleId_eventId: { eventId: event.id, roleId } },
 							create: {
 								roleId,
 							},
@@ -269,19 +343,10 @@ async function editEvent(id: string, data: EventEditInput, discordClient: Discor
 	});
 
 	await updateEventMessage(discordClient, updatedEvent)
-
 	return updatedEvent;
 }
 
-async function postEvent(id: string, discordClient: DiscordClient) {
-	const event = await database.event.findUnique({
-		where: { id },
-		include: {
-			channel: true,
-		},
-	});
-	if (!event || !event.channel) return;
-	
+async function postEvent(event: Event, discordClient: DiscordClient) {
 	await postEventMessage(discordClient, event)
 }
 
@@ -300,27 +365,18 @@ async function deleteEvent(id: string, discordClient: DiscordClient) {
 	})
 }
 
-async function getUserRsvp(event: Event, user: User) {
-	const members = await database.event.getMembers(event)
-	return members.find(member => member.userId === user.id) ?? null
-}
-
 async function canJoinRsvp(rsvp: EventRsvpRole) {
 	if (rsvp.limit === 0) return true;
 
-	const members = await database.eventRsvpRole.getMembers(rsvp)
+	const members = await getRSVPMembers(rsvp.id, {
+		select: { id: true }
+	})
 	return members.length < rsvp.limit 
 }
 
-async function getEventThread(event: Event, discordClient: DiscordClient) {
-	if (!event.discordThreadId) throw new Error("Event has no thread!")
-	const thread = await $discord.getChannel(discordClient, event.discordThreadId)
-	if (!thread?.isThread()) throw new Error("Could not find thread or channel is not a thread")
-	return thread;
-}
-
 async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, currentRsvp: EventUser | null, discordClient: DiscordClient) {
-	if (!(await canJoinRsvp(rsvp))) throw new Error(`Cannot rsvp to ${rsvp.name}, role is full`)
+	const canRsvp = await canJoinRsvp(rsvp)
+	if (!canRsvp) throw new Error(`Cannot rsvp to ${rsvp.name}, role is full`)
 	
 	const updatedEvent = await database.event.update({
 		where: { id: event.id },
@@ -395,7 +451,7 @@ async function canSeeEvent(event: Event, user: User | undefined, discordClient: 
 	if (event.ownerId === user?.id) return true;
 	if (event.accessType === EventAccessType.Everyone) return true;
 
-	const members = await database.event.getMembers(event);
+	const members = await getEventMembers(event.id);
 	if (user && members.some((member) => member.userId == user.id)) return true;
 
 	switch (event.accessType as EventAccessType) {
@@ -404,20 +460,27 @@ async function canSeeEvent(event: Event, user: User | undefined, discordClient: 
 		case EventAccessType.PrimaryRole: {
 			if (!user) return false;
 
-			const accessThroughRoles = await database.event.getAccessThroughRoles(event);
+			const accessThroughRoles = await getEventAccessRoles(event.id, {
+				include: {
+					role: true
+				}
+			});
 			if (accessThroughRoles.length === 0) return false;
 
-			const primaryRole = await database.eventsWithUserRoleForAccess.getRole(accessThroughRoles[0]);
-			return $roles.hasPrimaryRolePrivileges(primaryRole, user);
+			return $roles.hasPrimaryRolePrivileges(accessThroughRoles[0].role, user);
 		}
 		case EventAccessType.SelectRoles: {
 			if (!user) return false;
 
-			const accessRoles = await database.event.getAccessRoles(event);
-			return await $roles.hasOneOfRoles(accessRoles, user);
+			const accessRoles = await getEventAccessRoles(event.id, {
+				include: {
+					role: true
+				}
+			});
+			return await $roles.hasOneOfRoles(accessRoles.map(ar => ar.role), user);
 		}
 		case EventAccessType.Channel: {
-			const channel = await database.event.getChannel(event);
+			const channel = await getEventChannel(event.id);
 			if (!channel) return false;
 			return await $discord.canUserViewChannel(discordClient, user, channel.discordId);
 		}
@@ -434,18 +497,28 @@ async function eventChannelExists(id: string) {
 }
 
 export const $events = {
-	eventExists,
 	getEvent,
 	getEventFromMessageId,
 	getEvents,
+	getAllEventChannels,
+	getEventChannel,
+	getEventThread,
+	getEventOwner,
+	getEventSettings,
+	getEventMembers,
+	getEventMemberUser,
+	getEventMemberEvent,
+	getEventMemberRsvp,
+	getEventAccessRoles,
+	getRSVPRoles,
+	getRSVPMembers,
+	getUserRsvp,
 	createEvent,
 	editEvent,
 	postEvent,
 	deleteEvent,
 	canSeeEvent,
-	getUserRsvp,
 	canJoinRsvp,
-	getEventThread,
 	rsvpForEvent,
 	unrsvpForEvent,
 	eventChannelExists,

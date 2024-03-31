@@ -1,8 +1,10 @@
 import { randomUUID } from "crypto";
 
+import type { AccessKey } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 
 import { database } from "../database";
+import type { AccessKeyEditInput, SystemEditInput } from "../graphql/__generated__/resolvers-types";
 
 const ACCESS_KEY_SALT_ROUNDS = 12
 
@@ -12,6 +14,23 @@ async function getSystemSettings() {
 			defaultEventChannel: true,
 		},
 	});
+}
+
+async function editSystemSettings(data: SystemEditInput) {
+	return await database.systemSettings.update({
+		where: { unique: true },
+		data: {
+			discordGuildId: data.discordGuildId ?? undefined,
+			defaultEventChannel: data.defaultEventChannelId ? {
+				connect: {
+					discordId: data.defaultEventChannelId
+				} 
+			} : undefined
+		},
+		include: {
+			defaultEventChannel: true
+		}
+	})
 }
 
 function encodeKey(id: number, uuid: string) {
@@ -42,6 +61,16 @@ async function getAccessKey(key: string) {
 	return accessKey;
 }
 
+async function getAccessKeyById(id: number) {
+	return await database.accessKey.findUnique({
+		where: { id }
+	})
+}
+
+async function getAllAccessKeys() {
+	return await database.accessKey.findMany()
+}
+
 async function createAccessKey() {
 	const uuid = randomUUID()
 	const hash = await bcrypt.hash(uuid, ACCESS_KEY_SALT_ROUNDS)
@@ -56,23 +85,44 @@ async function createAccessKey() {
 	return [accessKey, encodeKey(accessKey.id, uuid)] as const;
 }
 
-async function regenerateAccessKey(id: number) {
+async function editAccessKey(accessKey: AccessKey, data: AccessKeyEditInput) {
+	return await database.accessKey.update({
+		where: { id: accessKey.id },
+		data: {
+			description: data.description ?? undefined,
+			permissions: data.permissions ?? undefined
+		}
+	})
+}
+
+async function regenerateAccessKey(accessKey: AccessKey) {
 	const key = randomUUID()
 	const hash = await bcrypt.hash(key, ACCESS_KEY_SALT_ROUNDS)
 
 	await database.accessKey.update({
-		where: { id },
+		where: { id: accessKey.id },
 		data: {
 			hashedKey: hash
 		}
 	})
 
-	return encodeKey(id, key)
+	return encodeKey(accessKey.id, key)
+}
+
+async function deleteAccessKey(accessKey: AccessKey) {
+	await database.accessKey.delete({
+		where: { id: accessKey.id }
+	})
 }
 
 export const $system = {
 	getSystemSettings,
+	editSystemSettings,
 	getAccessKey,
+	getAccessKeyById,
+	getAllAccessKeys,
 	createAccessKey,
-	regenerateAccessKey
+	editAccessKey,
+	regenerateAccessKey,
+	deleteAccessKey
 };

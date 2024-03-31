@@ -1,9 +1,20 @@
-import type { User, UserRole } from "@prisma/client";
+import type { Prisma, User, UserRole } from "@prisma/client";
 
 import { $system } from "./system";
-import { database } from "../database";
+import { $users } from "./users";
+import { database, type Transaction } from "../database";
 import type { RoleEditInput } from "../graphql/__generated__/resolvers-types";
 import { publishUserRolesUpdated } from "../graphql/schema/resolvers/Roles";
+
+async function getRole(id: string) {
+	return await database.userRole.findUnique({
+		where: { id }
+	})
+}
+
+async function getAllRoles<T extends Prisma.UserRoleFindManyArgs>(args?: Prisma.SelectSubset<T, Prisma.UserRoleFindManyArgs>) {
+	return await database.userRole.findMany<T>(args);
+}
 
 function getRoleOrder(id: string, order: string[]): number;
 function getRoleOrder(role: UserRole, order: string[]): number;
@@ -37,6 +48,32 @@ async function getDefaultPrimaryRole() {
 	rolesWithOrder.sort((a, b) => a.order - b.order);
 
 	return rolesWithOrder[0].role;
+}
+
+async function getRoleUsers<T extends Prisma.UserFindManyArgs>(role: UserRole, args?: Prisma.Subset<T, Prisma.UserFindManyArgs> & { tx?: Transaction }) {
+	if (role.primary) {
+		const users = await database.userRole.findUnique({
+			where: { id: role.id }
+		}).primaryUsers<T>(args)
+		return users ?? []
+	}
+
+	const userLinks = await database.userRole.findUnique({
+		where: { id: role.id }
+	}).users({
+		where: args?.where ? {
+			user: args.where
+		} : undefined,
+		include: {
+			user: args?.select || args?.include ? {
+				select: args.select,
+				include: args.include
+			} : true
+		},
+		take: args?.take,
+		skip: args?.skip
+	})
+	return userLinks ? userLinks.map(ul => ul.user) : []
 }
 
 async function createRole() {
@@ -112,6 +149,32 @@ async function editRole(id: string, data: RoleEditInput) {
 	return updatedRole;
 }
 
+async function reorderRoles(order: string[]) {
+	await database.systemSettings.update({
+		where: { unique: true },
+		data: {
+			roleOrder: order
+		}
+	})
+}
+
+async function deleteRole(id: string) {
+	const { roleOrder } = await $system.getSystemSettings()
+
+	await database.$transaction(async (tx) => {
+		await tx.systemSettings.update({
+			where: { unique: true },
+			data: {
+				roleOrder: roleOrder.filter(rId => rId !== id)
+			}
+		})
+
+		await tx.userRole.delete({
+			where: { id }
+		})
+	})
+}
+
 async function hasPrimaryRolePrivileges(role: UserRole, user: User) {
 	if (!role.primary)
 		throw new Error(`Checking hasPrimaryRolePrivileges() with non-primary role ${role.name}`);
@@ -125,7 +188,7 @@ async function hasPrimaryRolePrivileges(role: UserRole, user: User) {
 async function hasRole(role: UserRole, user: User) {
 	if (role.primary) return user.primaryRoleId == role.id;
 
-	const throughRoles = await database.user.getThroughRoles(user);
+	const throughRoles = await $users.getRoles(user.id);
 	for (const throughRole of throughRoles) {
 		if (throughRole.roleId == role.id) return true;
 	}
@@ -148,10 +211,15 @@ function resolvePermissions(roles: UserRole[]) {
 }
 
 export const $roles = {
+	getRole,
+	getAllRoles,
 	sort,
 	getDefaultPrimaryRole,
+	getRoleUsers,
 	createRole,
 	editRole,
+	reorderRoles,
+	deleteRole,
 	hasPrimaryRolePrivileges,
 	hasRole,
 	hasOneOfRoles,
