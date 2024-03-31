@@ -1,10 +1,10 @@
 import { Permission } from "@frcn/shared";
-import type { User } from "@prisma/client";
+import type { Prisma, User } from "@prisma/client";
 import { type APIUser, CDNRoutes, ImageFormat, Client as DiscordClient } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
-import { database } from "../database";
+import { database, type Transaction } from "../database";
 import { getAdminIds } from "../env";
 
 async function getUser(id: string) {
@@ -31,6 +31,7 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 	let discordName = discordUser.global_name ?? discordUsername
 	try {
 		const guild = await $discord.getGuild(discordClient)
+		if (!guild) throw new Error("Could not fetch guild")
 		const member = await guild.members.fetch(discordUser.id)
 		discordName = member.nickname ?? member.displayName
 	} catch (err) {
@@ -73,10 +74,35 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 	return user;
 }
 
+async function getSessions<T extends Prisma.User$sessionsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$sessionsArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).user.findUnique({
+		where: { id }
+	}).sessions<T>(args)
+	return result ?? []
+}
+
+async function getRoles<T extends Prisma.User$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rolesArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).user.findUnique({
+		where: { id }
+	}).roles<T>(args)
+	return result ?? []
+}
+
+async function getPrimaryRole<T extends Prisma.UserRoleDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserRoleDefaultArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).user.findUnique({
+		where: { id }
+	}).primaryRole<T>(args)
+	return result
+}
+
 async function getAllRolesUnordered(user: User) {
-	const primaryRole = await database.user.getPrimaryRole(user);
-	const roles = await database.user.getRoles(user);
-	return [primaryRole, ...roles]
+	const primaryRole = await getPrimaryRole(user.id);
+	const roles = await getRoles(user.id, {
+		include: {
+			role: true
+		}
+	});
+	return [...(primaryRole ? [primaryRole] : []), ...roles.map(r => r.role)]
 }
 
 async function getAllRoles(user: User) {
@@ -95,10 +121,77 @@ async function getPermissions(user: User) {
 	return permissions
 }
 
+async function getRSVPs<T extends Prisma.User$rsvpsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rsvpsArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).user.findUnique({
+		where: { id }
+	}).rsvps<T>(args)
+	return result ?? []
+}
+
+async function getEvents<T extends Prisma.User$eventsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$eventsArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).user.findUnique({
+		where: { id }
+	}).events<T>(args)
+	return result ?? []
+}
+
+async function getStatus<T extends Prisma.User$statusArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$statusArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).user.findUnique({
+		where: { id }
+	}).status<T>(args)
+	return result
+}
+
+async function getSettings<T extends Prisma.User$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$settingsArgs> & { tx?: Transaction }) {
+	const result = await (args?.tx ?? database).user.findUnique({
+		where: { id }
+	}).settings<T>(args)
+	return result
+}
+
+async function unauthenticateSessions(user: User) {
+	const sessions = await $users.getSessions(user.id)
+	for (const session of sessions) {
+		try {
+			const data = JSON.parse(session.data);
+			delete data["user"]
+
+			await database.userSession.update({
+				where: { sid: session.sid },
+				data: {
+					user: {
+						disconnect: session.userId ? {
+							id: session.userId
+						} : undefined
+					},
+					data: JSON.stringify(data)
+				}
+			})
+		} catch (err) {
+			console.error("Failed to unauthenticate session", err)
+		}
+	}
+}
+
+async function deleteUser(id: string) {
+	await database.user.delete({
+		where: { id }
+	})
+}
+
 export const $users = {
 	getUser,
 	getUserByDiscordId,
 	getOrCreateUser,
+	getSessions,
+	getRoles,
+	getPrimaryRole,
 	getAllRoles,
 	getPermissions,
+	getRSVPs,
+	getEvents,
+	getStatus,
+	getSettings,
+	unauthenticateSessions,
+	deleteUser
 };

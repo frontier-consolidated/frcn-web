@@ -124,9 +124,12 @@ export default function route(context: Context, _config: RouteConfig) {
         })
 
         async function traverseAndExportContainer(container: ContentContainer): Promise<ExportContentContainer> {
-            const children = await database.contentContainer.getChildren(container)
-            const fileLinks = await database.contentContainer.getFileLinks(container)
-            const files = await database.contentContainer.getFiles(container)
+            const children = await $cms.getContainerChildren(container.id)
+            const fileLinks = await $cms.getContainerFileLinks(container.id, {
+                include: {
+                    file: true
+                }
+            })
 
             const idToIndex = children.reduce((record, child) => ({ ...record, [child.id]: container.childrenOrder.findIndex(id => id === child.id) }), {} as Record<string, number>)
             const exportChildren = await Promise.all([...children].sort((a, b) => idToIndex[a.id] - idToIndex[b.id]).map(async (child) => await traverseAndExportContainer(child)));
@@ -138,13 +141,10 @@ export default function route(context: Context, _config: RouteConfig) {
                 content: container.content ?? undefined,
                 children: exportChildren,
                 files: fileLinks.map(link => {
-                    const file = files.find(f => f.id === link.fileId)
-                    if (!file) return null;
-
                     return {
-                        key: file.key,
+                        key: link.file.key,
                         identifier: link.identifier ?? undefined,
-                        fileName: file.fileName
+                        fileName: link.file.fileName
                     } as ExportContentContainerFile
                 }).filter((f): f is ExportContentContainerFile => !!f)
             }

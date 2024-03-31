@@ -21,7 +21,7 @@ async function setupCache(cache: FileSystemCache) {
 
     try {
 		fs.mkdirSync(cache.basePath, { recursive: true });
-        // rw-rw-r--
+        // rwxrwxr--
         fs.chmodSync(cache.basePath, 0o774)
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (e: any) {
