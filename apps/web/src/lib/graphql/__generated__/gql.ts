@@ -20,7 +20,7 @@ const documents = {
     "\n    fragment EventMemberFragment on EventMember {\n        id\n        pending\n        user {\n            id\n            name\n            avatarUrl\n        }\n        rsvp\n        rsvpAt\n    }\n": types.EventMemberFragmentFragmentDoc,
     "\n    fragment EventSettingsFragment on Event {\n        mentions\n        settings {\n            hideLocation\n            inviteOnly\n            openToJoinRequests\n            allowTeamSwitching\n        }\n        accessType\n        accessRoles {\n            id\n            name\n        }\n    }\n": types.EventSettingsFragmentFragmentDoc,
     "\n    fragment ResourceFragment on Resource {\n        id\n        owner {\n            ...UserFragment\n        }\n        name\n        sizeKb\n        shortDescription\n        previewUrl\n        downloadUrl\n        tags\n        updatedAt\n        createdAt\n    }\n": types.ResourceFragmentFragmentDoc,
-    "\n    fragment RoleFragment on UserRole {\n        id\n        name\n        primary\n        discordId\n        permissions\n        updatedAt\n        createdAt\n    }\n": types.RoleFragmentFragmentDoc,
+    "\n    fragment RoleFragment on UserRole {\n        id\n        name\n        primary\n        default\n        discordId\n        permissions\n        updatedAt\n        createdAt\n    }\n": types.RoleFragmentFragmentDoc,
     "\n    fragment UserFragment on User {\n        id\n        name\n        scName\n        discordId\n        discordName\n        discordUsername\n        verified\n        avatarUrl\n        primaryRole {\n            id\n            name\n        }\n        roles {\n            id\n            name\n        }\n        updatedAt\n        createdAt\n    }\n": types.UserFragmentFragmentDoc,
     "\n\tmutation CreateAccessKey {\n\t\tkey: createAccessKey {\n\t\t\tid\n\t\t\tkey\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.CreateAccessKeyDocument,
     "\n\tmutation CreateContentContainer($type: String!, $identifier: String, $parent: ID) {\n\t\tcontainer: createContentContainer(type: $type, identifier: $identifier, parent: $parent) {\n\t\t\t...ContentContainerFragment\n\t\t}\n\t}\n": types.CreateContentContainerDocument,
@@ -60,7 +60,7 @@ const documents = {
     "\n\tquery GetOwnedEvents {\n\t\tevents: getCurrentUser {\n\t\t\tevents {\n\t\t\t\t...EventFragment\n\t\t\t}\n\t\t}\n\t}\n": types.GetOwnedEventsDocument,
     "\n\tquery GetResource($id: ID!) {\n\t\tresource: getResource(id: $id) {\n\t\t\t...ResourceFragment\n\t\t}\n\t}\n": types.GetResourceDocument,
     "\n\tquery GetResources($filter: ResourceFilterInput, $page: Int, $limit: Int) {\n\t\tresources: getResources(filter: $filter, page: $page, limit: $limit) {\n\t\t\titems {\n\t\t\t\t...ResourceFragment\n\t\t\t}\n\t\t\titemsPerPage\n\t\t\tpage\n\t\t\tnextPage\n\t\t\tprevPage\n\t\t\ttotal\n\t\t}\n\t}\n": types.GetResourcesDocument,
-    "\n\tquery GetRole($roleId: ID!) {\n\t\trole: getRole(id: $roleId) {\n\t\t\tid\n\t\t\tname\n\t\t\tdiscordId\n\t\t\tprimary\n\t\t\tpermissions\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tavatarUrl\n\t\t\t}\n\t\t}\n\t\tdiscordRoles: getAllDiscordRoles(everyone: false) {\n\t\t\tid\n\t\t\tname\n\t\t\tcolor\n\t\t}\n\t}\n": types.GetRoleDocument,
+    "\n\tquery GetRole($roleId: ID!) {\n\t\trole: getRole(id: $roleId) {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tavatarUrl\n\t\t\t}\n\t\t}\n\t\tdiscordRoles: getAllDiscordRoles(everyone: false) {\n\t\t\tid\n\t\t\tname\n\t\t\tcolor\n\t\t}\n\t}\n": types.GetRoleDocument,
     "\n\tquery GetSystemSettings {\n\t\tsettings: getSystemSettings {\n\t\t\tdiscordGuild {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\tdefaultEventChannel {\n\t\t\t\t...ChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...ChannelFragment\n\t\t}\n\t}\n": types.GetSystemSettingsDocument,
     "\n\tquery GetUser($id: ID!) {\n\t\tuser: getUser(id: $id) {\n\t\t\t...UserFragment\n\t\t}\n\t}\n": types.GetUserDocument,
     "\n\tsubscription OnRolesUpdated($userId: ID!) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tpermissions\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n": types.OnRolesUpdatedDocument,
@@ -111,7 +111,7 @@ export function gql(source: "\n    fragment ResourceFragment on Resource {\n    
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n    fragment RoleFragment on UserRole {\n        id\n        name\n        primary\n        discordId\n        permissions\n        updatedAt\n        createdAt\n    }\n"): (typeof documents)["\n    fragment RoleFragment on UserRole {\n        id\n        name\n        primary\n        discordId\n        permissions\n        updatedAt\n        createdAt\n    }\n"];
+export function gql(source: "\n    fragment RoleFragment on UserRole {\n        id\n        name\n        primary\n        default\n        discordId\n        permissions\n        updatedAt\n        createdAt\n    }\n"): (typeof documents)["\n    fragment RoleFragment on UserRole {\n        id\n        name\n        primary\n        default\n        discordId\n        permissions\n        updatedAt\n        createdAt\n    }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -271,7 +271,7 @@ export function gql(source: "\n\tquery GetResources($filter: ResourceFilterInput
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tquery GetRole($roleId: ID!) {\n\t\trole: getRole(id: $roleId) {\n\t\t\tid\n\t\t\tname\n\t\t\tdiscordId\n\t\t\tprimary\n\t\t\tpermissions\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tavatarUrl\n\t\t\t}\n\t\t}\n\t\tdiscordRoles: getAllDiscordRoles(everyone: false) {\n\t\t\tid\n\t\t\tname\n\t\t\tcolor\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetRole($roleId: ID!) {\n\t\trole: getRole(id: $roleId) {\n\t\t\tid\n\t\t\tname\n\t\t\tdiscordId\n\t\t\tprimary\n\t\t\tpermissions\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tavatarUrl\n\t\t\t}\n\t\t}\n\t\tdiscordRoles: getAllDiscordRoles(everyone: false) {\n\t\t\tid\n\t\t\tname\n\t\t\tcolor\n\t\t}\n\t}\n"];
+export function gql(source: "\n\tquery GetRole($roleId: ID!) {\n\t\trole: getRole(id: $roleId) {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tavatarUrl\n\t\t\t}\n\t\t}\n\t\tdiscordRoles: getAllDiscordRoles(everyone: false) {\n\t\t\tid\n\t\t\tname\n\t\t\tcolor\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetRole($roleId: ID!) {\n\t\trole: getRole(id: $roleId) {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tavatarUrl\n\t\t\t}\n\t\t}\n\t\tdiscordRoles: getAllDiscordRoles(everyone: false) {\n\t\t\tid\n\t\t\tname\n\t\t\tcolor\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

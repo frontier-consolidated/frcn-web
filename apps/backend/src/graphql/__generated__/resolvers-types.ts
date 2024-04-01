@@ -540,7 +540,6 @@ export type Query = {
   getResource?: Maybe<Resource>;
   getResources?: Maybe<PagedResource>;
   getRole?: Maybe<UserRole>;
-  getRoleOrder: Array<Scalars['ID']['output']>;
   getRoles: Array<UserRole>;
   getSystemSettings: SystemSettings;
   getUser?: Maybe<User>;
@@ -701,6 +700,7 @@ export type User = {
 export type UserRole = {
   __typename?: 'UserRole';
   createdAt: Scalars['Timestamp']['output'];
+  default: Scalars['Boolean']['output'];
   discordId?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
@@ -1139,7 +1139,6 @@ export type QueryResolvers<ContextType = GQLContext, ParentType extends Resolver
   getResource?: Resolver<Maybe<ResolversTypes['Resource']>, ParentType, ContextType, RequireFields<QueryGetResourceArgs, 'id'>>;
   getResources?: Resolver<Maybe<ResolversTypes['PagedResource']>, ParentType, ContextType, Partial<QueryGetResourcesArgs>>;
   getRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<QueryGetRoleArgs, 'id'>>;
-  getRoleOrder?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType>;
   getRoles?: Resolver<Array<ResolversTypes['UserRole']>, ParentType, ContextType>;
   getSystemSettings?: Resolver<ResolversTypes['SystemSettings'], ParentType, ContextType>;
   getUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType, RequireFields<QueryGetUserArgs, 'id'>>;
@@ -1205,6 +1204,7 @@ export type UserResolvers<ContextType = GQLContext, ParentType extends Resolvers
 
 export type UserRoleResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['UserRole'] = ResolversParentTypes['UserRole']> = ResolversObject<{
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  default?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   discordId?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;

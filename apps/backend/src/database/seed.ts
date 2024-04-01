@@ -44,7 +44,7 @@ export async function seed(database: typeof Database) {
 				permissions: permissions([Permission.Admin]),
 			},
 		});
-		sortedRoles.unshift(adminRole)
+		sortedRoles.push(adminRole)
 		updateRoleOrder = true;
 		console.log("Created Admin role")
 	}
@@ -57,7 +57,7 @@ export async function seed(database: typeof Database) {
 				permissions: 0,
 			},
 		});
-		sortedRoles.push(defaultRole)
+		sortedRoles.unshift(defaultRole)
 		updateRoleOrder = true;
 		console.log("Created Default role")
 	}

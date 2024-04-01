@@ -54,6 +54,7 @@ type UserRole {
 	name: String!
 	discordId: String
 	primary: Boolean!
+	default: Boolean!
 	permissions: Int! @permission(has: ManageRoles)
 	users: [User!]! @permission(has: ManageRoles)
 	updatedAt: Timestamp!
@@ -347,7 +348,6 @@ type Query {
 	# Roles
 	getRoles: [UserRole!]! @permission(one: [CreateEvents, ManageRoles])
 	getRole(id: ID!): UserRole @permission(has: ManageRoles)
-	getRoleOrder: [ID!]! @permission(has: ManageRoles)
 
 	# System
 	getAllEventChannels: [DiscordChannel!]! @permission(one: [CreateEvents, ManageSystem])

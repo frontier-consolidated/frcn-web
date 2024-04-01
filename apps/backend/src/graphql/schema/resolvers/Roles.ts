@@ -18,6 +18,7 @@ export function resolveUserRole(role: UserRole) {
 		name: role.name,
 		discordId: role.discordId,
 		primary: role.primary,
+		default: false, // field-resolved
 		permissions: role.permissions,
 		users: [], // field-resolved
 		updatedAt: role.updatedAt,
@@ -46,6 +47,12 @@ export const roleResolvers: Resolvers = {
 			const users = await $roles.getRoleUsers(_model)
 			return users.map(resolveUser);
 		},
+		async default(source) {
+			const { _model } = source as WithModel<GQLUserRole, UserRole>;
+			if (!_model.primary) return false;
+			const defaultRole = await $roles.getDefaultPrimaryRole()
+			return defaultRole.id === _model.id
+		}
 	},
 
 	Query: {
@@ -58,10 +65,6 @@ export const roleResolvers: Resolvers = {
 			const role = await $roles.getRole(args.id)
 			if (!role) return null;
 			return resolveUserRole(role)
-		},
-		async getRoleOrder() {
-			const settings = await $system.getSystemSettings();
-			return settings.roleOrder;
 		},
 	},
 
@@ -90,6 +93,13 @@ export const roleResolvers: Resolvers = {
 			if (!role.primary && data.primary) {
 				if (users.length > 0) {
 					throw gqlErrorBadInput("Cannot switch non-primary role to primary role while it has users assigned");
+				}
+			}
+			
+			if (role.primary && data.primary !== false && data.permissions && hasAdmin(data.permissions)) {
+				const defaultRole = await $roles.getDefaultPrimaryRole()
+				if (role.id === defaultRole.id) {
+					throw gqlErrorBadInput("Cannot give admin permissions to default primary role");
 				}
 			}
 

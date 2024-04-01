@@ -16,6 +16,8 @@ async function getAllRoles<T extends Prisma.UserRoleFindManyArgs>(args?: Prisma.
 	return await database.userRole.findMany<T>(args);
 }
 
+// NOTE: Low order means lower ranked role
+
 function getRoleOrder(id: string, order: string[]): number;
 function getRoleOrder(role: UserRole, order: string[]): number;
 function getRoleOrder(roleOrId: UserRole | string, order: string[]): number {
@@ -40,14 +42,8 @@ async function getDefaultPrimaryRole() {
 		},
 	});
 
-	const { roleOrder } = await $system.getSystemSettings();
-	const rolesWithOrder = primaryRoles.map((role) => ({
-		role,
-		order: getRoleOrder(role, roleOrder),
-	}));
-	rolesWithOrder.sort((a, b) => a.order - b.order);
-
-	return rolesWithOrder[0].role;
+	const sortedPrimaryRoles = await sort(primaryRoles)
+	return sortedPrimaryRoles[0];
 }
 
 async function getRoleUsers<T extends Prisma.UserFindManyArgs>(role: UserRole, args?: Prisma.Subset<T, Prisma.UserFindManyArgs> & { tx?: Transaction }) {
@@ -182,7 +178,7 @@ async function hasPrimaryRolePrivileges(role: UserRole, user: User) {
 	if (user.primaryRoleId == role.id) return true;
 
 	const { roleOrder } = await $system.getSystemSettings();
-	return getRoleOrder(user.primaryRoleId, roleOrder) > getRoleOrder(role, roleOrder);
+	return getRoleOrder(user.primaryRoleId, roleOrder) >= getRoleOrder(role, roleOrder);
 }
 
 async function hasRole(role: UserRole, user: User) {

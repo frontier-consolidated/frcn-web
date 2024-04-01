@@ -49,11 +49,12 @@
 	function checkIfCanToggleAdmin(roles: PageData["roles"], role: PageData["role"], user: GetCurrentUserQuery["user"]) {
 		if (!user) return false;
 		if (!hasAdmin(user.permissions)) return false;
+		if (role.default) return false;
 
 		const userRoles = [user.primaryRole, ...user.roles]
 		const adminRoles = roles.filter(r => !!userRoles.find(r2 => r2.id === r.id) && hasAdmin(r.permissions))
-		if (adminRoles.length === 0) return false; // somehow?
-		if (adminRoles.length > 1) return true;
+		if (adminRoles.length === 0) return true; // root admin user
+		if (adminRoles.length > 1) return true; // user has multiple admin roles, let them toggle it
 		return adminRoles[0].id != role.id
 	}
 
@@ -179,11 +180,18 @@
 			</TabItem>
 			<TabItem title="Permissions" open={$page.url.hash === "#permissions"} on:click={() => window.location.hash = "#permissions"}>
 				<PermissionToggles disableToggles={{ [Permission.Admin]: !canToggleAdmin }} bind:permissions={editData.permissions} let:info let:checked>
-					{#if info.permission === Permission.Admin && checked && !canToggleAdmin}
-						<Tooltip>
-							<ExclamationCircleSolid slot="icon" class="ms-2 text-orange-400" />
-							You cannot remove admin from this role as this is the only role that gives you admin
-						</Tooltip>
+					{#if info.permission === Permission.Admin && !canToggleAdmin}
+						{#if data.role.default}
+							<Tooltip>
+								<ExclamationCircleSolid slot="icon" class="ms-2 text-orange-400" />
+								You cannot give admin permissions to the default primary role
+							</Tooltip>
+						{:else if checked}
+							<Tooltip>
+								<ExclamationCircleSolid slot="icon" class="ms-2 text-orange-400" />
+								You cannot remove admin from this role as this is the only role that gives you admin
+							</Tooltip>
+						{/if}
 					{/if}
 				</PermissionToggles>
 			</TabItem>
