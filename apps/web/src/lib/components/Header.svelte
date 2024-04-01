@@ -73,7 +73,7 @@
 					}}
 				/>
 			{:else}
-				<LoginButton spinner />
+				<LoginButton spinner class="hidden sm:!block" />
 			{/if}
 			<a href={DISCORD_URL} class="shrink-0 inline-flex justify-center items-center font-medium ms-5 xl:ms-10 p-0 text-slate-800 dark:text-discord hover:text-discord dark:hover:text-discord-pressed">
 				<MediaQuery query="(min-width: 500px)" let:matches>
