@@ -2,6 +2,7 @@ import { browser } from "$app/environment";
 import { locale, waitLocale } from "svelte-i18n";
 
 import "$lib/i18n"; // Import to initialize. Important :)
+import type { GetAllRolesQuery } from "$lib/graphql/__generated__/graphql.js";
 import { integration } from "$lib/integration.js";
 
 function base64URLdecode(str: string) {
@@ -11,8 +12,15 @@ function base64URLdecode(str: string) {
 	return atob(base64WithPadding).split('').map(char => String.fromCharCode(char.charCodeAt(0))).join("");
 }
 
-export const load = async ({ data, url }) => {
+export const prerender = false
+
+export const load = async ({ url, depends, fetch }) => {
+	let rolesData: { roles: GetAllRolesQuery["roles"] } = { roles: [] }
 	if (browser) {
+		depends("app:allroles")
+		const rolesResponse = await fetch("/_api/roles.json")
+		rolesData = await rolesResponse.json()
+
 		locale.set(window.navigator.language);
 
 		if (url.searchParams.has("login_err")) {
@@ -30,7 +38,7 @@ export const load = async ({ data, url }) => {
 	// console.log("Spectrum identity", spectrumIdentity)
 
 	return {
-		...data,
+		...rolesData,
 		spectrumIdentity
 	};
 };
