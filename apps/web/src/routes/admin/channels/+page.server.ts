@@ -18,6 +18,9 @@ export const load = (async ({ locals, depends }) => {
 
     return {
         ...data.settings,
-        channels: data.eventChannels
+        channels: data.eventChannels,
+        options: {
+            channels: data.discordChannels
+        }
     }
 }) satisfies PageServerLoad;

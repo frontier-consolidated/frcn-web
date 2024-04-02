@@ -26,6 +26,7 @@ const documents = {
     "\n\tmutation CreateAccessKey {\n\t\tkey: createAccessKey {\n\t\t\tid\n\t\t\tkey\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.CreateAccessKeyDocument,
     "\n\tmutation CreateContentContainer($type: String!, $identifier: String, $parent: ID) {\n\t\tcontainer: createContentContainer(type: $type, identifier: $identifier, parent: $parent) {\n\t\t\t...ContentContainerFragment\n\t\t}\n\t}\n": types.CreateContentContainerDocument,
     "\n\tmutation CreateEvent {\n\t\tevent: createEvent\n\t}\n": types.CreateEventDocument,
+    "\n\tmutation CreateEventChannel($linkTo: ID!) {\n\t\tchannel: createEventChannel(linkTo: $linkTo) {\n\t\t\t...EventChannelFragment\n\t\t}\n\t}\n": types.CreateEventChannelDocument,
     "\n\tmutation CreateResource($data: ResourceCreateInput!) {\n\t\tresource: createResource(data: $data) {\n\t\t\t...ResourceFragment\n\t\t}\n\t}\n": types.CreateResourceDocument,
     "\n\tmutation CreateRole {\n\t\trole: createRole\n\t}\n": types.CreateRoleDocument,
     "\n\tmutation DeleteAccessKey($id: Int!) {\n\t\tdeleted: deleteAccessKey(id: $id)\n\t}\n": types.DeleteAccessKeyDocument,
@@ -33,12 +34,14 @@ const documents = {
     "\n\tmutation DeleteContentContainerFile($id: ID!) {\n\t\tdeleted: deleteContentContainerFile(id: $id)\n\t}\n": types.DeleteContentContainerFileDocument,
     "\n\tmutation DeleteCurrentUser {\n\t\tdeleted: deleteCurrentUser\n\t}\n": types.DeleteCurrentUserDocument,
     "\n\tmutation DeleteEvent($id: ID!) {\n\t\tdeleted: deleteEvent(id: $id)\n\t}\n": types.DeleteEventDocument,
+    "\n\tmutation DeleteEventChannel($id: Int!) {\n\t\tdeleted: deleteEventChannel(id: $id)\n\t}\n": types.DeleteEventChannelDocument,
     "\n\tmutation DeleteResource($id: ID!) {\n\t\tdeleted: deleteResource(id: $id)\n\t}\n": types.DeleteResourceDocument,
     "\n\tmutation DeleteRole($roleId: ID!) {\n\t\tdeleted: deleteRole(id: $roleId)\n\t}\n": types.DeleteRoleDocument,
     "\n\tmutation EditAccessKey($id: Int!, $data: AccessKeyEditInput!) {\n\t\tkey: editAccessKey(id: $id, data: $data) {\n\t\t\tid\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.EditAccessKeyDocument,
     "\n\tmutation EditContentContainer($id: ID!, $data: ContentContainerEditInput!) {\n\t\tcontainer: editContentContainer(id: $id, data: $data) {\n\t\t\tid\n\t\t}\n\t}\n": types.EditContentContainerDocument,
     "\n\tmutation EditContentContainerFile($id: ID!, $data: ContentContainerFileEditInput!) {\n\t\tfile: editContentContainerFile(id: $id, data: $data) {\n\t\t\tid\n\t\t}\n\t}\n": types.EditContentContainerFileDocument,
     "\n\tmutation EditEvent($eventId: ID!, $data: EventEditInput!) {\n\t\tevent: editEvent(id: $eventId, data: $data) {\n\t\t\t...EventFragment\n\t\t\t...EventSettingsFragment\n\t\t}\n\t}\n": types.EditEventDocument,
+    "\n\tmutation EditEventChannel($id: Int!, $data: EventChannelEditInput!) {\n\t\tchannel: editEventChannel(id: $id, data: $data) {\n\t\t\t...EventChannelFragment\n\t\t}\n\t}\n": types.EditEventChannelDocument,
     "\n\tmutation EditResource($id: ID!, $data: ResourceEditInput!) {\n\t\tresource: editResource(id: $id, data: $data) {\n\t\t\t...ResourceFragment\n\t\t}\n\t}\n": types.EditResourceDocument,
     "\n\tmutation EditRole($roleId: ID!, $data: RoleEditInput!) {\n\t\trole: editRole(id: $roleId, data: $data) {\n\t\t\tid\n\t\t\tname\n\t\t\tdiscordId\n\t\t\tprimary\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.EditRoleDocument,
     "\n\tmutation EditSystemSettings($data: SystemEditInput!) {\n\t\tsettings: editSystemSettings(data: $data) {\n\t\t\tdiscordGuild {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\tdefaultEventChannel {\n\t\t\t\t...EventChannelFragment\n\t\t\t}\n\t\t}\n\t}\n": types.EditSystemSettingsDocument,
@@ -50,7 +53,7 @@ const documents = {
     "\n\tquery GetCurrentRsvps {\n\t\trsvps: getCurrentUser {\n\t\t\trsvps {\n\t\t\t\tinvite\n\t\t\t\trsvpAt\n\t\t\t\trsvp {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t\tevent {\n\t\t\t\t\tid\n\t\t\t\t\towner {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t\tscName\n\t\t\t\t\t\tavatarUrl\n\t\t\t\t\t\tverified\n\t\t\t\t\t\tupdatedAt\n\t\t\t\t\t\tcreatedAt\n\t\t\t\t\t}\n\t\t\t\t\tname\n\t\t\t\t\tsummary\n\t\t\t\t\tdescription\n\t\t\t\t\timageUrl\n\t\t\t\t\teventType\n\t\t\t\t\tlocation\n\t\t\t\t\tduration\n\t\t\t\t\tstartAt\n\t\t\t\t\tendedAt\n\t\t\t\t\tupdatedAt\n\t\t\t\t\tcreatedAt\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": types.GetCurrentRsvpsDocument,
     "\n\tquery GetCurrentUser {\n\t\tuser: getCurrentUser {\n\t\t\t...UserFragment\n\t\t\tpermissions\n\t\t\tsettings {\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t\tstatus {\n\t\t\t\tactivity\n\t\t\t\tship\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t}\n\t}\n": types.GetCurrentUserDocument,
     "\n\tquery GetAllAccessKeys {\n\t\tkeys: getAllAccessKeys {\n\t\t\tid\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.GetAllAccessKeysDocument,
-    "\n\tquery GetAllEventChannels {\n\t\tsettings: getSystemSettings {\n\t\t\tdefaultEventChannel {\n\t\t\t\t...EventChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...EventChannelFragment\n\t\t\tevents {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n": types.GetAllEventChannelsDocument,
+    "\n\tquery GetAllEventChannels {\n\t\tsettings: getSystemSettings {\n\t\t\tdefaultEventChannel {\n\t\t\t\t...EventChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...EventChannelFragment\n\t\t\tevents {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t\tdiscordChannels: getAllDiscordChannels {\n\t\t\t...ChannelFragment\n\t\t}\n\t}\n": types.GetAllEventChannelsDocument,
     "\n\tquery GetAllRoles {\n\t\troles: getRoles {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n": types.GetAllRolesDocument,
     "\n\tquery GetAllUsers {\n\t\tusers: getAllUsers {\n\t\t\tid\n\t\t\tname\n\t\t\tscName\n\t\t\tdiscordName\n\t\t\tverified\n\t\t\tavatarUrl\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.GetAllUsersDocument,
     "\n\tquery GetContentContainer($identifier: String!, $type: String!) {\n\t\tcontainer: getContentContainer(identifier: $identifier, type: $type) {\n\t\t\t...ContentContainerFragment\n\t\t}\n\t}\n": types.GetContentContainerDocument,
@@ -58,6 +61,7 @@ const documents = {
     "\n\tquery GetContentContainerWithDescendants($identifier: String!, $type: String!) {\n\t\tcontainer: getContentContainer(identifier: $identifier, type: $type) {\n\t\t\t...ContentContainerFragment\n\t\t\trecursiveChildren\n\t\t}\n\t}\n": types.GetContentContainerWithDescendantsDocument,
     "\n\tquery GetContentContainersOfType($type: String!) {\n\t\tcontainers: getContentContainersOfType(type: $type) {\n\t\t\t...ContentContainerFragment\n\t\t}\n\t}\n": types.GetContentContainersOfTypeDocument,
     "\n\tquery GetEvent($eventId: ID!) {\n\t\tevent: getEvent(id: $eventId) {\n\t\t\t...EventFragment\n\t\t}\n\t}\n": types.GetEventDocument,
+    "\n\tquery GetEventChannel($id: Int!) {\n\t\tchannel: getEventChannel(id: $id) {\n\t\t\t...EventChannelFragment\n\t\t}\n\t}\n": types.GetEventChannelDocument,
     "\n\tquery GetEventSettings($eventId: ID!) {\n\t\tevent: getEvent(id: $eventId) {\n\t\t\t...EventSettingsFragment\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...EventChannelFragment\n\t\t}\n\t\tcustomEmojis: getAllDiscordEmojis {\n\t\t\tserverName\n\t\t\tserverAvatar\n\t\t\temojis {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\timage\n\t\t\t}\n\t\t}\n\t\tdiscordRoles: getAllDiscordRoles {\n\t\t\tid\n\t\t\tname\n\t\t\tcolor\n\t\t}\n\t}\n": types.GetEventSettingsDocument,
     "\n\tquery GetEvents($filter: EventFilterInput, $page: Int, $limit: Int) {\n\t\tevents: getEvents(filter: $filter, page: $page, limit: $limit) {\n\t\t\titems {\n\t\t\t\t...EventFragment\n\t\t\t}\n\t\t\titemsPerPage\n\t\t\tpage\n\t\t\tnextPage\n\t\t\tprevPage\n\t\t\ttotal\n\t\t}\n\t}\n": types.GetEventsDocument,
     "\n\tquery GetOwnedEvents {\n\t\tevents: getCurrentUser {\n\t\t\tevents {\n\t\t\t\t...EventFragment\n\t\t\t}\n\t\t}\n\t}\n": types.GetOwnedEventsDocument,
@@ -138,6 +142,10 @@ export function gql(source: "\n\tmutation CreateEvent {\n\t\tevent: createEvent\
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n\tmutation CreateEventChannel($linkTo: ID!) {\n\t\tchannel: createEventChannel(linkTo: $linkTo) {\n\t\t\t...EventChannelFragment\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation CreateEventChannel($linkTo: ID!) {\n\t\tchannel: createEventChannel(linkTo: $linkTo) {\n\t\t\t...EventChannelFragment\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n\tmutation CreateResource($data: ResourceCreateInput!) {\n\t\tresource: createResource(data: $data) {\n\t\t\t...ResourceFragment\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation CreateResource($data: ResourceCreateInput!) {\n\t\tresource: createResource(data: $data) {\n\t\t\t...ResourceFragment\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -166,6 +174,10 @@ export function gql(source: "\n\tmutation DeleteEvent($id: ID!) {\n\t\tdeleted: 
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n\tmutation DeleteEventChannel($id: Int!) {\n\t\tdeleted: deleteEventChannel(id: $id)\n\t}\n"): (typeof documents)["\n\tmutation DeleteEventChannel($id: Int!) {\n\t\tdeleted: deleteEventChannel(id: $id)\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n\tmutation DeleteResource($id: ID!) {\n\t\tdeleted: deleteResource(id: $id)\n\t}\n"): (typeof documents)["\n\tmutation DeleteResource($id: ID!) {\n\t\tdeleted: deleteResource(id: $id)\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
@@ -187,6 +199,10 @@ export function gql(source: "\n\tmutation EditContentContainerFile($id: ID!, $da
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n\tmutation EditEvent($eventId: ID!, $data: EventEditInput!) {\n\t\tevent: editEvent(id: $eventId, data: $data) {\n\t\t\t...EventFragment\n\t\t\t...EventSettingsFragment\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation EditEvent($eventId: ID!, $data: EventEditInput!) {\n\t\tevent: editEvent(id: $eventId, data: $data) {\n\t\t\t...EventFragment\n\t\t\t...EventSettingsFragment\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tmutation EditEventChannel($id: Int!, $data: EventChannelEditInput!) {\n\t\tchannel: editEventChannel(id: $id, data: $data) {\n\t\t\t...EventChannelFragment\n\t\t}\n\t}\n"): (typeof documents)["\n\tmutation EditEventChannel($id: Int!, $data: EventChannelEditInput!) {\n\t\tchannel: editEventChannel(id: $id, data: $data) {\n\t\t\t...EventChannelFragment\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -234,7 +250,7 @@ export function gql(source: "\n\tquery GetAllAccessKeys {\n\t\tkeys: getAllAcces
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tquery GetAllEventChannels {\n\t\tsettings: getSystemSettings {\n\t\t\tdefaultEventChannel {\n\t\t\t\t...EventChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...EventChannelFragment\n\t\t\tevents {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetAllEventChannels {\n\t\tsettings: getSystemSettings {\n\t\t\tdefaultEventChannel {\n\t\t\t\t...EventChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...EventChannelFragment\n\t\t\tevents {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"];
+export function gql(source: "\n\tquery GetAllEventChannels {\n\t\tsettings: getSystemSettings {\n\t\t\tdefaultEventChannel {\n\t\t\t\t...EventChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...EventChannelFragment\n\t\t\tevents {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t\tdiscordChannels: getAllDiscordChannels {\n\t\t\t...ChannelFragment\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetAllEventChannels {\n\t\tsettings: getSystemSettings {\n\t\t\tdefaultEventChannel {\n\t\t\t\t...EventChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...EventChannelFragment\n\t\t\tevents {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t\tdiscordChannels: getAllDiscordChannels {\n\t\t\t...ChannelFragment\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -263,6 +279,10 @@ export function gql(source: "\n\tquery GetContentContainersOfType($type: String!
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n\tquery GetEvent($eventId: ID!) {\n\t\tevent: getEvent(id: $eventId) {\n\t\t\t...EventFragment\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetEvent($eventId: ID!) {\n\t\tevent: getEvent(id: $eventId) {\n\t\t\t...EventFragment\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tquery GetEventChannel($id: Int!) {\n\t\tchannel: getEventChannel(id: $id) {\n\t\t\t...EventChannelFragment\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetEventChannel($id: Int!) {\n\t\tchannel: getEventChannel(id: $id) {\n\t\t\t...EventChannelFragment\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

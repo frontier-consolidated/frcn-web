@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import { Helper, Label, Table, TableHead, TableHeadCell } from "flowbite-svelte";
+	import { invalidate } from "$app/navigation";
+	import { Helper, Label, Modal, Table, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { CloseSolid, EditOutline } from "flowbite-svelte-icons";
 
 	import { Button, Field, FieldValidator, Head, SectionHeading, Select } from "$lib/components";
@@ -51,6 +51,40 @@
 		}
         editData = cloneSettings(data)
 	}
+
+    function createModalData() {
+        return {
+            channel: null as string | null
+        }
+    }
+
+    let openModal = false;
+    let modalData = createModalData()
+
+    async function createEventChannel() {
+        if (!validator.validate()) return;
+
+        const { errors } = await getApollo().mutate({
+			mutation: Mutations.CREATE_EVENT_CHANNEL,
+			variables: {
+				linkTo: modalData.channel!
+			},
+			errorPolicy: "all",
+		});
+
+		if (errors && errors.length > 0) {
+			pushNotification({
+				type: "error",
+				message: "Failed to create event channel",
+			});
+			console.error(errors);
+			return;
+		}
+
+		modalData = createModalData();
+        await invalidate("app:eventchannels")
+        openModal = false;
+    }
 </script>
 
 <Head
@@ -62,11 +96,11 @@
 </SectionHeading>
 <div class="flex-1 flex flex-col justify-between">
     <div class="flex flex-col gap-4 p-4">
-        <Field {validator} for="system-general-guildid" value={"a"} required>
-            <Label for="system-general-default-channel" class="mb-2">Default Event Channel</Label>
+        <Field {validator} for="system-channels-guildid" value={"a"} required>
+            <Label for="system-channels-default-channel" class="mb-2">Default Event Channel</Label>
             <Select
-                id="system-general-default-channel"
-                name="system-general-default-channel"
+                id="system-channels-default-channel"
+                name="system-channels-default-channel"
                 options={data.channels.map((channel) => ({
                     value: channel.id,
                     name: channel.discord.name,
@@ -81,26 +115,7 @@
     </div>
     <div class="flex justify-end gap-2 px-2 my-4">
         <Button class="shrink-0" on:click={async () => {
-            try {
-                // const { data: createData } = await getApollo().mutate({
-                //     mutation: Mutations.CREATE_ACCESS_KEY,
-                // });
-    
-                // if (createData && createData.key) {
-                //     await goto(`/admin/channels/${createData.key.id}`, {
-                //         invalidateAll: true,
-                //         state: {
-                //             newAccessKey: createData.key
-                //         }
-                //     });
-                // }
-            } catch (err) {
-                pushNotification({
-                    type: "error",
-                    message: "Failed to create event channel link"
-                })
-                console.error(err)
-            }
+            openModal = true;
         }}>
             Link Channel
         </Button>
@@ -139,3 +154,40 @@
         </Button>
     </div>
 </div>
+
+<Modal title="Create Event Channel" bind:open={openModal} dismissable bodyClass="overflow-y-visible">
+	<div class="flex flex-col gap-4 p-4">
+		<Field
+			{validator}
+			for="system-channels-channel"
+			value={modalData.channel}
+			required
+		>
+			<Label for="system-channels-channel" class="mb-2">Discord Channel</Label>
+			<Select
+                id="system-channels-channel"
+                name="system-channels-channel"
+                options={data.options.channels.map((channel) => ({
+                    value: channel.id,
+                    name: channel.name,
+                }))}
+                search
+                required
+                bind:value={modalData.channel}
+            />
+		</Field>
+	</div>
+	<svelte:fragment slot="footer">
+        <Button on:click={() => {
+            createEventChannel().catch(console.error)
+        }}>
+            Create
+        </Button>
+        <Button color="alternative" on:click={() => {
+            openModal = false;
+            modalData = createModalData()
+        }}>
+            Cancel
+        </Button>
+  	</svelte:fragment>
+</Modal>

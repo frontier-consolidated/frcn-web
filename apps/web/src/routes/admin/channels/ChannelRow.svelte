@@ -43,25 +43,25 @@
 </TableBodyRow>
 
 <ConfirmationModal title="Delete Channel Link - {channel.discord.name}" bind:open={modalOpen} on:confirm={async () => {
-    // const { errors } = await getApollo().mutate({
-    //     mutation: Mutations.DELETE_ACCESS_KEY,
-    //     variables: {
-    //         id: accessKey.id
-    //     },
-    //     errorPolicy: "all",
-    // })
+    const { errors } = await getApollo().mutate({
+        mutation: Mutations.DELETE_EVENT_CHANNEL,
+        variables: {
+            id: channel.id
+        },
+        errorPolicy: "all",
+    })
 
-    // if (errors && errors.length > 0) {
-    //     pushNotification({
-    //         type: "error",
-    //         message: "Failed to delete access key",
-    //     });
-    //     console.error(errors);
-    //     return;
-    // }
+    if (errors && errors.length > 0) {
+        pushNotification({
+            type: "error",
+            message: "Failed to delete event channel",
+        });
+        console.error(errors);
+        return;
+    }
 
-    // await invalidate("app:accesskeys")
-    // modalOpen = false;
+    await invalidate("app:eventchannels")
+    modalOpen = false;
 }}>
     <span>Are you sure you want to delete the link to the <strong>{channel.discord.name}</strong> event channel? Once deleted it cannot be undone.</span>
     <span>Any scheduled events posted in this channel will have to be reposted in another event channel.</span>

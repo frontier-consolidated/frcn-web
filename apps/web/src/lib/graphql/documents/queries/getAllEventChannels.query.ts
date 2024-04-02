@@ -14,5 +14,8 @@ export const GET_ALL_EVENT_CHANNELS = gql(`
 				name
 			}
 		}
+		discordChannels: getAllDiscordChannels {
+			...ChannelFragment
+		}
 	}
 `);
