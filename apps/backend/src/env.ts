@@ -15,14 +15,17 @@ export function getExternalPort() {
 	return getPort()
 }
 
-export function getDomain() {
-	return process.env.DOMAIN;
+export function getDomain(withSubDomain = false) {
+	const domain = process.env.DOMAIN;
+	if (!withSubDomain) return domain;
+
+	const subDomain = process.env.SUB_DOMAIN;
+	return `${subDomain}${subDomain ? "." : ""}${domain}`;
 }
 
 export function getHost() {
-	const domain = getDomain()
-	const subDomain = process.env.SUB_DOMAIN;
-	return `${subDomain}${subDomain ? "." : ""}${domain}${domain === "localhost" || hasExternalPort() ? `:${getExternalPort()}` : ""}`
+	const domain = getDomain(true)
+	return `${domain}${domain === "localhost" || hasExternalPort() ? `:${getExternalPort()}` : ""}`
 }
 
 export function getBasePath() {

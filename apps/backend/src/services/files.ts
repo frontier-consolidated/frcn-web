@@ -8,7 +8,7 @@ import { Upload } from "@aws-sdk/lib-storage";
 import type { FileUpload, User } from "@prisma/client";
 import * as mime from "mime-types";
 
-import { database, transaction } from "../database";
+import { database, type Transaction } from "../database";
 import { getDomain } from "../env";
 import { ffmpeg, ffprobe } from "../ffmpeg";
 
@@ -28,7 +28,37 @@ function toHTTPTimestamp(date: Date): string {
 		.padStart(2, "0")}:${date.getUTCSeconds().toString().padStart(2, "0")} GMT`;
 }
 
-export async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Express.Multer.File, owner: User, effect: (tx: typeof database, fileUpload: FileUpload) => Promise<T>) {
+async function getFileById(id: string) {
+    return await database.fileUpload.findUnique({
+        where: { id }
+    })
+}
+
+function generateUploadId() {
+    const id = randomUUID();
+    const key = `${getDomain(true)}-${id}`
+    return { id, key }
+}
+
+async function compressImage(input: string, output: string) {
+    const probeData = await ffprobe(input)
+    const imageData = probeData.streams[0]
+    
+    const width = imageData.width!;
+    const height = imageData.height!;
+    
+    await ffmpeg(command => {
+        command.input(input)
+        if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
+            command.size(width > height ? `${MAX_IMAGE_DIMENSION}x?` : `?x${MAX_IMAGE_DIMENSION}`)
+        }
+        command.addOutputOption("-quality", "95")
+        command.saveToFile(output)
+        return command;
+    })
+}
+
+async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Express.Multer.File, owner: User, effect: (tx: Transaction, fileUpload: FileUpload) => Promise<T>) {
     const filesToCleanup = [file.path]
 
     function cleanup() {
@@ -51,21 +81,7 @@ export async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Ex
         targetFile = path.join(FILE_UPLOAD_DIR, `${randomUUID()}.webp`);
         filesToCleanup.push(targetFile)
         try {
-            const probeData = await ffprobe(file.path)
-            const imageData = probeData.streams[0]
-            
-            const width = imageData.width!;
-            const height = imageData.height!;
-            
-            await ffmpeg(command => {
-                command.input(file.path)
-                if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
-                    command.size(width > height ? `${MAX_IMAGE_DIMENSION}x?` : `?x${MAX_IMAGE_DIMENSION}`)
-                }
-                command.addOutputOption("-quality", "95")
-                command.saveToFile(targetFile)
-                return command;
-            })
+            await compressImage(file.path, targetFile);
 
             const stats = fs.statSync(targetFile)
             fileSize = stats.size
@@ -75,8 +91,7 @@ export async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Ex
         }
     }
 
-    const uploadId = randomUUID();
-    const uploadKey = `${getDomain()}-${uploadId}`
+    const { id: uploadId, key: uploadKey } = generateUploadId();
     const s3Upload = new Upload({
         client: s3Client,
         params: {
@@ -92,9 +107,7 @@ export async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Ex
     })
 
     try {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore excessively deep type, but still resolves
-        return await transaction(async (tx) => {
+        return await database.$transaction(async (tx) => {
             const fileUpload = await tx.fileUpload.create({
                 data: {
                     id: uploadId,
@@ -135,8 +148,7 @@ export async function copyFile(s3Client: S3Client, bucket: string, key: string, 
             return null
         }
 
-        const uploadId = randomUUID();
-        const uploadKey = `${getDomain()}-${uploadId}`
+        const { id: uploadId, key: uploadKey } = generateUploadId();
         const s3Upload = new Upload({
             client: s3Client,
             params: {
@@ -152,9 +164,7 @@ export async function copyFile(s3Client: S3Client, bucket: string, key: string, 
         })
 
         try {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore excessively deep type, but still resolves
-            return await transaction(async (tx) => {
+            return await database.$transaction(async (tx) => {
                 const fileUpload = await tx.fileUpload.create({
                     data: {
                         id: uploadId,
@@ -178,7 +188,7 @@ export async function copyFile(s3Client: S3Client, bucket: string, key: string, 
     }
 }
 
-async function deleteFile(client: S3Client, bucket: string, id: string) {
+async function deleteFile(client: S3Client, bucket: string, id: string, tx?: Transaction) {
     const file = await database.fileUpload.findUnique({
         where: { id },
         select: {
@@ -192,13 +202,13 @@ async function deleteFile(client: S3Client, bucket: string, id: string) {
         Key: file.key,
     })
 
-    await client.send(command)
-    await database.fileUpload.delete({
+    await (tx ?? database).fileUpload.delete({
         where: { id }
     })
+    await client.send(command)
 }
 
-async function deleteManyFiles(client: S3Client, bucket: string, files: { id: string, key: string }[], tx: typeof database = database) {
+async function deleteManyFiles(client: S3Client, bucket: string, files: readonly { id: string, key: string }[], tx?: Transaction) {
     if (files.length === 0) return;
     
     const command = new DeleteObjectsCommand({
@@ -210,14 +220,13 @@ async function deleteManyFiles(client: S3Client, bucket: string, files: { id: st
         }
     })
 
-    await tx.fileUpload.deleteMany({
+    await (tx ?? database).fileUpload.deleteMany({
         where: {
             id: {
                 in: files.map(f => f.id)
             }
         }
     })
-
     await client.send(command)
 }
 
@@ -225,6 +234,7 @@ export const $files = {
     FILE_UPLOAD_DIR,
     MAX_FILE_SIZE_MB,
     MAX_IMAGE_DIMENSION,
+    getFileById,
     uploadFile,
     copyFile,
     deleteFile,

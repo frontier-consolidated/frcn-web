@@ -3,15 +3,16 @@ import type { User, UserSettings, UserStatus } from "@prisma/client";
 import { resolveEvent, resolveEventRsvp } from "./Event";
 import { resolveUserRole } from "./Roles";
 import type { WithModel } from "./types";
-import { database } from "../../../database";
 import { $users } from "../../../services/users";
 import type {
 	Resolvers,
 	User as GQLUser,
 	UserStatus as GQLUserStatus,
 	UserSettings as GQLUserSettings,
-	UserRole as GQLUserRole
+	UserRole as GQLUserRole,
+	UpdatedUserRoles as GQLUpdatedUserRoles
 } from "../../__generated__/resolvers-types";
+import { pubsub, withFilter } from "../../pubsub";
 import { gqlErrorOwnership, gqlErrorUnauthenticated } from "../gqlError";
 
 export function resolveUser(user: User) {
@@ -61,13 +62,17 @@ export const userResolvers: Resolvers = {
 		},
 		async primaryRole(source) {
 			const { _model } = source as WithModel<GQLUser, User>;
-			const primaryRole = await database.user.getPrimaryRole(_model);
-			return resolveUserRole(primaryRole);
+			const primaryRole = await $users.getPrimaryRole(_model.id);
+			return resolveUserRole(primaryRole!);
 		},
 		async roles(source) {
 			const { _model } = source as WithModel<GQLUser, User>;
-			const roles = await database.user.getRoles(_model);
-			return roles.map(resolveUserRole);
+			const roles = await $users.getRoles(_model.id, {
+				include: {
+					role: true
+				}
+			});
+			return roles.map(r => r.role).map(resolveUserRole);
 		},
 		async rsvps(source, args, context) {
 			if (!context.user) throw gqlErrorUnauthenticated();
@@ -75,7 +80,7 @@ export const userResolvers: Resolvers = {
 			const { _model } = source as WithModel<GQLUser, User>;
 			if (_model.id !== context.user.id) throw gqlErrorOwnership();
 
-			const rsvps = await database.user.getRSVPs(_model);
+			const rsvps = await $users.getRSVPs(_model.id);
 			return await Promise.all(rsvps.map((rsvp) => resolveEventRsvp(rsvp)));
 		},
 		async events(source, args, context) {
@@ -84,12 +89,12 @@ export const userResolvers: Resolvers = {
 			const { _model } = source as WithModel<GQLUser, User>;
 			if (_model.id !== context.user.id) throw gqlErrorOwnership();
 
-			const events = await database.user.getEvents(_model);
+			const events = await $users.getEvents(_model.id);
 			return await Promise.all(events.map((event) => resolveEvent(event)))
 		},
 		async status(source) {
 			const { _model } = source as WithModel<GQLUser, User>;
-			const status = await database.user.getStatus(_model);
+			const status = await $users.getStatus(_model.id);
 			return resolveUserStatus(status!);
 		},
 		async settings(source, args, context) {
@@ -98,7 +103,7 @@ export const userResolvers: Resolvers = {
 			const { _model } = source as WithModel<GQLUser, User>;
 			if (_model.id !== context.user.id) throw gqlErrorOwnership();
 
-			const settings = await database.user.getSettings(_model);
+			const settings = await $users.getSettings(_model.id);
 			return resolveUserSettings(settings!);
 		},
 	},
@@ -121,11 +126,42 @@ export const userResolvers: Resolvers = {
 		async deleteCurrentUser(source, args, context) {
 			if (!context.user) return false;
 
-			await database.user.delete({
-				where: { id: context.user.id }
-			})
-
+			await $users.deleteUser(context.user.id);
 			return true;
+		}
+	},
+
+	UpdatedUserRoles: {
+		async permissions(source) {
+			const { _model } = source as WithModel<GQLUpdatedUserRoles, User>;
+			const permissions = await $users.getPermissions(_model);
+			return permissions;
+		},
+		async primaryRole(source) {
+			const { _model } = source as WithModel<GQLUpdatedUserRoles, User>;
+			const primaryRole = await $users.getPrimaryRole(_model.id);
+			return resolveUserRole(primaryRole!);
+		},
+		async roles(source) {
+			const { _model } = source as WithModel<GQLUpdatedUserRoles, User>;
+			const roles = await $users.getRoles(_model.id, {
+				include: {
+					role: true
+				}
+			});
+			return roles.map(r => r.role).map(resolveUserRole);
+		},
+	},
+
+	Subscription: {
+		userRolesUpdated: {
+			subscribe: withFilter(
+				() => pubsub.asyncIterator("USER_ROLES_UPDATED"),
+				async function (source, args) {
+					const value = await Promise.resolve(source.userRolesUpdated)
+					return value.userId === args.userId
+				}
+			)
 		}
 	}
 };

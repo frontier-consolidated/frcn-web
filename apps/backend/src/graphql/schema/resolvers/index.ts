@@ -7,7 +7,6 @@ import { scalarResolvers } from "./scalars";
 import { systemResolvers } from "./System";
 import { userResolvers } from "./User";
 
-
 export const resolvers = [
 	scalarResolvers,
 	userResolvers,

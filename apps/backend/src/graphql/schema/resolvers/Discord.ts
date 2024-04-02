@@ -1,8 +1,8 @@
 import type { EventChannel } from "@prisma/client";
 import { ChannelType, GuildChannel, GuildEmoji, Role } from "discord.js";
 
-import { database } from "../../../database";
 import { $discord } from "../../../services/discord";
+import { $events } from "../../../services/events";
 import type {
 	DiscordChannel,
 	DiscordEmoji,
@@ -93,7 +93,7 @@ export async function resolveDiscordEmoji(emoji: string | GuildEmoji, context: G
 export const discordResolvers: Resolvers = {
 	Query: {
 		async getAllEventChannels(source, args, context) {
-			const channels = await database.eventChannel.findMany();
+			const channels = await $events.getAllEventChannels()
 			return channels.map(async (channel) => await resolveDiscordChannel(channel, context));
 		},
 		async getAllDiscordChannels(source, args, context) {
@@ -102,6 +102,12 @@ export const discordResolvers: Resolvers = {
 		},
 		async getAllDiscordEmojis(source, args, context) {
 			const guild = await $discord.getGuild(context.app.discordClient);
+			if (!guild) return {
+				serverName: "!UNKNOWN",
+				serverAvatar: null,
+				emojis: []
+			}
+			
 			const emojis = await $discord.getAllEmojis(context.app.discordClient);
 			return {
 				serverName: guild.name,
