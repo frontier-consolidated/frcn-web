@@ -18,7 +18,7 @@
     goto(`/admin/channels/${channel.id}`)
 }}>
     <TableBodyCell>
-        {channel.name}
+        {channel.discord.name}
     </TableBodyCell>
     <TableBodyCell>
         <div class="flex items-center justify-end gap-6">
@@ -42,7 +42,7 @@
     </TableBodyCell>
 </TableBodyRow>
 
-<ConfirmationModal title="Delete Channel Link - {channel.name}" bind:open={modalOpen} on:confirm={async () => {
+<ConfirmationModal title="Delete Channel Link - {channel.discord.name}" bind:open={modalOpen} on:confirm={async () => {
     // const { errors } = await getApollo().mutate({
     //     mutation: Mutations.DELETE_ACCESS_KEY,
     //     variables: {
@@ -63,6 +63,6 @@
     // await invalidate("app:accesskeys")
     // modalOpen = false;
 }}>
-    <span>Are you sure you want to delete the link to the <strong>{channel.name}</strong> event channel? Once deleted it cannot be undone.</span>
+    <span>Are you sure you want to delete the link to the <strong>{channel.discord.name}</strong> event channel? Once deleted it cannot be undone.</span>
     <span>Any scheduled events posted in this channel will have to be reposted in another event channel.</span>
 </ConfirmationModal>

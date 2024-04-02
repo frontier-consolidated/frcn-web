@@ -148,11 +148,9 @@ export enum EventAccessType {
 
 export type EventChannel = {
   __typename?: 'EventChannel';
-  discordId: Scalars['String']['output'];
+  discord: DiscordChannel;
   events: Array<Event>;
   id: Scalars['Int']['output'];
-  name: Scalars['String']['output'];
-  type?: Maybe<Scalars['String']['output']>;
 };
 
 export type EventChannelEditInput = {
@@ -1054,11 +1052,9 @@ export type EventResolvers<ContextType = GQLContext, ParentType extends Resolver
 }>;
 
 export type EventChannelResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventChannel'] = ResolversParentTypes['EventChannel']> = ResolversObject<{
-  discordId?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  discord?: Resolver<ResolversTypes['DiscordChannel'], ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

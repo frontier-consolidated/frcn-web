@@ -336,8 +336,8 @@
 						name="event-channel"
 						options={data.options?.channels.map((channel) => ({
 							value: channel.id,
-							name: channel.name,
-						})) ?? [{ value: editData.channel.id, name: editData.channel.name }]}
+							name: channel.discord.name,
+						})) ?? [{ value: editData.channel.id, name: editData.channel.discord.name }]}
 						required
 						bind:value={editData.channel.id}
 					/>

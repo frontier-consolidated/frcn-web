@@ -69,8 +69,8 @@
                 name="system-general-default-channel"
                 options={data.channels.map((channel) => ({
                     value: channel.id,
-                    name: channel.name,
-                })) ?? [{ value: editData.defaultChannel.id, name: editData.defaultChannel.name }]}
+                    name: channel.discord.name,
+                })) ?? [{ value: editData.defaultChannel.id, name: editData.defaultChannel.discord?.name }]}
                 required
                 bind:value={editData.defaultChannel.id}
             />

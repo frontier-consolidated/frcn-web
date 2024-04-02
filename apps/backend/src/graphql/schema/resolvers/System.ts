@@ -59,10 +59,10 @@ export const systemResolvers: Resolvers = {
 				name: "!UNKNOWN"
 			}
 		},
-		async defaultEventChannel(source, args, context) {
+		defaultEventChannel(source) {
 			const { _model } = source as WithModel<GQLSystemSettings, SystemSettings>;
 			if (!_model.defaultEventChannel) return null;
-			return await resolveEventChannel(_model.defaultEventChannel, context);
+			return resolveEventChannel(_model.defaultEventChannel);
 		},
 	},
 
@@ -71,14 +71,14 @@ export const systemResolvers: Resolvers = {
 			const users = await $users.getAllUsers()
 			return users.map(resolveUser)
 		},
-		async getEventChannel(source, args, context) {
+		async getEventChannel(source, args) {
 			const channel = await $events.getEventChannel(args.id)
 			if (!channel) return null;
-			return await resolveEventChannel(channel, context)
+			return resolveEventChannel(channel)
 		},
-		async getAllEventChannels(source, args, context) {
+		async getAllEventChannels() {
 			const channels = await $events.getAllEventChannels()
-			return channels.map(async (channel) => await resolveEventChannel(channel, context));
+			return channels.map(resolveEventChannel);
 		},
 		async getSystemSettings() {
 			const settings = await $system.getSystemSettings();
@@ -123,14 +123,14 @@ export const systemResolvers: Resolvers = {
 			}
 
 			const channel = await $events.createEventChannel(discordChannel)
-			return await resolveEventChannel(channel, context)
+			return resolveEventChannel(channel)
 		},
 		async editEventChannel(source, args, context) {
 			const channel = await $events.getEventChannel(args.id)
 			if (!channel) return null;
 
 			if (!args.data.channelId) {
-				return await resolveEventChannel(channel, context)
+				return resolveEventChannel(channel)
 			}
 
 			const discordChannel = await $discord.getChannel(context.app.discordClient, args.data.channelId)
@@ -143,7 +143,7 @@ export const systemResolvers: Resolvers = {
 			}
 
 			const updatedChannel = await $events.editEventChannel(channel, args.data)
-			return await resolveEventChannel(updatedChannel, context)
+			return resolveEventChannel(updatedChannel)
 		},
 		async deleteEventChannel(source, args) {
 			const channel = await $events.getEventChannel(args.id)

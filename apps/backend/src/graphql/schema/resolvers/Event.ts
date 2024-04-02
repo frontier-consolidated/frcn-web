@@ -1,8 +1,8 @@
 import { EventType } from "@frcn/shared";
 import type { EventRsvpRole, EventSettings, EventUser, Event, User, EventChannel } from "@prisma/client";
-import { ChannelType, type GuildChannel } from "discord.js";
+import { type GuildChannel } from "discord.js";
 
-import { resolveDiscordEmoji } from "./Discord";
+import { resolveDiscordChannel, resolveDiscordEmoji } from "./Discord";
 import { resolveUserRole } from "./Roles";
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
@@ -17,7 +17,8 @@ import type {
 	EventMember as GQLEventMember,
 	EventSettings as GQLEventSettings,
 	EventChannel as GQLEventChannel,
-	Resolvers
+	Resolvers,
+	DiscordChannel
 } from "../../__generated__/resolvers-types";
 import { EventAccessType } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
@@ -99,18 +100,11 @@ export function resolveEventRsvp(rsvp: EventUser) {
 	} satisfies WithModel<GQLEventRsvp, EventUser>;
 }
 
-export async function resolveEventChannel(channel: EventChannel, context: GQLContext) {
-	const guildChannel = (await $discord.getChannel(
-		context.app.discordClient,
-		channel.discordId
-	)) as GuildChannel | null;
-
+export function resolveEventChannel(channel: EventChannel) {
 	return {
 		_model: channel,
 		id: channel.id,
-		discordId: channel.discordId,
-		name: guildChannel ? `#${guildChannel.name}` : `#ERROR-${channel.discordId}`,
-		type: guildChannel ? ChannelType[guildChannel.type] : "Unknown",
+		discord: {} as unknown as DiscordChannel, // field-resolved
 		events: [] // field-resolved
 	} satisfies WithModel<GQLEventChannel, EventChannel>;
 }
@@ -121,7 +115,7 @@ export const eventResolvers: Resolvers = {
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const channel = await $events.getEventEventChannel(_model.id);
 			if (!channel) return null;
-			return await resolveEventChannel(channel, context);
+			return resolveEventChannel(channel);
 		},
 		async owner(source): Promise<WithModel<GQLUser, User> | null> {
 			const { _model } = source as WithModel<GQLEvent, Event>;
@@ -209,6 +203,22 @@ export const eventResolvers: Resolvers = {
 	},
 
 	EventChannel: {
+		async discord(source, args, context) {
+			const { _model } = source as WithModel<GQLEventChannel, EventChannel>;
+
+			const guildChannel = (await $discord.getChannel(
+				context.app.discordClient,
+				_model.discordId
+			)) as GuildChannel | null;
+
+			if (!guildChannel) return {
+				id: _model.discordId,
+				name: `#ERROR-${_model.discordId}`,
+				type: "Unknown",
+			}
+
+			return resolveDiscordChannel(guildChannel);
+		},
 		async events(source) {
 			const { _model } = source as WithModel<GQLEventChannel, EventChannel>;
 			const events = await $events.getEventsInChannel(_model.id)

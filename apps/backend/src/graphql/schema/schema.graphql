@@ -157,9 +157,7 @@ type Event {
 
 type EventChannel {
 	id: Int!
-	discordId: String!
-	name: String!
-	type: String
+	discord: DiscordChannel!
 	events: [Event!]! @permission(has: ManageSystem)
 }
 
