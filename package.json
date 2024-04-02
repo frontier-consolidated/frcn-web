@@ -2,6 +2,7 @@
   "name": "frcn",
   "version": "0.0.1",
   "type": "module",
+  "license": "MPL-2.0",
   "scripts": {
     "backend:dev": "cd apps/backend && pnpm dev",
     "web:dev": "cd apps/web && pnpm dev",
