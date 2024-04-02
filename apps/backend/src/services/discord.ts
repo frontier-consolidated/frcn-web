@@ -1,5 +1,5 @@
 import type { User } from "@prisma/client";
-import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuildBasedChannel } from "discord.js";
+import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuildBasedChannel, type GuildBasedChannel } from "discord.js";
 
 import { $system } from "./system";
 
@@ -47,6 +47,12 @@ async function getChannel(client: Client, id: string) {
 	} catch (err) {
 		return null;
 	}
+}
+
+async function canPostInChannel(channel: GuildBasedChannel) {
+	const me = channel.guild.members.me ?? await channel.guild.members.fetchMe()
+	const permissions = me.permissionsIn(channel.id)
+	return permissions.has("SendMessages")
 }
 
 async function canUserViewChannel(client: Client, user: User | undefined, channelId: string) {
@@ -140,6 +146,7 @@ export const $discord = {
 	isInGuild,
 	getAllTextChannels,
 	getChannel,
+	canPostInChannel,
 	canUserViewChannel,
 	getAllRoles,
 	getRole,

@@ -82,6 +82,7 @@ export type DiscordChannel = {
   __typename?: 'DiscordChannel';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  sendMessages: Scalars['Boolean']['output'];
   type?: Maybe<Scalars['String']['output']>;
 };
 
@@ -993,6 +994,7 @@ export type ContentContainerFileResolvers<ContextType = GQLContext, ParentType e
 export type DiscordChannelResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DiscordChannel'] = ResolversParentTypes['DiscordChannel']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  sendMessages?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;

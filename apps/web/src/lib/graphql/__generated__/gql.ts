@@ -13,7 +13,7 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Therefore it is highly recommended to use the babel or swc plugin for production.
  */
 const documents = {
-    "\n    fragment ChannelFragment on DiscordChannel {\n        id\n        name\n        type\n    }\n": types.ChannelFragmentFragmentDoc,
+    "\n    fragment ChannelFragment on DiscordChannel {\n        id\n        name\n        type\n        sendMessages\n    }\n": types.ChannelFragmentFragmentDoc,
     "\n    fragment ContentContainerFragment on ContentContainer {\n        id\n        identifier\n        type\n        title\n        content\n        files {\n            ...ContentContainerFileFragment\n        }\n        parent {\n            id\n        }\n    }\n": types.ContentContainerFragmentFragmentDoc,
     "\n    fragment ContentContainerFileFragment on ContentContainerFile {\n        id\n        identifier\n        fileName\n        fileSizeKb\n        contentType\n        previewUrl\n    }\n": types.ContentContainerFileFragmentFragmentDoc,
     "\n    fragment EventFragment on Event {\n        id\n        channel {\n            ...EventChannelFragment\n        }\n        owner {\n            ...UserFragment\n        }\n        name\n        summary\n        description\n        imageUrl\n        eventType\n        location\n        rsvp {\n            pending\n            rsvp\n        }\n        rsvpRoles: roles {\n            id\n            name\n            emoji {\n                id\n                name\n                image\n            }\n            limit\n        }\n        members {\n            ...EventMemberFragment\n        }\n        posted\n        duration\n        startAt\n        endedAt\n        updatedAt\n        createdAt\n    }\n": types.EventFragmentFragmentDoc,
@@ -86,7 +86,7 @@ export function gql(source: string): unknown;
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n    fragment ChannelFragment on DiscordChannel {\n        id\n        name\n        type\n    }\n"): (typeof documents)["\n    fragment ChannelFragment on DiscordChannel {\n        id\n        name\n        type\n    }\n"];
+export function gql(source: "\n    fragment ChannelFragment on DiscordChannel {\n        id\n        name\n        type\n        sendMessages\n    }\n"): (typeof documents)["\n    fragment ChannelFragment on DiscordChannel {\n        id\n        name\n        type\n        sendMessages\n    }\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

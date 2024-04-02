@@ -170,6 +170,7 @@ type DiscordChannel {
 	id: ID!
 	name: String!
 	type: String
+	sendMessages: Boolean!
 }
 
 type DiscordRole {

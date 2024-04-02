@@ -43,7 +43,7 @@ export const load = (async ({ params, locals, depends }) => {
             ...eventSettingsData.event,
             canEdit,
             options: {
-                channels: eventSettingsData.eventChannels,
+                channels: eventSettingsData.eventChannels.filter(channel => channel.discord.sendMessages),
                 emojis: eventSettingsData.customEmojis,
                 discordRoles: eventSettingsData.discordRoles
             },

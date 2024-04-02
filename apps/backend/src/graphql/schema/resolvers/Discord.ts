@@ -1,5 +1,6 @@
-import { ChannelType, GuildChannel, GuildEmoji, Role } from "discord.js";
+import { ChannelType, GuildEmoji, Role, type GuildBasedChannel } from "discord.js";
 
+import type { WithModel } from "./types";
 import { $discord } from "../../../services/discord";
 import type {
 	DiscordChannel,
@@ -11,13 +12,15 @@ import type { GQLContext } from "../../context";
 import { gqlErrorNotFound } from "../gqlError";
 
 export function resolveDiscordChannel(
-	channel: GuildChannel,
+	channel: GuildBasedChannel,
 ) {
 	return {
+		_model: channel,
 		id: channel.id,
 		name: `#${channel.name}`,
 		type: ChannelType[channel.type],
-	} satisfies DiscordChannel;
+		sendMessages: false, // field-resolved
+	} satisfies WithModel<DiscordChannel, GuildBasedChannel>;
 }
 
 export async function resolveDiscordRole(role: string | Role, context: GQLContext) {
@@ -67,6 +70,13 @@ export async function resolveDiscordEmoji(emoji: string | GuildEmoji, context: G
 }
 
 export const discordResolvers: Resolvers = {
+	DiscordChannel: {
+		async sendMessages(source) {
+			const { _model } = source as WithModel<DiscordChannel, GuildBasedChannel>;
+			return await $discord.canPostInChannel(_model)
+		}
+	},
+
 	Query: {
 		async getAllDiscordChannels(source, args, context) {
 			const channels = await $discord.getAllTextChannels(context.app.discordClient);

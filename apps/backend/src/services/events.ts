@@ -222,8 +222,14 @@ async function getUserRsvp(event: Event, user: User) {
 async function createEvent(owner: User, discordClient: DiscordClient) {
 	const { defaultEventChannel } = await $system.getSystemSettings();
 	if (!defaultEventChannel) throw new Error("No default event channel")
+
 	const guild = await $discord.getGuild(discordClient);
 	if (!guild) throw new Error("Could not fetch guild")
+	
+	const discordChannel = await $discord.getChannel(discordClient, defaultEventChannel.discordId)
+	if (!discordChannel) throw new Error("Could not fetch default event discord channel")
+
+	if (!(await $discord.canPostInChannel(discordChannel))) throw new Error("Cannot post messages in default event channel")
 
 	const event = await database.event.create({
 		data: {

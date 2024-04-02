@@ -1,6 +1,5 @@
 import { EventType } from "@frcn/shared";
 import type { EventRsvpRole, EventSettings, EventUser, Event, User, EventChannel } from "@prisma/client";
-import { type GuildChannel } from "discord.js";
 
 import { resolveDiscordChannel, resolveDiscordEmoji } from "./Discord";
 import { resolveUserRole } from "./Roles";
@@ -209,12 +208,13 @@ export const eventResolvers: Resolvers = {
 			const guildChannel = (await $discord.getChannel(
 				context.app.discordClient,
 				_model.discordId
-			)) as GuildChannel | null;
+			));
 
 			if (!guildChannel) return {
 				id: _model.discordId,
 				name: `#ERROR-${_model.discordId}`,
 				type: "Unknown",
+				sendMessages: false
 			}
 
 			return resolveDiscordChannel(guildChannel);
@@ -392,6 +392,13 @@ export const eventResolvers: Resolvers = {
 
 			const eventChannel = await $events.getEventEventChannel(event.id)
 			if (!eventChannel) throw gqlErrorBadState("Event is missing channel");
+
+			const discordChannel = await $discord.getChannel(context.app.discordClient, eventChannel.discordId);
+			if (!discordChannel) throw gqlErrorBadState("Cannot find discord channel")
+
+			if (!(await $discord.canPostInChannel(discordChannel))) {
+				throw gqlErrorBadState("Cannot send messages in the linked event channel")
+			}
 
 			if (
 				event.accessType === EventAccessType.PrimaryRole ||
