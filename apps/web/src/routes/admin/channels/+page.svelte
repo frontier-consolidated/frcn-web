@@ -117,10 +117,10 @@
         <Button class="shrink-0" on:click={async () => {
             openModal = true;
         }}>
-            Link Channel
+            Link New Channel
         </Button>
     </div>
-    <div class="flex-1 flex flex-col overflow-y-auto">
+    <div class="flex-1 flex flex-col">
         <Table divClass="relative">
             <TableHead>
                 <TableHeadCell>
@@ -137,7 +137,7 @@
             </tbody>
         </Table>
     </div>
-    <div class="flex justify-end items-center gap-2">
+    <div class="flex justify-end items-center gap-2 pt-2">
         <Button color="alternative" on:click={() => {
             editData = cloneSettings(data)
         }}>
