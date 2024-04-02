@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
 	import { Helper, Label, Modal, Table, TableHead, TableHeadCell } from "flowbite-svelte";
-	import { CloseSolid, EditOutline } from "flowbite-svelte-icons";
+	import { CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
 	import { Button, Field, FieldValidator, Head, SectionHeading, Select } from "$lib/components";
+	import Tooltip from "$lib/components/Tooltip.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
@@ -98,16 +99,29 @@
     <div class="flex flex-col gap-4 p-4">
         <Field {validator} for="system-channels-guildid" value={"a"} required>
             <Label for="system-channels-default-channel" class="mb-2">Default Event Channel</Label>
-            <Select
-                id="system-channels-default-channel"
-                name="system-channels-default-channel"
-                options={data.channels.map((channel) => ({
-                    value: channel.id,
-                    name: channel.discord.name,
-                })) ?? [{ value: editData.defaultChannel.id, name: editData.defaultChannel.discord?.name }]}
-                required
-                bind:value={editData.defaultChannel.id}
-            />
+            <div class="flex items-center gap-2">
+                <Select
+                    id="system-channels-default-channel"
+                    name="system-channels-default-channel"
+                    options={data.channels.map((channel) => ({
+                        value: channel.id,
+                        name: channel.discord.name,
+                    })) ?? [{ value: editData.defaultChannel.id, name: editData.defaultChannel.discord?.name }]}
+                    required
+                    bind:value={editData.defaultChannel.id}
+                />
+                {#if !data.defaultEventChannel}
+                    <Tooltip>
+                        <ExclamationCircleSolid slot="icon" class="ms-2 text-orange-500" size="lg" />
+                        A default channel must be set to create events
+                    </Tooltip>
+                {:else if !data.defaultEventChannel.discord.sendMessages}
+                    <Tooltip>
+                        <ExclamationCircleSolid slot="icon" class="ms-2 text-orange-500" size="lg" />
+                        Missing permissions to post messages in this channel
+                    </Tooltip>
+                {/if}
+            </div>
             <Helper class="mt-1">
                 The default channel where events will be posted
             </Helper>
@@ -167,7 +181,7 @@
 			<Select
                 id="system-channels-channel"
                 name="system-channels-channel"
-                options={data.options.channels.map((channel) => ({
+                options={data.options.channels.filter(channel => channel.sendMessages).map((channel) => ({
                     value: channel.id,
                     name: channel.name,
                 }))}
@@ -175,6 +189,9 @@
                 required
                 bind:value={modalData.channel}
             />
+            <Helper class="mt-1">
+                Only channels the bot can send messages in will appear in this list, if a channel is not appearing the bot is probably missing permissions
+            </Helper>
 		</Field>
 	</div>
 	<svelte:fragment slot="footer">

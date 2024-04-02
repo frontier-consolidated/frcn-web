@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto, invalidate } from "$app/navigation";
 	import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
-	import { EditOutline, TrashBinSolid } from "flowbite-svelte-icons";
+	import { EditOutline, ExclamationCircleSolid, TrashBinSolid } from "flowbite-svelte-icons";
 
 	import { ConfirmationModal, Tooltip } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
@@ -18,7 +18,15 @@
     goto(`/admin/channels/${channel.id}`)
 }}>
     <TableBodyCell>
-        {channel.discord.name}
+        <div class="flex items-center">
+            {#if !channel.discord.sendMessages}
+                <Tooltip>
+                    <ExclamationCircleSolid slot="icon" class="me-2 text-orange-500" size="sm" />
+                    Missing permissions to post messages in this channel
+                </Tooltip>
+            {/if}
+            {channel.discord.name}
+        </div>
     </TableBodyCell>
     <TableBodyCell>
         <div class="flex items-center justify-end gap-6">
@@ -63,6 +71,6 @@
     await invalidate("app:eventchannels")
     modalOpen = false;
 }}>
-    <span>Are you sure you want to delete the link to the <strong>{channel.discord.name}</strong> event channel? Once deleted it cannot be undone.</span>
-    <span>Any scheduled events posted in this channel will have to be reposted in another event channel.</span>
+    <p>Are you sure you want to delete the link to the <strong>{channel.discord.name}</strong> event channel? Once deleted it cannot be undone.</p>
+    <p>Any scheduled events posted in this channel will have to be reposted in another event channel.</p>
 </ConfirmationModal>
