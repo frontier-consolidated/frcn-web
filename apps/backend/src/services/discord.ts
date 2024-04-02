@@ -52,7 +52,13 @@ async function getChannel(client: Client, id: string) {
 async function canPostInChannel(channel: GuildBasedChannel) {
 	const me = channel.guild.members.me ?? await channel.guild.members.fetchMe()
 	const permissions = me.permissionsIn(channel.id)
-	return permissions.has("SendMessages")
+	return permissions.has("SendMessages") && permissions.has("SendMessagesInThreads")
+}
+
+async function canCreateThreadInChannel(channel: GuildBasedChannel) {
+	const me = channel.guild.members.me ?? await channel.guild.members.fetchMe()
+	const permissions = me.permissionsIn(channel.id)
+	return permissions.has("CreatePublicThreads")
 }
 
 async function canUserViewChannel(client: Client, user: User | undefined, channelId: string) {
@@ -147,6 +153,7 @@ export const $discord = {
 	getAllTextChannels,
 	getChannel,
 	canPostInChannel,
+	canCreateThreadInChannel,
 	canUserViewChannel,
 	getAllRoles,
 	getRole,

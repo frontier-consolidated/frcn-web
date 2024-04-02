@@ -400,6 +400,10 @@ export const eventResolvers: Resolvers = {
 				throw gqlErrorBadState("Cannot send messages in the linked event channel")
 			}
 
+			if (!(await $discord.canCreateThreadInChannel(discordChannel))) {
+				throw gqlErrorBadState("Cannot create threads in the linked event channel")
+			}
+
 			if (
 				event.accessType === EventAccessType.PrimaryRole ||
 				event.accessType === EventAccessType.SelectRoles

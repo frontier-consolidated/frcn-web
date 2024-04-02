@@ -230,6 +230,7 @@ async function createEvent(owner: User, discordClient: DiscordClient) {
 	if (!discordChannel) throw new Error("Could not fetch default event discord channel")
 
 	if (!(await $discord.canPostInChannel(discordChannel))) throw new Error("Cannot post messages in default event channel")
+	if (!(await $discord.canCreateThreadInChannel(discordChannel))) throw new Error("Cannot create threads in default event channel")
 
 	const event = await database.event.create({
 		data: {
