@@ -20,14 +20,21 @@
                         <GearSolid tabindex="-1" />
                     </svelte:fragment>
                 </SidebarItem>
-                <SidebarItem label="Channels" href="/admin/channels" class="rounded clip-opposite-4">
-                    <svelte:fragment slot="icon">
-                        <UserHeadsetSolid tabindex="-1" />
-                    </svelte:fragment>
-                </SidebarItem>
                 <SidebarItem label="Roles" href="/admin/roles" class="rounded clip-opposite-4">
                     <svelte:fragment slot="icon">
                         <TagSolid tabindex="-1" />
+                    </svelte:fragment>
+                </SidebarItem>
+            </SidebarGroup>
+            <SidebarGroup border>
+                <div class="flex items-center gap-2 dark:text-gray-400 px-2">
+                    <span class="self-center font-semibold whitespace-nowrap">
+                        Events
+                    </span>
+                </div>
+                <SidebarItem label="Channels" href="/admin/channels" class="rounded clip-opposite-4">
+                    <svelte:fragment slot="icon">
+                        <UserHeadsetSolid tabindex="-1" />
                     </svelte:fragment>
                 </SidebarItem>
             </SidebarGroup>
