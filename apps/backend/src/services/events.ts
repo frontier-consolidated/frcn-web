@@ -127,6 +127,14 @@ async function getEvents(
 	};
 }
 
+async function getEventsInChannel(id: number) {
+	return await database.event.findMany({
+		where: {
+			channelId: id
+		}
+	})
+}
+
 async function getAllEventChannels() {
 	return await database.eventChannel.findMany();
 }
@@ -500,6 +508,7 @@ export const $events = {
 	getEvent,
 	getEventFromMessageId,
 	getEvents,
+	getEventsInChannel,
 	getAllEventChannels,
 	getEventChannel,
 	getEventThread,

@@ -1,7 +1,7 @@
 import { hasAdmin } from "@frcn/shared";
 import type { AccessKey } from "@prisma/client";
 
-import { resolveDiscordChannel } from "./Discord";
+import { resolveEventChannel } from "./Event";
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
 import { $events } from "../../../services/events";
@@ -58,10 +58,10 @@ export const systemResolvers: Resolvers = {
 				name: "!UNKNOWN"
 			}
 		},
-		defaultEventChannel(source, args, context) {
+		async defaultEventChannel(source, args, context) {
 			const { _model } = source as WithModel<GQLSystemSettings, SystemSettings>;
 			if (!_model.defaultEventChannel) return null;
-			return resolveDiscordChannel(_model.defaultEventChannel, context);
+			return await resolveEventChannel(_model.defaultEventChannel, context);
 		},
 	},
 
@@ -72,7 +72,7 @@ export const systemResolvers: Resolvers = {
 		},
 		async getAllEventChannels(source, args, context) {
 			const channels = await $events.getAllEventChannels()
-			return channels.map(async (channel) => await resolveDiscordChannel(channel, context));
+			return channels.map(async (channel) => await resolveEventChannel(channel, context));
 		},
 		async getSystemSettings() {
 			const settings = await $system.getSystemSettings();

@@ -1,4 +1,3 @@
-import type { EventChannel } from "@prisma/client";
 import { ChannelType, GuildChannel, GuildEmoji, Role } from "discord.js";
 
 import { $discord } from "../../../services/discord";
@@ -11,35 +10,13 @@ import type {
 import type { GQLContext } from "../../context";
 import { gqlErrorNotFound } from "../gqlError";
 
-export async function resolveDiscordChannel(
-	channel: EventChannel | GuildChannel,
-	context: GQLContext
+export function resolveDiscordChannel(
+	channel: GuildChannel,
 ) {
-	let guildChannel: GuildChannel | null = null;
-
-	if (channel instanceof GuildChannel) {
-		guildChannel = channel;
-	} else {
-		guildChannel = (await $discord.getChannel(
-			context.app.discordClient,
-			channel.discordId
-		)) as GuildChannel;
-		
-		// if (!guildChannel) throw gqlErrorNotFound(`Discord channel not found: ${channel.discordId}`, {
-		// 	channelId: channel.discordId,
-		// });
-
-		if (!guildChannel) return {
-			id: channel.discordId,
-			name: `#ERROR-${channel.discordId}`,
-			type: "Unknown"
-		} satisfies DiscordChannel;
-	}
-
 	return {
-		id: guildChannel.id,
-		name: `#${guildChannel.name}`,
-		type: ChannelType[guildChannel.type],
+		id: channel.id,
+		name: `#${channel.name}`,
+		type: ChannelType[channel.type],
 	} satisfies DiscordChannel;
 }
 
@@ -93,7 +70,7 @@ export const discordResolvers: Resolvers = {
 	Query: {
 		async getAllDiscordChannels(source, args, context) {
 			const channels = await $discord.getAllTextChannels(context.app.discordClient);
-			return channels.map((channel) => resolveDiscordChannel(channel, context));
+			return channels.map(resolveDiscordChannel);
 		},
 		async getAllDiscordEmojis(source, args, context) {
 			const guild = await $discord.getGuild(context.app.discordClient);

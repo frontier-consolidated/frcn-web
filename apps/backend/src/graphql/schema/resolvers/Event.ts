@@ -1,7 +1,8 @@
 import { EventType } from "@frcn/shared";
-import type { EventRsvpRole, EventSettings, EventUser, Event, User } from "@prisma/client";
+import type { EventRsvpRole, EventSettings, EventUser, Event, User, EventChannel } from "@prisma/client";
+import { ChannelType, type GuildChannel } from "discord.js";
 
-import { resolveDiscordChannel, resolveDiscordEmoji } from "./Discord";
+import { resolveDiscordEmoji } from "./Discord";
 import { resolveUserRole } from "./Roles";
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
@@ -15,6 +16,7 @@ import type {
 	EventRsvpRole as GQLEventRsvpRole,
 	EventMember as GQLEventMember,
 	EventSettings as GQLEventSettings,
+	EventChannel as GQLEventChannel,
 	Resolvers
 } from "../../__generated__/resolvers-types";
 import { EventAccessType } from "../../__generated__/resolvers-types";
@@ -97,13 +99,29 @@ export function resolveEventRsvp(rsvp: EventUser) {
 	} satisfies WithModel<GQLEventRsvp, EventUser>;
 }
 
+export async function resolveEventChannel(channel: EventChannel, context: GQLContext) {
+	const guildChannel = (await $discord.getChannel(
+		context.app.discordClient,
+		channel.discordId
+	)) as GuildChannel | null;
+
+	return {
+		_model: channel,
+		id: channel.id,
+		discordId: channel.discordId,
+		name: guildChannel ? `#${guildChannel.name}` : `#ERROR-${channel.discordId}`,
+		type: guildChannel ? ChannelType[guildChannel.type] : "Unknown",
+		events: [] // field-resolved
+	} satisfies WithModel<GQLEventChannel, EventChannel>;
+}
+
 export const eventResolvers: Resolvers = {
 	Event: {
 		async channel(source, args, context) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const channel = await $events.getEventChannel(_model.id);
 			if (!channel) return null;
-			return await resolveDiscordChannel(channel, context);
+			return await resolveEventChannel(channel, context);
 		},
 		async owner(source): Promise<WithModel<GQLUser, User> | null> {
 			const { _model } = source as WithModel<GQLEvent, Event>;
@@ -188,6 +206,14 @@ export const eventResolvers: Resolvers = {
 			if (!rsvp) return null;
 			return resolveEventRsvpRole(rsvp, context);
 		},
+	},
+
+	EventChannel: {
+		async events(source) {
+			const { _model } = source as WithModel<GQLEventChannel, EventChannel>;
+			const events = await $events.getEventsInChannel(_model.id)
+			return events.map(resolveEvent)
+		}
 	},
 
 	Query: {

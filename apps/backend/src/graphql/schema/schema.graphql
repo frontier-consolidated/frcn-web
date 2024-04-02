@@ -37,7 +37,7 @@ directive @permission(has: Permission, one: [Permission!], all: [Permission!]) o
 
 type SystemSettings {
 	discordGuild: DiscordGuild!
-	defaultEventChannel: DiscordChannel
+	defaultEventChannel: EventChannel
 }
 
 type AccessKey {
@@ -130,7 +130,7 @@ type EventTeam {
 
 type Event {
 	id: ID!
-	channel: DiscordChannel
+	channel: EventChannel
 	owner: User
 	name: String!
 	summary: String!
@@ -153,6 +153,14 @@ type Event {
 	settings: EventSettings! @permission(has: CreateEvents)
 	accessType: EventAccessType! @permission(has: CreateEvents)
 	accessRoles: [UserRole!]! @permission(has: CreateEvents)
+}
+
+type EventChannel {
+	id: Int!
+	discordId: String!
+	name: String!
+	type: String
+	events: [Event!]! @permission(has: ManageSystem)
 }
 
 type DiscordGuild {
@@ -285,6 +293,10 @@ input AccessKeyEditInput {
 	permissions: Int @constraint(min: 0, max: 2147483647)
 }
 
+input EventChannelEditInput {
+	channelId: ID
+}
+
 input RoleEditInput {
 	name: String @constraint(minLength: 1, maxLength: 128)
 	primary: Boolean
@@ -351,7 +363,7 @@ type Query {
 
 	# System
 	getAllUsers: [User!]! @permission(has: ManageSystem)
-	getAllEventChannels: [DiscordChannel!]! @permission(one: [CreateEvents, ManageSystem])
+	getAllEventChannels: [EventChannel!]! @permission(one: [CreateEvents, ManageSystem])
 	getAllDiscordChannels: [DiscordChannel!]! @permission(has: ManageSystem)
 	getAllDiscordEmojis: DiscordEmojis! @permission(has: CreateEvents)
 	getAllDiscordRoles(everyone: Boolean): [DiscordRole!]!
@@ -409,8 +421,12 @@ type Mutation {
 	removeUserRole(userId: ID!, roleId: ID!): Boolean! @permission(has: ManageRoles)
 
 	# System
-	editEventChannels(channels: [ID!]!): [DiscordChannel!]! @permission(has: ManageSystem)
 	editSystemSettings(data: SystemEditInput!): SystemSettings! @permission(has: ManageSystem)
+
+	createEventChannel(linkTo: ID!): EventChannel! @permission(has: ManageSystem)
+	editEventChannel(id: ID!, data: EventChannelEditInput!): EventChannel
+		@permission(has: ManageSystem)
+	deleteEventChannel(id: ID!): Boolean! @permission(has: ManageSystem)
 
 	createAccessKey: AccessKey! @permission(has: ManageSystem)
 	editAccessKey(id: Int!, data: AccessKeyEditInput!): AccessKey @permission(has: ManageSystem)
