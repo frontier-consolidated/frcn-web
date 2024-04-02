@@ -14,7 +14,7 @@ declare global {
 			}
 		}
 		interface PageData {
-			roles: GetAllRolesQuery["roles"]
+			roles?: GetAllRolesQuery["roles"]
 		}
 		interface PageState {
 			newAccessKey?: CreateAccessKeyMutation["key"]

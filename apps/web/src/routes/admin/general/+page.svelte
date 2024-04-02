@@ -2,7 +2,7 @@
 	import { Helper, Input, Label } from 'flowbite-svelte';
 	import { CloseSolid, EditOutline } from 'flowbite-svelte-icons';
 
-	import { SectionHeading, Select, Field, FieldValidator, Button, Head } from '$lib/components';
+	import { SectionHeading, Field, FieldValidator, Button, Head } from '$lib/components';
 	import { Mutations, getApollo } from '$lib/graphql';
 	import { pushNotification } from '$lib/stores/NotificationStore';
 
@@ -13,14 +13,13 @@
     function cloneSystemSettings(data: PageData) {
         return {
             discordGuild: { ...data.discordGuild },
-            defaultEventChannel: { ...data.defaultEventChannel },
         }
     }
 
-    let validator = new FieldValidator();
+    const validator = new FieldValidator();
     let editData = cloneSystemSettings(data)
 
-    $: isDirty = data.discordGuild.id !== editData.discordGuild.id || data.defaultEventChannel?.id !== editData.defaultEventChannel.id
+    $: isDirty = data.discordGuild.id !== editData.discordGuild.id
 
     async function save() {
         if (!validator.validate()) return;
@@ -30,7 +29,6 @@
 			variables: {
 				data: {
                     discordGuildId: editData.discordGuild.id,
-                    defaultEventChannelId: editData.defaultEventChannel.id
                 }
 			},
 			errorPolicy: "all",
@@ -77,22 +75,6 @@
             />
             <Helper class="mt-1">
                 The discord guild that all roles and events will be linked to
-            </Helper>
-        </Field>
-        <Field {validator} for="system-general-guildid" value={"a"} required>
-            <Label for="system-general-default-channel" class="mb-2">Default Event Channel</Label>
-            <Select
-                id="system-general-default-channel"
-                name="system-general-default-channel"
-                options={data.options?.channels.map((channel) => ({
-                    value: channel.id,
-                    name: channel.name,
-                })) ?? [{ value: editData.defaultEventChannel.id, name: editData.defaultEventChannel.name }]}
-                required
-                bind:value={editData.defaultEventChannel.id}
-            />
-            <Helper class="mt-1">
-                The default channel where events will be posted
             </Helper>
         </Field>
         <div>

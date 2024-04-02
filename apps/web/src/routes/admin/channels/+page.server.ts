@@ -11,10 +11,11 @@ export const load = (async ({ locals }) => {
     }
 
     const { data } = await locals.apollo.query({
-        query: Queries.GET_SYSTEM_SETTINGS
+        query: Queries.GET_ALL_EVENT_CHANNELS
     })
 
     return {
-        ...data.settings
+        ...data.settings,
+        channels: data.eventChannels
     }
 }) satisfies PageServerLoad;

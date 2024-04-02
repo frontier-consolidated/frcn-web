@@ -49,7 +49,9 @@ const documents = {
     "\n\tquery GetCurrentRsvps {\n\t\trsvps: getCurrentUser {\n\t\t\trsvps {\n\t\t\t\tinvite\n\t\t\t\trsvpAt\n\t\t\t\trsvp {\n\t\t\t\t\tid\n\t\t\t\t\tname\n\t\t\t\t}\n\t\t\t\tevent {\n\t\t\t\t\tid\n\t\t\t\t\towner {\n\t\t\t\t\t\tid\n\t\t\t\t\t\tname\n\t\t\t\t\t\tscName\n\t\t\t\t\t\tavatarUrl\n\t\t\t\t\t\tverified\n\t\t\t\t\t\tupdatedAt\n\t\t\t\t\t\tcreatedAt\n\t\t\t\t\t}\n\t\t\t\t\tname\n\t\t\t\t\tsummary\n\t\t\t\t\tdescription\n\t\t\t\t\timageUrl\n\t\t\t\t\teventType\n\t\t\t\t\tlocation\n\t\t\t\t\tduration\n\t\t\t\t\tstartAt\n\t\t\t\t\tendedAt\n\t\t\t\t\tupdatedAt\n\t\t\t\t\tcreatedAt\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n": types.GetCurrentRsvpsDocument,
     "\n\tquery GetCurrentUser {\n\t\tuser: getCurrentUser {\n\t\t\t...UserFragment\n\t\t\tpermissions\n\t\t\tsettings {\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t\tstatus {\n\t\t\t\tactivity\n\t\t\t\tship\n\t\t\t\tupdatedAt\n\t\t\t}\n\t\t}\n\t}\n": types.GetCurrentUserDocument,
     "\n\tquery GetAllAccessKeys {\n\t\tkeys: getAllAccessKeys {\n\t\t\tid\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.GetAllAccessKeysDocument,
+    "\n\tquery GetAllEventChannels {\n\t\tsettings: getSystemSettings {\n\t\t\tdefaultEventChannel {\n\t\t\t\t...ChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...ChannelFragment\n\t\t}\n\t}\n": types.GetAllEventChannelsDocument,
     "\n\tquery GetAllRoles {\n\t\troles: getRoles {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n": types.GetAllRolesDocument,
+    "\n\tquery GetAllUsers {\n\t\tusers: getAllUsers {\n\t\t\tid\n\t\t\tname\n\t\t\tscName\n\t\t\tdiscordName\n\t\t\tverified\n\t\t\tavatarUrl\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.GetAllUsersDocument,
     "\n\tquery GetContentContainer($identifier: String!, $type: String!) {\n\t\tcontainer: getContentContainer(identifier: $identifier, type: $type) {\n\t\t\t...ContentContainerFragment\n\t\t}\n\t}\n": types.GetContentContainerDocument,
     "\n\tquery GetContentContainerById($id: ID!) {\n\t\tcontainer: getContentContainerById(id: $id) {\n\t\t\t...ContentContainerFragment\n\t\t\trecursiveChildren\n\t\t}\n\t}\n": types.GetContentContainerByIdDocument,
     "\n\tquery GetContentContainerWithDescendants($identifier: String!, $type: String!) {\n\t\tcontainer: getContentContainer(identifier: $identifier, type: $type) {\n\t\t\t...ContentContainerFragment\n\t\t\trecursiveChildren\n\t\t}\n\t}\n": types.GetContentContainerWithDescendantsDocument,
@@ -61,7 +63,7 @@ const documents = {
     "\n\tquery GetResource($id: ID!) {\n\t\tresource: getResource(id: $id) {\n\t\t\t...ResourceFragment\n\t\t}\n\t}\n": types.GetResourceDocument,
     "\n\tquery GetResources($filter: ResourceFilterInput, $page: Int, $limit: Int) {\n\t\tresources: getResources(filter: $filter, page: $page, limit: $limit) {\n\t\t\titems {\n\t\t\t\t...ResourceFragment\n\t\t\t}\n\t\t\titemsPerPage\n\t\t\tpage\n\t\t\tnextPage\n\t\t\tprevPage\n\t\t\ttotal\n\t\t}\n\t}\n": types.GetResourcesDocument,
     "\n\tquery GetRole($roleId: ID!) {\n\t\trole: getRole(id: $roleId) {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tavatarUrl\n\t\t\t}\n\t\t}\n\t\tdiscordRoles: getAllDiscordRoles(everyone: false) {\n\t\t\tid\n\t\t\tname\n\t\t\tcolor\n\t\t}\n\t}\n": types.GetRoleDocument,
-    "\n\tquery GetSystemSettings {\n\t\tsettings: getSystemSettings {\n\t\t\tdiscordGuild {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\tdefaultEventChannel {\n\t\t\t\t...ChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...ChannelFragment\n\t\t}\n\t}\n": types.GetSystemSettingsDocument,
+    "\n\tquery GetSystemSettings {\n\t\tsettings: getSystemSettings {\n\t\t\tdiscordGuild {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n": types.GetSystemSettingsDocument,
     "\n\tquery GetUser($id: ID!) {\n\t\tuser: getUser(id: $id) {\n\t\t\t...UserFragment\n\t\t}\n\t}\n": types.GetUserDocument,
     "\n\tsubscription OnRolesUpdated($userId: ID!) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tpermissions\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n": types.OnRolesUpdatedDocument,
 };
@@ -227,7 +229,15 @@ export function gql(source: "\n\tquery GetAllAccessKeys {\n\t\tkeys: getAllAcces
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
+export function gql(source: "\n\tquery GetAllEventChannels {\n\t\tsettings: getSystemSettings {\n\t\t\tdefaultEventChannel {\n\t\t\t\t...ChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...ChannelFragment\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetAllEventChannels {\n\t\tsettings: getSystemSettings {\n\t\t\tdefaultEventChannel {\n\t\t\t\t...ChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...ChannelFragment\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
 export function gql(source: "\n\tquery GetAllRoles {\n\t\troles: getRoles {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetAllRoles {\n\t\troles: getRoles {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tquery GetAllUsers {\n\t\tusers: getAllUsers {\n\t\t\tid\n\t\t\tname\n\t\t\tscName\n\t\t\tdiscordName\n\t\t\tverified\n\t\t\tavatarUrl\n\t\t\tcreatedAt\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetAllUsers {\n\t\tusers: getAllUsers {\n\t\t\tid\n\t\t\tname\n\t\t\tscName\n\t\t\tdiscordName\n\t\t\tverified\n\t\t\tavatarUrl\n\t\t\tcreatedAt\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
@@ -275,7 +285,7 @@ export function gql(source: "\n\tquery GetRole($roleId: ID!) {\n\t\trole: getRol
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tquery GetSystemSettings {\n\t\tsettings: getSystemSettings {\n\t\t\tdiscordGuild {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\tdefaultEventChannel {\n\t\t\t\t...ChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...ChannelFragment\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetSystemSettings {\n\t\tsettings: getSystemSettings {\n\t\t\tdiscordGuild {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\tdefaultEventChannel {\n\t\t\t\t...ChannelFragment\n\t\t\t}\n\t\t}\n\t\teventChannels: getAllEventChannels {\n\t\t\t...ChannelFragment\n\t\t}\n\t}\n"];
+export function gql(source: "\n\tquery GetSystemSettings {\n\t\tsettings: getSystemSettings {\n\t\t\tdiscordGuild {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tquery GetSystemSettings {\n\t\tsettings: getSystemSettings {\n\t\t\tdiscordGuild {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
