@@ -111,7 +111,7 @@ export async function buildEventMessage(id: string, client: Client) {
 				} ${role.name} (${role.members.length}${role.limit > 0 ? `/${role.limit}` : ""})`,
 				value:
 					role.members.length > 0
-						? `> ${role.members.map((member) => member.user.discordName).join("\n")}`
+						? `>>> ${role.members.map((member) => member.user.discordName).join("\n")}`
 						: " ",
 				inline: true,
 			}))
