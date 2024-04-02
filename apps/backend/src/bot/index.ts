@@ -1,7 +1,7 @@
 import { type AnySelectMenuInteraction, ButtonInteraction, Client, InteractionType } from "discord.js";
 
 import { buildErrorMessage } from "./messages/error.message";
-import { buildRsvpDmMessage, buildRsvpMessage } from "./messages/rsvp.message";
+import { buildRsvpDmMessage, buildRsvpMessage, buildRsvpSwitchMessage } from "./messages/rsvp.message";
 import { buildUnrsvpMessage } from "./messages/unrsvp.message";
 import { $discord } from "../services/discord";
 import { $events } from "../services/events";
@@ -24,16 +24,8 @@ async function eventInteraction(interaction: ButtonInteraction | AnySelectMenuIn
         })
         return;
     }
-
-    if (!(await $events.canJoinRsvp(role))) {
-        await interaction.editReply({
-            ...buildErrorMessage(`RSVP __${role.emoji === role.emojiId ? `:${role.emoji}:` : `<:${role.emoji}:${role.emojiId}>`} ${role.name}__ is full`),
-        })
-        return
-    }
-
-    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
     
+    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
     const currentRsvp = await $events.getUserRsvp(event, user);
 
     if (currentRsvp && role.id === currentRsvp.rsvpId && !currentRsvp.pending) {
@@ -43,26 +35,32 @@ async function eventInteraction(interaction: ButtonInteraction | AnySelectMenuIn
         await interaction.editReply({
             ...payload,
         })
+    } else if (!(await $events.canJoinRsvp(role))) {
+        await interaction.editReply({
+            ...buildErrorMessage(`RSVP __${role.emoji === role.emojiId ? `:${role.emoji}:` : `<:${role.emoji}:${role.emojiId}>`} ${role.name}__ is full`),
+        })
     } else {
         await $events.rsvpForEvent(event, role, user, currentRsvp, interaction.client);
 
         let dmMessageLink: string | null = null;
-        try {
-            const dmPayload = buildRsvpDmMessage(event, role, interaction.message.url)
-
-            let dmChannel = interaction.user.dmChannel
-            if (!dmChannel) {
-                dmChannel = await interaction.user.createDM()
+        if (!currentRsvp) {
+            try {
+                const dmPayload = buildRsvpDmMessage(event, role, interaction.message.url)
+    
+                let dmChannel = interaction.user.dmChannel
+                if (!dmChannel) {
+                    dmChannel = await interaction.user.createDM()
+                }
+                const dmMessage = await dmChannel.send(dmPayload)
+    
+                dmMessageLink = dmMessage.url
+            } catch (err) {
+                // failed to dm
+                console.log("Failed to dm user", interaction.user.username, err)
             }
-            const dmMessage = await dmChannel.send(dmPayload)
-
-            dmMessageLink = dmMessage.url
-        } catch (err) {
-            // failed to dm
-            console.log("Failed to dm user", interaction.user.username, err)
         }
 
-        const payload = buildRsvpMessage(role, dmMessageLink)
+        const payload = currentRsvp ? buildRsvpSwitchMessage(role) : buildRsvpMessage(role, dmMessageLink)
         await interaction.editReply({
             ...payload,
         })
