@@ -4,7 +4,7 @@ export const EVENT_FRAGMENT = gql(`
     fragment EventFragment on Event {
         id
         channel {
-            ...ChannelFragment
+            ...EventChannelFragment
         }
         owner {
             ...UserFragment

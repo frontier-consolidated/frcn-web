@@ -4,11 +4,15 @@ export const GET_ALL_EVENT_CHANNELS = gql(`
 	query GetAllEventChannels {
 		settings: getSystemSettings {
 			defaultEventChannel {
-				...ChannelFragment
+				...EventChannelFragment
 			}
 		}
 		eventChannels: getAllEventChannels {
-			...ChannelFragment
+			...EventChannelFragment
+			events {
+				id
+				name
+			}
 		}
 	}
 `);

@@ -2,7 +2,6 @@ import { Permission, hasPermission } from '@frcn/shared';
 import { error } from '@sveltejs/kit';
 
 import { Queries } from '$lib/graphql';
-import type { DiscordChannel } from '$lib/graphql/__generated__/graphql';
 
 import type { PageServerLoad } from './$types';
 
@@ -44,7 +43,7 @@ export const load = (async ({ params, locals, depends }) => {
             ...eventSettingsData.event,
             canEdit,
             options: {
-                channels: eventSettingsData.eventChannels.filter((channel): channel is DiscordChannel => !!channel),
+                channels: eventSettingsData.eventChannels,
                 emojis: eventSettingsData.customEmojis,
                 discordRoles: eventSettingsData.discordRoles
             },

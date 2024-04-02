@@ -6,7 +6,7 @@ export const GET_EVENT_SETTINGS = gql(`
 			...EventSettingsFragment
 		}
 		eventChannels: getAllEventChannels {
-			...ChannelFragment
+			...EventChannelFragment
 		}
 		customEmojis: getAllDiscordEmojis {
 			serverName

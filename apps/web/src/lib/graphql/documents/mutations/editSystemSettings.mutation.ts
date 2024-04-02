@@ -8,7 +8,7 @@ export const EDIT_SYSTEM_SETTINGS = gql(`
 				name
 			}
 			defaultEventChannel {
-				...ChannelFragment
+				...EventChannelFragment
 			}
 		}
 	}
