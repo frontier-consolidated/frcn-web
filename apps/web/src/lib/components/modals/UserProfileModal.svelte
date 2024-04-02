@@ -72,7 +72,7 @@
                             {/if}
                         </Badge>
                     {/each}
-                    {#if canEdit}
+                    {#if canEdit && $page.data.roles}
                         <CirclePlusSolid size="sm" class="cursor-pointer hover:text-white" />
                         <Dropdown class="px-2 text-sm">
                             <div slot="header" class="px-2 py-1">
