@@ -23,6 +23,14 @@ import { EventAccessType } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
 import { gqlErrorBadInput, gqlErrorBadState, gqlErrorUnauthenticated } from "../gqlError";
 
+export enum EventReminder {
+	OnStart = "ON_START",
+	TenMinutesBefore = "TEN_MINUTES",
+	OneHourBefore = "ONE_HOUR",
+	OneDayBefore = "ONE_DAY",
+	OneWeekBefore = "ONE_WEEK"
+}
+
 export function resolveEvent(event: Event) {
 	return {
 		_model: event,

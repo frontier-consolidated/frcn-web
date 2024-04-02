@@ -75,6 +75,12 @@ export function buildRsvpDmMessage(event: Event, rsvp: EventRsvpRole, eventMessa
 			{ name: "Duration", value: dates.toDuration(event.duration!) },
 		)
 	
+	const remindersButton = new ButtonBuilder()
+		.setCustomId(`reminders-${event.id}`)
+		.setEmoji("🔔")
+		.setLabel("Reminders")
+		.setStyle(ButtonStyle.Secondary);
+	
 	const unrsvpButton = new ButtonBuilder()
 		.setCustomId(`unrsvp-${event.id}`)
 		.setLabel("UnRSVP")
@@ -86,7 +92,7 @@ export function buildRsvpDmMessage(event: Event, rsvp: EventRsvpRole, eventMessa
 		.setStyle(ButtonStyle.Link);
 		
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
-	buttonsRow.addComponents(unrsvpButton, weblinkButton);
+	buttonsRow.addComponents(remindersButton, unrsvpButton, weblinkButton);
 	
 	return {
 		embeds: [embed],

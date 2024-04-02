@@ -1,110 +1,79 @@
-import { type AnySelectMenuInteraction, ButtonInteraction, Client, InteractionType } from "discord.js";
+import { type Client, InteractionType } from "discord.js";
 
-import { buildErrorMessage } from "./messages/error.message";
-import { buildRsvpDmMessage, buildRsvpMessage, buildRsvpSwitchMessage } from "./messages/rsvp.message";
-import { buildUnrsvpMessage } from "./messages/unrsvp.message";
+import { eventInteraction } from "./handlers/event.interaction";
+import { eventDmInteraction } from "./handlers/eventDm.interaction";
+import { buildReminderDmMessage, reminderTimes } from "./messages/reminders.message";
+import { EventReminder } from "../graphql/schema/resolvers/Event";
 import { $discord } from "../services/discord";
 import { $events } from "../services/events";
 import { $users } from "../services/users";
 
-async function eventInteraction(interaction: ButtonInteraction | AnySelectMenuInteraction) {
-    const event = await $events.getEventFromMessageId(interaction.message.id)
-    if (!event) {
-        await interaction.editReply({
-            ...buildErrorMessage("Action failed! Could not find event in database"),
-        })
-        return;
-    }
+const EVENT_REMINDERS_UPDATE_INTERVAL = 60 * 1000;
+const eventReminderBufferTime = EVENT_REMINDERS_UPDATE_INTERVAL / 2
 
-    const roles = await $events.getRSVPRoles(event.id)
-    const role = roles.find(r => r.id === interaction.customId)
-    if (!role) {
-        await interaction.editReply({
-            ...buildErrorMessage("Action failed! Could not find rsvp role in event"),
-        })
-        return;
-    }
-    
-    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
-    const currentRsvp = await $events.getUserRsvp(event, user);
+async function updateEventReminders(client: Client) {
+    const guild = await $discord.getGuild(client)
+    if (!guild) return;
 
-    if (currentRsvp && role.id === currentRsvp.rsvpId && !currentRsvp.pending) {
-        await $events.unrsvpForEvent(event, user, interaction.client);
+    const now = Date.now()
+    const events = await $events.getUpcomingEvents(7.2 * 24 * 60 * 60 * 1000)
 
-        const payload = buildUnrsvpMessage()
-        await interaction.editReply({
-            ...payload,
-        })
-    } else if (!(await $events.canJoinRsvp(role))) {
-        await interaction.editReply({
-            ...buildErrorMessage(`RSVP __${role.emoji === role.emojiId ? `:${role.emoji}:` : `<:${role.emoji}:${role.emojiId}>`} ${role.name}__ is full`),
-        })
-    } else {
-        await $events.rsvpForEvent(event, role, user, currentRsvp, interaction.client);
+    for (const event of events) {
+        if (!event.startAt) continue;
 
-        let dmMessageLink: string | null = null;
-        if (!currentRsvp) {
-            try {
-                const dmPayload = buildRsvpDmMessage(event, role, interaction.message.url)
-    
-                let dmChannel = interaction.user.dmChannel
-                if (!dmChannel) {
-                    dmChannel = await interaction.user.createDM()
+        for (const [reminder, time] of Object.entries(reminderTimes) as [EventReminder, number][]) {
+            const reminderTimeInFuture = now + time
+            if (event.startAt >= new Date(reminderTimeInFuture - eventReminderBufferTime) && event.startAt < new Date(reminderTimeInFuture + eventReminderBufferTime)) {
+                const eventUsers = await $events.getEventMembers(event.id, {
+                    include: {
+                        user: {
+                            select: {
+                                discordId: true
+                            }
+                        }
+                    }
+                })
+
+                for (const rsvp of eventUsers) {
+                    if (rsvp.reminders.length === 0) continue;
+                    if (!rsvp.reminders.includes(reminder)) continue;
+
+                    try {
+                        const discordUser = await client.users.fetch(rsvp.user.discordId)
+                        const eventMessageLink = `https://discord.com/channels/${guild.id}/${event.channel?.discordId}/${event.discordEventMessageId}`
+                        const dmPayload = buildReminderDmMessage(event, reminder, eventMessageLink)
+            
+                        let dmChannel = discordUser.dmChannel
+                        if (!dmChannel) {
+                            dmChannel = await discordUser.createDM()
+                        }
+                        await dmChannel.send(dmPayload)
+                    } catch (err) {
+                        // failed to dm
+                        console.log("Failed to dm user", rsvp.userId, err)
+                    }
                 }
-                const dmMessage = await dmChannel.send(dmPayload)
-    
-                dmMessageLink = dmMessage.url
-            } catch (err) {
-                // failed to dm
-                console.log("Failed to dm user", interaction.user.username, err)
+                break;
             }
         }
-
-        const payload = currentRsvp ? buildRsvpSwitchMessage(role) : buildRsvpMessage(role, dmMessageLink)
-        await interaction.editReply({
-            ...payload,
-        })
     }
-}
-
-async function eventDmInteraction(interaction: ButtonInteraction | AnySelectMenuInteraction) {
-    if (!interaction.customId.startsWith("unrsvp-")) return;
-    
-    const eventId = interaction.customId.substring(7)
-    
-    const event = await $events.getEvent(eventId)
-    if (!event) {
-        await interaction.editReply({
-            ...buildErrorMessage("Action failed! Could not find event in database"),
-        })
-        return;
-    }
-
-    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
-    await $events.unrsvpForEvent(event, user, interaction.client);
-
-    const payload = buildUnrsvpMessage()
-    await interaction.editReply({
-        ...payload,
-    })
 }
 
 export function load(client: Client) {
     client.on("interactionCreate", async (interaction) => {
         if (interaction.user.bot) return;
 
-        if (interaction.type === InteractionType.MessageComponent) {
-            await interaction.deferReply({
-                ephemeral: true,
-            })
-
-            if (interaction.channel?.isDMBased()) {
-                await eventDmInteraction(interaction)
-            } else {
-                await eventInteraction(interaction)
+        try {
+            if (interaction.type === InteractionType.MessageComponent) {
+                if (!interaction.channel || interaction.channel.isDMBased()) {
+                    await eventDmInteraction(interaction)
+                } else {
+                    await eventInteraction(interaction)
+                }
             }
+        } catch (err) {
+            console.error("Error during interaction:", err)
         }
-
     })
 
     client.on("guildMemberRemove", async (member) => {
@@ -113,4 +82,6 @@ export function load(client: Client) {
 
         await $users.unauthenticateSessions(user)
     })
+
+    setInterval(() => updateEventReminders(client), EVENT_REMINDERS_UPDATE_INTERVAL)
 }

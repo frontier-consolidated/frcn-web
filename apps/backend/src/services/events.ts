@@ -10,6 +10,7 @@ import { $system } from "./system";
 import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
 import { database, type Transaction } from "../database";
 import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
+import type { EventReminder } from "../graphql/schema/resolvers/Event";
 
 async function getEvent(id: string) {
 	const event = await database.event.findUnique({
@@ -127,6 +128,26 @@ async function getEvents(
 	};
 }
 
+async function getUpcomingEvents(maxTimeInFutureMs?: number) {
+	const now = new Date()
+	return await database.event.findMany({
+		where: {
+			posted: true,
+			startAt: {
+				gte: now,
+				lte: maxTimeInFutureMs ? new Date(now.getTime() + maxTimeInFutureMs) : undefined
+			}
+		},
+		include: {
+			channel: {
+				select: {
+					discordId: true
+				}
+			}
+		}
+	})
+}
+
 async function getEventsInChannel(id: number) {
 	return await database.event.findMany({
 		where: {
@@ -217,6 +238,15 @@ async function getRSVPMembers<T extends Prisma.EventRsvpRole$membersArgs>(id: st
 async function getUserRsvp(event: Event, user: User) {
 	const members = await getEventMembers(event.id)
 	return members.find(member => member.userId === user.id) ?? null
+}
+
+async function setUserReminder(rsvp: EventUser, reminder: EventReminder) {
+	return await database.eventUser.update({
+		where: { id: rsvp.id },
+		data: {
+			reminders: rsvp.reminders.includes(reminder) ? rsvp.reminders.filter(r => r !== reminder) : [...rsvp.reminders, reminder]
+		}
+	})
 }
 
 async function createEvent(owner: User, discordClient: DiscordClient) {
@@ -544,6 +574,7 @@ export const $events = {
 	getEvent,
 	getEventFromMessageId,
 	getEvents,
+	getUpcomingEvents,
 	getEventsInChannel,
 	getEventEventChannel,
 	getEventThread,
@@ -557,6 +588,7 @@ export const $events = {
 	getRSVPRoles,
 	getRSVPMembers,
 	getUserRsvp,
+	setUserReminder,
 	createEvent,
 	editEvent,
 	postEvent,

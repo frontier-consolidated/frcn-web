@@ -156,6 +156,7 @@ model EventRsvpRole {
 model EventUser {
   id        String         @id @default(uuid())
   pending   Boolean
+  reminders String[]
   user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String         @map("user_id")
   rsvp      EventRsvpRole? @relation(fields: [rsvpId], references: [id])
