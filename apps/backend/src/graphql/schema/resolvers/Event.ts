@@ -119,7 +119,7 @@ export const eventResolvers: Resolvers = {
 	Event: {
 		async channel(source, args, context) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
-			const channel = await $events.getEventChannel(_model.id);
+			const channel = await $events.getEventEventChannel(_model.id);
 			if (!channel) return null;
 			return await resolveEventChannel(channel, context);
 		},
@@ -290,7 +290,7 @@ export const eventResolvers: Resolvers = {
 
 			const data = args.data;
 
-			if (data.channel && !(await $events.eventChannelExists(data.channel))) {
+			if (data.channel && !(await $events.getEventChannel(data.channel))) {
 				throw gqlErrorBadInput(`Event channel not found: ${data.channel}`);
 			}
 
@@ -380,7 +380,7 @@ export const eventResolvers: Resolvers = {
 			if (!event.startAt) throw gqlErrorBadState("Event is missing start date");
 			if (!event.duration) throw gqlErrorBadState("Event is missing duration");
 
-			const eventChannel = await $events.getEventChannel(event.id)
+			const eventChannel = await $events.getEventEventChannel(event.id)
 			if (!eventChannel) throw gqlErrorBadState("Event is missing channel");
 
 			if (

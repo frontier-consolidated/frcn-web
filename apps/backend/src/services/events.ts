@@ -1,15 +1,15 @@
 import { randomUUID } from "crypto";
 
 import type { EventType } from "@frcn/shared";
-import type { Event, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
-import { Client as DiscordClient } from "discord.js";
+import type { Event, EventChannel, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
+import { Client as DiscordClient, type GuildBasedChannel } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { $system } from "./system";
 import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
 import { database, type Transaction } from "../database";
-import { EventAccessType, type EventEditInput } from "../graphql/__generated__/resolvers-types";
+import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 
 async function getEvent(id: string) {
 	const event = await database.event.findUnique({
@@ -135,11 +135,7 @@ async function getEventsInChannel(id: number) {
 	})
 }
 
-async function getAllEventChannels() {
-	return await database.eventChannel.findMany();
-}
-
-async function getEventChannel<T extends Prisma.Event$channelArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$channelArgs> & { tx?: Transaction }) {
+async function getEventEventChannel<T extends Prisma.Event$channelArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$channelArgs> & { tx?: Transaction }) {
 	const result = await (args?.tx ?? database).event.findUnique({
 		where: { id }
 	}).channel<T>(args)
@@ -280,7 +276,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 			channel: data.channel
 				? {
 						connect: {
-							discordId: data.channel,
+							id: data.channel,
 						},
 				  }
 				: undefined,
@@ -488,20 +484,53 @@ async function canSeeEvent(event: Event, user: User | undefined, discordClient: 
 			return await $roles.hasOneOfRoles(accessRoles.map(ar => ar.role), user);
 		}
 		case EventAccessType.Channel: {
-			const channel = await getEventChannel(event.id);
+			const channel = await getEventEventChannel(event.id);
 			if (!channel) return false;
 			return await $discord.canUserViewChannel(discordClient, user, channel.discordId);
 		}
 	}
 }
 
-async function eventChannelExists(id: string) {
+async function eventChannelExists(discordId: string) {
 	const channel = await database.eventChannel.findUnique({
-		where: {
-			discordId: id,
-		},
+		where: { discordId },
 	});
 	return !!channel;
+}
+
+async function getAllEventChannels() {
+	return await database.eventChannel.findMany();
+}
+
+async function getEventChannel(id: number) {
+	return await database.eventChannel.findUnique({
+		where: { id },
+	});
+}
+
+async function createEventChannel(channel: GuildBasedChannel) {
+	return await database.eventChannel.create({
+		data: {
+			discordId: channel.id,
+		}
+	})
+}
+
+async function editEventChannel(channel: EventChannel, data: EventChannelEditInput) {
+	return await database.eventChannel.update({
+		where: { id: channel.id },
+		data: {
+			discordId: data.channelId ?? undefined,
+		}
+	})
+}
+
+async function deleteEventChannel(channel: EventChannel) {
+	// TODO: Update all scheduled events to be reposted
+
+	await database.eventChannel.delete({
+		where: { id: channel.id },
+	})
 }
 
 export const $events = {
@@ -509,8 +538,7 @@ export const $events = {
 	getEventFromMessageId,
 	getEvents,
 	getEventsInChannel,
-	getAllEventChannels,
-	getEventChannel,
+	getEventEventChannel,
 	getEventThread,
 	getEventOwner,
 	getEventSettings,
@@ -531,4 +559,9 @@ export const $events = {
 	rsvpForEvent,
 	unrsvpForEvent,
 	eventChannelExists,
+	getAllEventChannels,
+	getEventChannel,
+	createEventChannel,
+	editEventChannel,
+	deleteEventChannel
 };

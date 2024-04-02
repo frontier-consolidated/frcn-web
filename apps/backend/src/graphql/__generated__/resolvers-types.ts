@@ -162,7 +162,7 @@ export type EventChannelEditInput = {
 export type EventEditInput = {
   accessRoles?: InputMaybe<Array<Scalars['ID']['input']>>;
   accessType?: InputMaybe<EventAccessType>;
-  channel?: InputMaybe<Scalars['ID']['input']>;
+  channel?: InputMaybe<Scalars['Int']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
   duration?: InputMaybe<Scalars['Int']['input']>;
   eventType?: InputMaybe<Scalars['String']['input']>;
@@ -339,7 +339,7 @@ export type MutationDeleteEventArgs = {
 
 
 export type MutationDeleteEventChannelArgs = {
-  id: Scalars['ID']['input'];
+  id: Scalars['Int']['input'];
 };
 
 
@@ -385,7 +385,7 @@ export type MutationEditEventArgs = {
 
 export type MutationEditEventChannelArgs = {
   data: EventChannelEditInput;
-  id: Scalars['ID']['input'];
+  id: Scalars['Int']['input'];
 };
 
 
@@ -563,6 +563,7 @@ export type Query = {
   getCurrentAccessKey?: Maybe<AccessKey>;
   getCurrentUser?: Maybe<User>;
   getEvent?: Maybe<Event>;
+  getEventChannel?: Maybe<EventChannel>;
   getEvents?: Maybe<PagedEvent>;
   getResource?: Maybe<Resource>;
   getResources?: Maybe<PagedResource>;
@@ -604,6 +605,11 @@ export type QueryGetContentContainersOfTypeArgs = {
 
 export type QueryGetEventArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type QueryGetEventChannelArgs = {
+  id: Scalars['Int']['input'];
 };
 
 
@@ -685,7 +691,7 @@ export type SubscriptionUserRolesUpdatedArgs = {
 };
 
 export type SystemEditInput = {
-  defaultEventChannelId?: InputMaybe<Scalars['ID']['input']>;
+  defaultEventChannelId?: InputMaybe<Scalars['Int']['input']>;
   discordGuildId?: InputMaybe<Scalars['ID']['input']>;
 };
 
@@ -1178,6 +1184,7 @@ export type QueryResolvers<ContextType = GQLContext, ParentType extends Resolver
   getCurrentAccessKey?: Resolver<Maybe<ResolversTypes['AccessKey']>, ParentType, ContextType>;
   getCurrentUser?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   getEvent?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<QueryGetEventArgs, 'id'>>;
+  getEventChannel?: Resolver<Maybe<ResolversTypes['EventChannel']>, ParentType, ContextType, RequireFields<QueryGetEventChannelArgs, 'id'>>;
   getEvents?: Resolver<Maybe<ResolversTypes['PagedEvent']>, ParentType, ContextType, Partial<QueryGetEventsArgs>>;
   getResource?: Resolver<Maybe<ResolversTypes['Resource']>, ParentType, ContextType, RequireFields<QueryGetResourceArgs, 'id'>>;
   getResources?: Resolver<Maybe<ResolversTypes['PagedResource']>, ParentType, ContextType, Partial<QueryGetResourcesArgs>>;

@@ -23,7 +23,7 @@ async function editSystemSettings(data: SystemEditInput) {
 			discordGuildId: data.discordGuildId ?? undefined,
 			defaultEventChannel: data.defaultEventChannelId ? {
 				connect: {
-					discordId: data.defaultEventChannelId
+					id: data.defaultEventChannelId
 				} 
 			} : undefined
 		},

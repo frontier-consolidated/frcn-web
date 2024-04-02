@@ -4,6 +4,7 @@ import type { AccessKey } from "@prisma/client";
 import { resolveEventChannel } from "./Event";
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
+import { $discord } from "../../../services/discord";
 import { $events } from "../../../services/events";
 import { $system } from "../../../services/system";
 import { $users } from "../../../services/users";
@@ -70,6 +71,11 @@ export const systemResolvers: Resolvers = {
 			const users = await $users.getAllUsers()
 			return users.map(resolveUser)
 		},
+		async getEventChannel(source, args, context) {
+			const channel = await $events.getEventChannel(args.id)
+			if (!channel) return null;
+			return await resolveEventChannel(channel, context)
+		},
 		async getAllEventChannels(source, args, context) {
 			const channels = await $events.getAllEventChannels()
 			return channels.map(async (channel) => await resolveEventChannel(channel, context));
@@ -99,12 +105,52 @@ export const systemResolvers: Resolvers = {
 				throw gqlErrorBadInput(`Invalid guild id: ${args.data.discordGuildId}`);
 			}
 
-			if (args.data.defaultEventChannelId && !(await $events.eventChannelExists(args.data.defaultEventChannelId))) {
+			if (args.data.defaultEventChannelId && !(await $events.getEventChannel(args.data.defaultEventChannelId))) {
 				throw gqlErrorBadInput(`Event channel not found: ${args.data.defaultEventChannelId}`);
 			}
 
 			const updatedSettings = await $system.editSystemSettings(args.data)
 			return resolveSystemSettings(updatedSettings)
+		},
+		async createEventChannel(source, args, context) {
+			const discordChannel = await $discord.getChannel(context.app.discordClient, args.linkTo)
+			if (!discordChannel) {
+				throw gqlErrorBadInput(`Discord channel not found: ${args.linkTo}`);
+			}
+
+			if (!discordChannel.isTextBased()) {
+				throw gqlErrorBadInput(`Event channels can only be text-based channels`);
+			}
+
+			const channel = await $events.createEventChannel(discordChannel)
+			return await resolveEventChannel(channel, context)
+		},
+		async editEventChannel(source, args, context) {
+			const channel = await $events.getEventChannel(args.id)
+			if (!channel) return null;
+
+			if (!args.data.channelId) {
+				return await resolveEventChannel(channel, context)
+			}
+
+			const discordChannel = await $discord.getChannel(context.app.discordClient, args.data.channelId)
+			if (!discordChannel) {
+				throw gqlErrorBadInput(`Discord channel not found: ${args.data.channelId}`);
+			}
+
+			if (!discordChannel.isTextBased()) {
+				throw gqlErrorBadInput(`Event channels can only be text-based channels`);
+			}
+
+			const updatedChannel = await $events.editEventChannel(channel, args.data)
+			return await resolveEventChannel(updatedChannel, context)
+		},
+		async deleteEventChannel(source, args) {
+			const channel = await $events.getEventChannel(args.id)
+			if (!channel) return false;
+
+			await $events.deleteEventChannel(channel)
+			return true;
 		},
 		async createAccessKey() {
 			const [accessKey, key] = await $system.createAccessKey()

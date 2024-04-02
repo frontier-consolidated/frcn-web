@@ -259,7 +259,7 @@ input EventRoleInput {
 }
 
 input EventEditInput {
-	channel: ID
+	channel: Int
 	name: String @constraint(minLength: 1, maxLength: 255)
 	summary: String @constraint(minLength: 1, maxLength: 255)
 	description: String @constraint(maxLength: 2048)
@@ -285,7 +285,7 @@ input EventTeamEditInput {
 
 input SystemEditInput {
 	discordGuildId: ID
-	defaultEventChannelId: ID
+	defaultEventChannelId: Int
 }
 
 input AccessKeyEditInput {
@@ -363,7 +363,10 @@ type Query {
 
 	# System
 	getAllUsers: [User!]! @permission(has: ManageSystem)
+
 	getAllEventChannels: [EventChannel!]! @permission(one: [CreateEvents, ManageSystem])
+	getEventChannel(id: Int!): EventChannel @permission(has: ManageSystem)
+
 	getAllDiscordChannels: [DiscordChannel!]! @permission(has: ManageSystem)
 	getAllDiscordEmojis: DiscordEmojis! @permission(has: CreateEvents)
 	getAllDiscordRoles(everyone: Boolean): [DiscordRole!]!
@@ -424,9 +427,9 @@ type Mutation {
 	editSystemSettings(data: SystemEditInput!): SystemSettings! @permission(has: ManageSystem)
 
 	createEventChannel(linkTo: ID!): EventChannel! @permission(has: ManageSystem)
-	editEventChannel(id: ID!, data: EventChannelEditInput!): EventChannel
+	editEventChannel(id: Int!, data: EventChannelEditInput!): EventChannel
 		@permission(has: ManageSystem)
-	deleteEventChannel(id: ID!): Boolean! @permission(has: ManageSystem)
+	deleteEventChannel(id: Int!): Boolean! @permission(has: ManageSystem)
 
 	createAccessKey: AccessKey! @permission(has: ManageSystem)
 	editAccessKey(id: Int!, data: AccessKeyEditInput!): AccessKey @permission(has: ManageSystem)
