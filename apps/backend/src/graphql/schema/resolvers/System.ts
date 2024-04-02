@@ -3,8 +3,10 @@ import type { AccessKey } from "@prisma/client";
 
 import { resolveDiscordChannel } from "./Discord";
 import type { WithModel } from "./types";
+import { resolveUser } from "./User";
 import { $events } from "../../../services/events";
 import { $system } from "../../../services/system";
+import { $users } from "../../../services/users";
 import type {
 	DiscordGuild,
 	SystemSettings as GQLSystemSettings,
@@ -64,6 +66,14 @@ export const systemResolvers: Resolvers = {
 	},
 
 	Query: {
+		async getAllUsers() {
+			const users = await $users.getAllUsers()
+			return users.map(resolveUser)
+		},
+		async getAllEventChannels(source, args, context) {
+			const channels = await $events.getAllEventChannels()
+			return channels.map(async (channel) => await resolveDiscordChannel(channel, context));
+		},
 		async getSystemSettings() {
 			const settings = await $system.getSystemSettings();
 			return resolveSystemSettings(settings);

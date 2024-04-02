@@ -7,6 +7,10 @@ import { $roles } from "./roles";
 import { database, type Transaction } from "../database";
 import { getAdminIds } from "../env";
 
+async function getAllUsers() {
+	return await database.user.findMany()
+}
+
 async function getUser(id: string) {
 	const user = await database.user.findUnique({
 		where: { id },
@@ -180,6 +184,7 @@ async function deleteUser(id: string) {
 }
 
 export const $users = {
+	getAllUsers,
 	getUser,
 	getUserByDiscordId,
 	getOrCreateUser,

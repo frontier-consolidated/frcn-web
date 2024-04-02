@@ -530,6 +530,7 @@ export type Query = {
   getAllDiscordEmojis: DiscordEmojis;
   getAllDiscordRoles: Array<DiscordRole>;
   getAllEventChannels: Array<DiscordChannel>;
+  getAllUsers: Array<User>;
   getContentContainer?: Maybe<ContentContainer>;
   getContentContainerById?: Maybe<ContentContainer>;
   getContentContainersOfType: Array<ContentContainer>;
@@ -1129,6 +1130,7 @@ export type QueryResolvers<ContextType = GQLContext, ParentType extends Resolver
   getAllDiscordEmojis?: Resolver<ResolversTypes['DiscordEmojis'], ParentType, ContextType>;
   getAllDiscordRoles?: Resolver<Array<ResolversTypes['DiscordRole']>, ParentType, ContextType, Partial<QueryGetAllDiscordRolesArgs>>;
   getAllEventChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
+  getAllUsers?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   getContentContainer?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainerArgs, 'identifier' | 'type'>>;
   getContentContainerById?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainerByIdArgs, 'id'>>;
   getContentContainersOfType?: Resolver<Array<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainersOfTypeArgs, 'type'>>;

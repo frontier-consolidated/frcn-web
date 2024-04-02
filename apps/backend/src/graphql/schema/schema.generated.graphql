@@ -350,6 +350,7 @@ type Query {
 	getRole(id: ID!): UserRole @permission(has: ManageRoles)
 
 	# System
+	getAllUsers: [User!]! @permission(has: ManageSystem)
 	getAllEventChannels: [DiscordChannel!]! @permission(one: [CreateEvents, ManageSystem])
 	getAllDiscordChannels: [DiscordChannel!]! @permission(has: ManageSystem)
 	getAllDiscordEmojis: DiscordEmojis! @permission(has: CreateEvents)
