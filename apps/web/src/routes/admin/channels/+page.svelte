@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { Helper, Label } from "flowbite-svelte";
+	import { goto } from "$app/navigation";
+	import { Helper, Label, Table, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { CloseSolid, EditOutline } from "flowbite-svelte-icons";
 
 	import { Button, Field, FieldValidator, Head, SectionHeading, Select } from "$lib/components";
@@ -7,6 +8,7 @@
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
     import type { PageData } from './$types';
+	import ChannelRow from "./ChannelRow.svelte";
 
     export let data: PageData;
 
@@ -76,6 +78,49 @@
                 The default channel where events will be posted
             </Helper>
         </Field>
+    </div>
+    <div class="flex justify-end gap-2 px-2 my-4">
+        <Button class="shrink-0" on:click={async () => {
+            try {
+                // const { data: createData } = await getApollo().mutate({
+                //     mutation: Mutations.CREATE_ACCESS_KEY,
+                // });
+    
+                // if (createData && createData.key) {
+                //     await goto(`/admin/channels/${createData.key.id}`, {
+                //         invalidateAll: true,
+                //         state: {
+                //             newAccessKey: createData.key
+                //         }
+                //     });
+                // }
+            } catch (err) {
+                pushNotification({
+                    type: "error",
+                    message: "Failed to create event channel link"
+                })
+                console.error(err)
+            }
+        }}>
+            Link Channel
+        </Button>
+    </div>
+    <div class="flex-1 flex flex-col overflow-y-auto">
+        <Table divClass="relative">
+            <TableHead>
+                <TableHeadCell>
+                    Channels - {data.channels.length}
+                </TableHeadCell>
+                <TableHeadCell class="w-32"></TableHeadCell>
+            </TableHead>
+            <tbody class="divide-y">
+                {#each data.channels as channel}
+                    {#key channel.id}
+                        <ChannelRow {channel} />
+                    {/key}
+                {/each}
+            </tbody>
+        </Table>
     </div>
     <div class="flex justify-end items-center gap-2">
         <Button color="alternative" on:click={() => {
