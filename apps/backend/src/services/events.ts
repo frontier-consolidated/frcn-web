@@ -2,15 +2,18 @@ import { randomUUID } from "crypto";
 
 import type { EventType } from "@frcn/shared";
 import type { Event, EventChannel, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
-import { Client as DiscordClient, type GuildBasedChannel } from "discord.js";
+import { ChannelType, Client as DiscordClient, TextChannel, type GuildBasedChannel, ThreadAutoArchiveDuration } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { $system } from "./system";
-import { deleteEventMessage, getEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
+import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
+import { postEventEndMessage } from "../bot/messages/eventStartEnd.message";
 import { database, type Transaction } from "../database";
 import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 import type { EventReminder } from "../graphql/schema/resolvers/Event";
+
+const EVENT_EXPIRE_AFTER = 12 * 3600 * 1000
 
 async function getEvent(id: string) {
 	const event = await database.event.findUnique({
@@ -55,8 +58,7 @@ async function getEvents(
 		limit = Math.min(100, limit);
 	}
 	
-	const expiredDuration = 24 * 3600 * 1000
-	const expiredDate = new Date(Date.now() - expiredDuration)
+	const expiredDate = new Date(Date.now() - EVENT_EXPIRE_AFTER)
 	const startAtOr: Prisma.EventWhereInput[] = [
 		{
 			startAt: {
@@ -67,7 +69,7 @@ async function getEvents(
 	]
 
 	// Show live events if they haven't expired and are in our selected date range
-	if (startAt.min && expiredDate >= new Date(startAt.min.getTime() - expiredDuration) && (!startAt.max || startAt.max > new Date())) {
+	if (startAt.min && expiredDate >= new Date(startAt.min.getTime() - EVENT_EXPIRE_AFTER) && (!startAt.max || startAt.max > new Date())) {
 		startAtOr.push({
 			startAt: {
 				lt: startAt.min,
@@ -128,14 +130,14 @@ async function getEvents(
 	};
 }
 
-async function getUpcomingEvents(maxTimeInFutureMs?: number) {
-	const now = new Date()
+async function getUpcomingEvents(buffer: number = 1, maxTimeInFutureMs?: number) {
+	const now = Date.now()
 	return await database.event.findMany({
 		where: {
 			posted: true,
 			startAt: {
-				gte: now,
-				lte: maxTimeInFutureMs ? new Date(now.getTime() + maxTimeInFutureMs) : undefined
+				gte: new Date(now - buffer),
+				lte: maxTimeInFutureMs ? new Date(now + maxTimeInFutureMs + buffer) : undefined
 			}
 		},
 		include: {
@@ -163,6 +165,15 @@ async function getEventEventChannel<T extends Prisma.Event$channelArgs>(id: stri
 	return result
 }
 
+async function getEventDiscordChannel(event: Event, discordClient: DiscordClient) {
+	const eventChannel = await $events.getEventEventChannel(event.id);
+	if (!eventChannel) throw new Error("Event has no event channel");
+
+	const channel = await $discord.getChannel(discordClient, eventChannel.discordId);
+	if (!channel?.isTextBased() || !(channel instanceof TextChannel)) throw new Error("Could not find event channel, or channel is somehow not text based");
+	return channel;
+}
+
 async function getEventThread(event: Event, discordClient: DiscordClient) {
 	if (!event.discordThreadId) throw new Error("Event has no thread!")
 
@@ -170,6 +181,60 @@ async function getEventThread(event: Event, discordClient: DiscordClient) {
 	if (!thread?.isThread()) throw new Error("Could not find thread or channel is not a thread")
 
 	return thread;
+}
+
+async function createEventThread(event: Event, discordClient: DiscordClient, channel?: TextChannel) {
+	channel ??= await getEventDiscordChannel(event, discordClient)
+
+	const thread = await channel!.threads.create({
+		name: event.name,
+		type: ChannelType.PrivateThread,
+		reason: "Create thread for event: " + event.name,
+		autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
+		invitable: false,
+	})
+
+	const rsvps = await $events.getEventMembers(event.id, {
+		include: {
+			user: {
+				select: {
+					discordId: true
+				}
+			}
+		}
+	})
+
+	for (const rsvp of rsvps) {
+		try {
+			await thread.members.add(rsvp.user.discordId, "RSVPed")
+		} catch (err) {
+			console.error("Failed to add user to event thread", err)
+		}
+	}
+
+	return thread;
+}
+
+async function archiveEventThread(event: Event, discordClient: DiscordClient) {
+	if (!event.posted || !event.discordThreadId) return;
+	
+	try {
+		const thread = await getEventThread(event, discordClient)
+		await thread.setArchived(true)
+	} catch (err) {
+		console.error("Failed to archive event thread", err)
+	}
+}
+
+async function deleteEventThread(event: Event, discordClient: DiscordClient) {
+	if (!event.posted || !event.discordThreadId) return;
+
+	try {
+		const thread = await getEventThread(event, discordClient)
+		await thread.delete()
+	} catch (err) {
+		console.error("Failed to delete event thread", err)
+	}
 }
 
 async function getEventOwner<T extends Prisma.Event$ownerArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$ownerArgs> & { tx?: Transaction }) {
@@ -401,22 +466,8 @@ async function postEvent(event: Event, discordClient: DiscordClient) {
 }
 
 async function unpostEvent(event: Event, discordClient: DiscordClient) {
-	try {
-		const thread = await getEventThread(event, discordClient)
-		await thread.delete()
-	} catch (err) {
-		console.error("Failed to delete event thread", err)
-	}
-
-	try {
-		const message = await getEventMessage(discordClient, event)
-		if (message) {
-			await message.delete()
-		}
-	} catch (err) {
-		console.error("Failed to delete event message", err)
-	}
-
+	await deleteEventThread(event, discordClient)
+	await deleteEventMessage(discordClient, event)
 	await database.event.update({
 		where: { id: event.id },
 		data: {
@@ -427,18 +478,39 @@ async function unpostEvent(event: Event, discordClient: DiscordClient) {
 	});
 }
 
-async function deleteEvent(id: string, discordClient: DiscordClient) {
-	const event = await database.event.findUnique({
-		where: { id },
-		include: {
-			channel: true,
-		},
-	});
-	if (!event) return;
+async function endEvent(event: Event, discordClient: DiscordClient) {
+	await deleteEventMessage(discordClient, event)
+	const endedEvent = await database.event.update({
+		where: { id: event.id },
+		data: {
+			endedAt: new Date()
+		}
+	})
+
+	await postEventEndMessage(discordClient, endedEvent)
+}
+
+async function archiveEvent(event: Event, discordClient: DiscordClient) {
+	if (!event.endedAt) {
+		await endEvent(event, discordClient)
+	}
+
+	await archiveEventThread(event, discordClient)
+	await database.event.update({
+		where: { id: event.id },
+		data: {
+			archived: true,
+			archivedAt: new Date()
+		}
+	})
+}
+
+async function deleteEvent(event: Event, discordClient: DiscordClient) {
+	if (event.endedAt) return;
 
 	await deleteEventMessage(discordClient, event)
 	await database.event.delete({
-		where: { id },
+		where: { id: event.id },
 	})
 }
 
@@ -612,7 +684,11 @@ export const $events = {
 	getUpcomingEvents,
 	getEventsInChannel,
 	getEventEventChannel,
+	getEventDiscordChannel,
 	getEventThread,
+	createEventThread,
+	archiveEventThread,
+	deleteEventThread,
 	getEventOwner,
 	getEventSettings,
 	getEventMembers,
@@ -628,6 +704,8 @@ export const $events = {
 	editEvent,
 	postEvent,
 	unpostEvent,
+	endEvent,
+	archiveEvent,
 	deleteEvent,
 	canSeeEvent,
 	canJoinRsvp,

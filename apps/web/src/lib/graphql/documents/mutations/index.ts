@@ -1,3 +1,4 @@
+import { ARCHIVE_EVENT } from "./archiveEvent.mutation";
 import { CREATE_ACCESS_KEY } from "./createAccessKey.mutation";
 import { CREATE_CONTENT_CONTAINER } from "./createContentContainer.mutation";
 import { CREATE_EVENT } from "./createEvent.mutation";
@@ -20,6 +21,7 @@ import { EDIT_EVENT_CHANNEL } from "./editEventChannel.mutation";
 import { EDIT_RESOURCE } from "./editResource.mutation";
 import { EDIT_ROLE } from "./editRole.mutation";
 import { EDIT_SYSTEM_SETTINGS } from "./editSystemSettings.mutation";
+import { END_EVENT } from "./endEvent.mutation";
 import { POST_EVENT } from "./postEvent.mutation";
 import { REGENERATE_ACCESS_KEY } from "./regenerateAccessKey.mutation";
 import { REORDER_ROLES } from "./reorderRoles.mutation";
@@ -31,6 +33,8 @@ export const Mutations = {
 	CREATE_EVENT,
 	EDIT_EVENT,
 	POST_EVENT,
+	END_EVENT,
+	ARCHIVE_EVENT,
 	DELETE_EVENT,
 	RSVP_FOR_EVENT,
 	UNRSVP_FOR_EVENT,

@@ -194,7 +194,6 @@ model Event {
   discordThreadId       String?                       @map("discord_thread_id")
   discordRoleId         String?                       @map("discord_role_id")
   discordEventMessageId String?                       @map("discord_event_message_id")
-  discordStartMessageId String?                       @map("discord_start_message_id")
   discordMentions       String[]                      @map("discord_mentions")
   name                  String
   summary               String
@@ -211,6 +210,8 @@ model Event {
   endedAt               DateTime?                     @map("ended_at")
   duration              Int?
   posted                Boolean
+  archived              Boolean                       @default(false)
+  archivedAt            DateTime?                     @map("archived_at")
   updatedAt             DateTime                      @updatedAt @map("updated_at")
   createdAt             DateTime                      @default(now()) @map("created_at")
 

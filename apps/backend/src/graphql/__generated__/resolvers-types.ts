@@ -117,6 +117,8 @@ export type Event = {
   __typename?: 'Event';
   accessRoles: Array<UserRole>;
   accessType: EventAccessType;
+  archived: Scalars['Boolean']['output'];
+  archivedAt?: Maybe<Scalars['Timestamp']['output']>;
   channel?: Maybe<EventChannel>;
   createdAt: Scalars['Timestamp']['output'];
   description: Scalars['String']['output'];
@@ -251,6 +253,7 @@ export type EventTeamEditInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  archiveEvent: Scalars['Boolean']['output'];
   createAccessKey: AccessKey;
   createContentContainer: ContentContainer;
   createEvent: Scalars['ID']['output'];
@@ -277,6 +280,7 @@ export type Mutation = {
   editRole?: Maybe<UserRole>;
   editSystemSettings: SystemSettings;
   editUserStatus: UserStatus;
+  endEvent: Scalars['Boolean']['output'];
   giveUserRole: Scalars['Boolean']['output'];
   kickEventMember: Scalars['Boolean']['output'];
   postEvent: Scalars['Boolean']['output'];
@@ -292,6 +296,11 @@ export type Mutation = {
   unpostEvent: Scalars['Boolean']['output'];
   unrsvpForEvent: Scalars['Boolean']['output'];
   verifyUserScName: User;
+};
+
+
+export type MutationArchiveEventArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -414,6 +423,11 @@ export type MutationEditSystemSettingsArgs = {
 
 export type MutationEditUserStatusArgs = {
   data: UserStatusEditInput;
+};
+
+
+export type MutationEndEventArgs = {
+  id: Scalars['ID']['input'];
 };
 
 
@@ -1035,6 +1049,8 @@ export type DiscordRoleResolvers<ContextType = GQLContext, ParentType extends Re
 export type EventResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Event'] = ResolversParentTypes['Event']> = ResolversObject<{
   accessRoles?: Resolver<Array<ResolversTypes['UserRole']>, ParentType, ContextType>;
   accessType?: Resolver<ResolversTypes['EventAccessType'], ParentType, ContextType>;
+  archived?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
+  archivedAt?: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
   channel?: Resolver<Maybe<ResolversTypes['EventChannel']>, ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   description?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1108,6 +1124,7 @@ export type EventTeamResolvers<ContextType = GQLContext, ParentType extends Reso
 }>;
 
 export type MutationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
+  archiveEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationArchiveEventArgs, 'id'>>;
   createAccessKey?: Resolver<ResolversTypes['AccessKey'], ParentType, ContextType>;
   createContentContainer?: Resolver<ResolversTypes['ContentContainer'], ParentType, ContextType, RequireFields<MutationCreateContentContainerArgs, 'type'>>;
   createEvent?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -1134,6 +1151,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   editRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<MutationEditRoleArgs, 'data' | 'id'>>;
   editSystemSettings?: Resolver<ResolversTypes['SystemSettings'], ParentType, ContextType, RequireFields<MutationEditSystemSettingsArgs, 'data'>>;
   editUserStatus?: Resolver<ResolversTypes['UserStatus'], ParentType, ContextType, RequireFields<MutationEditUserStatusArgs, 'data'>>;
+  endEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationEndEventArgs, 'id'>>;
   giveUserRole?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationGiveUserRoleArgs, 'roleId' | 'userId'>>;
   kickEventMember?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationKickEventMemberArgs, 'id' | 'member'>>;
   postEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationPostEventArgs, 'id'>>;

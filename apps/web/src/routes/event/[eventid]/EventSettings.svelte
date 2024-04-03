@@ -8,6 +8,7 @@
 		EditOutline,
 		CaretRightSolid,
 		CloseSolid,
+		ArchiveSolid,
 	} from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 	import isURL from "validator/lib/isURL"
@@ -30,6 +31,8 @@
 	let isDirty = false;
 	$: isDirty = checkIfDirty(data, editData);
 
+	$: canEdit = !data.archived && !data.endedAt
+
 	let startDate: Date | null = editData.startAt ? new Date(editData.startAt) : null;
 	$: if (startDate) editData.startAt = startDate.getTime();
 
@@ -37,6 +40,7 @@
 	let validator = new FieldValidator()
 
 	let deleteModalOpen = false;
+	let archiveModalOpen = false;
 
 	async function save() {
 		if (!validator.validate()) return false;
@@ -135,6 +139,7 @@
 						name="event-type"
 						options={EventTypeOptions}
 						required
+						disabled={!canEdit}
 						bind:value={editData.eventType}
 					/>
 				</Field>
@@ -148,6 +153,7 @@
 						required
 						autocomplete="new-password"
 						class="rounded"
+						disabled={!canEdit}
 						bind:value={editData.name}
 					/>
 				</Field>
@@ -161,6 +167,7 @@
 						required
 						autocomplete="new-password"
 						class="rounded"
+						disabled={!canEdit}
 						bind:value={editData.summary}
 					/>
 					<Helper class="mt-1">
@@ -188,21 +195,22 @@
 						required
 						autocomplete="new-password"
 						class="rounded"
+						disabled={!canEdit}
 						bind:value={editData.imageUrl}
 					/>
 					{#if editData.imageUrl}
-					<div class="mt-2">
-						<img src={editData.imageUrl} alt="Event thumbnail" class={twMerge("rounded h-48", imagePlaceholder ? "hidden" : undefined)} on:error={() => {
-							imagePlaceholder = true
-						}} on:load={() => {
-							imagePlaceholder = false
-						}} />
-						<div role="status" class={twMerge("animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700", imagePlaceholder ? undefined : "hidden")}>
-							<svg width="48" height="48" class="text-gray-200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" viewBox="0 0 640 512">
-								<path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2 160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 81.01C231.9 70.42 243.5 64 256 64C268.5 64 280.1 70.42 286.8 81.01L412.7 281.7L460.9 202.7C464.1 196.1 472.2 192 480 192C487.8 192 495 196.1 499.1 202.7L631.1 419.1C636.9 428.6 640 439.7 640 450.9C640 484.6 612.6 512 578.9 512H55.91C25.03 512 .0006 486.1 .0006 456.1L0 456.1z" />
-							</svg>
+						<div class="mt-2">
+							<img src={editData.imageUrl} alt="Event thumbnail" class={twMerge("rounded h-48", imagePlaceholder ? "hidden" : undefined)} on:error={() => {
+								imagePlaceholder = true
+							}} on:load={() => {
+								imagePlaceholder = false
+							}} />
+							<div role="status" class={twMerge("animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700", imagePlaceholder ? undefined : "hidden")}>
+								<svg width="48" height="48" class="text-gray-200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" viewBox="0 0 640 512">
+									<path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2 160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 81.01C231.9 70.42 243.5 64 256 64C268.5 64 280.1 70.42 286.8 81.01L412.7 281.7L460.9 202.7C464.1 196.1 472.2 192 480 192C487.8 192 495 196.1 499.1 202.7L631.1 419.1C636.9 428.6 640 439.7 640 450.9C640 484.6 612.6 512 578.9 512H55.91C25.03 512 .0006 486.1 .0006 456.1L0 456.1z" />
+								</svg>
+							</div>
 						</div>
-					</div>
 					{/if}
 				</Field>
 				<Alert color="red" class="dark:bg-gray-900">
@@ -219,6 +227,7 @@
 					<Label for="event-description" class="mb-2">Event Description</Label>
 					<MarkdownEditor
 						placeholder="Describe the event"
+						editable={canEdit}
 						bind:value={editData.description}
 					/>
 				</Field>
@@ -235,6 +244,7 @@
 						id="event-start"
 						name="event-start"
 						disable="past"
+						disabled={!canEdit}
 						bind:value={startDate}
 					/>
 				</Field>
@@ -243,6 +253,7 @@
 					<DurationPicker
 						id="event-duration"
 						name="event-duration"
+						disabled={!canEdit}
 						bind:value={editData.duration}
 					/>
 				</Field>
@@ -256,16 +267,15 @@
 			</SectionHeading>
 			<div class="flex flex-col gap-4 p-4">
 				<Field {validator} for="event-hide-location" value={editData.settings.hideLocation}>
-					<Checkbox id="event-hide-location" bind:checked={editData.settings.hideLocation}>
+					<Checkbox id="event-hide-location" disabled={!canEdit} bind:checked={editData.settings.hideLocation}>
 						Hide Location
 					</Checkbox>
-					<Helper
-						>If enabled, the event location will only be shown to users once they
-						join the event</Helper
-					>
+					<Helper>
+						If enabled, the event location will only be shown to users once they join the event
+					</Helper>
 				</Field>
 				<Field {validator} for="event-location" value={editData.location}>
-					<LocationSelectUl id="event-location" bind:value={editData.location} />
+					<LocationSelectUl id="event-location" disabled={!canEdit} bind:value={editData.location} />
 				</Field>
 			</div>
 		</section>
@@ -284,11 +294,12 @@
 							name: strings.toTitleCase(type),
 						}))}
 						required
+						disabled={!canEdit}
 						bind:value={editData.accessType}
 					/>
 				</Field>
 				<Field {validator} for="event-require-invite" value={editData.settings.inviteOnly}>
-					<Toggle id="event-require-invite" bind:checked={editData.settings.inviteOnly}>
+					<Toggle id="event-require-invite" disabled={!canEdit} bind:checked={editData.settings.inviteOnly}>
 						Require Invite to Join
 					</Toggle>
 					<Helper class="mt-1">
@@ -299,7 +310,7 @@
 					{#key editData.settings.inviteOnly}
 						<Toggle
 							id="event-open-to-requests"
-							disabled={!editData.settings.inviteOnly}
+							disabled={!editData.settings.inviteOnly || !canEdit}
 							bind:checked={editData.settings.openToJoinRequests}
 						>
 							Open to Join Requests
@@ -315,7 +326,7 @@
 			</SectionHeading>
 			<div class="flex flex-col gap-4 p-4">
 				<Field {validator} for="event-allow-team-switching" value={editData.settings.allowTeamSwitching}>
-					<Toggle id="event-allow-team-switching" bind:checked={editData.settings.allowTeamSwitching}>
+					<Toggle id="event-allow-team-switching" disabled={!canEdit} bind:checked={editData.settings.allowTeamSwitching}>
 						Allow Team Switching
 					</Toggle>
 					<Helper class="mt-1">
@@ -339,6 +350,7 @@
 							name: channel.discord.name,
 						})) ?? [{ value: editData.channel.id, name: editData.channel.discord.name }]}
 						required
+						disabled={!canEdit}
 						bind:value={editData.channel.id}
 					/>
 				</Field>
@@ -357,6 +369,7 @@
 						required
 						multi
 						search
+						disabled={!canEdit}
 						bind:value={editData.mentions}
 						let:option
 					>
@@ -375,15 +388,24 @@
 		Event RSVPs
 	</SectionHeading>
 	<div class="py-4 sm:px-4">
-		<RsvpTable id="event-rsvps" {validator} {data} bind:value={editData.rsvpRoles} />
+		<RsvpTable id="event-rsvps" {validator} {data} disabled={!canEdit} bind:value={editData.rsvpRoles} />
 	</div>
 </section>
 <div class="flex flex-wrap justify-end items-center gap-2">
-	<Button color="red" class="mr-auto" on:click={() => {
-		deleteModalOpen = true;
-	}}>
-		<CloseSolid class="me-2" tabindex="-1" /> Delete
-	</Button>
+	{#if startDate && startDate <= new Date()}
+		<Button disabled={data.archived} color="dark" class="mr-auto" on:click={() => {
+			if (data.archived) return;
+			archiveModalOpen = true;
+		}}>
+			<ArchiveSolid class="me-2" tabindex="-1" /> Archive
+		</Button>
+	{:else}
+		<Button color="red" class="mr-auto" on:click={() => {
+			deleteModalOpen = true;
+		}}>
+			<CloseSolid class="me-2" tabindex="-1" /> Delete
+		</Button>
+	{/if}
 	<Button color="alternative" on:click={() => {
 		if (data.createdAt === data.updatedAt) {
 			deleteModalOpen = true;
@@ -395,9 +417,9 @@
 	</Button>
 	{#if data.posted}
 		<Button
-			disabled={!isDirty}
+			disabled={!isDirty || !canEdit}
 			on:click={() => {
-				if (!isDirty) return;
+				if (!isDirty || !canEdit) return;
 				save();
 			}}
 		>
@@ -448,4 +470,31 @@
 	goto("/events")
 }}>
     <span>Are you sure you want to delete this event? Once deleted it cannot be undone.</span>
+</ConfirmationModal>
+
+<ConfirmationModal title="Archive event" bind:open={archiveModalOpen} on:confirm={async () => {
+    const { errors } = await getApollo().mutate({
+        mutation: Mutations.ARCHIVE_EVENT,
+        variables: {
+            id: data.id
+        },
+		errorPolicy: "all",
+    })
+
+    if (errors && errors.length > 0) {
+        pushNotification({
+            type: "error",
+            message: "Failed to archive event",
+        });
+        console.error(errors);
+        return;
+    }
+
+    archiveModalOpen = false;
+	await invalidate("app:currentevent")
+}}>
+    <p>Are you sure you want to archive this event?</p>
+	{#if !data.endedAt}
+		<p>This event has not been ended, archiving the event will end the event.</p>
+	{/if}
 </ConfirmationModal>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidate } from "$app/navigation";
 	import {
 		Sidebar,
 		SidebarDropdownItem,
@@ -44,7 +45,31 @@
 						<AdjustmentsHorizontalSolid tabindex="-1" />
 					</svelte:fragment>
 					<SidebarDropdownItem label="Invite Members" class="rounded clip-opposite-4" />
-					<SidebarDropdownItem label="End Event" class="rounded clip-opposite-4 dark:hover:bg-red-500" />
+					{#if !data.endedAt && data.startAt && new Date(data.startAt) <= new Date()}
+						<SidebarDropdownItem
+							label="End Event"
+							class="rounded clip-opposite-4 dark:hover:bg-red-500"
+							on:click={async () => {
+								const { data: endData, errors } = await getApollo().mutate({
+									mutation: Mutations.END_EVENT,
+									variables: {
+										id: data.id
+									}
+								})
+
+								if (!endData?.ended || (errors && errors.length > 0)) {
+									pushNotification({
+										type: "error",
+										message: "Failed to end event",
+									});
+									console.error(errors);
+									return;
+								}
+
+								await invalidate("app:currentevent")
+							}}
+						/>
+					{/if}
 				</SidebarDropdownWrapper>
 			{/if}
 			{#if data.rsvp}

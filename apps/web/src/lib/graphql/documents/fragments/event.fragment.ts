@@ -36,6 +36,8 @@ export const EVENT_FRAGMENT = gql(`
         duration
         startAt
         endedAt
+        archived
+        archivedAt
         updatedAt
         createdAt
     }

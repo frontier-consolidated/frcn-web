@@ -47,6 +47,8 @@ export function resolveEvent(event: Event) {
 		endedAt: event.endedAt,
 		duration: event.duration,
 		posted: event.posted,
+		archived: event.archived,
+		archivedAt: event.archivedAt,
 		updatedAt: event.updatedAt,
 		createdAt: event.createdAt,
 
@@ -306,6 +308,10 @@ export const eventResolvers: Resolvers = {
 			const event = await $events.getEvent(args.id);
 			if (!event) return null;
 
+			if (event.endedAt || event.archived) {
+				throw gqlErrorBadInput(`Cannot edit event after it has ended or been archived`);
+			}
+
 			const data = args.data;
 
 			if (data.channel && !(await $events.getEventChannel(data.channel))) {
@@ -432,23 +438,45 @@ export const eventResolvers: Resolvers = {
 		},
 		async unpostEvent(source, args, context) {
 			const event = await $events.getEvent(args.id);
-			if (!event) return false;
+			if (!event || event.endedAt || event.archived) return false;
 			if (!event.posted) return true;
 
 			await $events.unpostEvent(event, context.app.discordClient)
 			return true;
 		},
+		async endEvent(source, args, context) {
+			const event = await $events.getEvent(args.id);
+			if (!event || !event.posted) return false;
+			if (!event.startAt || event.startAt > new Date()) return false;
+			if (event.endedAt) return true;
+
+			await $events.endEvent(event, context.app.discordClient)
+			return true
+		},
+		async archiveEvent(source, args, context) {
+			const event = await $events.getEvent(args.id);
+			if (!event || !event.posted) return false;
+			if (event.archived) return true;
+
+			await $events.archiveEvent(event, context.app.discordClient)
+			return true;
+		},
 		async deleteEvent(source, args, context) {
 			const event = await $events.getEvent(args.id)
 			if (!event) return false;
+			if (event.startAt && event.startAt <= new Date()) return false;
 
-			await $events.deleteEvent(args.id, context.app.discordClient)
+			await $events.deleteEvent(event, context.app.discordClient)
 			return true;
 		},
 		async rsvpForEvent(source, args, context) {
 			if (!context.user) throw gqlErrorUnauthenticated()
 			const event = await $events.getEvent(args.id)
 			if (!event) return false;
+
+			if (event.endedAt || event.archived) {
+				throw gqlErrorBadInput(`Cannot rsvp for event after it has ended or been archived`);
+			}
 
 			const roles = await $events.getRSVPRoles(event.id);
 			const role = roles.find(r => r.id === args.rsvp)
@@ -464,6 +492,10 @@ export const eventResolvers: Resolvers = {
 			if (!context.user) throw gqlErrorUnauthenticated()
 			const event = await $events.getEvent(args.id)
 			if (!event) return false;
+
+			if (event.endedAt || event.archived) {
+				throw gqlErrorBadInput(`Cannot unrsvp from event after it has ended or been archived`);
+			}
 
 			await $events.unrsvpForEvent(event, context.user, context.app.discordClient);
 			return true

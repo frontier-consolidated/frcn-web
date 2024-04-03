@@ -142,6 +142,8 @@ type Event {
 	endedAt: Timestamp
 	duration: Int
 	posted: Boolean!
+	archived: Boolean!
+	archivedAt: Timestamp
 	updatedAt: Timestamp!
 	createdAt: Timestamp!
 
@@ -396,6 +398,8 @@ type Mutation {
 	editEvent(id: ID!, data: EventEditInput!): Event @permission(has: CreateEvents)
 	postEvent(id: ID!): Boolean! @permission(has: CreateEvents)
 	unpostEvent(id: ID!): Boolean! @permission(has: CreateEvents)
+	endEvent(id: ID!): Boolean! @permission(has: CreateEvents)
+	archiveEvent(id: ID!): Boolean! @permission(has: CreateEvents)
 	deleteEvent(id: ID!): Boolean! @permission(has: CreateEvents)
 
 	rsvpForEvent(id: ID!, rsvp: ID!): Boolean!
