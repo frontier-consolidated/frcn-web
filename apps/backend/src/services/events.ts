@@ -13,7 +13,7 @@ import { database, type Transaction } from "../database";
 import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 import type { EventReminder } from "../graphql/schema/resolvers/Event";
 
-const EVENT_EXPIRE_AFTER = 12 * 3600 * 1000
+const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000
 
 async function getEvent(id: string) {
 	const event = await database.event.findUnique({
@@ -139,6 +139,27 @@ async function getUpcomingEvents(buffer: number = 1, maxTimeInFutureMs?: number)
 				gte: new Date(now - buffer),
 				lte: maxTimeInFutureMs ? new Date(now + maxTimeInFutureMs + buffer) : undefined
 			}
+		},
+		include: {
+			channel: {
+				select: {
+					discordId: true
+				}
+			}
+		}
+	})
+}
+
+async function getEndingEvents(buffer: number = 1) {
+	const now = Date.now()
+	return await database.event.findMany({
+		where: {
+			posted: true,
+			startAt: {
+				gte: new Date(now - EVENT_EXPIRE_AFTER),
+				lt: new Date(now + buffer)
+			},
+			endedAt: null,
 		},
 		include: {
 			channel: {
@@ -686,6 +707,7 @@ export const $events = {
 	getEventFromMessageId,
 	getEvents,
 	getUpcomingEvents,
+	getEndingEvents,
 	getEventsInChannel,
 	getEventEventChannel,
 	getEventDiscordChannel,

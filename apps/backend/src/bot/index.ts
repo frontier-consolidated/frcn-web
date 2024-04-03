@@ -20,7 +20,7 @@ async function updateEventReminders(client: Client) {
     const guild = await $discord.getGuild(client)
     if (!guild) return;
 
-    const now = Date.now()
+    let now = Date.now()
     const events = await $events.getUpcomingEvents(eventUpdateBufferTime, 7 * 24 * 60 * 60 * 1000)
 
     for (const event of events) {
@@ -71,8 +71,14 @@ async function updateEventReminders(client: Client) {
             }
             break;
         }
+    }
 
-        if (!event.endedAt && event.duration && isTime(new Date(event.startAt.getTime() + event.duration), now)) {
+    now = Date.now()
+    const endingEvents = await $events.getEndingEvents(eventUpdateBufferTime)
+    for (const event of endingEvents) {
+        if (!event.startAt || !event.duration || event.endedAt) return;
+        
+        if (isTime(new Date(event.startAt.getTime() + event.duration), now)) {
             try {
                 const thread = await $events.getEventThread(event, client)
                 const payload = buildEventScheduledEndMessage(event)
