@@ -188,10 +188,24 @@ export async function postEventMessage(client: Client, event: Event) {
 		const postLinkEmbed = new EmbedBuilder()
 			.setColor(PRIMARY_COLOR)
 			.setTitle(`:calendar_spiral: ${event.name}`)
-			.setDescription(`**[Click here to view event post](${eventMessage.url})**`)
+			.setDescription(`This is the **${event.name}** event thread`)
+		
+		const postButton = new ButtonBuilder()
+			.setLabel("See Details")
+			.setURL(eventMessage.url)
+			.setStyle(ButtonStyle.Link);
+			
+		const weblinkButton = new ButtonBuilder()
+			.setLabel("View")
+			.setURL(getWebURL(`/event/${event.id}`).href)
+			.setStyle(ButtonStyle.Link);
+			
+		const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
+		buttonsRow.addComponents(postButton, weblinkButton);
 		
 		await thread.send({
-			embeds: [postLinkEmbed]
+			embeds: [postLinkEmbed],
+			components: [buttonsRow]
 		})
 	}
 
