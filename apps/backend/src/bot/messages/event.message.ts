@@ -173,9 +173,12 @@ export async function postEventMessage(client: Client, event: Event) {
 		}
 	}
 
-	const threadId = event.discordThreadId
+	let threadId = event.discordThreadId
 	let thread: ThreadChannel | null = null;
-	if (createThread) thread = await $events.createEventThread(event, client, channel)
+	if (createThread) {
+		thread = await $events.createEventThread(event, client, channel)
+		threadId = thread.id
+	}
 
 	const payload = await buildEventMessage(event.id, client, threadId ?? undefined);
 	if (!payload) throw new Error("Failed to build event message")
