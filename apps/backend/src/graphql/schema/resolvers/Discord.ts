@@ -72,8 +72,9 @@ export async function resolveDiscordEmoji(emoji: string | GuildEmoji, context: G
 export const discordResolvers: Resolvers = {
 	DiscordChannel: {
 		async sendMessages(source) {
-			const { _model } = source as WithModel<DiscordChannel, GuildBasedChannel>;
-			return await $discord.canPostInChannel(_model)
+			const { _model: channel } = source as WithModel<DiscordChannel, GuildBasedChannel>;
+			if (!channel) return false;
+			return await $discord.canPostInChannel(channel)
 		}
 	},
 
