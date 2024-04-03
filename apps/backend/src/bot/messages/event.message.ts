@@ -2,7 +2,7 @@ import { dates, strings } from "@frcn/shared";
 import { getEmojiByName } from "@frcn/shared/emojis";
 import { type AnyLocation, getLocations } from "@frcn/shared/locations";
 import type { Event } from "@prisma/client";
-import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadAutoArchiveDuration } from "discord.js";
+import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadAutoArchiveDuration, TextChannel, ChannelType, ThreadChannel } from "discord.js";
 
 import { database } from "../../database";
 import { getWebURL } from "../../env";
@@ -33,7 +33,7 @@ function getLocationEmoji(location: AnyLocation) {
 	}
 }
 
-export async function buildEventMessage(id: string, client: Client) {
+export async function buildEventMessage(id: string, client: Client, threadId?: string) {
 	const guild = await $discord.getGuild(client)
 	if (!guild) return null;
 
@@ -103,6 +103,7 @@ export async function buildEventMessage(id: string, client: Client) {
 				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`,
 			},
 			{ name: "Duration", value: dates.toDuration(event.duration!) },
+			{ name: "Thread", value: `<#${threadId ?? event.discordThreadId}>` },
 			...event.roles.map((role) => ({
 				name: `${
 					role.emoji === role.emojiId
@@ -153,7 +154,7 @@ export async function buildEventMessage(id: string, client: Client) {
 	} satisfies BaseMessageOptions;
 }
 
-async function getEventMessage(client: Client, event: Event) {
+export async function getEventMessage(client: Client, event: Event) {
 	if (!event.discordEventMessageId) return null;
 	const eventChannel = await $events.getEventEventChannel(event.id);
 	if (!eventChannel) return null;
@@ -171,11 +172,7 @@ export async function postEventMessage(client: Client, event: Event) {
 	if (!eventChannel) throw new Error("Could not find event channel")
 
 	const channel = await $discord.getChannel(client, eventChannel.discordId);
-	if (!channel?.isTextBased()) throw new Error("Could not find event channel, or channel is somehow not text based");
-
-	const payload = await buildEventMessage(event.id, client);
-	if (!payload) throw new Error("Failed to build event message")
-	const eventMessage = await channel.send(payload);
+	if (!channel?.isTextBased() || !(channel instanceof TextChannel)) throw new Error("Could not find event channel, or channel is somehow not text based");
 
 	let createThread = !event.discordThreadId
 	if (!createThread) {
@@ -187,23 +184,56 @@ export async function postEventMessage(client: Client, event: Event) {
 	}
 
 	let threadId = event.discordThreadId
+	let thread: ThreadChannel | null = null;
 	if (createThread) {
-		const thread = await eventMessage.startThread({
+		thread = await channel.threads.create({
 			name: event.name,
+			type: ChannelType.PrivateThread,
 			reason: "Create thread for event: " + event.name,
-			autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays
+			autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
+			invitable: false,
+			// startMessage: eventMessage
 		})
 		threadId = thread.id
+	
+		const rsvps = await $events.getEventMembers(event.id, {
+			include: {
+				user: {
+					select: {
+						discordId: true
+					}
+				}
+			}
+		})
+	
+		for (const rsvp of rsvps) {
+			try {
+				await thread.members.add(rsvp.user.discordId, "RSVPed")
+			} catch (err) {
+				console.error("Failed to add user to event thread", err)
+			}
+		}
 	}
 
-	await database.event.update({
-		where: { id: event.id },
-		data: {
-			discordEventMessageId: eventMessage.id,
-			discordThreadId: threadId,
-			posted: true,
-		},
-	});
+	const payload = await buildEventMessage(event.id, client, threadId ?? undefined);
+	if (!payload) throw new Error("Failed to build event message")
+	const eventMessage = await channel.send(payload);
+	
+	if (createThread && thread) {
+		const postLinkEmbed = new EmbedBuilder()
+			.setColor(PRIMARY_COLOR)
+			.setTitle(`:calendar_spiral: ${event.name}`)
+			.setDescription(`**[Click here to view event post](${eventMessage.url})**`)
+		
+		await thread.send({
+			embeds: [postLinkEmbed]
+		})
+	}
+
+	return {
+		messageId: eventMessage.id,
+		threadId
+	}
 }
 
 export async function updateEventMessage(client: Client, event: Event) {
@@ -213,7 +243,7 @@ export async function updateEventMessage(client: Client, event: Event) {
 		const message = await getEventMessage(client, event)
 		if (!message) {
 			// Message must have been deleted, repost it!
-			await postEventMessage(client, event)
+			await $events.postEvent(event, client)
 		} else {
 			const payload = await buildEventMessage(event.id, client);
 			if (!payload) throw new Error("Failed to build event message")

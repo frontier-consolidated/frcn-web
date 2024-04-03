@@ -58,7 +58,7 @@ async function canPostInChannel(channel: GuildBasedChannel) {
 async function canCreateThreadInChannel(channel: GuildBasedChannel) {
 	const me = channel.guild.members.me ?? await channel.guild.members.fetchMe()
 	const permissions = me.permissionsIn(channel.id)
-	return permissions.has("CreatePublicThreads")
+	return permissions.has("CreatePrivateThreads")
 }
 
 async function canUserViewChannel(client: Client, user: User | undefined, channelId: string) {

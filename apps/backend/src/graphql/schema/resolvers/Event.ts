@@ -428,7 +428,14 @@ export const eventResolvers: Resolvers = {
 			}
 
 			await $events.postEvent(event, context.app.discordClient);
+			return true;
+		},
+		async unpostEvent(source, args, context) {
+			const event = await $events.getEvent(args.id);
+			if (!event) return false;
+			if (!event.posted) return true;
 
+			await $events.unpostEvent(event, context.app.discordClient)
 			return true;
 		},
 		async deleteEvent(source, args, context) {

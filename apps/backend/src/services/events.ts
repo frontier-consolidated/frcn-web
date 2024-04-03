@@ -7,7 +7,7 @@ import { Client as DiscordClient, type GuildBasedChannel } from "discord.js";
 import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { $system } from "./system";
-import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
+import { deleteEventMessage, getEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
 import { database, type Transaction } from "../database";
 import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 import type { EventReminder } from "../graphql/schema/resolvers/Event";
@@ -388,7 +388,43 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 }
 
 async function postEvent(event: Event, discordClient: DiscordClient) {
-	await postEventMessage(discordClient, event)
+	const { messageId, threadId } = await postEventMessage(discordClient, event)
+
+	await database.event.update({
+		where: { id: event.id },
+		data: {
+			discordEventMessageId: messageId,
+			discordThreadId: threadId,
+			posted: true,
+		},
+	});
+}
+
+async function unpostEvent(event: Event, discordClient: DiscordClient) {
+	try {
+		const thread = await getEventThread(event, discordClient)
+		await thread.delete()
+	} catch (err) {
+		console.error("Failed to delete event thread", err)
+	}
+
+	try {
+		const message = await getEventMessage(discordClient, event)
+		if (message) {
+			await message.delete()
+		}
+	} catch (err) {
+		console.error("Failed to delete event message", err)
+	}
+
+	await database.event.update({
+		where: { id: event.id },
+		data: {
+			discordEventMessageId: null,
+			discordThreadId: null,
+			posted: false,
+		},
+	});
 }
 
 async function deleteEvent(id: string, discordClient: DiscordClient) {
@@ -457,8 +493,7 @@ async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, curre
 		const thread = await getEventThread(updatedEvent, discordClient)
 		await thread.members.add(user.discordId, "RSVPed")
 	} catch (err) {
-		console.error("Failed to add user to event thread")
-		console.error(err)
+		console.error("Failed to add user to event thread", err)
 	}
 }
 
@@ -592,6 +627,7 @@ export const $events = {
 	createEvent,
 	editEvent,
 	postEvent,
+	unpostEvent,
 	deleteEvent,
 	canSeeEvent,
 	canJoinRsvp,
