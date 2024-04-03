@@ -487,7 +487,11 @@ async function endEvent(event: Event, discordClient: DiscordClient) {
 		}
 	})
 
-	await postEventEndMessage(discordClient, endedEvent)
+	try {
+		await postEventEndMessage(discordClient, endedEvent)
+	} catch (err) {
+		console.error("Error posting event end message", err)
+	}
 }
 
 async function archiveEvent(event: Event, discordClient: DiscordClient) {
