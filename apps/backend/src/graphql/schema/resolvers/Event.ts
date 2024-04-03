@@ -120,7 +120,7 @@ export function resolveEventChannel(channel: EventChannel) {
 
 export const eventResolvers: Resolvers = {
 	Event: {
-		async channel(source, args, context) {
+		async channel(source) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const channel = await $events.getEventEventChannel(_model.id);
 			if (!channel) return null;
