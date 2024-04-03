@@ -19,7 +19,7 @@
 </script>
 
 <a href="/event/{event.id}" class="group/card flex flex-col md:flex-row bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded clip-br-6 divide-gray-200 dark:divide-gray-700 shadow-md p-0 w-full">
-    <img src={event.imageUrl ?? placeholder} alt="Event thumbnail" class="object-cover h-32 md:h-auto md:w-36 rounded-t md:rounded-none md:rounded-s group-hover/card:brightness-110" on:error={(e) => {
+    <img src={event.imageUrl ? event.imageUrl : placeholder} alt="Event thumbnail" class="object-cover h-32 md:h-auto md:w-36 rounded-t md:rounded-none md:rounded-s group-hover/card:brightness-110" on:error={(e) => {
         e.currentTarget.setAttribute("src", placeholder)
     }} />
     <div class="flex flex-col px-4 py-3">
