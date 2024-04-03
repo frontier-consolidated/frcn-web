@@ -43,7 +43,8 @@ export function buildEventScheduledEndMessage(event: Event) {
 	const endButton = new ButtonBuilder()
 		.setCustomId(`end-event-${event.id}`)
 		.setLabel("End Event")
-		.setStyle(ButtonStyle.Danger);
+		.setStyle(ButtonStyle.Danger)
+		.setDisabled(!!event.endedAt)
 	
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
 	buttonsRow.addComponents(endButton);
@@ -69,7 +70,8 @@ export function buildEventEndedMessage(event: Event) {
 		.setCustomId(`archive-event-${event.id}`)
 		.setEmoji("🗃️")
 		.setLabel("Archive Event")
-		.setStyle(ButtonStyle.Secondary);
+		.setStyle(ButtonStyle.Secondary)
+		.setDisabled(event.archived)
 	
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
 	buttonsRow.addComponents(archiveButton);

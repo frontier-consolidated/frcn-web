@@ -513,6 +513,8 @@ async function endEvent(event: Event, discordClient: DiscordClient) {
 	} catch (err) {
 		console.error("Error posting event end message", err)
 	}
+
+	return endedEvent;
 }
 
 async function archiveEvent(event: Event, discordClient: DiscordClient) {
@@ -521,7 +523,7 @@ async function archiveEvent(event: Event, discordClient: DiscordClient) {
 	}
 
 	await archiveEventThread(event, discordClient)
-	await database.event.update({
+	return await database.event.update({
 		where: { id: event.id },
 		data: {
 			archived: true,
