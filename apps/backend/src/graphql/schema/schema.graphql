@@ -412,10 +412,9 @@ type Mutation {
 	endEvent(id: ID!): Boolean! @permission(has: CreateEvents)
 	archiveEvent(id: ID!): Boolean! @permission(has: CreateEvents)
 	deleteEvent(id: ID!): Boolean! @permission(has: CreateEvents)
-
 	rsvpForEvent(id: ID!, rsvp: ID!): Boolean!
 	unrsvpForEvent(id: ID!): Boolean!
-
+	inviteToEvent(eventId: ID!, userId: ID!): Boolean! @permission(has: CreateEvents)
 	setEventMemberTeam(member: ID!, team: ID): Boolean!
 	kickEventMember(member: ID!): Boolean! @permission(has: CreateEvents)
 

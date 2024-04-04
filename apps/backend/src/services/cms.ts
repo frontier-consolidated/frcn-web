@@ -2,7 +2,7 @@ import { DeleteObjectCommand, type S3Client } from "@aws-sdk/client-s3";
 import type { ContentContainer, ContentContainerFile, FileUpload, Prisma, User } from "@prisma/client";
 
 import { $files } from "./files";
-import { database, type Transaction } from "../database";
+import { database } from "../database";
 import type { ContentContainerEditInput, ContentContainerFileEditInput } from "../graphql/__generated__/resolvers-types";
 
 export type CmsAttachFileMetadata = {
@@ -27,15 +27,15 @@ async function getContainersOfType(type: string, parentId?: string) {
 	})
 }
 
-async function getContainerChildren<T extends Prisma.ContentContainer$childrenArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$childrenArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).contentContainer.findUnique({
+async function getContainerChildren<T extends Prisma.ContentContainer$childrenArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$childrenArgs>) {
+	const result = await database.contentContainer.findUnique({
 		where: { id }
 	}).children<T>(args)
 	return result ?? []
 }
 
-async function getContainerParent<T extends Prisma.ContentContainer$parentArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$parentArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).contentContainer.findUnique({
+async function getContainerParent<T extends Prisma.ContentContainer$parentArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$parentArgs>) {
+	const result = await database.contentContainer.findUnique({
 		where: { id }
 	}).parent<T>(args)
 	return result
@@ -138,8 +138,8 @@ async function getContainerFileLink(id: string) {
 	})
 }
 
-async function getContainerFileLinks<T extends Prisma.ContentContainer$filesArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$filesArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).contentContainer.findUnique({
+async function getContainerFileLinks<T extends Prisma.ContentContainer$filesArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$filesArgs>) {
+	const result = await database.contentContainer.findUnique({
 		where: { id }
 	}).files<T>(args)
 	return result ?? []

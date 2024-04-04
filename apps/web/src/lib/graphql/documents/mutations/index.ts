@@ -22,6 +22,7 @@ import { EDIT_RESOURCE } from "./editResource.mutation";
 import { EDIT_ROLE } from "./editRole.mutation";
 import { EDIT_SYSTEM_SETTINGS } from "./editSystemSettings.mutation";
 import { END_EVENT } from "./endEvent.mutation";
+import { KICK_EVENT_MEMBER } from "./kickEventMember.mutation";
 import { POST_EVENT } from "./postEvent.mutation";
 import { REGENERATE_ACCESS_KEY } from "./regenerateAccessKey.mutation";
 import { REORDER_ROLES } from "./reorderRoles.mutation";
@@ -38,6 +39,7 @@ export const Mutations = {
 	DELETE_EVENT,
 	RSVP_FOR_EVENT,
 	UNRSVP_FOR_EVENT,
+	KICK_EVENT_MEMBER,
 	CREATE_EVENT_CHANNEL,
 	EDIT_EVENT_CHANNEL,
 	DELETE_EVENT_CHANNEL,

@@ -4,7 +4,7 @@ import { type APIUser, CDNRoutes, ImageFormat, Client as DiscordClient } from "d
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
-import { database, type Transaction } from "../database";
+import { database } from "../database";
 import { getAdminIds } from "../env";
 
 async function getAllUsers() {
@@ -78,22 +78,22 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 	return user;
 }
 
-async function getSessions<T extends Prisma.User$sessionsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$sessionsArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getSessions<T extends Prisma.User$sessionsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$sessionsArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
 	}).sessions<T>(args)
 	return result ?? []
 }
 
-async function getRoles<T extends Prisma.User$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rolesArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getRoles<T extends Prisma.User$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rolesArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
 	}).roles<T>(args)
 	return result ?? []
 }
 
-async function getPrimaryRole<T extends Prisma.UserRoleDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserRoleDefaultArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getPrimaryRole<T extends Prisma.UserRoleDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserRoleDefaultArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
 	}).primaryRole<T>(args)
 	return result
@@ -125,29 +125,29 @@ async function getPermissions(user: User) {
 	return permissions
 }
 
-async function getRSVPs<T extends Prisma.User$rsvpsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rsvpsArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getRSVPs<T extends Prisma.User$rsvpsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rsvpsArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
 	}).rsvps<T>(args)
 	return result ?? []
 }
 
-async function getEvents<T extends Prisma.User$eventsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$eventsArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getEvents<T extends Prisma.User$eventsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$eventsArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
 	}).events<T>(args)
 	return result ?? []
 }
 
-async function getStatus<T extends Prisma.User$statusArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$statusArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getStatus<T extends Prisma.User$statusArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$statusArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
 	}).status<T>(args)
 	return result
 }
 
-async function getSettings<T extends Prisma.User$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$settingsArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getSettings<T extends Prisma.User$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$settingsArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
 	}).settings<T>(args)
 	return result

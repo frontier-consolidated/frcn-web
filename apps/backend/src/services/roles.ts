@@ -2,7 +2,7 @@ import type { Prisma, User, UserRole } from "@prisma/client";
 
 import { $system } from "./system";
 import { $users } from "./users";
-import { database, type Transaction } from "../database";
+import { database } from "../database";
 import type { RoleEditInput } from "../graphql/__generated__/resolvers-types";
 import { publishUserRolesUpdated } from "../graphql/schema/resolvers/Roles";
 
@@ -46,7 +46,7 @@ async function getDefaultPrimaryRole() {
 	return sortedPrimaryRoles[0];
 }
 
-async function getRoleUsers<T extends Prisma.UserFindManyArgs>(role: UserRole, args?: Prisma.Subset<T, Prisma.UserFindManyArgs> & { tx?: Transaction }) {
+async function getRoleUsers<T extends Prisma.UserFindManyArgs>(role: UserRole, args?: Prisma.Subset<T, Prisma.UserFindManyArgs>) {
 	if (role.primary) {
 		const users = await database.userRole.findUnique({
 			where: { id: role.id }

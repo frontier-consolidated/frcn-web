@@ -155,10 +155,10 @@ model EventRsvpRole {
 
 model EventUser {
   id        String         @id @default(uuid())
-  pending   Boolean
+  pending   Boolean        @default(false)
   reminders String[]
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String         @map("user_id")
+  user      User?          @relation(fields: [userId], references: [id])
+  userId    String?        @map("user_id")
   rsvp      EventRsvpRole? @relation(fields: [rsvpId], references: [id])
   rsvpId    String?        @map("rsvp_id")
   team      EventTeam?     @relation(fields: [teamId], references: [id])

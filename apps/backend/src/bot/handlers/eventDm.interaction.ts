@@ -51,7 +51,7 @@ async function sendRemindersMessage(interaction: ButtonInteraction | AnySelectMe
     const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
     const currentRsvp = await $events.getUserRsvp(event, user);
 
-    if (!currentRsvp) {
+    if (!currentRsvp || !currentRsvp.rsvpId) {
         await interaction.reply({
             ...buildErrorMessage("Cannot edit reminders for an event you are not RSVPed for"),
             ephemeral: true
@@ -88,7 +88,7 @@ async function handleSetReminder(interaction: ButtonInteraction | AnySelectMenuI
     const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
     let currentRsvp = await $events.getUserRsvp(event, user);
 
-    if (!currentRsvp) {
+    if (!currentRsvp || !currentRsvp.rsvpId) {
         await interaction.reply({
             ...buildErrorMessage("Cannot edit reminders for an event you are not RSVPed for"),
             ephemeral: true

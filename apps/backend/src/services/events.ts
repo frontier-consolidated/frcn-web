@@ -9,7 +9,7 @@ import { $roles } from "./roles";
 import { $system } from "./system";
 import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
 import { postEventEndMessage } from "../bot/messages/eventStartEnd.message";
-import { database, type Transaction } from "../database";
+import { database } from "../database";
 import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 import type { EventReminder } from "../graphql/schema/resolvers/Event";
 
@@ -181,8 +181,8 @@ async function getEventsInChannel(id: number) {
 	})
 }
 
-async function getEventEventChannel<T extends Prisma.Event$channelArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$channelArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
+async function getEventEventChannel<T extends Prisma.Event$channelArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$channelArgs>) {
+	const result = await database.event.findUnique({
 		where: { id }
 	}).channel<T>(args)
 	return result
@@ -228,6 +228,7 @@ async function createEventThread(event: Event, discordClient: DiscordClient, cha
 	})
 
 	for (const rsvp of rsvps) {
+		if (!rsvp.user) continue;
 		try {
 			await thread.members.add(rsvp.user.discordId, "RSVPed")
 		} catch (err) {
@@ -260,72 +261,122 @@ async function deleteEventThread(event: Event, discordClient: DiscordClient) {
 	}
 }
 
-async function getEventOwner<T extends Prisma.Event$ownerArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$ownerArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
+async function getEventOwner<T extends Prisma.Event$ownerArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$ownerArgs>) {
+	const result = await database.event.findUnique({
 		where: { id }
 	}).owner<T>(args)
 	return result
 }
 
-async function getEventSettings<T extends Prisma.Event$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$settingsArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
+async function getEventSettings<T extends Prisma.Event$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$settingsArgs>) {
+	const result = await database.event.findUnique({
 		where: { id }
 	}).settings<T>(args)
 	return result
 }
 
-async function getEventMembers<T extends Prisma.Event$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$membersArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
+async function getEventMember(id: string) {
+	return await database.eventUser.findUnique({
+		where: { id }
+	})
+}
+
+async function getEventMembers<T extends Omit<Prisma.Event$membersArgs, "where">>(id: string, args?: Prisma.Subset<T, Prisma.Event$membersArgs>) {
+	return (await getEventRsvps<T>(id, {
+		...args,
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore not sure how to fix this type
+		where: {
+			rsvpId: {
+				not: null
+			}
+		}
+	}))
+}
+
+async function getEventRsvps<T extends Prisma.Event$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$membersArgs>) {
+	const result = await database.event.findUnique({
 		where: { id }
 	}).members<T>(args)
 	return result ?? []
 }
 
-async function getEventMemberUser<T extends Prisma.UserDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserDefaultArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).eventUser.findUnique({
+async function getEventMemberUser<T extends Prisma.UserDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserDefaultArgs>) {
+	const result = await database.eventUser.findUnique({
 		where: { id }
 	}).user<T>(args)
 	return result
 }
 
-async function getEventMemberEvent<T extends Prisma.EventDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventDefaultArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).eventUser.findUnique({
+async function getEventMemberEvent<T extends Prisma.EventDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventDefaultArgs>) {
+	const result = await database.eventUser.findUnique({
 		where: { id }
 	}).event<T>(args)
 	return result
 }
 
-async function getEventMemberRsvp<T extends Prisma.EventUser$rsvpArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventUser$rsvpArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).eventUser.findUnique({
+async function getEventMemberRsvp<T extends Prisma.EventUser$rsvpArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventUser$rsvpArgs>) {
+	const result = await database.eventUser.findUnique({
 		where: { id }
 	}).rsvp<T>(args)
 	return result
 }
 
-async function getEventAccessRoles<T extends Prisma.Event$accessRolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$accessRolesArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
+async function kickEventMember(member: EventUser, discordClient: DiscordClient) {
+	const updatedMember = await database.eventUser.update({
+		where: { id: member.id },
+		data: {
+			rsvp: {
+				disconnect: true
+			}
+		},
+		include: {
+			user: {
+				select: {
+					discordId: true
+				}
+			},
+			event: true
+		}
+	})
+
+	await updateEventMessage(discordClient, updatedMember.event)
+
+	if (updatedMember.user) {
+		try {
+			const thread = await getEventThread(updatedMember.event, discordClient)
+			await thread.members.remove(updatedMember.user.discordId, "UnRSVPed / Kicked from event")
+		} catch (err) {
+			console.error("Failed to remove user to event thread")
+			console.error(err)
+		}
+	}
+}
+
+async function getEventAccessRoles<T extends Prisma.Event$accessRolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$accessRolesArgs>) {
+	const result = await database.event.findUnique({
 		where: { id }
 	}).accessRoles<T>(args)
 	return result ?? []
 }
 
-async function getRSVPRoles<T extends Prisma.Event$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$rolesArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
+async function getRSVPRoles<T extends Prisma.Event$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$rolesArgs>) {
+	const result = await database.event.findUnique({
 		where: { id }
 	}).roles<T>(args)
 	return result ?? []
 }
 
-async function getRSVPMembers<T extends Prisma.EventRsvpRole$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventRsvpRole$membersArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).eventRsvpRole.findUnique({
+async function getRSVPMembers<T extends Prisma.EventRsvpRole$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventRsvpRole$membersArgs>) {
+	const result = await database.eventRsvpRole.findUnique({
 		where: { id }
 	}).members<T>(args)
 	return result ?? []
 }
 
 async function getUserRsvp(event: Event, user: User) {
-	const members = await getEventMembers(event.id)
-	return members.find(member => member.userId === user.id) ?? null
+	const rsvps = await getEventRsvps(event.id)
+	return rsvps.find(rsvp => rsvp.userId === user.id) ?? null
 }
 
 async function setUserReminder(rsvp: EventUser, reminder: EventReminder) {
@@ -604,28 +655,9 @@ async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, curre
 
 async function unrsvpForEvent(event: Event, user: User, discordClient: DiscordClient) {
 	const currentRsvp = await getUserRsvp(event, user)
-	if (!currentRsvp) return;
+	if (!currentRsvp || !currentRsvp.rsvpId) return;
 
-	const updatedEvent = await database.event.update({
-		where: { id: event.id },
-		data: {
-			members: {
-				delete: {
-					id: currentRsvp.id
-				}
-			}
-		}
-	})
-
-	await updateEventMessage(discordClient, updatedEvent)
-
-	try {
-		const thread = await getEventThread(updatedEvent, discordClient)
-		await thread.members.remove(user.discordId, "UnRSVPed")
-	} catch (err) {
-		console.error("Failed to add user to event thread")
-		console.error(err)
-	}
+	await kickEventMember(currentRsvp, discordClient)
 }
 
 async function canSeeEvent(event: Event, user: User | undefined, discordClient: DiscordClient) {
@@ -775,10 +807,13 @@ export const $events = {
 	deleteEventThread,
 	getEventOwner,
 	getEventSettings,
+	getEventMember,
 	getEventMembers,
+	getEventRsvps,
 	getEventMemberUser,
 	getEventMemberEvent,
 	getEventMemberRsvp,
+	kickEventMember,
 	getEventAccessRoles,
 	getRSVPRoles,
 	getRSVPMembers,

@@ -47,6 +47,7 @@ const documents = {
     "\n\tmutation EditRole($roleId: ID!, $data: RoleEditInput!) {\n\t\trole: editRole(id: $roleId, data: $data) {\n\t\t\tid\n\t\t\tname\n\t\t\tdiscordId\n\t\t\tprimary\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.EditRoleDocument,
     "\n\tmutation EditSystemSettings($data: SystemEditInput!) {\n\t\tsettings: editSystemSettings(data: $data) {\n\t\t\tdiscordGuild {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\tdefaultEventChannel {\n\t\t\t\t...EventChannelFragment\n\t\t\t}\n\t\t}\n\t}\n": types.EditSystemSettingsDocument,
     "\n\tmutation EndEvent($id: ID!) {\n\t\tended: endEvent(id: $id)\n\t}\n": types.EndEventDocument,
+    "\n\tmutation KickEventMember($id: ID!) {\n\t\tkicked: kickEventMember(member: $id)\n\t}\n": types.KickEventMemberDocument,
     "\n\tmutation PostEvent($eventId: ID!) {\n\t\tsuccess: postEvent(id: $eventId)\n\t}\n": types.PostEventDocument,
     "\n\tmutation RegenerateAccessKey($id: Int!) {\n\t\tkey: regenerateAccessKey(id: $id) {\n\t\t\tid\n\t\t\tkey\n\t\t}\n\t}\n": types.RegenerateAccessKeyDocument,
     "\n\tmutation ReorderRoles($order: [ID!]!) {\n\t\torder: reorderRoles(order: $order)\n\t}\n": types.ReorderRolesDocument,
@@ -225,6 +226,10 @@ export function gql(source: "\n\tmutation EditSystemSettings($data: SystemEditIn
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n\tmutation EndEvent($id: ID!) {\n\t\tended: endEvent(id: $id)\n\t}\n"): (typeof documents)["\n\tmutation EndEvent($id: ID!) {\n\t\tended: endEvent(id: $id)\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tmutation KickEventMember($id: ID!) {\n\t\tkicked: kickEventMember(member: $id)\n\t}\n"): (typeof documents)["\n\tmutation KickEventMember($id: ID!) {\n\t\tkicked: kickEventMember(member: $id)\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

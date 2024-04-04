@@ -52,7 +52,7 @@ async function updateEventReminders(client: Client) {
             })
 
             for (const rsvp of eventUsers) {
-                if (rsvp.reminders.length === 0) continue;
+                if (!rsvp.user || rsvp.reminders.length === 0) continue;
                 if (!rsvp.reminders.includes(reminder)) continue;
 
                 try {

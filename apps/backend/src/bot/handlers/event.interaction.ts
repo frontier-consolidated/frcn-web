@@ -113,7 +113,7 @@ async function handleEventRsvp(interaction: ButtonInteraction | AnySelectMenuInt
     const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
     const currentRsvp = await $events.getUserRsvp(event, user);
 
-    if (currentRsvp && role.id === currentRsvp.rsvpId && !currentRsvp.pending) {
+    if (currentRsvp && currentRsvp.rsvpId && role.id === currentRsvp.rsvpId && !currentRsvp.pending) {
         await $events.unrsvpForEvent(event, user, interaction.client);
 
         const payload = buildUnrsvpMessage()

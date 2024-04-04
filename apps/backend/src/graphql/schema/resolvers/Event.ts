@@ -169,7 +169,7 @@ export const eventResolvers: Resolvers = {
 			if (!context.user) return null;
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const currentRsvp = await $events.getUserRsvp(_model, context.user)
-			if (!currentRsvp) return null;
+			if (!currentRsvp || !currentRsvp.rsvpId) return null;
 			return resolveEventMember(currentRsvp)
 		},
 		async roles(source, args, context) {
@@ -541,6 +541,18 @@ export const eventResolvers: Resolvers = {
 			}
 
 			await $events.unrsvpForEvent(event, context.user, context.app.discordClient);
+			return true
+		},
+		async kickEventMember(source, args, context) {
+			const member = await $events.getEventMember(args.member)
+			if (!member) return false;
+
+			// const event = await $events.getEventMemberEvent(member.id)
+			// if (!event || event?.endedAt || event?.archived) {
+			// 	throw gqlErrorBadInput(`Cannot kick user from event after it has ended or been archived`);
+			// }
+
+			await $events.kickEventMember(member, context.app.discordClient)
 			return true
 		}
 	},
