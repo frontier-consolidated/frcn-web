@@ -56,15 +56,15 @@
 			variables: {
 				eventId: data.id,
 				data: {
-					channel: editData.channel.id,
-					name: editData.name,
-					summary: editData.summary,
-					description: editData.description,
+					channel: editData.channel.id ? editData.channel.id : undefined,
+					name: editData.name ? editData.name : undefined,
+					summary: editData.summary ? editData.summary : undefined,
+					description: editData.description ? editData.description : undefined,
 					imageUrl: editData.imageUrl,
-					eventType: editData.eventType!,
+					eventType: editData.eventType,
 					location: editData.location.map((loc) => loc.name),
-					startAt: editData.startAt!,
-					duration: editData.duration!,
+					startAt: editData.startAt,
+					duration: editData.duration,
 					roles: editData.rsvpRoles.map((r) => ({
 						id: r.id,
 						name: r.name,
