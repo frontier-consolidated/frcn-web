@@ -9,6 +9,7 @@
 	import { Button, Head, SectionHeading } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
+	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
@@ -40,8 +41,13 @@
 
 	$: highestMoveable = getHighestMovableRole(filteredRoles, $user.data)
 
+	const { canNavigate, initNavigation } = preventNavigation()
+
 	let isDirty = false;
-	$: isDirty = data.roles.toReversed().reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false)
+	$: {
+		isDirty = data.roles.toReversed().reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false)
+		canNavigate.set(!isDirty)
+	}
 
 	let sortable: Sortable;
     function initSortable(el: HTMLElement) {
@@ -96,7 +102,7 @@
 <SectionHeading>
     User Roles
 </SectionHeading>
-<div class="flex gap-2 px-2 my-4">
+<div class="flex gap-2 px-2 my-4" use:initNavigation>
     <Search size="md" bind:value={$roleSearch} class="rounded" />
     <Button class="shrink-0" on:click={async () => {
 		try {

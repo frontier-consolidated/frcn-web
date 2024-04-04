@@ -6,6 +6,7 @@
 	import { Button, Field, FieldValidator, Head, SectionHeading, Select } from "$lib/components";
 	import Tooltip from "$lib/components/Tooltip.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
+	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
     import type { PageData } from './$types';
@@ -22,7 +23,13 @@
     const validator = new FieldValidator();
     let editData = cloneSettings(data)
 
-    $: isDirty = data.defaultEventChannel?.id !== editData.defaultChannel.id
+    const { canNavigate, initNavigation } = preventNavigation()
+
+	let isDirty = false;
+	$: {
+		isDirty = data.defaultEventChannel?.id !== editData.defaultChannel.id
+		canNavigate.set(!isDirty)
+	}
 
     async function save() {
         if (!validator.validate()) return;
@@ -95,7 +102,7 @@
 <SectionHeading>
     Event Channels
 </SectionHeading>
-<div class="flex-1 flex flex-col justify-between">
+<div class="flex-1 flex flex-col justify-between" use:initNavigation>
     <div class="flex flex-col gap-4 p-4">
         <Field {validator} for="system-channels-guildid" value={"a"} required>
             <Label for="system-channels-default-channel" class="mb-2">Default Event Channel</Label>

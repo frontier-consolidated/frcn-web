@@ -4,6 +4,7 @@
 
 	import { SectionHeading, Field, FieldValidator, Button, Head } from '$lib/components';
 	import { Mutations, getApollo } from '$lib/graphql';
+	import preventNavigation from '$lib/preventNavigation';
 	import { pushNotification } from '$lib/stores/NotificationStore';
 
 	import type { PageData } from './$types';
@@ -19,7 +20,13 @@
     const validator = new FieldValidator();
     let editData = cloneSystemSettings(data)
 
-    $: isDirty = data.discordGuild.id !== editData.discordGuild.id
+    const { canNavigate, initNavigation } = preventNavigation()
+
+	let isDirty = false;
+	$: {
+		isDirty = data.discordGuild.id !== editData.discordGuild.id
+		canNavigate.set(!isDirty)
+	}
 
     async function save() {
         if (!validator.validate()) return;
@@ -58,7 +65,7 @@
 <SectionHeading>
     General Settings
 </SectionHeading>
-<div class="flex-1 flex flex-col justify-between">
+<div class="flex-1 flex flex-col justify-between" use:initNavigation>
     <div class="flex flex-col gap-4 p-4">
         <Field {validator} for="system-general-guildid" value={"a"} required>
             <Label for="system-general-guildid" class="mb-1">Discord Guild</Label>

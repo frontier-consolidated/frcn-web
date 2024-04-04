@@ -16,6 +16,7 @@
 	import { DatetimePicker, DurationPicker, LocationSelectInput, MarkdownEditor, ConfirmationModal, SectionHeading, Select, Field, FieldValidator, Button } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
+	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
 	import type { PageData } from "./$types";
@@ -28,8 +29,13 @@
 	export let data: PageData;
 	let editData = cloneEventSettingsData(data);
 
+	const { canNavigate, initNavigation } = preventNavigation()
+
 	let isDirty = false;
-	$: isDirty = checkIfDirty(data, editData);
+	$: {
+		isDirty = checkIfDirty(data, editData);
+		canNavigate.set(!isDirty)
+	}
 
 	$: canEdit = !data.archived && !data.endedAt
 
@@ -124,7 +130,7 @@
 	}
 </script>
 
-<div class="flex flex-col md:grid md:grid-cols-2 md:gap-6">
+<div class="flex flex-col md:grid md:grid-cols-2 md:gap-6" use:initNavigation>
 	<div>
 		<section>
 			<SectionHeading>

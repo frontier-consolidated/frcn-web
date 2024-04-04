@@ -9,6 +9,7 @@
 	import PermissionToggles from "$lib/components/PermissionToggles.svelte";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";
+	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
     import { user } from "$lib/stores/UserStore"
 
@@ -19,7 +20,13 @@
     const validator = new FieldValidator();
 
     let editData = {...data.key}
-    $: isDirty = editData.description !== data.key.description || editData.permissions !== data.key.permissions
+    const { canNavigate, initNavigation } = preventNavigation()
+
+	let isDirty = false;
+	$: {
+		isDirty = editData.description !== data.key.description || editData.permissions !== data.key.permissions
+		canNavigate.set(!isDirty)
+	}
 
     let key = $page.state.newAccessKey?.key ?? null
     if ($page.state.newAccessKey?.key) replaceState("", {
@@ -104,7 +111,7 @@
 <SectionHeading>
     Edit Key - {data.key.id}
 </SectionHeading>
-<div class="flex-1 flex flex-col justify-between">
+<div class="flex-1 flex flex-col justify-between" use:initNavigation>
 	<div class="flex flex-col gap-4 p-4">
         <Field {validator} for="access-key-description" value={editData.description}>
             <Label for="access-key-description" class="mb-2">Key Description</Label>
