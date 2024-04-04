@@ -177,7 +177,7 @@
                             <div class="w-full px-1 flex flex-col gap-px items-stretch">
                                 {#each day.events as event}
                                     {@const eventStart = event.startAt && new Date(event.startAt)}
-                                    <Button href="/event/{event.id}" target="_blank" disabled={eventStart && eventStart < new Date()} color="dark" class="flex justify-start gap-1 text-left rounded p-px pl-0" size="xs" on:click={(e) => {
+                                    <Button href="/event/{event.id}" target="_blank" disabled={!!event.endedAt} color="dark" class="flex justify-start gap-1 text-left rounded p-px pl-0" size="xs" on:click={(e) => {
                                         e.stopPropagation()
                                     }}>
                                         <div class="rounded-l h-full w-1 bg-primary-500"></div>
