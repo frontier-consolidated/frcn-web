@@ -49,7 +49,7 @@
 	let archiveModalOpen = false;
 
 	async function save() {
-		if (!validator.validate()) return false;
+		if (!validator.validate(!data.posted)) return false;
 		
 		const { data: updatedData, errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_EVENT,
