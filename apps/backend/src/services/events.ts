@@ -347,7 +347,7 @@ async function createEvent(owner: User, startAt: Date | undefined, discordClient
 	const discordChannel = await $discord.getChannel(discordClient, defaultEventChannel.discordId)
 	if (!discordChannel) throw new Error("Could not fetch default event discord channel")
 
-	const discordCategory = await $discord.getChannel(discordClient, defaultEventChannel.discordId)
+	const discordCategory = await $discord.getChannel(discordClient, defaultEventChannel.discordCategoryId)
 	if (!discordCategory) throw new Error("Could not fetch default event channel discord category")
 
 	if (!(await $discord.canPostInChannel(discordChannel))) throw new Error("Cannot post messages in default event channel")
