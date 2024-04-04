@@ -129,7 +129,6 @@ async function deleteResource(client: S3Client, bucket: string, id: string) {
 	})
 	if (!resource) return;
 
-	// TODO: Look at why transactions here was causing long process time
 	database.$transaction(async (tx) => {
 		await tx.resource.delete({
 			where: { id }
