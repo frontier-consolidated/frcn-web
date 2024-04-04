@@ -6,5 +6,9 @@ export const EVENT_CHANNEL_FRAGMENT = gql(`
         discord {
             ...ChannelFragment
         }
+        discordCategory {
+            ...ChannelFragment
+        }
+        readyRoomName
     }
 `);

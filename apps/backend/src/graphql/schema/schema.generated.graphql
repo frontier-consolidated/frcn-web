@@ -17,6 +17,13 @@ enum EventAccessType {
 	CHANNEL
 }
 
+enum EventState {
+	NONE
+	STARTED
+	ENDED
+	ARCHIVED
+}
+
 # Directives
 
 directive @cacheControl(
@@ -111,6 +118,7 @@ type EventMember {
 	id: ID!
 	pending: Boolean!
 	user: User!
+	team: EventTeam
 	rsvp: ID
 	rsvpAt: Timestamp!
 }
@@ -125,6 +133,7 @@ type EventTeam {
 	id: ID!
 	name: String!
 	members: [EventMember!]!
+	event: Event!
 }
 
 type Event {
@@ -140,6 +149,7 @@ type Event {
 	startAt: Timestamp
 	endedAt: Timestamp
 	duration: Int
+	state: EventState!
 	posted: Boolean!
 	archived: Boolean!
 	archivedAt: Timestamp
@@ -159,6 +169,8 @@ type Event {
 type EventChannel {
 	id: Int!
 	discord: DiscordChannel!
+	discordCategory: DiscordChannel
+	readyRoomName: String
 	events: [Event!]! @permission(has: ManageSystem)
 }
 
@@ -171,6 +183,7 @@ type DiscordChannel {
 	id: ID!
 	name: String!
 	type: String
+	parentId: ID
 	sendMessages: Boolean!
 }
 
@@ -274,12 +287,8 @@ input EventEditInput {
 	accessRoles: [ID!]
 }
 
-input EventTeamCreateInput {
-	name: String!
-}
-
 input EventTeamEditInput {
-	name: String
+	name: String @constraint(maxLength: 255)
 }
 
 input SystemEditInput {
@@ -294,6 +303,8 @@ input AccessKeyEditInput {
 
 input EventChannelEditInput {
 	channelId: ID
+	categoryId: ID
+	readyRoomName: String @constraint(maxLength: 255)
 }
 
 input RoleEditInput {
@@ -366,7 +377,9 @@ type Query {
 	getAllEventChannels: [EventChannel!]! @permission(one: [CreateEvents, ManageSystem])
 	getEventChannel(id: Int!): EventChannel @permission(has: ManageSystem)
 
-	getAllDiscordChannels: [DiscordChannel!]! @permission(has: ManageSystem)
+	getAllDiscordTextChannels: [DiscordChannel!]! @permission(has: ManageSystem)
+	getAllDiscordVoiceChannels: [DiscordChannel!]! @permission(has: ManageSystem)
+	getAllDiscordCategories: [DiscordChannel!]! @permission(has: ManageSystem)
 	getAllDiscordEmojis: DiscordEmojis! @permission(has: CreateEvents)
 	getAllDiscordRoles(everyone: Boolean): [DiscordRole!]!
 		@permission(one: [CreateEvents, ManageRoles])
@@ -403,12 +416,12 @@ type Mutation {
 	rsvpForEvent(id: ID!, rsvp: ID!): Boolean!
 	unrsvpForEvent(id: ID!): Boolean!
 
-	setEventMemberTeam(id: ID!, member: ID!, team: ID): Boolean!
-	kickEventMember(id: ID!, member: ID!): Boolean! @permission(has: CreateEvents)
+	setEventMemberTeam(member: ID!, team: ID): Boolean!
+	kickEventMember(member: ID!): Boolean! @permission(has: CreateEvents)
 
-	createEventTeam(id: ID!, data: EventTeamCreateInput!): EventTeam!
-	editEventTeam(id: ID!, data: EventTeamEditInput!): EventTeam!
-	deleteEventTeam(id: ID!, team: ID!): Boolean!
+	createEventTeam(eventId: ID!, name: String!): EventTeam! @permission(has: CreateEvents)
+	editEventTeam(id: ID!, data: EventTeamEditInput!): EventTeam @permission(has: CreateEvents)
+	deleteEventTeam(id: ID!): Boolean! @permission(has: CreateEvents)
 
 	# Resources
 	createResource(data: ResourceCreateInput!): Resource! @permission(has: UploadResources)
@@ -428,10 +441,12 @@ type Mutation {
 	# System
 	editSystemSettings(data: SystemEditInput!): SystemSettings! @permission(has: ManageSystem)
 
-	createEventChannel(linkTo: ID!): EventChannel! @permission(has: ManageSystem)
+	createEventChannel(linkTo: ID!, categoryId: ID!, existingReadyRoomId: ID): EventChannel!
+		@permission(has: ManageSystem)
 	editEventChannel(id: Int!, data: EventChannelEditInput!): EventChannel
 		@permission(has: ManageSystem)
-	deleteEventChannel(id: Int!): Boolean! @permission(has: ManageSystem)
+	deleteEventChannel(id: Int!, deleteVoiceChannels: Boolean): Boolean!
+		@permission(has: ManageSystem)
 
 	createAccessKey: AccessKey! @permission(has: ManageSystem)
 	editAccessKey(id: Int!, data: AccessKeyEditInput!): AccessKey @permission(has: ManageSystem)

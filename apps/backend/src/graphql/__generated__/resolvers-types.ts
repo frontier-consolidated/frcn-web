@@ -82,6 +82,7 @@ export type DiscordChannel = {
   __typename?: 'DiscordChannel';
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
+  parentId?: Maybe<Scalars['ID']['output']>;
   sendMessages: Scalars['Boolean']['output'];
   type?: Maybe<Scalars['String']['output']>;
 };
@@ -137,6 +138,7 @@ export type Event = {
   rsvp?: Maybe<EventMember>;
   settings: EventSettings;
   startAt?: Maybe<Scalars['Timestamp']['output']>;
+  state: EventState;
   summary: Scalars['String']['output'];
   teams: Array<EventTeam>;
   updatedAt: Scalars['Timestamp']['output'];
@@ -152,12 +154,16 @@ export enum EventAccessType {
 export type EventChannel = {
   __typename?: 'EventChannel';
   discord: DiscordChannel;
+  discordCategory?: Maybe<DiscordChannel>;
   events: Array<Event>;
   id: Scalars['Int']['output'];
+  readyRoomName?: Maybe<Scalars['String']['output']>;
 };
 
 export type EventChannelEditInput = {
+  categoryId?: InputMaybe<Scalars['ID']['input']>;
   channelId?: InputMaybe<Scalars['ID']['input']>;
+  readyRoomName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EventEditInput = {
@@ -193,6 +199,7 @@ export type EventMember = {
   pending: Scalars['Boolean']['output'];
   rsvp?: Maybe<Scalars['ID']['output']>;
   rsvpAt: Scalars['Timestamp']['output'];
+  team?: Maybe<EventTeam>;
   user: User;
 };
 
@@ -234,15 +241,19 @@ export type EventSettingsInput = {
   openToJoinRequests: Scalars['Boolean']['input'];
 };
 
+export enum EventState {
+  Archived = 'ARCHIVED',
+  Ended = 'ENDED',
+  None = 'NONE',
+  Started = 'STARTED'
+}
+
 export type EventTeam = {
   __typename?: 'EventTeam';
+  event: Event;
   id: Scalars['ID']['output'];
   members: Array<EventMember>;
   name: Scalars['String']['output'];
-};
-
-export type EventTeamCreateInput = {
-  name: Scalars['String']['input'];
 };
 
 export type EventTeamEditInput = {
@@ -273,7 +284,7 @@ export type Mutation = {
   editContentContainerFile?: Maybe<ContentContainerFile>;
   editEvent?: Maybe<Event>;
   editEventChannel?: Maybe<EventChannel>;
-  editEventTeam: EventTeam;
+  editEventTeam?: Maybe<EventTeam>;
   editResource?: Maybe<Resource>;
   editRole?: Maybe<UserRole>;
   editSystemSettings: SystemSettings;
@@ -315,13 +326,15 @@ export type MutationCreateEventArgs = {
 
 
 export type MutationCreateEventChannelArgs = {
+  categoryId: Scalars['ID']['input'];
+  existingReadyRoomId?: InputMaybe<Scalars['ID']['input']>;
   linkTo: Scalars['ID']['input'];
 };
 
 
 export type MutationCreateEventTeamArgs = {
-  data: EventTeamCreateInput;
-  id: Scalars['ID']['input'];
+  eventId: Scalars['ID']['input'];
+  name: Scalars['String']['input'];
 };
 
 
@@ -351,13 +364,13 @@ export type MutationDeleteEventArgs = {
 
 
 export type MutationDeleteEventChannelArgs = {
+  deleteVoiceChannels?: InputMaybe<Scalars['Boolean']['input']>;
   id: Scalars['Int']['input'];
 };
 
 
 export type MutationDeleteEventTeamArgs = {
   id: Scalars['ID']['input'];
-  team: Scalars['ID']['input'];
 };
 
 
@@ -441,7 +454,6 @@ export type MutationGiveUserRoleArgs = {
 
 
 export type MutationKickEventMemberArgs = {
-  id: Scalars['ID']['input'];
   member: Scalars['ID']['input'];
 };
 
@@ -486,7 +498,6 @@ export type MutationRsvpForEventArgs = {
 
 
 export type MutationSetEventMemberTeamArgs = {
-  id: Scalars['ID']['input'];
   member: Scalars['ID']['input'];
   team?: InputMaybe<Scalars['ID']['input']>;
 };
@@ -574,9 +585,11 @@ export type Query = {
   __typename?: 'Query';
   getAccessKey?: Maybe<AccessKey>;
   getAllAccessKeys: Array<AccessKey>;
-  getAllDiscordChannels: Array<DiscordChannel>;
+  getAllDiscordCategories: Array<DiscordChannel>;
   getAllDiscordEmojis: DiscordEmojis;
   getAllDiscordRoles: Array<DiscordRole>;
+  getAllDiscordTextChannels: Array<DiscordChannel>;
+  getAllDiscordVoiceChannels: Array<DiscordChannel>;
   getAllEventChannels: Array<EventChannel>;
   getAllUsers: Array<User>;
   getContentContainer?: Maybe<ContentContainer>;
@@ -879,8 +892,8 @@ export type ResolversTypes = ResolversObject<{
   EventRsvpRole: ResolverTypeWrapper<EventRsvpRole>;
   EventSettings: ResolverTypeWrapper<EventSettings>;
   EventSettingsInput: EventSettingsInput;
+  EventState: EventState;
   EventTeam: ResolverTypeWrapper<EventTeam>;
-  EventTeamCreateInput: EventTeamCreateInput;
   EventTeamEditInput: EventTeamEditInput;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
@@ -934,7 +947,6 @@ export type ResolversParentTypes = ResolversObject<{
   EventSettings: EventSettings;
   EventSettingsInput: EventSettingsInput;
   EventTeam: EventTeam;
-  EventTeamCreateInput: EventTeamCreateInput;
   EventTeamEditInput: EventTeamEditInput;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
@@ -1017,6 +1029,7 @@ export type ContentContainerFileResolvers<ContextType = GQLContext, ParentType e
 export type DiscordChannelResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['DiscordChannel'] = ResolversParentTypes['DiscordChannel']> = ResolversObject<{
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  parentId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   sendMessages?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   type?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
@@ -1072,6 +1085,7 @@ export type EventResolvers<ContextType = GQLContext, ParentType extends Resolver
   rsvp?: Resolver<Maybe<ResolversTypes['EventMember']>, ParentType, ContextType>;
   settings?: Resolver<ResolversTypes['EventSettings'], ParentType, ContextType>;
   startAt?: Resolver<Maybe<ResolversTypes['Timestamp']>, ParentType, ContextType>;
+  state?: Resolver<ResolversTypes['EventState'], ParentType, ContextType>;
   summary?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   teams?: Resolver<Array<ResolversTypes['EventTeam']>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
@@ -1080,8 +1094,10 @@ export type EventResolvers<ContextType = GQLContext, ParentType extends Resolver
 
 export type EventChannelResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventChannel'] = ResolversParentTypes['EventChannel']> = ResolversObject<{
   discord?: Resolver<ResolversTypes['DiscordChannel'], ParentType, ContextType>;
+  discordCategory?: Resolver<Maybe<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  readyRoomName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
@@ -1090,6 +1106,7 @@ export type EventMemberResolvers<ContextType = GQLContext, ParentType extends Re
   pending?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   rsvp?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   rsvpAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
+  team?: Resolver<Maybe<ResolversTypes['EventTeam']>, ParentType, ContextType>;
   user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
@@ -1119,6 +1136,7 @@ export type EventSettingsResolvers<ContextType = GQLContext, ParentType extends 
 }>;
 
 export type EventTeamResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventTeam'] = ResolversParentTypes['EventTeam']> = ResolversObject<{
+  event?: Resolver<ResolversTypes['Event'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   members?: Resolver<Array<ResolversTypes['EventMember']>, ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -1130,8 +1148,8 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   createAccessKey?: Resolver<ResolversTypes['AccessKey'], ParentType, ContextType>;
   createContentContainer?: Resolver<ResolversTypes['ContentContainer'], ParentType, ContextType, RequireFields<MutationCreateContentContainerArgs, 'type'>>;
   createEvent?: Resolver<ResolversTypes['ID'], ParentType, ContextType, Partial<MutationCreateEventArgs>>;
-  createEventChannel?: Resolver<ResolversTypes['EventChannel'], ParentType, ContextType, RequireFields<MutationCreateEventChannelArgs, 'linkTo'>>;
-  createEventTeam?: Resolver<ResolversTypes['EventTeam'], ParentType, ContextType, RequireFields<MutationCreateEventTeamArgs, 'data' | 'id'>>;
+  createEventChannel?: Resolver<ResolversTypes['EventChannel'], ParentType, ContextType, RequireFields<MutationCreateEventChannelArgs, 'categoryId' | 'linkTo'>>;
+  createEventTeam?: Resolver<ResolversTypes['EventTeam'], ParentType, ContextType, RequireFields<MutationCreateEventTeamArgs, 'eventId' | 'name'>>;
   createResource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType, RequireFields<MutationCreateResourceArgs, 'data'>>;
   createRole?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   deleteAccessKey?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteAccessKeyArgs, 'id'>>;
@@ -1140,7 +1158,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   deleteCurrentUser?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   deleteEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteEventArgs, 'id'>>;
   deleteEventChannel?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteEventChannelArgs, 'id'>>;
-  deleteEventTeam?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteEventTeamArgs, 'id' | 'team'>>;
+  deleteEventTeam?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteEventTeamArgs, 'id'>>;
   deleteResource?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteResourceArgs, 'id'>>;
   deleteRole?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteRoleArgs, 'id'>>;
   editAccessKey?: Resolver<Maybe<ResolversTypes['AccessKey']>, ParentType, ContextType, RequireFields<MutationEditAccessKeyArgs, 'data' | 'id'>>;
@@ -1148,14 +1166,14 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   editContentContainerFile?: Resolver<Maybe<ResolversTypes['ContentContainerFile']>, ParentType, ContextType, RequireFields<MutationEditContentContainerFileArgs, 'data' | 'id'>>;
   editEvent?: Resolver<Maybe<ResolversTypes['Event']>, ParentType, ContextType, RequireFields<MutationEditEventArgs, 'data' | 'id'>>;
   editEventChannel?: Resolver<Maybe<ResolversTypes['EventChannel']>, ParentType, ContextType, RequireFields<MutationEditEventChannelArgs, 'data' | 'id'>>;
-  editEventTeam?: Resolver<ResolversTypes['EventTeam'], ParentType, ContextType, RequireFields<MutationEditEventTeamArgs, 'data' | 'id'>>;
+  editEventTeam?: Resolver<Maybe<ResolversTypes['EventTeam']>, ParentType, ContextType, RequireFields<MutationEditEventTeamArgs, 'data' | 'id'>>;
   editResource?: Resolver<Maybe<ResolversTypes['Resource']>, ParentType, ContextType, RequireFields<MutationEditResourceArgs, 'data' | 'id'>>;
   editRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<MutationEditRoleArgs, 'data' | 'id'>>;
   editSystemSettings?: Resolver<ResolversTypes['SystemSettings'], ParentType, ContextType, RequireFields<MutationEditSystemSettingsArgs, 'data'>>;
   editUserStatus?: Resolver<ResolversTypes['UserStatus'], ParentType, ContextType, RequireFields<MutationEditUserStatusArgs, 'data'>>;
   endEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationEndEventArgs, 'id'>>;
   giveUserRole?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationGiveUserRoleArgs, 'roleId' | 'userId'>>;
-  kickEventMember?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationKickEventMemberArgs, 'id' | 'member'>>;
+  kickEventMember?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationKickEventMemberArgs, 'member'>>;
   postEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationPostEventArgs, 'id'>>;
   regenerateAccessKey?: Resolver<Maybe<ResolversTypes['AccessKey']>, ParentType, ContextType, RequireFields<MutationRegenerateAccessKeyArgs, 'id'>>;
   removeUserRole?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRemoveUserRoleArgs, 'roleId' | 'userId'>>;
@@ -1163,7 +1181,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   reorderContentContainerFiles?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<MutationReorderContentContainerFilesArgs, 'id' | 'order'>>;
   reorderRoles?: Resolver<Array<ResolversTypes['ID']>, ParentType, ContextType, RequireFields<MutationReorderRolesArgs, 'order'>>;
   rsvpForEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationRsvpForEventArgs, 'id' | 'rsvp'>>;
-  setEventMemberTeam?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSetEventMemberTeamArgs, 'id' | 'member'>>;
+  setEventMemberTeam?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSetEventMemberTeamArgs, 'member'>>;
   setUserScName?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationSetUserScNameArgs, 'name'>>;
   syncRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<MutationSyncRoleArgs, 'id'>>;
   unpostEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUnpostEventArgs, 'id'>>;
@@ -1198,9 +1216,11 @@ export type PagedResourceResolvers<ContextType = GQLContext, ParentType extends 
 export type QueryResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   getAccessKey?: Resolver<Maybe<ResolversTypes['AccessKey']>, ParentType, ContextType, RequireFields<QueryGetAccessKeyArgs, 'id'>>;
   getAllAccessKeys?: Resolver<Array<ResolversTypes['AccessKey']>, ParentType, ContextType>;
-  getAllDiscordChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
+  getAllDiscordCategories?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
   getAllDiscordEmojis?: Resolver<ResolversTypes['DiscordEmojis'], ParentType, ContextType>;
   getAllDiscordRoles?: Resolver<Array<ResolversTypes['DiscordRole']>, ParentType, ContextType, Partial<QueryGetAllDiscordRolesArgs>>;
+  getAllDiscordTextChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
+  getAllDiscordVoiceChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
   getAllEventChannels?: Resolver<Array<ResolversTypes['EventChannel']>, ParentType, ContextType>;
   getAllUsers?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
   getContentContainer?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainerArgs, 'identifier' | 'type'>>;

@@ -3,7 +3,7 @@ import { error } from '@sveltejs/kit';
 
 import { Queries } from '$lib/graphql';
 
-import type { PageServerLoad } from './$types';
+import type { LayoutServerLoad } from './$types';
 
 export const load = (async ({ locals, depends }) => {
     depends("app:eventchannels")
@@ -20,7 +20,9 @@ export const load = (async ({ locals, depends }) => {
         ...data.settings,
         channels: data.eventChannels,
         options: {
-            channels: data.discordChannels
+            channels: data.discordChannels,
+            voiceChannels: data.discordVoiceChannels,
+            categories: data.discordCategories
         }
     }
-}) satisfies PageServerLoad;
+}) satisfies LayoutServerLoad;

@@ -5,6 +5,7 @@ export const CHANNEL_FRAGMENT = gql(`
         id
         name
         type
+        parentId
         sendMessages
     }
 `);

@@ -6,7 +6,7 @@
     
 	import { Button, CreatedByButton, LocationBreadcrumbItem, RsvpModal } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
-	import type { EventFragmentFragment } from "$lib/graphql/__generated__/graphql";
+	import { EventState, type EventFragmentFragment } from "$lib/graphql/__generated__/graphql";
     import placeholder from "$lib/images/stock/placeholder.jpg"
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
@@ -24,20 +24,24 @@
     }} />
     <div class="flex flex-col px-4 py-3">
         <span class="flex flex-col sm:flex-row sm:items-center gap-2 text-xl font-semibold text-gray-800 dark:text-white">
-            {#if !event.endedAt && event.startAt && new Date(event.startAt) <= new Date()}
+            {#if event.state === EventState.Started}
                 <Badge large color="green" class="px-2.5 py-0.5">
                     <Indicator color="green" size="xs" class="me-2 relative">
                         <Indicator color="green" size="xs" class="absolute top-0 left-0 animate-ping" />
                     </Indicator>
                     Started
                 </Badge>
-            {:else if event.endedAt && !event.archived}
+            {:else if event.state === EventState.Ended}
                 <Badge large color="red" class="px-2.5 py-0.5">
                     Ended
                 </Badge>
-            {:else if event.archived}
+            {:else if event.state === EventState.Archived}
                 <Badge large color="dark" class="px-2.5 py-0.5">
                     Archived
+                </Badge>
+            {:else if !event.posted}
+                <Badge large color="dark" class="px-2.5 py-0.5">
+                    Draft
                 </Badge>
             {/if}
             {event.name ? event.name : "Unnamed Event"}

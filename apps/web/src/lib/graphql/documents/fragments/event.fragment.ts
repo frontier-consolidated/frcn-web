@@ -32,6 +32,7 @@ export const EVENT_FRAGMENT = gql(`
         members {
             ...EventMemberFragment
         }
+        state
         posted
         duration
         startAt

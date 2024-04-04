@@ -11,10 +11,16 @@ export const GET_ALL_EVENT_CHANNELS = gql(`
 			...EventChannelFragment
 			events {
 				id
-				name
+				state
 			}
 		}
-		discordChannels: getAllDiscordChannels {
+		discordChannels: getAllDiscordTextChannels {
+			...ChannelFragment
+		}
+		discordVoiceChannels: getAllDiscordVoiceChannels {
+			...ChannelFragment
+		}
+		discordCategories: getAllDiscordCategories {
 			...ChannelFragment
 		}
 	}

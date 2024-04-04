@@ -1,5 +1,6 @@
 import { hasAdmin } from "@frcn/shared";
 import type { AccessKey } from "@prisma/client";
+import { ChannelType, type GuildBasedChannel } from "discord.js";
 
 import { resolveEventChannel } from "./Event";
 import type { WithModel } from "./types";
@@ -15,7 +16,7 @@ import type {
 	Resolvers,
 } from "../../__generated__/resolvers-types";
 import { calculatePermissions } from "../calculatePermissions";
-import { gqlErrorBadInput, gqlErrorPermission } from "../gqlError";
+import { gqlErrorBadInput, gqlErrorBadState, gqlErrorPermission } from "../gqlError";
 
 type SystemSettings = Awaited<ReturnType<(typeof $system)["getSystemSettings"]>>
 
@@ -122,34 +123,68 @@ export const systemResolvers: Resolvers = {
 				throw gqlErrorBadInput(`Event channels can only be text-based channels`);
 			}
 
-			const channel = await $events.createEventChannel(discordChannel)
+			const discordCategory = await $discord.getChannel(context.app.discordClient, args.categoryId)
+			if (!discordCategory) {
+				throw gqlErrorBadInput(`Discord category not found: ${args.categoryId}`);
+			}
+
+			if (discordCategory.type !== ChannelType.GuildCategory) {
+				throw gqlErrorBadInput(`Given id for event category does not point to a category channel`);
+			}
+
+			if (!(await $discord.canManageChannelsInCategory(discordCategory))) {
+				throw gqlErrorBadState("Cannot manage channels in event channel category")
+			}
+
+			let existingReadyRoom: GuildBasedChannel | null = null;
+			if (args.existingReadyRoomId) {
+				existingReadyRoom = await $discord.getChannel(context.app.discordClient, args.existingReadyRoomId)
+				if (!existingReadyRoom) {
+					throw gqlErrorBadInput(`Discord channel not found: ${args.existingReadyRoomId}`);
+				}
+	
+				if (existingReadyRoom.type !== ChannelType.GuildVoice) {
+					throw gqlErrorBadInput(`Existing ready room given is not a voice channel`);
+				}
+			}
+
+			const channel = await $events.createEventChannel(discordChannel, discordCategory, existingReadyRoom ?? undefined)
 			return resolveEventChannel(channel)
 		},
 		async editEventChannel(source, args, context) {
 			const channel = await $events.getEventChannel(args.id)
 			if (!channel) return null;
 
-			if (!args.data.channelId) {
-				return resolveEventChannel(channel)
+			if (args.data.channelId) {
+				const discordChannel = await $discord.getChannel(context.app.discordClient, args.data.channelId)
+				if (!discordChannel) {
+					throw gqlErrorBadInput(`Discord channel not found: ${args.data.channelId}`);
+				}
+	
+				if (!discordChannel.isTextBased()) {
+					throw gqlErrorBadInput(`Event channels can only be text-based channels`);
+				}
 			}
 
-			const discordChannel = await $discord.getChannel(context.app.discordClient, args.data.channelId)
-			if (!discordChannel) {
-				throw gqlErrorBadInput(`Discord channel not found: ${args.data.channelId}`);
-			}
-
-			if (!discordChannel.isTextBased()) {
-				throw gqlErrorBadInput(`Event channels can only be text-based channels`);
+			if (args.data.categoryId) {
+				const discordCategory = await $discord.getChannel(context.app.discordClient, args.data.categoryId)
+				if (!discordCategory) {
+					throw gqlErrorBadInput(`Discord category not found: ${args.data.categoryId}`);
+				}
+	
+				if (discordCategory.type !== ChannelType.GuildCategory) {
+					throw gqlErrorBadInput(`Given id for event category does not point to a category channel`);
+				}
 			}
 
 			const updatedChannel = await $events.editEventChannel(channel, args.data)
 			return resolveEventChannel(updatedChannel)
 		},
-		async deleteEventChannel(source, args) {
+		async deleteEventChannel(source, args, context) {
 			const channel = await $events.getEventChannel(args.id)
 			if (!channel) return false;
 
-			await $events.deleteEventChannel(channel)
+			await $events.deleteEventChannel(channel, context.app.discordClient, args.deleteVoiceChannels ?? false)
 			return true;
 		},
 		async createAccessKey() {

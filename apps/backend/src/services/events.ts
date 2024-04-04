@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 
 import type { EventType } from "@frcn/shared";
 import type { Event, EventChannel, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
-import { ChannelType, Client as DiscordClient, TextChannel, type GuildBasedChannel, ThreadAutoArchiveDuration } from "discord.js";
+import { ChannelType, Client as DiscordClient, TextChannel, type GuildBasedChannel, ThreadAutoArchiveDuration, VideoQualityMode } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
@@ -681,12 +681,48 @@ async function getEventChannel(id: number) {
 	});
 }
 
-async function createEventChannel(channel: GuildBasedChannel) {
-	return await database.eventChannel.create({
+async function getEventChannelReadyRoom(id: number) {
+	return await database.eventVoiceChannel.findFirst({
+		where: { channelId: id, readyRoom: true },
+	})
+}
+
+async function getEventChannelVoiceChannels(id: number) {
+	const result = await database.eventChannel.findUnique({
+		where: { id },
+	}).voiceChannels()
+	return result ?? []
+}
+
+async function createEventChannel(channel: GuildBasedChannel, category: GuildBasedChannel, readyRoom?: GuildBasedChannel) {
+	if (!(await $discord.canManageChannelsInCategory(category))) throw new Error("Cannot manage channels in event channel category")
+
+	if (!readyRoom) {
+		// Currently inherits permissions of category - this should be ok?
+		readyRoom = await category.guild.channels.create({
+			name: "Event Ready Room",
+			type: ChannelType.GuildVoice,
+			bitrate: 64000,
+			videoQualityMode: VideoQualityMode.Auto,
+			parent: category.id,
+			reason: "Create event ready room for " + channel.name,
+		})
+	}
+
+	const eventChannel = await database.eventChannel.create({
 		data: {
 			discordId: channel.id,
+			discordCategoryId: category.id,
+			voiceChannels: {
+				create: {
+					discordId: readyRoom.id,
+					readyRoom: true,
+				}
+			}
 		}
 	})
+
+	return eventChannel;
 }
 
 async function editEventChannel(channel: EventChannel, data: EventChannelEditInput) {
@@ -694,12 +730,24 @@ async function editEventChannel(channel: EventChannel, data: EventChannelEditInp
 		where: { id: channel.id },
 		data: {
 			discordId: data.channelId ?? undefined,
+			discordCategoryId: data.categoryId ?? undefined,
+			readyRoomName: data.readyRoomName ?? undefined
 		}
 	})
 }
 
-async function deleteEventChannel(channel: EventChannel) {
+async function deleteEventChannel(channel: EventChannel, discordClient: DiscordClient, deleteVoiceChannels = false) {
 	// TODO: Update all scheduled events to be reposted
+
+	if (deleteVoiceChannels) {
+		const vcs = await getEventChannelVoiceChannels(channel.id)
+		for (const vc of vcs) {
+			const discordChannel = await $discord.getChannel(discordClient, vc.discordId)
+			if (discordChannel) {
+				await discordChannel.delete("Deleting voice channels associated to event channel")
+			}
+		}
+	}
 
 	await database.eventChannel.delete({
 		where: { id: channel.id },
@@ -744,6 +792,8 @@ export const $events = {
 	eventChannelExists,
 	getAllEventChannels,
 	getEventChannel,
+	getEventChannelReadyRoom,
+	getEventChannelVoiceChannels,
 	createEventChannel,
 	editEventChannel,
 	deleteEventChannel

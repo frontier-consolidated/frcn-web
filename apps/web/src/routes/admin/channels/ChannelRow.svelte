@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { goto, invalidate } from "$app/navigation";
-	import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
+	import { Indicator, TableBodyCell, TableBodyRow, Toggle } from "flowbite-svelte";
 	import { EditOutline, ExclamationCircleSolid, TrashBinSolid } from "flowbite-svelte-icons";
 
 	import { ConfirmationModal, Tooltip } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
+	import { EventState } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
 	import type { PageData } from "./$types";
@@ -12,6 +13,7 @@
     export let channel: PageData["channels"][number]
 
     let modalOpen = false;
+    let deleteRelatedVoiceChannels = false;
 </script>
 
 <TableBodyRow data-channel-id={channel.id} class="group cursor-pointer dark:hover:bg-gray-600" on:click={() => {
@@ -26,6 +28,47 @@
                 </Tooltip>
             {/if}
             {channel.discord.name}
+        </div>
+    </TableBodyCell>
+    <TableBodyCell>
+        {#if channel.discordCategory}
+            {channel.discordCategory.name}
+        {:else}
+            <span class="text-red-500">MISSING</span>
+        {/if}
+    </TableBodyCell>
+    <TableBodyCell class="text-center dark:text-gray-400 group-[.dragging]:hidden">
+        <div class="flex items-center justify-center gap-2 flex-wrap text-xs">
+            <Tooltip>
+                <div slot="icon" class="flex items-center">
+                    <span>{channel.events.filter(e => e.state === EventState.Started).length}</span>
+                    <Indicator color="green" size="xs" class="ms-1 relative">
+                        <Indicator color="green" size="xs" class="absolute top-0 left-0 animate-ping" />
+                    </Indicator>
+                </div>
+                Currently running events
+            </Tooltip>
+            <Tooltip>
+                <div slot="icon" class="flex items-center">
+                    <span>{channel.events.filter(e => e.state === EventState.Ended).length}</span>
+                    <Indicator color="red" size="xs" class="ms-1" />
+                </div>
+                Ended unarchived events
+            </Tooltip>
+            <Tooltip>
+                <div slot="icon" class="flex items-center">
+                    <span>{channel.events.filter(e => e.state === EventState.Archived).length}</span>
+                    <Indicator color="dark" size="xs" class="ms-1" />
+                </div>
+                Archived events
+            </Tooltip>
+            <Tooltip>
+                <div slot="icon" class="flex items-center">
+                    <span>{channel.events.filter(e => e.state === EventState.None).length}</span>
+                    <Indicator color="yellow" size="xs" class="ms-1" />
+                </div>
+                Upcoming / draft events
+            </Tooltip>
         </div>
     </TableBodyCell>
     <TableBodyCell>
@@ -54,7 +97,8 @@
     const { errors } = await getApollo().mutate({
         mutation: Mutations.DELETE_EVENT_CHANNEL,
         variables: {
-            id: channel.id
+            id: channel.id,
+            deleteVoiceChannels: deleteRelatedVoiceChannels
         },
         errorPolicy: "all",
     })
@@ -73,4 +117,5 @@
 }}>
     <p>Are you sure you want to delete the link to the <strong>{channel.discord.name}</strong> event channel? Once deleted it cannot be undone.</p>
     <p>Any scheduled events posted in this channel will have to be reposted in another event channel.</p>
+    <Toggle bind:checked={deleteRelatedVoiceChannels}>Delete Voice Channels</Toggle>
 </ConfirmationModal>

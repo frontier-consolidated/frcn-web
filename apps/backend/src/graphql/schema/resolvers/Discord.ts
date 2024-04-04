@@ -14,11 +14,24 @@ import { gqlErrorNotFound } from "../gqlError";
 export function resolveDiscordChannel(
 	channel: GuildBasedChannel,
 ) {
+	let name = channel.name;
+	switch (channel.type) {
+		case ChannelType.GuildCategory:
+			break;
+		case ChannelType.GuildVoice:
+			name = `🔊 ${channel.name}`
+			break;
+		default:
+			name = `#${channel.name}`
+			break;
+	}
+
 	return {
 		_model: channel,
 		id: channel.id,
-		name: `#${channel.name}`,
+		name,
 		type: ChannelType[channel.type],
+		parentId: channel.parentId,
 		sendMessages: false, // field-resolved
 	} satisfies WithModel<DiscordChannel, GuildBasedChannel>;
 }
@@ -73,15 +86,23 @@ export const discordResolvers: Resolvers = {
 	DiscordChannel: {
 		async sendMessages(source) {
 			const { _model: channel } = source as WithModel<DiscordChannel, GuildBasedChannel>;
-			if (!channel) return false;
+			if (!channel || channel.type === ChannelType.GuildCategory) return false;
 			return await $discord.canPostInChannel(channel)
 		}
 	},
 
 	Query: {
-		async getAllDiscordChannels(source, args, context) {
+		async getAllDiscordTextChannels(source, args, context) {
 			const channels = await $discord.getAllTextChannels(context.app.discordClient);
 			return channels.map(resolveDiscordChannel);
+		},
+		async getAllDiscordVoiceChannels(source, args, context) {
+			const channels = await $discord.getAllVoiceChannels(context.app.discordClient);
+			return channels.map(resolveDiscordChannel);
+		},
+		async getAllDiscordCategories(source, args, context) {
+			const categories = await $discord.getAllCategories(context.app.discordClient)
+			return categories.map(resolveDiscordChannel)
 		},
 		async getAllDiscordEmojis(source, args, context) {
 			const guild = await $discord.getGuild(context.app.discordClient);

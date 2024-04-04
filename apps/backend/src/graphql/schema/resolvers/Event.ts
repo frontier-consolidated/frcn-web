@@ -1,5 +1,6 @@
 import { EventType } from "@frcn/shared";
 import type { EventRsvpRole, EventSettings, EventUser, Event, User, EventChannel } from "@prisma/client";
+import type { CategoryChannel } from "discord.js";
 
 import { resolveDiscordChannel, resolveDiscordEmoji } from "./Discord";
 import { resolveUserRole } from "./Roles";
@@ -19,7 +20,7 @@ import type {
 	Resolvers,
 	DiscordChannel
 } from "../../__generated__/resolvers-types";
-import { EventAccessType } from "../../__generated__/resolvers-types";
+import { EventAccessType, EventState } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
 import { gqlErrorBadInput, gqlErrorBadState, gqlErrorUnauthenticated } from "../gqlError";
 
@@ -46,6 +47,7 @@ export function resolveEvent(event: Event) {
 		startAt: event.startAt,
 		endedAt: event.endedAt,
 		duration: event.duration,
+		state: EventState.None, // field-resolved
 		posted: event.posted,
 		archived: event.archived,
 		archivedAt: event.archivedAt,
@@ -112,7 +114,9 @@ export function resolveEventChannel(channel: EventChannel) {
 	return {
 		_model: channel,
 		id: channel.id,
+		readyRoomName: channel.readyRoomName,
 		discord: {} as unknown as DiscordChannel, // field-resolved
+		discordCategory: null, // field-resolved
 		events: [] // field-resolved
 	} satisfies WithModel<GQLEventChannel, EventChannel>;
 }
@@ -145,6 +149,21 @@ export const eventResolvers: Resolvers = {
 			}
 
 			return _model.location;
+		},
+		state(event) {
+			if (!event.endedAt && event.startAt && new Date(event.startAt) <= new Date()) {
+				return EventState.Started
+			}
+
+			if (event.endedAt && !event.archived) {
+				return EventState.Ended
+			}
+
+			if (event.archived) {
+				return EventState.Archived
+			}
+
+			return EventState.None
 		},
 		async rsvp(source, args, context) {
 			if (!context.user) return null;
@@ -227,6 +246,24 @@ export const eventResolvers: Resolvers = {
 			}
 
 			return resolveDiscordChannel(guildChannel);
+		},
+		async discordCategory(source, args, context) {
+			const { _model } = source as WithModel<GQLEventChannel, EventChannel>;
+			if (!_model.discordCategoryId) return null;
+
+			const category = (await $discord.getChannel(
+				context.app.discordClient,
+				_model.discordCategoryId
+			));
+
+			if (!category) return {
+				id: _model.discordCategoryId,
+				name: `ERROR-${_model.discordCategoryId}`,
+				type: "GuildCategory",
+				sendMessages: false
+			}
+
+			return resolveDiscordChannel(category as CategoryChannel);
 		},
 		async events(source) {
 			const { _model } = source as WithModel<GQLEventChannel, EventChannel>;

@@ -1,5 +1,5 @@
 import type { User } from "@prisma/client";
-import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuildBasedChannel, type GuildBasedChannel } from "discord.js";
+import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuildBasedChannel, type GuildBasedChannel, CategoryChannel } from "discord.js";
 
 import { $system } from "./system";
 
@@ -38,6 +38,30 @@ async function getAllTextChannels(client: Client) {
 	}
 }
 
+async function getAllVoiceChannels(client: Client) {
+	try {
+		const guild = await getGuild(client);
+		if (!guild) return [];
+		const channels = await guild.channels.fetch();
+
+		return Array.from(channels.values()).filter((channel) => !!channel && channel.type === ChannelType.GuildVoice) as NonThreadGuildBasedChannel[];
+	} catch (err) {
+		return [];
+	}
+}
+
+async function getAllCategories(client: Client) {
+	try {
+		const guild = await getGuild(client);
+		if (!guild) return [];
+		const channels = await guild.channels.fetch();
+
+		return Array.from(channels.values()).filter((channel) => !!channel && channel.type === ChannelType.GuildCategory) as CategoryChannel[];
+	} catch (err) {
+		return [];
+	}
+}
+
 async function getChannel(client: Client, id: string) {
 	try {
 		const guild = await getGuild(client);
@@ -59,6 +83,14 @@ async function canCreateThreadInChannel(channel: GuildBasedChannel) {
 	const me = channel.guild.members.me ?? await channel.guild.members.fetchMe()
 	const permissions = me.permissionsIn(channel.id)
 	return permissions.has("CreatePrivateThreads")
+}
+
+async function canManageChannelsInCategory(category: GuildBasedChannel) {
+	if (category.type !== ChannelType.GuildCategory) return false;
+
+	const me = category.guild.members.me ?? await category.guild.members.fetchMe()
+	const permissions = me.permissionsIn(category.id)
+	return permissions.has("ManageChannels")
 }
 
 async function canUserViewChannel(client: Client, user: User | undefined, channelId: string) {
@@ -151,9 +183,12 @@ export const $discord = {
 	getGuild,
 	isInGuild,
 	getAllTextChannels,
+	getAllVoiceChannels,
+	getAllCategories,
 	getChannel,
 	canPostInChannel,
 	canCreateThreadInChannel,
+	canManageChannelsInCategory,
 	canUserViewChannel,
 	getAllRoles,
 	getRole,

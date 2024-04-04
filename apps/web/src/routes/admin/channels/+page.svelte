@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
-	import { Helper, Label, Modal, Table, TableHead, TableHeadCell } from "flowbite-svelte";
+	import { Helper, Label, Modal, Table, TableHead, TableHeadCell, Toggle } from "flowbite-svelte";
 	import { CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
 	import { Button, Field, FieldValidator, Head, SectionHeading, Select } from "$lib/components";
@@ -62,7 +62,10 @@
 
     function createModalData() {
         return {
-            channel: null as string | null
+            channel: null as string | null,
+            category: null as string | null,
+            existingReadyRoom: null as string | null,
+            showExistingReadyRoom: false
         }
     }
 
@@ -75,7 +78,9 @@
         const { errors } = await getApollo().mutate({
 			mutation: Mutations.CREATE_EVENT_CHANNEL,
 			variables: {
-				linkTo: modalData.channel!
+				linkTo: modalData.channel!,
+                categoryId: modalData.category!,
+                existingReadyRoomId: modalData.existingReadyRoom
 			},
 			errorPolicy: "all",
 		});
@@ -147,6 +152,12 @@
                 <TableHeadCell>
                     Channels - {data.channels.length}
                 </TableHeadCell>
+                <TableHeadCell>
+                    Voice Category
+                </TableHeadCell>
+                <TableHeadCell class="w-40">
+                    Events
+                </TableHeadCell>
                 <TableHeadCell class="w-32"></TableHeadCell>
             </TableHead>
             <tbody class="divide-y">
@@ -180,14 +191,14 @@
 	<div class="flex flex-col gap-4 p-4">
 		<Field
 			{validator}
-			for="system-channels-channel"
+			for="system-channels-new-link-channel"
 			value={modalData.channel}
 			required
 		>
-			<Label for="system-channels-channel" class="mb-2">Discord Channel</Label>
+			<Label for="system-channels-new-link-channel" class="mb-2">Discord Channel</Label>
 			<Select
-                id="system-channels-channel"
-                name="system-channels-channel"
+                id="system-channels-new-link-channel"
+                name="system-channels-new-link-channel"
                 options={data.options.channels.filter(channel => channel.sendMessages).map((channel) => ({
                     value: channel.id,
                     name: channel.name,
@@ -200,6 +211,52 @@
                 Only channels the bot can send messages in will appear in this list, if a channel is not appearing the bot is probably missing permissions
             </Helper>
 		</Field>
+        <Field
+			{validator}
+			for="system-channels-new-link-category"
+			value={modalData.category}
+			required
+		>
+			<Label for="system-channels-new-link-category" class="mb-2">Discord Category</Label>
+			<Select
+                id="system-channels-new-link-category"
+                name="system-channels-new-link-category"
+                options={data.options.categories.map((category) => ({
+                    value: category.id,
+                    name: category.name,
+                }))}
+                search
+                required
+                bind:value={modalData.category}
+            />
+            <Helper class="mt-1">
+                The category that event voice channels will be created under
+            </Helper>
+		</Field>
+        <div class="flex flex-col gap-2">
+            <Toggle bind:checked={modalData.showExistingReadyRoom}>
+                Use existing ready room
+            </Toggle>
+            {#if modalData.showExistingReadyRoom}
+                <Field
+                    {validator}
+                    for="system-channels-new-link-ready-room"
+                    value={modalData.existingReadyRoom}
+                >
+                    <Label for="system-channels-new-link-ready-room" class="mb-2">Ready Room Channel</Label>
+                    <Select
+                        id="system-channels-new-link-ready-room"
+                        name="system-channels-new-link-ready-room"
+                        options={data.options.voiceChannels.filter(vc => vc.parentId === modalData.category).map((vc) => ({
+                            value: vc.id,
+                            name: vc.name,
+                        }))}
+                        search
+                        bind:value={modalData.existingReadyRoom}
+                    />
+                </Field>
+            {/if}
+        </div>
 	</div>
 	<svelte:fragment slot="footer">
         <Button on:click={() => {

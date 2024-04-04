@@ -161,12 +161,27 @@ model EventUser {
   userId    String         @map("user_id")
   rsvp      EventRsvpRole? @relation(fields: [rsvpId], references: [id])
   rsvpId    String?        @map("rsvp_id")
+  team      EventTeam?     @relation(fields: [teamId], references: [id])
+  teamId    String?        @map("team_id")
   event     Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId   String         @map("event_id")
   updatedAt DateTime       @updatedAt @map("updated_at")
   createdAt DateTime       @default(now()) @map("created_at")
 
   @@map("users")
+  @@schema("events")
+}
+
+model EventTeam {
+  id             String            @id @default(uuid())
+  name           String
+  members        EventUser[]
+  event          Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId        String            @map("event_id")
+  voiceChannel   EventVoiceChannel @relation(fields: [voiceChannelId], references: [id], onDelete: Cascade)
+  voiceChannelId Int               @unique @map("voice_channel_id")
+
+  @@map("teams")
   @@schema("events")
 }
 
@@ -202,6 +217,7 @@ model Event {
   location              String[]
   roles                 EventRsvpRole[]
   members               EventUser[]
+  teams                 EventTeam[]
   settings              EventSettings?
   accessType            String                        @map("access_type")
   accessRoles           EventsWithUserRoleForAccess[]
@@ -231,14 +247,32 @@ model EventsWithUserRoleForAccess {
 }
 
 model EventChannel {
-  id             Int             @id @default(autoincrement())
-  discordId      String          @unique @map("discord_id")
-  events         Event[]
-  systemSettings SystemSettings?
-  updatedAt      DateTime        @updatedAt @map("updated_at")
-  createdAt      DateTime        @default(now()) @map("created_at")
+  id                Int                 @id @default(autoincrement())
+  discordId         String              @unique @map("discord_id")
+  discordCategoryId String?             @unique @map("discord_category_id")
+  readyRoomName     String?             @map("ready_room_name")
+  events            Event[]
+  voiceChannels     EventVoiceChannel[]
+  systemSettings    SystemSettings?
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  createdAt         DateTime            @default(now()) @map("created_at")
 
   @@map("channels")
+  @@schema("events")
+}
+
+model EventVoiceChannel {
+  id        Int          @id @default(autoincrement())
+  discordId String       @map("discord_id")
+  channel   EventChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId Int          @map("channel_id")
+  readyRoom Boolean      @default(false) @map("ready_room")
+  team      EventTeam?   @relation()
+  teamId    String?      @map("team_id")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  @@map("voice_channels")
   @@schema("events")
 }
 
