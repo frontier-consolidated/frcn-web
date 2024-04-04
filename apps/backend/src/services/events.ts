@@ -536,6 +536,7 @@ async function archiveEvent(event: Event, discordClient: DiscordClient) {
 async function deleteEvent(event: Event, discordClient: DiscordClient) {
 	if (event.endedAt) return;
 
+	await deleteEventThread(event, discordClient)
 	await deleteEventMessage(discordClient, event)
 	await database.event.delete({
 		where: { id: event.id },
