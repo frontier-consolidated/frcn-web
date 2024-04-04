@@ -227,7 +227,7 @@
 					<Label for="event-description" class="mb-2">Event Description</Label>
 					<MarkdownEditor
 						placeholder="Describe the event"
-						editable={canEdit}
+						disabled={!canEdit}
 						bind:value={editData.description}
 					/>
 				</Field>
