@@ -112,7 +112,7 @@
 		aria-disabled={disabled}
 		tabindex="-1"
 		role="listbox"
-		class={twMerge("flex items-center w-full text-gray-900 bg-gray-50 border border-gray-300 rounded text-sm p-2.5 min-h-[3rem]", background ? "dark:bg-gray-600 dark:border-gray-500" : "dark:bg-gray-700 dark:border-gray-600", disabled ? "cursor-not-allowed dark:text-gray-400" : "focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:text-white")}
+		class={twMerge("flex items-center w-full text-gray-900 dark:text-white bg-gray-50 border border-gray-300 rounded text-sm p-2.5 min-h-[3rem]", background ? "dark:bg-gray-600 dark:border-gray-500" : "dark:bg-gray-700 dark:border-gray-600", disabled ? "cursor-not-allowed opacity-50" : "focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500")}
 	>
 		<span class="flex flex-wrap gap-1 w-full">
 			{#if selectedOptions.length > 0}
