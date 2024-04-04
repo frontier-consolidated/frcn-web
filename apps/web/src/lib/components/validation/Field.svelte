@@ -24,10 +24,10 @@
     let showMessage = false;
     let valid: boolean = true, msg: string | null = null
 
-    function internalValidate(val: T) {
+    function internalValidate(val: T, ignoreRequired = false) {
         let newValid = true, newMsg: string | null = null;
 
-        if (required && isEmpty(val)) {
+        if (required && isEmpty(val) && !ignoreRequired) {
             newValid = false;
             newMsg = "Field is required"
         } else if (validate) {
@@ -42,9 +42,9 @@
 
     $: {
         validate;
-        validator.addField(`field-${reference}`, () => {
+        validator.addField(`field-${reference}`, (ignoreRequired) => {
             showMessage = true
-            return internalValidate(value);
+            return internalValidate(value, ignoreRequired);
         })
     }
 
