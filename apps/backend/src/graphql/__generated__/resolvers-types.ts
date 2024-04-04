@@ -311,6 +311,11 @@ export type MutationCreateContentContainerArgs = {
 };
 
 
+export type MutationCreateEventArgs = {
+  startAt?: InputMaybe<Scalars['Timestamp']['input']>;
+};
+
+
 export type MutationCreateEventChannelArgs = {
   linkTo: Scalars['ID']['input'];
 };
@@ -1127,7 +1132,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   archiveEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationArchiveEventArgs, 'id'>>;
   createAccessKey?: Resolver<ResolversTypes['AccessKey'], ParentType, ContextType>;
   createContentContainer?: Resolver<ResolversTypes['ContentContainer'], ParentType, ContextType, RequireFields<MutationCreateContentContainerArgs, 'type'>>;
-  createEvent?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  createEvent?: Resolver<ResolversTypes['ID'], ParentType, ContextType, Partial<MutationCreateEventArgs>>;
   createEventChannel?: Resolver<ResolversTypes['EventChannel'], ParentType, ContextType, RequireFields<MutationCreateEventChannelArgs, 'linkTo'>>;
   createEventTeam?: Resolver<ResolversTypes['EventTeam'], ParentType, ContextType, RequireFields<MutationCreateEventTeamArgs, 'data' | 'id'>>;
   createResource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType, RequireFields<MutationCreateResourceArgs, 'data'>>;

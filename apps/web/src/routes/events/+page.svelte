@@ -9,10 +9,12 @@
 
 	import type { PageData } from "./$types";
 	import CreateEventButton from "./CreateEventButton.svelte";
+	import EventsCalendar from "./EventsCalendar.svelte";
 	import EventsTimeline from "./EventsTimeline.svelte";
 
 	export let data: PageData;
 
+	const view = queryParam("view")
 	const search = queryParam("q")
 	let searchInput = $search
 </script>
@@ -48,11 +50,17 @@
 			</div>
 		</div>
 		<Tabs contentClass="mt-6" style="underline">
-			<TabItem title="Timeline" open={$page.url.hash.length < 2 || $page.url.hash === "#timeline"} on:click={() => window.location.hash = "#timeline"}>
+			<TabItem title="Timeline" open={!$view || $view === "timeline"} on:click={() => {
+				data.events = [] // set events to empty while new events get fetched
+				view.set("timeline")
+			}}>
 				<EventsTimeline {data} />
 			</TabItem>
-			<TabItem title="Calendar" open={$page.url.hash === "#calendar"} on:click={() => window.location.hash = "#calendar"}>
-				
+			<TabItem title="Calendar" open={$view === "calendar"} on:click={() => {
+				data.events = [] // set events to empty while new events get fetched
+				view.set("calendar")
+			}}>
+				<EventsCalendar {data} />
 			</TabItem>
 		</Tabs>
 	</section>

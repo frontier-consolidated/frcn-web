@@ -16,6 +16,7 @@ export const load = (async ({ url, data }) => {
         return await getEvents(getApollo(), url)
     } catch (err) {
         if (browser) {
+            console.error(err)
             pushNotification({
                 type: "error",
                 message: "Error connecting to server"

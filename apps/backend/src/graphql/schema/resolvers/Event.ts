@@ -300,6 +300,7 @@ export const eventResolvers: Resolvers = {
 
 			const event = await $events.createEvent(
 				context.user,
+				args.startAt ?? undefined,
 				context.app.discordClient
 			);
 			return event.id;

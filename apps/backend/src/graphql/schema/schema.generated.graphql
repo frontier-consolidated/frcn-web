@@ -394,7 +394,7 @@ type Mutation {
 	deleteCurrentUser: Boolean!
 
 	# Events
-	createEvent: ID! @permission(has: CreateEvents)
+	createEvent(startAt: Timestamp): ID! @permission(has: CreateEvents)
 	editEvent(id: ID!, data: EventEditInput!): Event @permission(has: CreateEvents)
 	postEvent(id: ID!): Boolean! @permission(has: CreateEvents)
 	unpostEvent(id: ID!): Boolean! @permission(has: CreateEvents)

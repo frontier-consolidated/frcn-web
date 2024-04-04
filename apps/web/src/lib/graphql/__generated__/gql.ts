@@ -26,7 +26,7 @@ const documents = {
     "\n\tmutation ArchiveEvent($id: ID!) {\n\t\tarchived: archiveEvent(id: $id)\n\t}\n": types.ArchiveEventDocument,
     "\n\tmutation CreateAccessKey {\n\t\tkey: createAccessKey {\n\t\t\tid\n\t\t\tkey\n\t\t\tdescription\n\t\t\tpermissions\n\t\t\tupdatedAt\n\t\t\tcreatedAt\n\t\t}\n\t}\n": types.CreateAccessKeyDocument,
     "\n\tmutation CreateContentContainer($type: String!, $identifier: String, $parent: ID) {\n\t\tcontainer: createContentContainer(type: $type, identifier: $identifier, parent: $parent) {\n\t\t\t...ContentContainerFragment\n\t\t}\n\t}\n": types.CreateContentContainerDocument,
-    "\n\tmutation CreateEvent {\n\t\tevent: createEvent\n\t}\n": types.CreateEventDocument,
+    "\n\tmutation CreateEvent($startAt: Timestamp) {\n\t\tevent: createEvent(startAt: $startAt)\n\t}\n": types.CreateEventDocument,
     "\n\tmutation CreateEventChannel($linkTo: ID!) {\n\t\tchannel: createEventChannel(linkTo: $linkTo) {\n\t\t\t...EventChannelFragment\n\t\t}\n\t}\n": types.CreateEventChannelDocument,
     "\n\tmutation CreateResource($data: ResourceCreateInput!) {\n\t\tresource: createResource(data: $data) {\n\t\t\t...ResourceFragment\n\t\t}\n\t}\n": types.CreateResourceDocument,
     "\n\tmutation CreateRole {\n\t\trole: createRole\n\t}\n": types.CreateRoleDocument,
@@ -144,7 +144,7 @@ export function gql(source: "\n\tmutation CreateContentContainer($type: String!,
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tmutation CreateEvent {\n\t\tevent: createEvent\n\t}\n"): (typeof documents)["\n\tmutation CreateEvent {\n\t\tevent: createEvent\n\t}\n"];
+export function gql(source: "\n\tmutation CreateEvent($startAt: Timestamp) {\n\t\tevent: createEvent(startAt: $startAt)\n\t}\n"): (typeof documents)["\n\tmutation CreateEvent($startAt: Timestamp) {\n\t\tevent: createEvent(startAt: $startAt)\n\t}\n"];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

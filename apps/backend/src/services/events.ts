@@ -59,14 +59,16 @@ async function getEvents(
 	}
 	
 	const expiredDate = new Date(Date.now() - EVENT_EXPIRE_AFTER)
-	const startAtOr: Prisma.EventWhereInput[] = [
-		{
+	const startAtOr: Prisma.EventWhereInput[] = []
+
+	if (startAt.min || startAt.max) {
+		startAtOr.push({
 			startAt: {
 				gte: startAt.min,
 				lte: startAt.max
 			},
-		}
-	]
+		})
+	}
 
 	// Show live events if they haven't expired and are in our selected date range
 	if (startAt.min && expiredDate >= new Date(startAt.min.getTime() - EVENT_EXPIRE_AFTER) && (!startAt.max || startAt.max > new Date())) {
@@ -335,7 +337,7 @@ async function setUserReminder(rsvp: EventUser, reminder: EventReminder) {
 	})
 }
 
-async function createEvent(owner: User, discordClient: DiscordClient) {
+async function createEvent(owner: User, startAt: Date | undefined, discordClient: DiscordClient) {
 	const { defaultEventChannel } = await $system.getSystemSettings();
 	if (!defaultEventChannel) throw new Error("No default event channel")
 
@@ -384,6 +386,7 @@ async function createEvent(owner: User, discordClient: DiscordClient) {
 			},
 			accessType: EventAccessType.Channel,
 			posted: false,
+			startAt
 		},
 	});
 
