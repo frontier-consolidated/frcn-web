@@ -547,10 +547,10 @@ export const eventResolvers: Resolvers = {
 			const member = await $events.getEventMember(args.member)
 			if (!member) return false;
 
-			// const event = await $events.getEventMemberEvent(member.id)
-			// if (!event || event?.endedAt || event?.archived) {
-			// 	throw gqlErrorBadInput(`Cannot kick user from event after it has ended or been archived`);
-			// }
+			const event = await $events.getEventMemberEvent(member.id)
+			if (!event || event?.endedAt || event?.archived) {
+				throw gqlErrorBadInput(`Cannot kick user from event after it has ended or been archived`);
+			}
 
 			await $events.kickEventMember(member, context.app.discordClient)
 			return true
