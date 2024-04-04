@@ -53,55 +53,57 @@
 	}}>
 		View Profile
 	</DropdownItem>
-	<DropdownDivider />
-	{#if $user.data?.id === member.user.id}
-		<DropdownItem class="flex dark:hover:bg-red-500" on:click={async () => {
-			const { data: unrsvpData, errors } = await getApollo().mutate({
-				mutation: Mutations.UNRSVP_FOR_EVENT,
-				variables: {
-					eventId: event.id
-				},
-				errorPolicy: "all"
-			})
-
-			if (!unrsvpData?.success || (errors && errors.length > 0)) {
-				pushNotification({
-					type: "error",
-					message: "Failed to leave event",
-				});
-				console.error(errors);
-				return;
-			}
-
-			event.rsvp = null;
-			event.members = event.members.filter(m => m.user.id !== $user.data?.id)
-		}}>
-			<ArrowLeftToBracketOutline class="me-2" tabindex="-1" /> Leave Event
-		</DropdownItem>
-	{:else}
-		{#if !event.endedAt && hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
-			<DropdownItem class="flex dark:hover:bg-red-500" on:click={async (e) => {
-				const { data: kickData, errors } = await getApollo().mutate({
-					mutation: Mutations.KICK_EVENT_MEMBER,
+	{#if !event.endedAt}
+		<DropdownDivider />
+		{#if $user.data?.id === member.user.id}
+			<DropdownItem class="flex dark:hover:bg-red-500" on:click={async () => {
+				const { data: unrsvpData, errors } = await getApollo().mutate({
+					mutation: Mutations.UNRSVP_FOR_EVENT,
 					variables: {
-						id: member.id
+						eventId: event.id
 					},
 					errorPolicy: "all"
 				})
 
-				if (!kickData?.kicked || (errors && errors.length > 0)) {
+				if (!unrsvpData?.success || (errors && errors.length > 0)) {
 					pushNotification({
 						type: "error",
-						message: "Failed to kick user",
+						message: "Failed to leave event",
 					});
 					console.error(errors);
 					return;
 				}
 
-				event.members = event.members.filter(m => m.id !== member.id)
+				event.rsvp = null;
+				event.members = event.members.filter(m => m.user.id !== $user.data?.id)
 			}}>
-				<UserRemoveSolid class="me-2" tabindex="-1" /> Kick Member
+				<ArrowLeftToBracketOutline class="me-2" tabindex="-1" /> Leave Event
 			</DropdownItem>
+		{:else}
+			{#if hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
+				<DropdownItem class="flex dark:hover:bg-red-500" on:click={async (e) => {
+					const { data: kickData, errors } = await getApollo().mutate({
+						mutation: Mutations.KICK_EVENT_MEMBER,
+						variables: {
+							id: member.id
+						},
+						errorPolicy: "all"
+					})
+
+					if (!kickData?.kicked || (errors && errors.length > 0)) {
+						pushNotification({
+							type: "error",
+							message: "Failed to kick user",
+						});
+						console.error(errors);
+						return;
+					}
+
+					event.members = event.members.filter(m => m.id !== member.id)
+				}}>
+					<UserRemoveSolid class="me-2" tabindex="-1" /> Kick Member
+				</DropdownItem>
+			{/if}
 		{/if}
 	{/if}
 </Dropdown>

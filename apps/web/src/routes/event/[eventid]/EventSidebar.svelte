@@ -72,47 +72,49 @@
 					{/if}
 				</SidebarDropdownWrapper>
 			{/if}
-			{#if data.rsvp}
-				<SidebarItem
-					class="rounded clip-opposite-4"
-					nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:text-white hover:bg-red-500"
-					label="Leave Event"
-					on:click={async () => {
-						const { data: unrsvpData, errors } = await getApollo().mutate({
-							mutation: Mutations.UNRSVP_FOR_EVENT,
-							variables: {
-								eventId: data.id
+			{#if !data.endedAt}
+				{#if data.rsvp}
+					<SidebarItem
+						class="rounded clip-opposite-4"
+						nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:text-white hover:bg-red-500"
+						label="Leave Event"
+						on:click={async () => {
+							const { data: unrsvpData, errors } = await getApollo().mutate({
+								mutation: Mutations.UNRSVP_FOR_EVENT,
+								variables: {
+									eventId: data.id
+								}
+							})
+
+							if (!unrsvpData?.success || (errors && errors.length > 0)) {
+								pushNotification({
+									type: "error",
+									message: "Failed to leave event",
+								});
+								console.error(errors);
+								return;
 							}
-						})
 
-						if (!unrsvpData?.success || (errors && errors.length > 0)) {
-							pushNotification({
-								type: "error",
-								message: "Failed to leave event",
-							});
-							console.error(errors);
-							return;
-						}
-
-						data.rsvp = null;
-						data.members = data.members.filter(member => member.user.id !== $user.data?.id)
-					}}
-				>
-					<svelte:fragment slot="icon">
-						<ArrowLeftToBracketOutline tabindex="-1" />
-					</svelte:fragment>
-				</SidebarItem>
-			{:else}
-				<SidebarItem	
-					class="rounded clip-opposite-4"
-					nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white dark:hover:bg-primary-500"
-					label="Join Event"
-					on:click={() => rsvpModal = true}
-				>
-					<svelte:fragment slot="icon">
-						<UserPlusSolid tabindex="-1" />
-					</svelte:fragment>
-				</SidebarItem>
+							data.rsvp = null;
+							data.members = data.members.filter(member => member.user.id !== $user.data?.id)
+						}}
+					>
+						<svelte:fragment slot="icon">
+							<ArrowLeftToBracketOutline tabindex="-1" />
+						</svelte:fragment>
+					</SidebarItem>
+				{:else}
+					<SidebarItem	
+						class="rounded clip-opposite-4"
+						nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white dark:hover:bg-primary-500"
+						label="Join Event"
+						on:click={() => rsvpModal = true}
+					>
+						<svelte:fragment slot="icon">
+							<UserPlusSolid tabindex="-1" />
+						</svelte:fragment>
+					</SidebarItem>
+				{/if}
 			{/if}
 		</ul>
 		<SidebarGroup border class="overflow-y-auto hidden lg:block">
