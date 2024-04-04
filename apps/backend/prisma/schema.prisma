@@ -249,7 +249,7 @@ model EventsWithUserRoleForAccess {
 model EventChannel {
   id                Int                 @id @default(autoincrement())
   discordId         String              @unique @map("discord_id")
-  discordCategoryId String?             @unique @map("discord_category_id")
+  discordCategoryId String              @map("discord_category_id")
   readyRoomName     String?             @map("ready_room_name")
   events            Event[]
   voiceChannels     EventVoiceChannel[]

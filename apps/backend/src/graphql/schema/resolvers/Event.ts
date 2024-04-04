@@ -249,7 +249,6 @@ export const eventResolvers: Resolvers = {
 		},
 		async discordCategory(source, args, context) {
 			const { _model } = source as WithModel<GQLEventChannel, EventChannel>;
-			if (!_model.discordCategoryId) return null;
 
 			const category = (await $discord.getChannel(
 				context.app.discordClient,
@@ -447,12 +446,19 @@ export const eventResolvers: Resolvers = {
 			const discordChannel = await $discord.getChannel(context.app.discordClient, eventChannel.discordId);
 			if (!discordChannel) throw gqlErrorBadState("Cannot find discord channel")
 
+			const discordCategory = await $discord.getChannel(context.app.discordClient, eventChannel.discordCategoryId);
+			if (!discordCategory) throw gqlErrorBadState("Cannot find discord category")
+
 			if (!(await $discord.canPostInChannel(discordChannel))) {
 				throw gqlErrorBadState("Cannot send messages in the linked event channel")
 			}
 
 			if (!(await $discord.canCreateThreadInChannel(discordChannel))) {
 				throw gqlErrorBadState("Cannot create threads in the linked event channel")
+			}
+
+			if (!(await $discord.canManageChannelsInCategory(discordCategory))) {
+				throw gqlErrorBadState("Cannot manage channels in the linked event channel category")
 			}
 
 			if (

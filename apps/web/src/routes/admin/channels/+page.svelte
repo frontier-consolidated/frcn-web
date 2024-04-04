@@ -80,7 +80,7 @@
 			variables: {
 				linkTo: modalData.channel!,
                 categoryId: modalData.category!,
-                existingReadyRoomId: modalData.existingReadyRoom
+                existingReadyRoomId: modalData.showExistingReadyRoom ? modalData.existingReadyRoom : undefined
 			},
 			errorPolicy: "all",
 		});
@@ -234,7 +234,9 @@
             </Helper>
 		</Field>
         <div class="flex flex-col gap-2">
-            <Toggle bind:checked={modalData.showExistingReadyRoom}>
+            <Toggle bind:checked={modalData.showExistingReadyRoom} on:change={() => {
+                if (!modalData.showExistingReadyRoom) modalData.existingReadyRoom = null
+            }}>
                 Use existing ready room
             </Toggle>
             {#if modalData.showExistingReadyRoom}
@@ -242,6 +244,7 @@
                     {validator}
                     for="system-channels-new-link-ready-room"
                     value={modalData.existingReadyRoom}
+                    required
                 >
                     <Label for="system-channels-new-link-ready-room" class="mb-2">Ready Room Channel</Label>
                     <Select
@@ -252,6 +255,7 @@
                             name: vc.name,
                         }))}
                         search
+                        required
                         bind:value={modalData.existingReadyRoom}
                     />
                 </Field>

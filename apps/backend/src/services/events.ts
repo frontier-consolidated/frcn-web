@@ -347,8 +347,12 @@ async function createEvent(owner: User, startAt: Date | undefined, discordClient
 	const discordChannel = await $discord.getChannel(discordClient, defaultEventChannel.discordId)
 	if (!discordChannel) throw new Error("Could not fetch default event discord channel")
 
+	const discordCategory = await $discord.getChannel(discordClient, defaultEventChannel.discordId)
+	if (!discordCategory) throw new Error("Could not fetch default event channel discord category")
+
 	if (!(await $discord.canPostInChannel(discordChannel))) throw new Error("Cannot post messages in default event channel")
 	if (!(await $discord.canCreateThreadInChannel(discordChannel))) throw new Error("Cannot create threads in default event channel")
+	if (!(await $discord.canManageChannelsInCategory(discordCategory))) throw new Error("Cannot manage channels in default event channel category")
 
 	const event = await database.event.create({
 		data: {
@@ -744,6 +748,8 @@ async function deleteEventChannel(channel: EventChannel, discordClient: DiscordC
 		for (const vc of vcs) {
 			const discordChannel = await $discord.getChannel(discordClient, vc.discordId)
 			if (discordChannel) {
+				const me = discordChannel.guild.members.me
+				console.log(discordChannel.parentId, ChannelType[discordChannel.type], discordChannel.permissionsFor(me!).toArray())
 				await discordChannel.delete("Deleting voice channels associated to event channel")
 			}
 		}
