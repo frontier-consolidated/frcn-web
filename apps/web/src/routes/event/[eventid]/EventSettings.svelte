@@ -13,7 +13,7 @@
 	import { twMerge } from "tailwind-merge";
 	import isURL from "validator/lib/isURL"
 
-	import { DatetimePicker, DurationPicker, LocationSelectUl, MarkdownEditor, ConfirmationModal, SectionHeading, Select, Field, FieldValidator, Button } from "$lib/components";
+	import { DatetimePicker, DurationPicker, LocationSelectInput, MarkdownEditor, ConfirmationModal, SectionHeading, Select, Field, FieldValidator, Button } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -275,7 +275,7 @@
 					</Helper>
 				</Field>
 				<Field {validator} for="event-location" value={editData.location}>
-					<LocationSelectUl id="event-location" disabled={!canEdit} bind:value={editData.location} />
+					<LocationSelectInput id="event-location" disabled={!canEdit} bind:value={editData.location} />
 				</Field>
 			</div>
 		</section>

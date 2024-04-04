@@ -14,8 +14,8 @@ import JoinDiscordButton from "./JoinDiscordButton.svelte"
 import LocationBreadcrumbItem from "./location/LocationBreadcrumbItem.svelte"
 import LocationIcon from "./location/LocationIcon.svelte"
 import LocationOption from "./location/LocationOption.svelte"
+import LocationSelectInput from "./location/LocationSelectInput.svelte"
 import LocationSelectLi from "./location/LocationSelectLi.svelte"
-import LocationSelectUl from "./location/LocationSelectUl.svelte"
 import LoginButton from "./LoginButton.svelte"
 import Markdown from "./markdown/Markdown.svelte"
 import MarkdownEditor from "./markdown/MarkdownEditor.svelte"
@@ -47,7 +47,7 @@ export {
     LocationIcon,
     LocationOption,
     LocationSelectLi,
-    LocationSelectUl,
+    LocationSelectInput,
     Markdown,
     MarkdownEditor,
     ConfirmationModal,
