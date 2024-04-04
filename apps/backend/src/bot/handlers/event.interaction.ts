@@ -94,9 +94,9 @@ async function handleEventRsvp(interaction: ButtonInteraction | AnySelectMenuInt
         return;
     }
 
-    if (event.startAt && event.startAt <= new Date()) {
+    if (event.endedAt) {
         await interaction.editReply({ 
-            ...buildErrorMessage("Cannot rsvp/unrsvp to event after it has started"),
+            ...buildErrorMessage("Cannot rsvp/unrsvp to event after it has ended"),
         })
         return;
     }
@@ -128,7 +128,7 @@ async function handleEventRsvp(interaction: ButtonInteraction | AnySelectMenuInt
         await $events.rsvpForEvent(event, role, user, currentRsvp, interaction.client);
 
         let dmMessageLink: string | null = null;
-        if (!currentRsvp) {
+        if (!currentRsvp || !currentRsvp.rsvpId) {
             try {
                 const dmPayload = buildRsvpDmMessage(event, role, interaction.message.url)
     
@@ -145,7 +145,7 @@ async function handleEventRsvp(interaction: ButtonInteraction | AnySelectMenuInt
             }
         }
 
-        const payload = currentRsvp ? buildRsvpSwitchMessage(role) : buildRsvpMessage(role, dmMessageLink)
+        const payload = currentRsvp && currentRsvp.rsvpId ? buildRsvpSwitchMessage(role) : buildRsvpMessage(role, dmMessageLink)
         await interaction.editReply({
             ...payload,
         })
