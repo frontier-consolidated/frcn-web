@@ -29,6 +29,7 @@ import Notifications from "./Notifications.svelte"
 import PageHero from "./PageHero.svelte"
 import PermissionToggles from "./PermissionToggles.svelte"
 import SectionHeading from "./SectionHeading.svelte"
+import NavigationSelect from "./select/NavigationSelect.svelte"
 import Select from "./select/Select.svelte"
 import Tooltip from "./Tooltip.svelte"
 import MediaQuery from "./utils/MediaQuery.svelte"
@@ -54,6 +55,7 @@ export {
     CookieConsentModal,
     RsvpModal,
     UserProfileModal,
+    NavigationSelect,
     Select,
     MediaQuery,
     ScreenQuery,
