@@ -95,7 +95,7 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 	}
 
 	event.roles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
-
+	
 	eventEmbed
 		.addFields(
 			{
@@ -104,18 +104,21 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 			},
 			{ name: "Duration", value: dates.toDuration(event.duration!) },
 			{ name: "Thread", value: `<#${threadId ?? event.discordThreadId}>` },
-			...event.roles.map((role) => ({
-				name: `${
-					role.emoji === role.emojiId
-						? `:${role.emoji}:`
-						: `<:${role.emoji}:${role.emojiId}>`
-				} ${role.name} (${role.members.length}${role.limit > 0 ? `/${role.limit}` : ""})`,
-				value:
-					role.members.length > 0
-						? `>>> ${role.members.map((member) => member.user.discordName).join("\n")}`
-						: " ",
-				inline: true,
-			}))
+			...event.roles.map((role) => {
+				const members = role.members.filter(m => !!m.user)
+				return {
+					name: `${
+						role.emoji === role.emojiId
+							? `:${role.emoji}:`
+							: `<:${role.emoji}:${role.emojiId}>`
+					} ${role.name} (${members.length}${role.limit > 0 ? `/${role.limit}` : ""})`,
+					value:
+						members.length > 0
+							? `>>> ${members.map((member) => member.user!.discordName).join("\n")}`
+							: " ",
+					inline: true,
+				}
+			})
 		)
 		.setFooter({
 			text: `Created by ${event.owner?.discordName ?? "[DELETED USER]"}`,
