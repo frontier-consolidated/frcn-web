@@ -2,10 +2,11 @@ import { dates } from "@frcn/shared";
 import type { Event } from "@prisma/client";
 import { type BaseMessageOptions, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Client } from "discord.js";
 
+import { $discord } from "../../services/discord";
 import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
 
-export function buildEventStartMessage(event: Event, eventMessageLink: string) {
+export async function buildEventStartMessage(client: Client, event: Event, eventMessageLink: string) {
 	const scheduledEndTime = Math.floor((event.startAt!.getTime() + event.duration!) / 1000)
 
 	const embed = new EmbedBuilder()
@@ -13,11 +14,13 @@ export function buildEventStartMessage(event: Event, eventMessageLink: string) {
 		.setTitle(`${event.name} - Event starting!`)
 		.setDescription(`The event is now starting! Scheduled event end: <t:${scheduledEndTime}:R>`)
 
-	const joinButton = new ButtonBuilder()
-		.setEmoji("🔊")
-		.setLabel("Join Ready Room")
-		.setURL(eventMessageLink)
-		.setStyle(ButtonStyle.Link);
+	let vcLink = ""
+	if (event.channelId) {
+		const readyRoom = await $events.getEventChannelReadyRoom(event.channelId)
+		const readyRoomChannel = readyRoom && await $discord.getChannel(client, readyRoom.discordId)
+
+		if (readyRoomChannel) vcLink = readyRoomChannel.url;
+	}
 	
 	const weblinkButton = new ButtonBuilder()
 		.setLabel("See Details")
@@ -28,7 +31,7 @@ export function buildEventStartMessage(event: Event, eventMessageLink: string) {
 	buttonsRow.addComponents(weblinkButton);
 	
 	return {
-		content: "@everyone",
+		content: `@everyone ${vcLink}`,
 		embeds: [embed],
 		components: [buttonsRow]
 	} satisfies BaseMessageOptions;

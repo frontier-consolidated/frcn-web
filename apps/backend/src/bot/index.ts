@@ -34,7 +34,7 @@ async function updateEventReminders(client: Client) {
             if (reminder === EventReminder.OnStart) {
                 try {
                     const thread = await $events.getEventThread(event, client)
-                    const payload = buildEventStartMessage(event, eventMessageLink)
+                    const payload = await buildEventStartMessage(client, event, eventMessageLink)
                     await thread.send(payload)
                 } catch (err) {
                     console.log("Error while posting event start message", err)
