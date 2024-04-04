@@ -79,7 +79,7 @@
 			<ArrowLeftToBracketOutline class="me-2" tabindex="-1" /> Leave Event
 		</DropdownItem>
 	{:else}
-		{#if hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
+		{#if !event.endedAt && hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
 			<DropdownItem class="flex dark:hover:bg-red-500" on:click={async (e) => {
 				const { data: kickData, errors } = await getApollo().mutate({
 					mutation: Mutations.KICK_EVENT_MEMBER,
