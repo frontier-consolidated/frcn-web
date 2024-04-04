@@ -19,6 +19,6 @@
             await createEvent(startAt)
         }}
     >
-        <CirclePlusSolid class="me-2" tabindex="-1" /> Create New Event
+        <CirclePlusSolid class="me-2 outline-none" tabindex="-1" /> Create New Event
     </Button>
 {/if}

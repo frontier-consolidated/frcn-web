@@ -50,14 +50,22 @@ export async function getEvents(apollo: TypedApolloClient, url: URL) {
         }
     } else {
         const { page, limit } = getPageVars(url.searchParams)
-
+        const includeCompleted = url.searchParams.has("includecompleted")
+        
         variables = {
             filter: {
                 search: url.searchParams.get("q"),
+                includeCompleted
             },
             page,
             limit
         }
+    }
+
+    const eventType = url.searchParams.get("type")
+    if (eventType) {
+        variables.filter ??= {}
+        variables.filter.eventType = eventType
     }
 
     const { data } = await apollo.query({

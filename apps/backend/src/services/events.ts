@@ -97,7 +97,7 @@ async function getEvents(
 						lte: duration.max,
 				  }
 				: undefined,
-			OR: startAtOr,
+			OR: startAtOr.length > 0 ? startAtOr : undefined,
 		},
 		orderBy: [
 			{
