@@ -67,7 +67,6 @@ function resolveEventSettings(settings: EventSettings) {
 		hideLocation: settings.hideLocation,
 		inviteOnly: settings.inviteOnly,
 		openToJoinRequests: settings.openToJoinRequests,
-		allowTeamSwitching: settings.allowTeamSwitching,
 	} satisfies GQLEventSettings;
 }
 

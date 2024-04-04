@@ -381,7 +381,6 @@ async function createEvent(owner: User, startAt: Date | undefined, discordClient
 					hideLocation: false,
 					inviteOnly: false,
 					openToJoinRequests: true,
-					allowTeamSwitching: false,
 				},
 			},
 			accessType: EventAccessType.Channel,
@@ -450,7 +449,6 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 							hideLocation: data.settings.hideLocation,
 							inviteOnly: data.settings.inviteOnly,
 							openToJoinRequests: data.settings.openToJoinRequests,
-							allowTeamSwitching: data.settings.allowTeamSwitching,
 						},
 				  }
 				: undefined,

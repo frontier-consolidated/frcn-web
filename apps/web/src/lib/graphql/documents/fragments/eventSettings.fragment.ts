@@ -7,7 +7,6 @@ export const EVENT_SETTINGS_FRAGMENT = gql(`
             hideLocation
             inviteOnly
             openToJoinRequests
-            allowTeamSwitching
         }
         accessType
         accessRoles {

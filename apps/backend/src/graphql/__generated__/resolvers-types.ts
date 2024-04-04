@@ -223,14 +223,12 @@ export type EventRsvpRole = {
 
 export type EventSettings = {
   __typename?: 'EventSettings';
-  allowTeamSwitching: Scalars['Boolean']['output'];
   hideLocation: Scalars['Boolean']['output'];
   inviteOnly: Scalars['Boolean']['output'];
   openToJoinRequests: Scalars['Boolean']['output'];
 };
 
 export type EventSettingsInput = {
-  allowTeamSwitching: Scalars['Boolean']['input'];
   hideLocation: Scalars['Boolean']['input'];
   inviteOnly: Scalars['Boolean']['input'];
   openToJoinRequests: Scalars['Boolean']['input'];
@@ -1114,7 +1112,6 @@ export type EventRsvpRoleResolvers<ContextType = GQLContext, ParentType extends 
 }>;
 
 export type EventSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventSettings'] = ResolversParentTypes['EventSettings']> = ResolversObject<{
-  allowTeamSwitching?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hideLocation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   inviteOnly?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   openToJoinRequests?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;

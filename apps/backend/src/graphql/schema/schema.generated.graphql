@@ -119,7 +119,6 @@ type EventSettings {
 	hideLocation: Boolean!
 	inviteOnly: Boolean!
 	openToJoinRequests: Boolean!
-	allowTeamSwitching: Boolean!
 }
 
 type EventTeam {
@@ -248,7 +247,6 @@ input EventSettingsInput {
 	hideLocation: Boolean!
 	inviteOnly: Boolean!
 	openToJoinRequests: Boolean!
-	allowTeamSwitching: Boolean!
 }
 
 input EventRoleInput {

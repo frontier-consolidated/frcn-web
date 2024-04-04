@@ -71,7 +71,6 @@
 						hideLocation: editData.settings.hideLocation,
 						inviteOnly: editData.settings.inviteOnly,
 						openToJoinRequests: editData.settings.openToJoinRequests,
-						allowTeamSwitching: editData.settings.allowTeamSwitching,
 					},
 					accessType: editData.accessType,
 					accessRoles: editData.accessRoles.map((role) => role.id),
@@ -317,21 +316,6 @@
 						</Toggle>
 					{/key}
 					<Helper class="mt-1">Selected users can request to join the event</Helper>
-				</Field>
-			</div>
-		</section>
-		<section>
-			<SectionHeading>
-				Member Permissions
-			</SectionHeading>
-			<div class="flex flex-col gap-4 p-4">
-				<Field {validator} for="event-allow-team-switching" value={editData.settings.allowTeamSwitching}>
-					<Toggle id="event-allow-team-switching" disabled={!canEdit} bind:checked={editData.settings.allowTeamSwitching}>
-						Allow Team Switching
-					</Toggle>
-					<Helper class="mt-1">
-						Users will be able to switch teams once the event has started
-					</Helper>
 				</Field>
 			</div>
 		</section>
