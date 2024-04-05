@@ -1,3 +1,4 @@
+import { Permission, hasOwnedObjectPermission } from "@frcn/shared";
 import type { Resource, User } from "@prisma/client";
 
 import type { WithModel } from "./types";
@@ -10,7 +11,8 @@ import type {
 	Resource as GQLResource,
 	Resolvers,
 } from "../../__generated__/resolvers-types";
-import { gqlErrorUnauthenticated } from "../gqlError";
+import { calculatePermissions } from "../calculatePermissions";
+import { gqlErrorOwnership, gqlErrorUnauthenticated } from "../gqlError";
 
 export function resolveResource(resource: Resource) {
 	return {
@@ -94,14 +96,29 @@ export const resourceResolvers: Resolvers = {
 			const resource = await $resources.createResource(context.user, args.data)
 			return resolveResource(resource)
 		},
-		async editResource(source, args) {
+		async editResource(source, args, context) {
 			const resource = await database.resource.findUnique({
 				where: { id: args.id },
 				select: {
-					id: true
+					id: true,
+					owner: {
+						select: {
+							id: true
+						}
+					}
 				}
 			})
 			if (!resource) return null;
+
+			if (!hasOwnedObjectPermission({
+				user: {
+					id: context.user?.id,
+					permissions: await calculatePermissions(context)
+				},
+				owner: resource.owner,
+				required: Permission.CreateResources,
+				override: Permission.ManageResources
+			})) throw gqlErrorOwnership()
 
 			const updatedResource = await $resources.editResource(args.id, args.data)
 			if (!updatedResource) return null;
@@ -111,10 +128,25 @@ export const resourceResolvers: Resolvers = {
 			const resource = await database.resource.findUnique({
 				where: { id: args.id },
 				select: {
-					id: true
+					id: true,
+					owner: {
+						select: {
+							id: true
+						}
+					}
 				}
 			})
 			if (!resource) return false;
+
+			if (!hasOwnedObjectPermission({
+				user: {
+					id: context.user?.id,
+					permissions: await calculatePermissions(context)
+				},
+				owner: resource.owner,
+				required: Permission.CreateResources,
+				override: Permission.ManageResources
+			})) throw gqlErrorOwnership()
 
 			await $resources.deleteResource(context.app.s3Client, context.app.s3Bucket, resource.id);
 			return true;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
-	import { Permission, hasPermission } from "@frcn/shared";
+	import { Permission, hasOwnedObjectPermission } from "@frcn/shared";
 	import { Dropdown, DropdownItem, Frame, Toolbar, ToolbarButton } from "flowbite-svelte";
 	import { DotsVerticalOutline, DownloadSolid, EditOutline, FilePdfSolid, LinkSolid, TrashBinSolid } from "flowbite-svelte-icons";
     import { createEventDispatcher } from "svelte";
@@ -87,7 +87,7 @@
                     }}>
                         <LinkSolid size="sm" class="me-2" tabindex="-1" /> Share
                     </DropdownItem>
-                    {#if hasPermission($user.data?.permissions ?? 0, Permission.UploadResources)}
+                    {#if hasOwnedObjectPermission({ user: $user.data, owner: resource.owner, required: Permission.CreateResources, override: Permission.ManageResources })}
                         <DropdownItem class="flex items-center" on:click={() => {
                             dispatch("edit", resource)
                         }}>

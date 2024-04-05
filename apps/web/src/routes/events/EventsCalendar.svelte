@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Permission, dates, hasPermission } from "@frcn/shared";
+	import { Permission, dates, hasOneOfPermissions, hasPermission } from "@frcn/shared";
 	import { Button, Heading, Indicator, Timeline, TimelineItem } from "flowbite-svelte";
 	import { ArrowLeftSolid, ArrowRightSolid, CirclePlusSolid } from "flowbite-svelte-icons";
 	import { type Writable } from 'svelte/store';
@@ -143,7 +143,7 @@
                 {@const inPast = day.date < getToday()}
                 {@const selected = dates.isSelected($selectedDate, day.date)}
                 {@const disabled = inPast || !dates.isCurrentMonth($viewMonth, day.date)}
-                {@const canCreateEvents = !inPast && hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
+                {@const canCreateEvents = !inPast && hasOneOfPermissions($user.data?.permissions ?? 0, [Permission.CreateEvents, Permission.ManageEvents])}
                 <button
                     class={twMerge("w-full aspect-square md:aspect-auto min-h-[64px] h-none md:h-32 lg:h-40 flex flex-col items-center bg-zinc-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-l border-b cursor-default", disabled && "text-gray-500", topRow && "border-t", (i + 1) % 7 === 0 && "border-r", i === 0 && "rounded-tl", i === 6 && "rounded-tr", i === dates.daysPerMonth - 7 && "rounded-bl", i === dates.daysPerMonth - 1 && "rounded-br", !matches && "cursor-pointer", (!matches && selected) && "bg-slate-200 dark:bg-gray-700")}
                     on:click={() => {

@@ -8,12 +8,22 @@
         {
             permission: Permission.CreateEvents,
             name: "Create Events",
-            help: "Allows creating, editing, posting and deleting of events"
+            help: "Allows creating, editing, posting and deleting of their own events"
         },
         {
-            permission: Permission.UploadResources,
+            permission: Permission.ManageEvents,
+            name: "Create Events",
+            help: "Allows creating, editing, posting and deleting of all events"
+        },
+        {
+            permission: Permission.CreateResources,
             name: "Create Resources",
-            help: "Allows creating, editing and deleting of guides & resources"
+            help: "Allows creating, editing and deleting of their own guides & resources"
+        },
+        {
+            permission: Permission.ManageResources,
+            name: "Create Events",
+            help: "Allows creating, editing and deleting of all guides & resources"
         },
         {
             permission: Permission.CmsRead,

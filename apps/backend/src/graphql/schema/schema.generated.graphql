@@ -412,10 +412,9 @@ type Mutation {
 	endEvent(id: ID!): Boolean! @permission(has: CreateEvents)
 	archiveEvent(id: ID!): Boolean! @permission(has: CreateEvents)
 	deleteEvent(id: ID!): Boolean! @permission(has: CreateEvents)
-
 	rsvpForEvent(id: ID!, rsvp: ID!): Boolean!
 	unrsvpForEvent(id: ID!): Boolean!
-
+	inviteToEvent(eventId: ID!, userId: ID!): Boolean! @permission(has: CreateEvents)
 	setEventMemberTeam(member: ID!, team: ID): Boolean!
 	kickEventMember(member: ID!): Boolean! @permission(has: CreateEvents)
 
@@ -424,9 +423,9 @@ type Mutation {
 	deleteEventTeam(id: ID!): Boolean! @permission(has: CreateEvents)
 
 	# Resources
-	createResource(data: ResourceCreateInput!): Resource! @permission(has: UploadResources)
-	editResource(id: ID!, data: ResourceEditInput!): Resource @permission(has: UploadResources)
-	deleteResource(id: ID!): Boolean! @permission(has: UploadResources)
+	createResource(data: ResourceCreateInput!): Resource! @permission(has: CreateResources)
+	editResource(id: ID!, data: ResourceEditInput!): Resource @permission(has: CreateResources)
+	deleteResource(id: ID!): Boolean! @permission(has: CreateResources)
 
 	# Roles
 	createRole: ID! @permission(has: ManageRoles)
@@ -501,7 +500,7 @@ type PagedResource {
 }
 enum Permission {
 	CreateEvents
-	UploadResources
+	CreateResources
 	CmsRead
 	CmsWrite
 	Unassigned4
@@ -526,8 +525,8 @@ enum Permission {
 	Unassigned23
 	Unassigned24
 	Unassigned25
-	Unassigned26
-	Unassigned27
+	ManageEvents
+	ManageResources
 	ManageRoles
 	ManageSystem
 	Admin

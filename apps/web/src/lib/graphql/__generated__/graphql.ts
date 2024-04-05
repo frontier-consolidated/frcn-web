@@ -290,6 +290,7 @@ export type Mutation = {
   editUserStatus: UserStatus;
   endEvent: Scalars['Boolean']['output'];
   giveUserRole: Scalars['Boolean']['output'];
+  inviteToEvent: Scalars['Boolean']['output'];
   kickEventMember: Scalars['Boolean']['output'];
   postEvent: Scalars['Boolean']['output'];
   regenerateAccessKey?: Maybe<AccessKey>;
@@ -452,6 +453,12 @@ export type MutationGiveUserRoleArgs = {
 };
 
 
+export type MutationInviteToEventArgs = {
+  eventId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
+};
+
+
 export type MutationKickEventMemberArgs = {
   member: Scalars['ID']['input'];
 };
@@ -551,6 +558,9 @@ export enum Permission {
   CmsRead = 'CmsRead',
   CmsWrite = 'CmsWrite',
   CreateEvents = 'CreateEvents',
+  CreateResources = 'CreateResources',
+  ManageEvents = 'ManageEvents',
+  ManageResources = 'ManageResources',
   ManageRoles = 'ManageRoles',
   ManageSystem = 'ManageSystem',
   Unassigned4 = 'Unassigned4',
@@ -574,10 +584,7 @@ export enum Permission {
   Unassigned22 = 'Unassigned22',
   Unassigned23 = 'Unassigned23',
   Unassigned24 = 'Unassigned24',
-  Unassigned25 = 'Unassigned25',
-  Unassigned26 = 'Unassigned26',
-  Unassigned27 = 'Unassigned27',
-  UploadResources = 'UploadResources'
+  Unassigned25 = 'Unassigned25'
 }
 
 export type Query = {

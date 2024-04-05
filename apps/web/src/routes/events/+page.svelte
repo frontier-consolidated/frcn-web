@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { EventTypeOptions, Permission, hasPermission } from "@frcn/shared";
+	import { EventTypeOptions, Permission, hasOneOfPermissions, hasPermission } from "@frcn/shared";
 	import { Heading, TabItem, Tabs, Search, Button as FButton, Toggle, Label } from "flowbite-svelte";
 	import { FilterSolid } from "flowbite-svelte-icons";
 	import type { Writable } from "svelte/store";
@@ -85,7 +85,7 @@
 					{/if}
 				</div>
 				<div class="sm:self-start shrink-0 flex flex-col justify-end min-[480px]:flex-row gap-2">
-					{#if hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
+					{#if hasOneOfPermissions($user.data?.permissions ?? 0, [Permission.CreateEvents, Permission.ManageEvents])}
 						<Button color="alternative" class="md:flex-1 sm:shrink-0" href="/events/me">
 							My Events
 						</Button>

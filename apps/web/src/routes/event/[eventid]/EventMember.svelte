@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Permission, hasPermission } from "@frcn/shared";
+	import { Permission, hasOwnedObjectPermission, hasPermission } from "@frcn/shared";
 	import { Avatar, Dropdown, DropdownDivider, DropdownItem } from "flowbite-svelte";
 	import { DotsVerticalOutline, UserRemoveSolid, ArrowLeftToBracketOutline } from "flowbite-svelte-icons";
 
@@ -80,7 +80,7 @@
 				<ArrowLeftToBracketOutline class="me-2" tabindex="-1" /> Leave Event
 			</DropdownItem>
 		{:else}
-			{#if hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
+			{#if hasOwnedObjectPermission({ user: $user.data, owner: event.owner, required: Permission.CreateEvents, override: Permission.ManageEvents })}
 				<DropdownItem class="flex dark:hover:bg-red-500" on:click={async (e) => {
 					const { data: kickData, errors } = await getApollo().mutate({
 						mutation: Mutations.KICK_EVENT_MEMBER,

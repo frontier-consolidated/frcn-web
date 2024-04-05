@@ -1,4 +1,4 @@
-import { EventType } from "@frcn/shared";
+import { EventType, Permission, hasOwnedObjectPermission } from "@frcn/shared";
 import type { EventRsvpRole, EventSettings, EventUser, Event, User, EventChannel } from "@prisma/client";
 import type { CategoryChannel } from "discord.js";
 
@@ -22,7 +22,8 @@ import type {
 } from "../../__generated__/resolvers-types";
 import { EventAccessType, EventState } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
-import { gqlErrorBadInput, gqlErrorBadState, gqlErrorUnauthenticated } from "../gqlError";
+import { calculatePermissions } from "../calculatePermissions";
+import { gqlErrorBadInput, gqlErrorBadState, gqlErrorOwnership, gqlErrorUnauthenticated } from "../gqlError";
 
 export enum EventReminder {
 	OnStart = "ON_START",
@@ -344,6 +345,16 @@ export const eventResolvers: Resolvers = {
 			const event = await $events.getEvent(args.id);
 			if (!event) return null;
 
+			if (!hasOwnedObjectPermission({
+				user: {
+					id: context.user?.id,
+					permissions: await calculatePermissions(context)
+				},
+				owner: event.ownerId ? { id: event.ownerId } : null,
+				required: Permission.CreateEvents,
+				override: Permission.ManageEvents
+			})) throw gqlErrorOwnership()
+
 			if (event.endedAt || event.archived) {
 				throw gqlErrorBadInput(`Cannot edit event after it has ended or been archived`);
 			}
@@ -435,6 +446,16 @@ export const eventResolvers: Resolvers = {
 			if (!event) return false;
 			if (event.posted) return true;
 
+			if (!hasOwnedObjectPermission({
+				user: {
+					id: context.user?.id,
+					permissions: await calculatePermissions(context)
+				},
+				owner: event.ownerId ? { id: event.ownerId } : null,
+				required: Permission.CreateEvents,
+				override: Permission.ManageEvents
+			})) throw gqlErrorOwnership()
+
 			if (!event.name) throw gqlErrorBadState("Event is missing name");
 			if (!event.eventType) throw gqlErrorBadState("Event is missing type");
 			if (!event.startAt) throw gqlErrorBadState("Event is missing start date");
@@ -484,6 +505,16 @@ export const eventResolvers: Resolvers = {
 			if (!event || event.endedAt || event.archived) return false;
 			if (!event.posted) return true;
 
+			if (!hasOwnedObjectPermission({
+				user: {
+					id: context.user?.id,
+					permissions: await calculatePermissions(context)
+				},
+				owner: event.ownerId ? { id: event.ownerId } : null,
+				required: Permission.CreateEvents,
+				override: Permission.ManageEvents
+			})) throw gqlErrorOwnership()
+
 			await $events.unpostEvent(event, context.app.discordClient)
 			return true;
 		},
@@ -493,6 +524,16 @@ export const eventResolvers: Resolvers = {
 			if (!event.startAt || event.startAt > new Date()) return false;
 			if (event.endedAt) return true;
 
+			if (!hasOwnedObjectPermission({
+				user: {
+					id: context.user?.id,
+					permissions: await calculatePermissions(context)
+				},
+				owner: event.ownerId ? { id: event.ownerId } : null,
+				required: Permission.CreateEvents,
+				override: Permission.ManageEvents
+			})) throw gqlErrorOwnership()
+
 			await $events.endEvent(event, context.app.discordClient)
 			return true
 		},
@@ -501,6 +542,16 @@ export const eventResolvers: Resolvers = {
 			if (!event || !event.posted) return false;
 			if (event.archived) return true;
 
+			if (!hasOwnedObjectPermission({
+				user: {
+					id: context.user?.id,
+					permissions: await calculatePermissions(context)
+				},
+				owner: event.ownerId ? { id: event.ownerId } : null,
+				required: Permission.CreateEvents,
+				override: Permission.ManageEvents
+			})) throw gqlErrorOwnership()
+
 			await $events.archiveEvent(event, context.app.discordClient)
 			return true;
 		},
@@ -508,6 +559,16 @@ export const eventResolvers: Resolvers = {
 			const event = await $events.getEvent(args.id)
 			if (!event) return false;
 			if (event.startAt && event.startAt <= new Date()) return false;
+
+			if (!hasOwnedObjectPermission({
+				user: {
+					id: context.user?.id,
+					permissions: await calculatePermissions(context)
+				},
+				owner: event.ownerId ? { id: event.ownerId } : null,
+				required: Permission.CreateEvents,
+				override: Permission.ManageEvents
+			})) throw gqlErrorOwnership()
 
 			await $events.deleteEvent(event, context.app.discordClient)
 			return true;
@@ -548,7 +609,19 @@ export const eventResolvers: Resolvers = {
 			if (!member) return false;
 
 			const event = await $events.getEventMemberEvent(member.id)
-			if (!event || event?.endedAt || event?.archived) {
+			if (!event) return false;
+
+			if (!hasOwnedObjectPermission({
+				user: {
+					id: context.user?.id,
+					permissions: await calculatePermissions(context)
+				},
+				owner: event.ownerId ? { id: event.ownerId } : null,
+				required: Permission.CreateEvents,
+				override: Permission.ManageEvents
+			})) throw gqlErrorOwnership()
+
+			if (event?.endedAt || event?.archived) {
 				throw gqlErrorBadInput(`Cannot kick user from event after it has ended or been archived`);
 			}
 

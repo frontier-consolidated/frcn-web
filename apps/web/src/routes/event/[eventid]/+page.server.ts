@@ -1,12 +1,9 @@
-import { Permission, hasPermission } from '@frcn/shared';
+import { Permission, hasOwnedObjectPermission } from '@frcn/shared';
 import { error } from '@sveltejs/kit';
 
 import { Queries } from '$lib/graphql';
 
 import type { PageServerLoad } from './$types';
-
-
-const editingEnabled = true
 
 export const load = (async ({ params, locals, depends }) => {
     depends("app:currentevent")
@@ -22,7 +19,12 @@ export const load = (async ({ params, locals, depends }) => {
 		error(404, "Event not found");
 	}
     
-    const canEdit = editingEnabled && locals.user && (locals.user.id === eventData.event.owner?.id || hasPermission(locals.user.permissions, Permission.CreateEvents))
+    const canEdit = hasOwnedObjectPermission({
+        user: locals.user,
+        owner: eventData.event.owner,
+        required: Permission.CreateEvents,
+        override: Permission.ManageEvents
+    })
 
     if (canEdit) {
         const { data: eventSettingsData, errors } = await locals.apollo.query({

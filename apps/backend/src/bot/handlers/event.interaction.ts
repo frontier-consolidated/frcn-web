@@ -1,4 +1,4 @@
-import { Permission, hasPermission } from "@frcn/shared";
+import { Permission, hasOwnedObjectPermission } from "@frcn/shared";
 import type { AnySelectMenuInteraction, ButtonInteraction } from "discord.js";
 
 import { $discord } from "../../services/discord";
@@ -32,9 +32,14 @@ async function handleEndEvent(interaction: ButtonInteraction | AnySelectMenuInte
     const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
 
     const permissions = await $users.getPermissions(user)
-    if (!hasPermission(permissions, Permission.CreateEvents)) {
+    if (!hasOwnedObjectPermission({
+        user: { id: user.id, permissions },
+        owner: event.ownerId ? { id: event.ownerId } : null,
+        required: Permission.CreateEvents,
+        override: Permission.ManageEvents
+    })) {
         await interaction.reply({
-            ...buildErrorMessage("You do not have permission to end events"),
+            ...buildErrorMessage("You do not have permission to end this event"),
             ephemeral: true
         })
         return;
@@ -73,9 +78,14 @@ async function handleArchiveEvent(interaction: ButtonInteraction | AnySelectMenu
     const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client)
 
     const permissions = await $users.getPermissions(user)
-    if (!hasPermission(permissions, Permission.CreateEvents)) {
+    if (!hasOwnedObjectPermission({
+        user: { id: user.id, permissions },
+        owner: event.ownerId ? { id: event.ownerId } : null,
+        required: Permission.CreateEvents,
+        override: Permission.ManageEvents
+    })) {
         await interaction.reply({
-            ...buildErrorMessage("You do not have permission to archive events"),
+            ...buildErrorMessage("You do not have permission to archive this event"),
             ephemeral: true
         })
         return;

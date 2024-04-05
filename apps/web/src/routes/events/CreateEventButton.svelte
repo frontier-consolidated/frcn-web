@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Permission, hasPermission } from "@frcn/shared";
+	import { Permission, hasOneOfPermissions, hasPermission } from "@frcn/shared";
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
@@ -11,7 +11,7 @@
     export let startAt: Date | undefined = undefined
 </script>
 
-{#if hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
+{#if hasOneOfPermissions($user.data?.permissions ?? 0, [Permission.CreateEvents, Permission.ManageEvents])}
     <Button
         {...$$restProps}
         class={twMerge("sm:shrink-0", $$restProps.class)}

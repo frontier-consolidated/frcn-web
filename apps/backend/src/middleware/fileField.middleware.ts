@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import path from "path";
 
-import { Permission, hasPermission } from "@frcn/shared";
+import { Permission, hasAllOfPermissions, hasOneOfPermissions, hasPermission } from "@frcn/shared";
 import type { RequestHandler } from "express";
 import * as mime from "mime-types";
 import multer, { MulterError, type Options } from "multer";
@@ -35,14 +35,16 @@ const memUpload = multer({
 
 const attachmentConfigs = {
     resource: {
-        permission: Permission.UploadResources,
+        permission: {
+            one: [Permission.CreateResources, Permission.ManageResources]
+        },
         allowedFiles: ["image/*", "pdf"]
     },
     cms_container: {
         permission: Permission.CmsWrite,
         allowedFiles: ["image/*"]
     }
-} as Record<string, { permission: Permission, allowedFiles?: string[] }>
+} as Record<string, { permission: Permission | { one: Permission[] } | { all: Permission[] }, allowedFiles?: string[] }>
 
 
 export function fileField(
@@ -70,7 +72,18 @@ export function fileField(
             if (!config) return res.status(400).send({ message: `Disallowed attachment 'type=${type}'` })
             
             const permissions = await $users.getPermissions(req.user)
-            if (!hasPermission(permissions, config.permission)) return res.status(403).send({
+            let canUpload = true;
+            if (typeof config.permission === "object") {
+                if ("one" in config.permission && !hasOneOfPermissions(permissions, config.permission.one)) {
+                    canUpload = false;
+                } else if ("all" in config.permission && !hasAllOfPermissions(permissions, config.permission.all)) {
+                    canUpload = false;
+                }
+            } else if (!hasPermission(permissions, config.permission)) {
+                canUpload = false;
+            }
+                
+            if (!canUpload) return res.status(403).send({
                 message: "Missing permissions required to upload files"
             })
     

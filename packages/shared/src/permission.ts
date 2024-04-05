@@ -1,6 +1,6 @@
 export enum Permission {
 	CreateEvents = 1 << 0,
-	UploadResources = 1 << 1,
+	CreateResources = 1 << 1,
 	CmsRead = 1 << 2,
 	CmsWrite = 1 << 3,
 	Unassigned4 = 1 << 4,
@@ -25,8 +25,8 @@ export enum Permission {
 	Unassigned23 = 1 << 23,
 	Unassigned24 = 1 << 24,
 	Unassigned25 = 1 << 25,
-	Unassigned26 = 1 << 26,
-	Unassigned27 = 1 << 27,
+	ManageEvents = 1 << 26,
+	ManageResources = 1 << 27,
 	ManageRoles = 1 << 28,
 	ManageSystem = 1 << 29,
 	Admin = 1 << 30,
@@ -61,4 +61,12 @@ export function hasAllOfPermissions(permissions: number, allOf: Permission[]) {
 		if (!hasPermission(permissions, permission)) return false;
 	}
 	return true;
+}
+
+export function hasOwnedObjectPermission({ user, owner, required, override }: { user: { id?: string, permissions: number } | null | undefined, owner: { id?: string } | null | undefined, required: Permission, override?: Permission }) {
+	if (!user) return false;
+	const isOwner = !!user.id && !!owner?.id && user.id === owner?.id
+
+	if (isOwner && hasPermission(user.permissions, required)) return true;
+	return override && hasPermission(user.permissions, override)
 }
