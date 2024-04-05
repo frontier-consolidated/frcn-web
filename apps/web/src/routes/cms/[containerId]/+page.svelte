@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import { goto, invalidate } from '$app/navigation';
 	import { CMSContainerType, CmsContainer, CmsFile } from '@frcn/cms';
     import { strings } from "@frcn/shared"

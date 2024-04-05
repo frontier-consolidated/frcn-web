@@ -49,6 +49,7 @@
 		canNavigate.set(!isDirty)
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let sortable: Sortable;
     function initSortable(el: HTMLElement) {
 		sortable = new Sortable(el, {

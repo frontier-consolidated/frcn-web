@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Permission, dates, hasOneOfPermissions, hasPermission } from "@frcn/shared";
+	import { Permission, dates, hasOneOfPermissions } from "@frcn/shared";
 	import { Button, Heading, Indicator, Timeline, TimelineItem } from "flowbite-svelte";
 	import { ArrowLeftSolid, ArrowRightSolid, CirclePlusSolid } from "flowbite-svelte-icons";
 	import { type Writable } from 'svelte/store';

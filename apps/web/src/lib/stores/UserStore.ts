@@ -56,7 +56,7 @@ if (browser) {
 				})
 			}
 			if (!subscription) {
-				subscription = observer.subscribe(({ data, errors }) => {
+				subscription = observer.subscribe(({ data }) => {
 					if (!data) return;
 					user.update((value) => {
 						return {

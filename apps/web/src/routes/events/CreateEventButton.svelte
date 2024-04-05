@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Permission, hasOneOfPermissions, hasPermission } from "@frcn/shared";
+	import { Permission, hasOneOfPermissions } from "@frcn/shared";
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 

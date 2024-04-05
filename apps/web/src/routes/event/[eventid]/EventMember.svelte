@@ -80,7 +80,7 @@
 			</DropdownItem>
 		{:else}
 			{#if event.canEdit}
-				<DropdownItem class="flex dark:hover:bg-red-500" on:click={async (e) => {
+				<DropdownItem class="flex dark:hover:bg-red-500" on:click={async () => {
 					const { data: kickData, errors } = await getApollo().mutate({
 						mutation: Mutations.KICK_EVENT_MEMBER,
 						variables: {

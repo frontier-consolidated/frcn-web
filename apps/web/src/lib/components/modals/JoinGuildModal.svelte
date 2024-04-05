@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
-	import { A, Modal } from "flowbite-svelte";
+	import { Modal } from "flowbite-svelte";
 	import { queryParam } from "sveltekit-search-params";
 
 	import JoinDiscordButton from "../JoinDiscordButton.svelte";

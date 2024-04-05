@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { EventTypeOptions, Permission, hasOneOfPermissions, hasPermission } from "@frcn/shared";
+	import { EventTypeOptions, Permission, hasOneOfPermissions } from "@frcn/shared";
 	import { Heading, TabItem, Tabs, Search, Button as FButton, Toggle, Label } from "flowbite-svelte";
 	import { FilterSolid } from "flowbite-svelte-icons";
 	import type { Writable } from "svelte/store";

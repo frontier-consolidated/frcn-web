@@ -2,7 +2,7 @@
 	import { page } from "$app/stores";
 	import { Permission, hasPermission } from "@frcn/shared";
 	import { Avatar, Badge, Dropdown, Modal, Search } from "flowbite-svelte";
-	import { AngleDownSolid, ArrowUpRightFromSquareOutline, CirclePlusSolid, CloseSolid, DiscordSolid, LinkSolid, StarSolid } from "flowbite-svelte-icons";
+	import { AngleDownSolid, ArrowUpRightFromSquareOutline, CirclePlusSolid, CloseSolid, DiscordSolid, StarSolid } from "flowbite-svelte-icons";
     import { locale } from "svelte-i18n";
 
 	import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";

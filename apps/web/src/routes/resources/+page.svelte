@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
 	import { page } from "$app/stores";
-	import { Permission, hasOneOfPermissions, hasPermission } from "@frcn/shared";
+	import { Permission, hasOneOfPermissions } from "@frcn/shared";
 	import { Heading, Pagination, Search } from "flowbite-svelte";
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params"
