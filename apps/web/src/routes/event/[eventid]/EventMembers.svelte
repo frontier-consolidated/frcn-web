@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Heading } from "flowbite-svelte";
 
-import type { PageData } from "./$types";
+    import type { PageData } from "./$types";
 	import EventMember from "./EventMember.svelte";
 
     export let data: PageData;
