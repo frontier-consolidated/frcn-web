@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { strings } from "@frcn/shared";
 	import { Tabs, TabItem } from "flowbite-svelte";
+	import { matches } from "validator";
 
-	import { Head } from "$lib/components";
+	import { Head, ScreenQuery } from "$lib/components";
 
 	import type { PageData } from "./$types";
 	import EventDetails from "./EventDetails.svelte";
+	import EventMembers from "./EventMembers.svelte";
 	import EventSettings from "./EventSettings.svelte";
 	import EventSidebar from "./EventSidebar.svelte";
 
@@ -41,10 +43,16 @@
 				>
 					<EventDetails bind:data />
 				</TabItem>
-				<TabItem
-					title="Members"
-					defaultClass="inline-block text-md font-medium text-center disabled:cursor-not-allowed"
-				></TabItem>
+				<ScreenQuery size="lg" let:matches>
+					{#if !matches}
+						<TabItem
+							title="Members"
+							defaultClass="inline-block text-md font-medium text-center disabled:cursor-not-allowed"
+						>
+							<EventMembers bind:data />
+						</TabItem>
+					{/if}
+				</ScreenQuery>
 			{/if}
 			{#if data.canEdit}
 				<TabItem

@@ -23,7 +23,7 @@
 	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
-	import EventSidebarMember from "./EventSidebarMember.svelte";
+	import EventMember from "./EventMember.svelte";
 
 	export let data: PageData;
 
@@ -133,7 +133,7 @@
 			<SidebarGroup ulClass={twMerge("space-y-0", hideMembers && "hidden")}>
 				{#if data.members.length > 0}
 					{#each data.members as member}
-						<EventSidebarMember bind:event={data} {member} />
+						<EventMember bind:event={data} {member} />
 					{/each}
 				{:else}
 					<span class="block text-sm text-center dark:text-gray-600">No members</span>
