@@ -2,14 +2,11 @@
 	import { invalidate } from "$app/navigation";
 	import {
 		Sidebar,
-		SidebarDropdownItem,
-		SidebarDropdownWrapper,
 		SidebarGroup,
 		SidebarItem,
 		SidebarWrapper,
 	} from "flowbite-svelte";
 	import {
-		AdjustmentsHorizontalSolid,
 		ArrowLeftSolid,
 		ArrowLeftToBracketOutline,
 		UserPlusSolid,
@@ -39,38 +36,30 @@
 					<ArrowLeftSolid tabindex="-1" />
 				</svelte:fragment>
 			</SidebarItem>
-			{#if data.canEdit}
-				<SidebarDropdownWrapper label="Manage" class="rounded clip-opposite-4">
-					<svelte:fragment slot="icon">
-						<AdjustmentsHorizontalSolid tabindex="-1" />
-					</svelte:fragment>
-					<SidebarDropdownItem label="Invite Members" class="rounded clip-opposite-4" />
-					{#if !data.endedAt && data.startAt && new Date(data.startAt) <= new Date()}
-						<SidebarDropdownItem
-							label="End Event"
-							class="rounded clip-opposite-4 dark:hover:bg-red-500"
-							on:click={async () => {
-								const { data: endData, errors } = await getApollo().mutate({
-									mutation: Mutations.END_EVENT,
-									variables: {
-										id: data.id
-									}
-								})
+			{#if data.canEdit && !data.endedAt && data.startAt && new Date(data.startAt) <= new Date()}
+				<SidebarItem
+					label="End Event"
+					class="rounded clip-opposite-4 dark:hover:bg-red-500"
+					on:click={async () => {
+						const { data: endData, errors } = await getApollo().mutate({
+							mutation: Mutations.END_EVENT,
+							variables: {
+								id: data.id
+							}
+						})
 
-								if (!endData?.ended || (errors && errors.length > 0)) {
-									pushNotification({
-										type: "error",
-										message: "Failed to end event",
-									});
-									console.error(errors);
-									return;
-								}
+						if (!endData?.ended || (errors && errors.length > 0)) {
+							pushNotification({
+								type: "error",
+								message: "Failed to end event",
+							});
+							console.error(errors);
+							return;
+						}
 
-								await invalidate("app:currentevent")
-							}}
-						/>
-					{/if}
-				</SidebarDropdownWrapper>
+						await invalidate("app:currentevent")
+					}}
+				/>
 			{/if}
 			{#if !data.endedAt}
 				{#if data.rsvp}
@@ -126,7 +115,7 @@
 			</div>
 			<SidebarItem
 				class="rounded clip-opposite-4"
-				nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 bg-white hover:bg-gray-100 dark:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
+				nonActiveClass="flex items-center px-2 py-1 text-base font-normal text-gray-900 bg-white hover:bg-gray-100 dark:text-white dark:bg-gray-800 dark:hover:bg-gray-700"
 				label={hideMembers ? "Show Members" : "Hide Members"}
 				on:click={() => hideMembers = !hideMembers}
 			/>
