@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Helper, Input, Label } from 'flowbite-svelte';
-	import { CloseSolid, EditOutline } from 'flowbite-svelte-icons';
+	import { CloseSolid, EditOutline, LockOpenSolid, LockSolid } from 'flowbite-svelte-icons';
 
 	import { SectionHeading, Field, FieldValidator, Button, Head } from '$lib/components';
 	import { Mutations, getApollo } from '$lib/graphql';
@@ -27,6 +27,8 @@
 		isDirty = data.discordGuild.id !== editData.discordGuild.id
 		canNavigate.set(!isDirty)
 	}
+
+    let guildIdFieldLocked = true
 
     async function save() {
         if (!validator.validate()) return;
@@ -71,17 +73,25 @@
             <Label for="system-general-guildid" class="mb-1">Discord Guild</Label>
             <span class="block mb-1 text-xs text-gray-500">Current Guild: {data.discordGuild.name}</span>
             <Input
-                class="rounded"
+                class="flex-1 rounded"
                 id="system-general-guildid"
                 name="system-general-guildid"
                 type="text"
                 placeholder="0"
                 pattern="[0-9]+"
+                disabled={guildIdFieldLocked}
                 required
                 bind:value={editData.discordGuild.id}
-            />
+            >
+                <button slot="right" class="text-gray-600 dark:text-gray-300" on:click={() => (guildIdFieldLocked = !guildIdFieldLocked)}>
+                    <svelte:component this={guildIdFieldLocked ? LockSolid : LockOpenSolid} tabindex="-1" class="outline-none" size="sm" />
+                </button>
+            </Input>
             <Helper class="mt-1">
-                The discord guild that all roles and events will be linked to
+                The discord guild that all discord related connections will be related to.
+            </Helper>
+            <Helper color="red" class="mt-1">
+                * DO NOT CHANGE UNLESS YOU ABSOLUTELY NEED TO - THINGS WILL BREAK
             </Helper>
         </Field>
         <div>
