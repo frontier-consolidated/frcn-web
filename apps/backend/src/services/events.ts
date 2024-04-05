@@ -780,8 +780,6 @@ async function deleteEventChannel(channel: EventChannel, discordClient: DiscordC
 		for (const vc of vcs) {
 			const discordChannel = await $discord.getChannel(discordClient, vc.discordId)
 			if (discordChannel) {
-				const me = discordChannel.guild.members.me
-				console.log(discordChannel.parentId, ChannelType[discordChannel.type], discordChannel.permissionsFor(me!).toArray())
 				await discordChannel.delete("Deleting voice channels associated to event channel")
 			}
 		}

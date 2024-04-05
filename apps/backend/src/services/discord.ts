@@ -76,13 +76,13 @@ async function getChannel(client: Client, id: string) {
 async function canPostInChannel(channel: GuildBasedChannel) {
 	const me = channel.guild.members.me ?? await channel.guild.members.fetchMe()
 	const permissions = me.permissionsIn(channel.id)
-	return permissions.has("SendMessages") && permissions.has("SendMessagesInThreads") && permissions.has("ViewChannel")
+	return permissions.has("SendMessages") && permissions.has("SendMessagesInThreads") && permissions.has("ViewChannel") && permissions.has("MentionEveryone")
 }
 
 async function canCreateThreadInChannel(channel: GuildBasedChannel) {
 	const me = channel.guild.members.me ?? await channel.guild.members.fetchMe()
 	const permissions = me.permissionsIn(channel.id)
-	return permissions.has("CreatePrivateThreads")
+	return permissions.has("CreatePrivateThreads") && permissions.has("SendMessagesInThreads")
 }
 
 async function canManageChannelsInCategory(category: GuildBasedChannel) {
@@ -90,7 +90,7 @@ async function canManageChannelsInCategory(category: GuildBasedChannel) {
 
 	const me = category.guild.members.me ?? await category.guild.members.fetchMe()
 	const permissions = me.permissionsIn(category.id)
-	return permissions.has("ManageChannels") && permissions.has("ViewChannel")
+	return permissions.has("ManageChannels") && permissions.has("ViewChannel") && permissions.has("Connect") && permissions.has("MoveMembers")
 }
 
 async function canUserViewChannel(client: Client, user: User | undefined, channelId: string) {
