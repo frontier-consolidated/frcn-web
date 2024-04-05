@@ -12,7 +12,7 @@
         },
         {
             permission: Permission.ManageEvents,
-            name: "Create Events",
+            name: "Manage Events",
             help: "Allows creating, editing, posting and deleting of all events"
         },
         {
@@ -22,7 +22,7 @@
         },
         {
             permission: Permission.ManageResources,
-            name: "Create Events",
+            name: "Manage Resources",
             help: "Allows creating, editing and deleting of all guides & resources"
         },
         {
@@ -36,9 +36,14 @@
             help: "Allows creating, editing and deleting of CMS content"
         },
         {
+            permission: Permission.ManageRoles,
+            name: "Manage System",
+            help: "Allows modifying of roles and ability to add/remove roles from users"
+        },
+        {
             permission: Permission.ManageSystem,
             name: "Manage System",
-            help: "Allows modifying of general system settings and event channels"
+            help: "Allows modifying of any system settings not covered by other permissions"
         },
         {
             permission: Permission.Admin,
