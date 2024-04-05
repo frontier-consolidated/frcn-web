@@ -13,7 +13,7 @@
 	export let event: PageData;
 	export let member: PageData["members"][number];
 
-	$: id = `event-member-more-${member.id}`
+	$: optionsId = `event-member-options-${member.id}`
 	$: role = member.rsvp ? event.rsvpRoles.find(role => role.id === member.rsvp) : null
 </script>
 
@@ -40,14 +40,14 @@
 		</div>
 	</div>
 	<DotsVerticalOutline
-		{id}
+		id={optionsId}
 		class="ml-auto dark:hover:text-gray-500"
 		size="sm"
 		on:click={(e) => e.stopPropagation()}
 	/>
 </button>
 
-<Dropdown triggeredBy="#{id}">
+<Dropdown containerClass="rounded divide-y z-50" triggeredBy="#{optionsId}">
 	<DropdownItem on:click={() => {
 		viewUserProfile(member.user.id)
 	}}>
