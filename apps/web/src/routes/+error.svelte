@@ -4,16 +4,16 @@
 
 	import { Button, Head, LoginButton } from "$lib/components";
 
-	let heading = "Critical Error"
+	let heading = "Critical Error";
 	$: switch ($page.status) {
 		case 401:
-			heading = "Access Denied"
+			heading = "Access Denied";
 			break;
 		case 404:
-			heading = "Page Not Found"
+			heading = "Page Not Found";
 			break;
 		default:
-			heading = "Server Error"
+			heading = "Server Error";
 			break;
 	}
 </script>

@@ -153,30 +153,30 @@ export const eventResolvers: Resolvers = {
 		},
 		state(event) {
 			if (!event.endedAt && event.startAt && new Date(event.startAt) <= new Date()) {
-				return EventState.Started
+				return EventState.Started;
 			}
 
 			if (event.endedAt && !event.archived) {
-				return EventState.Ended
+				return EventState.Ended;
 			}
 
 			if (event.archived) {
-				return EventState.Archived
+				return EventState.Archived;
 			}
 
-			return EventState.None
+			return EventState.None;
 		},
 		async rsvp(source, args, context) {
 			if (!context.user) return null;
 			const { _model } = source as WithModel<GQLEvent, Event>;
-			const currentRsvp = await $events.getUserRsvp(_model, context.user)
+			const currentRsvp = await $events.getUserRsvp(_model, context.user);
 			if (!currentRsvp || !currentRsvp.rsvpId) return null;
-			return resolveEventMember(currentRsvp)
+			return resolveEventMember(currentRsvp);
 		},
 		async roles(source, args, context) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const rsvpRoles = await $events.getRSVPRoles(_model.id);
-			rsvpRoles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
+			rsvpRoles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 			return rsvpRoles.map((role) => resolveEventRsvpRole(role, context));
 		},
 		async members(source) {
@@ -244,7 +244,7 @@ export const eventResolvers: Resolvers = {
 				name: `#ERROR-${_model.discordId}`,
 				type: "Unknown",
 				sendMessages: false
-			}
+			};
 
 			return resolveDiscordChannel(guildChannel);
 		},
@@ -261,14 +261,14 @@ export const eventResolvers: Resolvers = {
 				name: `ERROR-${_model.discordCategoryId}`,
 				type: "GuildCategory",
 				sendMessages: false
-			}
+			};
 
 			return resolveDiscordChannel(category as CategoryChannel);
 		},
 		async events(source) {
 			const { _model } = source as WithModel<GQLEventChannel, EventChannel>;
-			const events = await $events.getEventsInChannel(_model.id)
-			return events.map(resolveEvent)
+			const events = await $events.getEventsInChannel(_model.id);
+			return events.map(resolveEvent);
 		}
 	},
 
@@ -292,11 +292,11 @@ export const eventResolvers: Resolvers = {
 			}
 
 			if (minStartAt && maxStartAt && minStartAt > maxStartAt) {
-				throw gqlErrorBadInput("Range not allowed: `maxStartAt` must be greater than `minStartAt`")
+				throw gqlErrorBadInput("Range not allowed: `maxStartAt` must be greater than `minStartAt`");
 			}
 
 			if (minDuration && maxDuration && minDuration > maxDuration) {
-				throw gqlErrorBadInput("Range not allowed: `maxDuration` must be greater than `minDuration`")
+				throw gqlErrorBadInput("Range not allowed: `maxDuration` must be greater than `minDuration`");
 			}
 
 			const result = await $events.getEvents(
@@ -353,10 +353,10 @@ export const eventResolvers: Resolvers = {
 				owner: event.ownerId ? { id: event.ownerId } : null,
 				required: Permission.CreateEvents,
 				override: Permission.ManageEvents
-			})) throw gqlErrorOwnership()
+			})) throw gqlErrorOwnership();
 
 			if (event.endedAt || event.archived) {
-				throw gqlErrorBadInput(`Cannot edit event after it has ended or been archived`);
+				throw gqlErrorBadInput("Cannot edit event after it has ended or been archived");
 			}
 
 			const data = args.data;
@@ -374,7 +374,7 @@ export const eventResolvers: Resolvers = {
 
 			if (data.roles) {
 				if (data.roles.length < 1) {
-					throw gqlErrorBadInput(`Expected atleast 1 role`);
+					throw gqlErrorBadInput("Expected atleast 1 role");
 				}
 				for (const role of data.roles) {
 					if (role.emoji != role.emojiId && role.emojiId.length < 17) {
@@ -405,7 +405,7 @@ export const eventResolvers: Resolvers = {
 						(!data.accessRoles || data.accessRoles.length != 1)
 					) {
 						throw gqlErrorBadInput(
-							`Expected exactly 1 access role with accessType=PrimaryRole`
+							"Expected exactly 1 access role with accessType=PrimaryRole"
 						);
 					}
 					if (
@@ -413,7 +413,7 @@ export const eventResolvers: Resolvers = {
 						(!data.accessRoles || data.accessRoles.length < 1)
 					) {
 						throw gqlErrorBadInput(
-							`Expected atleast 1 access role with accessType=SelectRoles`
+							"Expected atleast 1 access role with accessType=SelectRoles"
 						);
 					}
 					const roles = await $roles.getAllRoles({
@@ -454,32 +454,32 @@ export const eventResolvers: Resolvers = {
 				owner: event.ownerId ? { id: event.ownerId } : null,
 				required: Permission.CreateEvents,
 				override: Permission.ManageEvents
-			})) throw gqlErrorOwnership()
+			})) throw gqlErrorOwnership();
 
 			if (!event.name) throw gqlErrorBadState("Event is missing name");
 			if (!event.eventType) throw gqlErrorBadState("Event is missing type");
 			if (!event.startAt) throw gqlErrorBadState("Event is missing start date");
 			if (!event.duration) throw gqlErrorBadState("Event is missing duration");
 
-			const eventChannel = await $events.getEventEventChannel(event.id)
+			const eventChannel = await $events.getEventEventChannel(event.id);
 			if (!eventChannel) throw gqlErrorBadState("Event is missing channel");
 
 			const discordChannel = await $discord.getChannel(context.app.discordClient, eventChannel.discordId);
-			if (!discordChannel) throw gqlErrorBadState("Cannot find discord channel")
+			if (!discordChannel) throw gqlErrorBadState("Cannot find discord channel");
 
 			const discordCategory = await $discord.getChannel(context.app.discordClient, eventChannel.discordCategoryId);
-			if (!discordCategory) throw gqlErrorBadState("Cannot find discord category")
+			if (!discordCategory) throw gqlErrorBadState("Cannot find discord category");
 
 			if (!(await $discord.canPostInChannel(discordChannel))) {
-				throw gqlErrorBadState("Cannot send messages in the linked event channel")
+				throw gqlErrorBadState("Cannot send messages in the linked event channel");
 			}
 
 			if (!(await $discord.canCreateThreadInChannel(discordChannel))) {
-				throw gqlErrorBadState("Cannot create threads in the linked event channel")
+				throw gqlErrorBadState("Cannot create threads in the linked event channel");
 			}
 
 			if (!(await $discord.canManageChannelsInCategory(discordCategory))) {
-				throw gqlErrorBadState("Cannot manage channels in the linked event channel category")
+				throw gqlErrorBadState("Cannot manage channels in the linked event channel category");
 			}
 
 			if (
@@ -513,9 +513,9 @@ export const eventResolvers: Resolvers = {
 				owner: event.ownerId ? { id: event.ownerId } : null,
 				required: Permission.CreateEvents,
 				override: Permission.ManageEvents
-			})) throw gqlErrorOwnership()
+			})) throw gqlErrorOwnership();
 
-			await $events.unpostEvent(event, context.app.discordClient)
+			await $events.unpostEvent(event, context.app.discordClient);
 			return true;
 		},
 		async endEvent(source, args, context) {
@@ -532,10 +532,10 @@ export const eventResolvers: Resolvers = {
 				owner: event.ownerId ? { id: event.ownerId } : null,
 				required: Permission.CreateEvents,
 				override: Permission.ManageEvents
-			})) throw gqlErrorOwnership()
+			})) throw gqlErrorOwnership();
 
-			await $events.endEvent(event, context.app.discordClient)
-			return true
+			await $events.endEvent(event, context.app.discordClient);
+			return true;
 		},
 		async archiveEvent(source, args, context) {
 			const event = await $events.getEvent(args.id);
@@ -550,13 +550,13 @@ export const eventResolvers: Resolvers = {
 				owner: event.ownerId ? { id: event.ownerId } : null,
 				required: Permission.CreateEvents,
 				override: Permission.ManageEvents
-			})) throw gqlErrorOwnership()
+			})) throw gqlErrorOwnership();
 
-			await $events.archiveEvent(event, context.app.discordClient)
+			await $events.archiveEvent(event, context.app.discordClient);
 			return true;
 		},
 		async deleteEvent(source, args, context) {
-			const event = await $events.getEvent(args.id)
+			const event = await $events.getEvent(args.id);
 			if (!event) return false;
 			if (event.startAt && event.startAt <= new Date()) return false;
 
@@ -568,47 +568,47 @@ export const eventResolvers: Resolvers = {
 				owner: event.ownerId ? { id: event.ownerId } : null,
 				required: Permission.CreateEvents,
 				override: Permission.ManageEvents
-			})) throw gqlErrorOwnership()
+			})) throw gqlErrorOwnership();
 
-			await $events.deleteEvent(event, context.app.discordClient)
+			await $events.deleteEvent(event, context.app.discordClient);
 			return true;
 		},
 		async rsvpForEvent(source, args, context) {
-			if (!context.user) throw gqlErrorUnauthenticated()
-			const event = await $events.getEvent(args.id)
+			if (!context.user) throw gqlErrorUnauthenticated();
+			const event = await $events.getEvent(args.id);
 			if (!event) return false;
 
 			if (event.endedAt || event.archived) {
-				throw gqlErrorBadInput(`Cannot rsvp for event after it has ended or been archived`);
+				throw gqlErrorBadInput("Cannot rsvp for event after it has ended or been archived");
 			}
 
 			const roles = await $events.getRSVPRoles(event.id);
-			const role = roles.find(r => r.id === args.rsvp)
-			if (!role) throw gqlErrorBadInput("No such rsvp role with id")
-			if (!(await $events.canJoinRsvp(role))) throw gqlErrorBadInput(`RSVP '${role.name}' is full`)
+			const role = roles.find(r => r.id === args.rsvp);
+			if (!role) throw gqlErrorBadInput("No such rsvp role with id");
+			if (!(await $events.canJoinRsvp(role))) throw gqlErrorBadInput(`RSVP '${role.name}' is full`);
 			
 			const currentRsvp = await $events.getUserRsvp(event, context.user);
 
 			await $events.rsvpForEvent(event, role, context.user, currentRsvp, context.app.discordClient);
-			return true
+			return true;
 		},
 		async unrsvpForEvent(source, args, context) {
-			if (!context.user) throw gqlErrorUnauthenticated()
-			const event = await $events.getEvent(args.id)
+			if (!context.user) throw gqlErrorUnauthenticated();
+			const event = await $events.getEvent(args.id);
 			if (!event) return false;
 
 			if (event.endedAt || event.archived) {
-				throw gqlErrorBadInput(`Cannot unrsvp from event after it has ended or been archived`);
+				throw gqlErrorBadInput("Cannot unrsvp from event after it has ended or been archived");
 			}
 
 			await $events.unrsvpForEvent(event, context.user, context.app.discordClient);
-			return true
+			return true;
 		},
 		async kickEventMember(source, args, context) {
-			const member = await $events.getEventMember(args.member)
+			const member = await $events.getEventMember(args.member);
 			if (!member) return false;
 
-			const event = await $events.getEventMemberEvent(member.id)
+			const event = await $events.getEventMemberEvent(member.id);
 			if (!event) return false;
 
 			if (!hasOwnedObjectPermission({
@@ -619,14 +619,14 @@ export const eventResolvers: Resolvers = {
 				owner: event.ownerId ? { id: event.ownerId } : null,
 				required: Permission.CreateEvents,
 				override: Permission.ManageEvents
-			})) throw gqlErrorOwnership()
+			})) throw gqlErrorOwnership();
 
 			if (event?.endedAt || event?.archived) {
-				throw gqlErrorBadInput(`Cannot kick user from event after it has ended or been archived`);
+				throw gqlErrorBadInput("Cannot kick user from event after it has ended or been archived");
 			}
 
-			await $events.kickEventMember(member, context.app.discordClient)
-			return true
+			await $events.kickEventMember(member, context.app.discordClient);
+			return true;
 		}
 	},
 };

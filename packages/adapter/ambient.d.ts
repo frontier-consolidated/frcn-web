@@ -1,4 +1,4 @@
-export {}
+export {};
 
 declare global {
 	namespace App {
@@ -6,7 +6,7 @@ declare global {
 			/**
 			 * The original Node request object (https://nodejs.org/api/http.html#class-httpincomingmessage)
 			 */
-			req: import('http').IncomingMessage;
+			req: import("http").IncomingMessage;
 		}
 	}
 }

@@ -9,10 +9,10 @@
 </script>
 
 <button {...$$restProps} class={twMerge("w-max flex items-center gap-2 group/owner", $$restProps.class)} on:click={(e) => {
-    e.preventDefault()
-    e.stopPropagation()
+    e.preventDefault();
+    e.stopPropagation();
     if (!user) return;
-    viewUserProfile(user)
+    viewUserProfile(user);
 }}>
     <span class="text-sm dark:text-white">By</span>
     <Avatar rounded size="xs" src={user?.avatarUrl} />

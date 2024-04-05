@@ -7,17 +7,17 @@ import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
 
 export async function buildEventStartMessage(client: Client, event: Event, eventMessageLink: string) {
-	const scheduledEndTime = Math.floor((event.startAt!.getTime() + event.duration!) / 1000)
+	const scheduledEndTime = Math.floor((event.startAt!.getTime() + event.duration!) / 1000);
 
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
 		.setTitle(`${event.name} - Event starting!`)
-		.setDescription(`The event is now starting! Scheduled event end: <t:${scheduledEndTime}:R>`)
+		.setDescription(`The event is now starting! Scheduled event end: <t:${scheduledEndTime}:R>`);
 
-	let vcLink = ""
+	let vcLink = "";
 	if (event.channelId) {
-		const readyRoom = await $events.getEventChannelReadyRoom(event.channelId)
-		const readyRoomChannel = readyRoom && await $discord.getChannel(client, readyRoom.discordId)
+		const readyRoom = await $events.getEventChannelReadyRoom(event.channelId);
+		const readyRoomChannel = readyRoom && await $discord.getChannel(client, readyRoom.discordId);
 
 		if (readyRoomChannel) vcLink = readyRoomChannel.url;
 	}
@@ -41,13 +41,13 @@ export function buildEventScheduledEndMessage(event: Event) {
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
 		.setTitle(`${event.name} - Scheduled end`)
-		.setDescription("Reached the scheduled end of the event")
+		.setDescription("Reached the scheduled end of the event");
 
 	const endButton = new ButtonBuilder()
 		.setCustomId(`end-event-${event.id}`)
 		.setLabel("End Event")
 		.setStyle(ButtonStyle.Danger)
-		.setDisabled(!!event.endedAt)
+		.setDisabled(!!event.endedAt);
 	
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
 	buttonsRow.addComponents(endButton);
@@ -67,14 +67,14 @@ export function buildEventEndedMessage(event: Event) {
 				name: "Total Duration",
 				value: dates.toDuration(event.endedAt!.getTime() - event.startAt!.getTime())
 			}
-		)
+		);
 
 	const archiveButton = new ButtonBuilder()
 		.setCustomId(`archive-event-${event.id}`)
 		.setEmoji("🗃️")
 		.setLabel("Archive Event")
 		.setStyle(ButtonStyle.Secondary)
-		.setDisabled(event.archived)
+		.setDisabled(event.archived);
 	
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
 	buttonsRow.addComponents(archiveButton);
@@ -86,9 +86,9 @@ export function buildEventEndedMessage(event: Event) {
 }
 
 export async function postEventEndMessage(client: Client, event: Event) {
-	const thread = await $events.getEventThread(event, client)
+	const thread = await $events.getEventThread(event, client);
 
 	const payload = buildEventEndedMessage(event);
-	if (!payload) throw new Error("Failed to build event end message")
+	if (!payload) throw new Error("Failed to build event end message");
 	await thread.send(payload);
 }

@@ -50,17 +50,17 @@
             name: "Administrator",
             help: "[DANGEROUS] This permission enables use of all permissions and overrides role hierarchy"
         },
-    ] satisfies { permission: Permission, name: string, help: string }[]
+    ] satisfies { permission: Permission, name: string, help: string }[];
 
     export let permissions: number;
     export let disableToggles: Partial<Record<Permission, boolean>> = {};
 
     function togglePermission(ev: Event, permission: Permission) {
-		const target = (ev.target) as HTMLInputElement
+		const target = (ev.target) as HTMLInputElement;
 		if (target.checked) {
-			permissions |= permission
+			permissions |= permission;
 		} else {
-			permissions ^= permission
+			permissions ^= permission;
 		}
 	}
 </script>

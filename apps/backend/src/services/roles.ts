@@ -9,7 +9,7 @@ import { publishUserRolesUpdated } from "../graphql/schema/resolvers/Roles";
 async function getRole(id: string) {
 	return await database.userRole.findUnique({
 		where: { id }
-	})
+	});
 }
 
 async function getAllRoles<T extends Prisma.UserRoleFindManyArgs>(args?: Prisma.SelectSubset<T, Prisma.UserRoleFindManyArgs>) {
@@ -42,7 +42,7 @@ async function getDefaultPrimaryRole() {
 		},
 	});
 
-	const sortedPrimaryRoles = await sort(primaryRoles)
+	const sortedPrimaryRoles = await sort(primaryRoles);
 	return sortedPrimaryRoles[0];
 }
 
@@ -50,8 +50,8 @@ async function getRoleUsers<T extends Prisma.UserFindManyArgs>(role: UserRole, a
 	if (role.primary) {
 		const users = await database.userRole.findUnique({
 			where: { id: role.id }
-		}).primaryUsers<T>(args)
-		return users ?? []
+		}).primaryUsers<T>(args);
+		return users ?? [];
 	}
 
 	const userLinks = await database.userRole.findUnique({
@@ -68,8 +68,8 @@ async function getRoleUsers<T extends Prisma.UserFindManyArgs>(role: UserRole, a
 		},
 		take: args?.take,
 		skip: args?.skip
-	})
-	return userLinks ? userLinks.map(ul => ul.user) : []
+	});
+	return userLinks ? userLinks.map(ul => ul.user) : [];
 }
 
 async function createRole() {
@@ -78,9 +78,9 @@ async function createRole() {
 			name: "new role",
 			permissions: 0,
 		}
-	})
+	});
 
-	const { roleOrder } = await $system.getSystemSettings()
+	const { roleOrder } = await $system.getSystemSettings();
 
 	await database.systemSettings.update({
 		where: { unique: true },
@@ -90,9 +90,9 @@ async function createRole() {
 				...roleOrder
 			]
 		}
-	})
+	});
 
-	return role
+	return role;
 }
 
 async function editRole(id: string, data: RoleEditInput) {
@@ -101,13 +101,13 @@ async function editRole(id: string, data: RoleEditInput) {
 		include: {
 			primaryUsers: true,
 		}
-	})
+	});
 
 	if (!role) return null;
 	if (role.primary && data.primary === false) {
 		const newRole = data.newPrimaryRole && await database.userRole.findUnique({
 			where: { id: data.newPrimaryRole }
-		})
+		});
 		if (!newRole || !newRole.primary) return null;
 
 		await database.user.updateMany({
@@ -119,7 +119,7 @@ async function editRole(id: string, data: RoleEditInput) {
 			data: {
 				primaryRoleId: newRole.id
 			}
-		})
+		});
 	}
 
 	const updatedRole = await database.userRole.update({
@@ -138,9 +138,9 @@ async function editRole(id: string, data: RoleEditInput) {
 				}
 			}
 		}
-	})
+	});
 
-	publishUserRolesUpdated(updatedRole.primary ? updatedRole.primaryUsers : updatedRole.users.map(u => u.user))
+	publishUserRolesUpdated(updatedRole.primary ? updatedRole.primaryUsers : updatedRole.users.map(u => u.user));
 
 	return updatedRole;
 }
@@ -151,11 +151,11 @@ async function reorderRoles(order: string[]) {
 		data: {
 			roleOrder: order
 		}
-	})
+	});
 }
 
 async function deleteRole(id: string) {
-	const { roleOrder } = await $system.getSystemSettings()
+	const { roleOrder } = await $system.getSystemSettings();
 
 	await database.$transaction(async (tx) => {
 		await tx.systemSettings.update({
@@ -163,12 +163,12 @@ async function deleteRole(id: string) {
 			data: {
 				roleOrder: roleOrder.filter(rId => rId !== id)
 			}
-		})
+		});
 
 		await tx.userRole.delete({
 			where: { id }
-		})
-	})
+		});
+	});
 }
 
 async function hasPrimaryRolePrivileges(role: UserRole, user: User) {

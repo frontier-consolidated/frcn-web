@@ -12,12 +12,12 @@
 	export let event: PageData;
 	export let member: PageData["members"][number];
 
-	$: optionsId = `event-member-options-${member.id}`
-	$: role = member.rsvp ? event.rsvpRoles.find(role => role.id === member.rsvp) : null
+	$: optionsId = `event-member-options-${member.id}`;
+	$: role = member.rsvp ? event.rsvpRoles.find(role => role.id === member.rsvp) : null;
 </script>
 
 <button class="rounded flex items-center gap-2 px-1 w-full dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700" on:click={() => {
-	viewUserProfile(member.user.id)
+	viewUserProfile(member.user.id);
 }}>
 	<Avatar rounded size="sm" src={member.user.avatarUrl} />
 	<div class="flex flex-col items-start">
@@ -48,7 +48,7 @@
 
 <Dropdown containerClass="rounded divide-y z-50" triggeredBy="#{optionsId}">
 	<DropdownItem on:click={() => {
-		viewUserProfile(member.user.id)
+		viewUserProfile(member.user.id);
 	}}>
 		View Profile
 	</DropdownItem>
@@ -62,7 +62,7 @@
 						eventId: event.id
 					},
 					errorPolicy: "all"
-				})
+				});
 
 				if (!unrsvpData?.success || (errors && errors.length > 0)) {
 					pushNotification({
@@ -74,7 +74,7 @@
 				}
 
 				event.rsvp = null;
-				event.members = event.members.filter(m => m.user.id !== $user.data?.id)
+				event.members = event.members.filter(m => m.user.id !== $user.data?.id);
 			}}>
 				<ArrowLeftToBracketOutline class="me-2" tabindex="-1" /> Leave Event
 			</DropdownItem>
@@ -87,7 +87,7 @@
 							id: member.id
 						},
 						errorPolicy: "all"
-					})
+					});
 
 					if (!kickData?.kicked || (errors && errors.length > 0)) {
 						pushNotification({
@@ -98,7 +98,7 @@
 						return;
 					}
 
-					event.members = event.members.filter(m => m.id !== member.id)
+					event.members = event.members.filter(m => m.id !== member.id);
 				}}>
 					<UserRemoveSolid class="me-2" tabindex="-1" /> Kick Member
 				</DropdownItem>

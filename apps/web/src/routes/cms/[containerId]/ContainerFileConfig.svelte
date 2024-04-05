@@ -8,10 +8,10 @@
     export let file: CmsFile;
     export let validator: FieldValidator;
 
-    let editData = { identifier: file.getIdentifier() }
+    let editData = { identifier: file.getIdentifier() };
     $: {
-        file.setIdentifier(editData.identifier)
-        getContext<() => void>("containerchange")()
+        file.setIdentifier(editData.identifier);
+        getContext<() => void>("containerchange")();
     }
 </script>
 

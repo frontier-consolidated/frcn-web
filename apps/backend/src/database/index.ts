@@ -4,17 +4,17 @@ import type { ITXClientDenyList } from "@prisma/client/runtime/library";
 
 import { seed } from "./seed";
 
-const PrismaClient = PrismaClientPkg.PrismaClient
+const PrismaClient = PrismaClientPkg.PrismaClient;
 export const prisma = new PrismaClient();
 
-const database = prisma
+const database = prisma;
 
-export type Transaction = Omit<typeof database, ITXClientDenyList>
+export type Transaction = Omit<typeof database, ITXClientDenyList>;
 
 export async function seedDatabase() {
-	console.log("Seeding database...")
-	await seed(database)
-	console.log("Seeding database completed")
+	console.log("Seeding database...");
+	await seed(database);
+	console.log("Seeding database completed");
 }
 
-export { database }
+export { database };

@@ -3,7 +3,7 @@
 	import { hasAdmin } from "@frcn/shared";
 	import { Search, Table, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { CloseSolid, EditOutline } from "flowbite-svelte-icons";
-    import Sortable from "sortablejs"
+    import Sortable from "sortablejs";
 	import { queryParam } from "sveltekit-search-params";
 
 	import { Button, Head, SectionHeading } from "$lib/components";
@@ -13,13 +13,13 @@
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
-    import type { PageData } from './$types';
+    import type { PageData } from "./$types";
 	import RoleRow from "./RoleRow.svelte";
 
-	const roleSearch = queryParam("q")
+	const roleSearch = queryParam("q");
     
     export let data: PageData;
-	$: editRoles = data.roles.toReversed()
+	$: editRoles = data.roles.toReversed();
 
 	$: filteredRoles = $roleSearch ? editRoles.filter(r => r.name.toLowerCase().includes($roleSearch!.toLowerCase())) : editRoles;
 
@@ -27,26 +27,26 @@
 		if (!user) return roles.length;
 		if (hasAdmin(user.permissions)) return -1;
 
-		const userRoles = [user.primaryRole, ...user.roles]
+		const userRoles = [user.primaryRole, ...user.roles];
 
 		let highest = roles.length;
 		for (const [i, role] of roles.entries()) {
-			const userRole = userRoles.find(r => r.id === role.id)
+			const userRole = userRoles.find(r => r.id === role.id);
 			if (userRole && i < highest) {
-				highest = i
+				highest = i;
 			}
 		}
-		return highest
+		return highest;
 	}
 
-	$: highestMoveable = getHighestMovableRole(filteredRoles, $user.data)
+	$: highestMoveable = getHighestMovableRole(filteredRoles, $user.data);
 
-	const { canNavigate, initNavigation } = preventNavigation()
+	const { canNavigate, initNavigation } = preventNavigation();
 
 	let isDirty = false;
 	$: {
-		isDirty = data.roles.toReversed().reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false)
-		canNavigate.set(!isDirty)
+		isDirty = data.roles.toReversed().reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false);
+		canNavigate.set(!isDirty);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -59,16 +59,16 @@
 			filter: ".cannot-reorder",
 			onMove: function(ev) {
 				if (ev.related.classList.contains("cannot-reorder")) {
-					return false
+					return false;
 				}
 			},
 			onEnd: function (ev) {
-				const updatedRoles = [...editRoles]
-				const movedRole = updatedRoles.splice(ev.oldIndex!, 1)[0]
-				updatedRoles.splice(ev.newIndex!, 0, movedRole)
-				editRoles = updatedRoles
+				const updatedRoles = [...editRoles];
+				const movedRole = updatedRoles.splice(ev.oldIndex!, 1)[0];
+				updatedRoles.splice(ev.newIndex!, 0, movedRole);
+				editRoles = updatedRoles;
 			}
-		})
+		});
     }
 
 	async function save() {
@@ -120,8 +120,8 @@
 			pushNotification({
 				type: "error",
 				message: "Failed to create role"
-			})
-			console.error(err)
+			});
+			console.error(err);
 		}
 	}}>
         Create Role
@@ -149,7 +149,7 @@
 	</Table>
 	<div class="flex justify-end items-center gap-2">
 		<Button color="alternative" on:click={() => {
-			editRoles = data.roles.toReversed()
+			editRoles = data.roles.toReversed();
 		}}>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>

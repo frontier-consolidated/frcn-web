@@ -9,7 +9,7 @@
 	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
-    import type { PageData } from './$types';
+    import type { PageData } from "./$types";
 	import ChannelRow from "./ChannelRow.svelte";
 
     export let data: PageData;
@@ -17,18 +17,18 @@
     function cloneSettings(data: PageData) {
         return {
             defaultChannel: { ...data.defaultEventChannel },
-        }
+        };
     }
 
     const validator = new FieldValidator();
-    let editData = cloneSettings(data)
+    let editData = cloneSettings(data);
 
-    const { canNavigate, initNavigation } = preventNavigation()
+    const { canNavigate, initNavigation } = preventNavigation();
 
 	let isDirty = false;
 	$: {
-		isDirty = data.defaultEventChannel?.id !== editData.defaultChannel.id
-		canNavigate.set(!isDirty)
+		isDirty = data.defaultEventChannel?.id !== editData.defaultChannel.id;
+		canNavigate.set(!isDirty);
 	}
 
     async function save() {
@@ -56,8 +56,8 @@
 		data = {
 			...data, 
 			...updatedData?.settings
-		}
-        editData = cloneSettings(data)
+		};
+        editData = cloneSettings(data);
 	}
 
     function createModalData() {
@@ -66,11 +66,11 @@
             category: null as string | null,
             existingReadyRoom: null as string | null,
             showExistingReadyRoom: false
-        }
+        };
     }
 
     let openModal = false;
-    let modalData = createModalData()
+    let modalData = createModalData();
 
     async function createEventChannel() {
         if (!validator.validate()) return;
@@ -95,7 +95,7 @@
 		}
 
 		modalData = createModalData();
-        await invalidate("app:eventchannels")
+        await invalidate("app:eventchannels");
         openModal = false;
     }
 </script>
@@ -171,7 +171,7 @@
     </div>
     <div class="flex justify-end items-center gap-2 pt-2">
         <Button color="alternative" on:click={() => {
-            editData = cloneSettings(data)
+            editData = cloneSettings(data);
         }}>
             <CloseSolid class="me-2" tabindex="-1" /> Cancel
         </Button>
@@ -235,7 +235,7 @@
 		</Field>
         <div class="flex flex-col gap-2">
             <Toggle bind:checked={modalData.showExistingReadyRoom} on:change={() => {
-                if (!modalData.showExistingReadyRoom) modalData.existingReadyRoom = null
+                if (!modalData.showExistingReadyRoom) modalData.existingReadyRoom = null;
             }}>
                 Use existing ready room
             </Toggle>
@@ -264,13 +264,13 @@
 	</div>
 	<svelte:fragment slot="footer">
         <Button on:click={() => {
-            createEventChannel().catch(console.error)
+            createEventChannel().catch(console.error);
         }}>
             Create
         </Button>
         <Button color="alternative" on:click={() => {
             openModal = false;
-            modalData = createModalData()
+            modalData = createModalData();
         }}>
             Cancel
         </Button>

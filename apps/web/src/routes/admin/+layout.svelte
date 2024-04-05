@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { page } from '$app/stores';
-    import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from 'flowbite-svelte';
-	import { GearSolid, TagSolid, UserGroupSolid, UserHeadsetSolid } from 'flowbite-svelte-icons';
+    import { page } from "$app/stores";
+    import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from "flowbite-svelte";
+	import { GearSolid, TagSolid, UserGroupSolid, UserHeadsetSolid } from "flowbite-svelte-icons";
 
-	import NavigationSelect from '$lib/components/select/NavigationSelect.svelte';
+	import NavigationSelect from "$lib/components/select/NavigationSelect.svelte";
 
     const pageGroup = [
         {
@@ -42,7 +42,7 @@
             ]
         }
     // eslint-disable-next-line no-undef
-    ] satisfies { name: string, pages: { name: string, href: string, icon?: ConstructorOfATypedSvelteComponent }[] }[]
+    ] satisfies { name: string, pages: { name: string, href: string, icon?: ConstructorOfATypedSvelteComponent }[] }[];
 
     $: activeUrl = $page.url.pathname;
 </script>

@@ -9,13 +9,13 @@
 
 	import type { PageData } from "./$types";
 
-    export let accessKey: PageData["keys"][number]
+    export let accessKey: PageData["keys"][number];
 
     let modalOpen = false;
 </script>
 
 <TableBodyRow data-key-id={accessKey.id} class="group cursor-pointer dark:hover:bg-gray-600" on:click={() => {
-    goto(`/admin/general/accesskeys/${accessKey.id}`)
+    goto(`/admin/general/accesskeys/${accessKey.id}`);
 }}>
     <TableBodyCell>
         {accessKey.id}
@@ -39,8 +39,8 @@
                     aria-disabled={false}
                     class="dark:text-white dark:hover:text-red-600 cursor-pointer"
                     on:click={(ev) => {
-                        ev.stopPropagation()
-                        modalOpen = true
+                        ev.stopPropagation();
+                        modalOpen = true;
                     }}
                 />
                 Delete
@@ -56,7 +56,7 @@
             id: accessKey.id
         },
         errorPolicy: "all",
-    })
+    });
 
     if (errors && errors.length > 0) {
         pushNotification({
@@ -67,7 +67,7 @@
         return;
     }
 
-    await invalidate("app:accesskeys")
+    await invalidate("app:accesskeys");
     modalOpen = false;
 }}>
     <span>Are you sure you want to delete the access key? Once deleted it cannot be undone.</span>

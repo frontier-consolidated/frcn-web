@@ -1,12 +1,12 @@
-import { error } from '@sveltejs/kit';
+import { error } from "@sveltejs/kit";
 
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ parent, params }) => {
-    const { channels, options } = await parent()
-    const channel = channels.find(channel => channel.id.toString() === params.channelId)
+    const { channels, options } = await parent();
+    const channel = channels.find(channel => channel.id.toString() === params.channelId);
 
-    if (!channel) error(404, "Event channel not found")
+    if (!channel) error(404, "Event channel not found");
 
     return {
         channel,

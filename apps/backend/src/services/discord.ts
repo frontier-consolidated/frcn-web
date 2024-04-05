@@ -74,23 +74,23 @@ async function getChannel(client: Client, id: string) {
 }
 
 async function canPostInChannel(channel: GuildBasedChannel) {
-	const me = channel.guild.members.me ?? await channel.guild.members.fetchMe()
-	const permissions = me.permissionsIn(channel.id)
-	return permissions.has("SendMessages") && permissions.has("SendMessagesInThreads") && permissions.has("ViewChannel") && permissions.has("MentionEveryone")
+	const me = channel.guild.members.me ?? await channel.guild.members.fetchMe();
+	const permissions = me.permissionsIn(channel.id);
+	return permissions.has("SendMessages") && permissions.has("SendMessagesInThreads") && permissions.has("ViewChannel") && permissions.has("MentionEveryone");
 }
 
 async function canCreateThreadInChannel(channel: GuildBasedChannel) {
-	const me = channel.guild.members.me ?? await channel.guild.members.fetchMe()
-	const permissions = me.permissionsIn(channel.id)
-	return permissions.has("CreatePrivateThreads") && permissions.has("SendMessagesInThreads")
+	const me = channel.guild.members.me ?? await channel.guild.members.fetchMe();
+	const permissions = me.permissionsIn(channel.id);
+	return permissions.has("CreatePrivateThreads") && permissions.has("SendMessagesInThreads");
 }
 
 async function canManageChannelsInCategory(category: GuildBasedChannel) {
 	if (category.type !== ChannelType.GuildCategory) return false;
 
-	const me = category.guild.members.me ?? await category.guild.members.fetchMe()
-	const permissions = me.permissionsIn(category.id)
-	return permissions.has("ManageChannels") && permissions.has("ViewChannel") && permissions.has("Connect") && permissions.has("MoveMembers")
+	const me = category.guild.members.me ?? await category.guild.members.fetchMe();
+	const permissions = me.permissionsIn(category.id);
+	return permissions.has("ManageChannels") && permissions.has("ViewChannel") && permissions.has("Connect") && permissions.has("MoveMembers");
 }
 
 async function canUserViewChannel(client: Client, user: User | undefined, channelId: string) {
@@ -124,7 +124,7 @@ async function getAllRoles(client: Client, includeEveryone?: boolean) {
 
 		let arr = Array.from(roles.values());
 		if (includeEveryone === false) {
-			arr = arr.filter(role => role.id !== guild.roles.everyone.id)
+			arr = arr.filter(role => role.id !== guild.roles.everyone.id);
 		}
 
 		return arr;
@@ -176,7 +176,7 @@ function convertDJSUserToAPIUser(user: DJSUser) {
 		discriminator: user.discriminator,
 		global_name: user.globalName,
 		username: user.username,
-	} satisfies APIUser
+	} satisfies APIUser;
 }
 
 export const $discord = {

@@ -1,9 +1,9 @@
-import { getLocations } from '@frcn/shared/locations';
+import { getLocations } from "@frcn/shared/locations";
 
-import type { PageLoad } from './$types';
+import type { PageLoad } from "./$types";
 
 export const load = (async ({ data }) => {
-    const location = data.location ? getLocations(data.location) : null
+    const location = data.location ? getLocations(data.location) : null;
     return {
         ...data,
         location

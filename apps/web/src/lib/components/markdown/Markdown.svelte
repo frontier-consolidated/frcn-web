@@ -8,8 +8,8 @@
 	export let nowrap: boolean = false;
 	export let source: string | Token[];
 	export let isInline = false;
-	export let disabled: string[] = []
-	export let components: Record<string, ComponentType<SvelteComponent>> = {}
+	export let disabled: string[] = [];
+	export let components: Record<string, ComponentType<SvelteComponent>> = {};
 
 	let tokens: Token[];
 	let lexer: Lexer;

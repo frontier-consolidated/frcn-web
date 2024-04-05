@@ -5,14 +5,14 @@ export function getPort() {
 }
 
 function hasExternalPort() {
-	return process.env.EXTERNAL_PORT && !isNaN(Number(process.env.EXTERNAL_PORT))
+	return process.env.EXTERNAL_PORT && !isNaN(Number(process.env.EXTERNAL_PORT));
 }
 
 export function getExternalPort() {
 	if (hasExternalPort()) {
-		return Number(process.env.EXTERNAL_PORT)
+		return Number(process.env.EXTERNAL_PORT);
 	}
-	return getPort()
+	return getPort();
 }
 
 export function getDomain(withSubDomain = false) {
@@ -24,8 +24,8 @@ export function getDomain(withSubDomain = false) {
 }
 
 export function getHost() {
-	const domain = getDomain(true)
-	return `${domain}${domain === "localhost" || hasExternalPort() ? `:${getExternalPort()}` : ""}`
+	const domain = getDomain(true);
+	return `${domain}${domain === "localhost" || hasExternalPort() ? `:${getExternalPort()}` : ""}`;
 }
 
 export function getBasePath() {
@@ -33,7 +33,7 @@ export function getBasePath() {
 	if (basePath && !basePath.startsWith("/")) {
 		basePath = "/" + basePath;
 	}
-	return basePath ?? ""
+	return basePath ?? "";
 }
 
 export function getOrigin(protocol: string = "") {
@@ -41,7 +41,7 @@ export function getOrigin(protocol: string = "") {
 }
 
 export function getWebOrigin() {
-	return process.env.WEB_ORIGIN
+	return process.env.WEB_ORIGIN;
 }
 
 export function getOrigins() {
@@ -54,70 +54,70 @@ export function getOrigins() {
 	}
 
 	if (!origins.includes(getWebOrigin())) {
-		origins.push(getWebOrigin())
+		origins.push(getWebOrigin());
 	}
 
-	return origins
+	return origins;
 }
 
 export function getURL(protocol: string = "", path: string) {
-	return new URL(getBasePath() + path, `${protocol}://${getHost()}`)
+	return new URL(getBasePath() + path, `${protocol}://${getHost()}`);
 }
 
 export function getWebURL(path: string) {
-	return new URL(path, getWebOrigin())
+	return new URL(path, getWebOrigin());
 }
 
 export function isProd() {
 	if (!process.env.NODE_ENV) return false;
-	return process.env.NODE_ENV.trim() === "production"
+	return process.env.NODE_ENV.trim() === "production";
 }
 
 export function getAdminIds() {
-	const envIds = process.env.ADMIN_DISCORD_IDS ?? ""
-	if (!envIds) return []
-	return envIds.split(",").map(id => id.trim())
+	const envIds = process.env.ADMIN_DISCORD_IDS ?? "";
+	if (!envIds) return [];
+	return envIds.split(",").map(id => id.trim());
 }
 
 function expectEnvvar(envvar: keyof NodeJS.ProcessEnv) {
-	assert(process.env[envvar] && (process.env[envvar]?.length ?? 0) > 0, `Environment: Expected var '${envvar}'`)
+	assert(process.env[envvar] && (process.env[envvar]?.length ?? 0) > 0, `Environment: Expected var '${envvar}'`);
 }
 
 export function validateEnvironment() {
-	console.log("Validating environment...")
+	console.log("Validating environment...");
 
-	assert(!isNaN(getPort()), "Environment: Expected 'PORT' to be a number") // PORT
-	assert(!isNaN(getExternalPort()), "Environment: Expected 'EXTERNAL_PORT' to be a number") // EXTERNAL_PORT
-	expectEnvvar("DOMAIN")
+	assert(!isNaN(getPort()), "Environment: Expected 'PORT' to be a number"); // PORT
+	assert(!isNaN(getExternalPort()), "Environment: Expected 'EXTERNAL_PORT' to be a number"); // EXTERNAL_PORT
+	expectEnvvar("DOMAIN");
 	// SUB_DOMAIN
 	// BASE_PATH
 
-	expectEnvvar("WEB_ORIGIN")
-	expectEnvvar("ORIGINS")
+	expectEnvvar("WEB_ORIGIN");
+	expectEnvvar("ORIGINS");
 
-	expectEnvvar("DATABASE_URL")
+	expectEnvvar("DATABASE_URL");
 
 	// CMS_BUS_DATABASE_URL
-	expectEnvvar("CMS_BUS_SCHEMA")
-	if (process.env.SERVE_WEB === "true") expectEnvvar("CMS_ACCESS_KEY")
+	expectEnvvar("CMS_BUS_SCHEMA");
+	if (process.env.SERVE_WEB === "true") expectEnvvar("CMS_ACCESS_KEY");
 
-	expectEnvvar("ACCESS_KEY_HEADER")
-	expectEnvvar("CONSENT_COOKIE")
-	expectEnvvar("DEVICE_TRACK_COOKIE")
+	expectEnvvar("ACCESS_KEY_HEADER");
+	expectEnvvar("CONSENT_COOKIE");
+	expectEnvvar("DEVICE_TRACK_COOKIE");
 
-	expectEnvvar("SESSION_COOKIE")
-	expectEnvvar("SESSION_SECRET")
+	expectEnvvar("SESSION_COOKIE");
+	expectEnvvar("SESSION_SECRET");
 
-	if (isProd()) expectEnvvar("ADMIN_DISCORD_IDS")
+	if (isProd()) expectEnvvar("ADMIN_DISCORD_IDS");
 
-	expectEnvvar("DISCORD_CLIENTID")
-	expectEnvvar("DISCORD_SECRET")
-	expectEnvvar("DISCORD_TOKEN")
+	expectEnvvar("DISCORD_CLIENTID");
+	expectEnvvar("DISCORD_SECRET");
+	expectEnvvar("DISCORD_TOKEN");
 
-	expectEnvvar("AWS_S3_BUCKET")
-	expectEnvvar("AWS_S3_REGION")
-	expectEnvvar("AWS_S3_KEY")
-	expectEnvvar("AWS_S3_SECRET")
+	expectEnvvar("AWS_S3_BUCKET");
+	expectEnvvar("AWS_S3_REGION");
+	expectEnvvar("AWS_S3_KEY");
+	expectEnvvar("AWS_S3_SECRET");
 
-	console.log("No issues with environment found")
+	console.log("No issues with environment found");
 }

@@ -4,13 +4,13 @@
 
 	import { renderers } from "./renderers";
 
-	export let disabled: string[] = []
-	export let components: Record<string, ComponentType<SvelteComponent>> = {}
+	export let disabled: string[] = [];
+	export let components: Record<string, ComponentType<SvelteComponent>> = {};
 	export let tokens: Token[] = [];
 	export let token: Token | undefined = undefined;
 
 	function getRenderer(type: string) {
-		if (components[type]) return components[type]
+		if (components[type]) return components[type];
 		return renderers[type as keyof typeof renderers] as ComponentType<SvelteComponent>;
 	}
 </script>

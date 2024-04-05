@@ -1,4 +1,4 @@
-import { AboutSectionContainer, CtaContainer, GalleryContainer, IndexContainer, SectionContainer } from "./classes"
+import { AboutSectionContainer, CtaContainer, GalleryContainer, IndexContainer, SectionContainer } from "./classes";
 
 export enum CMSContainerType {
     Index = "index",
@@ -14,8 +14,8 @@ export const ContainerTypeMap = {
     [CMSContainerType.AboutSection]: AboutSectionContainer,
     [CMSContainerType.Gallery]: GalleryContainer,
     [CMSContainerType.CallToAction]: CtaContainer,
-}
+};
 
 export type ContainerInstanceTypeMap = {
     [key in keyof typeof ContainerTypeMap]: InstanceType<(typeof ContainerTypeMap)[key]>
-}
+};

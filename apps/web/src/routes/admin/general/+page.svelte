@@ -1,34 +1,34 @@
 <script lang="ts">
-	import { Helper, Input, Label } from 'flowbite-svelte';
-	import { CloseSolid, EditOutline, LockOpenSolid, LockSolid } from 'flowbite-svelte-icons';
+	import { Helper, Input, Label } from "flowbite-svelte";
+	import { CloseSolid, EditOutline, LockOpenSolid, LockSolid } from "flowbite-svelte-icons";
 
-	import { SectionHeading, Field, FieldValidator, Button, Head } from '$lib/components';
-	import { Mutations, getApollo } from '$lib/graphql';
-	import preventNavigation from '$lib/preventNavigation';
-	import { pushNotification } from '$lib/stores/NotificationStore';
+	import { SectionHeading, Field, FieldValidator, Button, Head } from "$lib/components";
+	import { Mutations, getApollo } from "$lib/graphql";
+	import preventNavigation from "$lib/preventNavigation";
+	import { pushNotification } from "$lib/stores/NotificationStore";
 
-	import type { PageData } from './$types';
+	import type { PageData } from "./$types";
 
     export let data: PageData;
 
     function cloneSystemSettings(data: PageData) {
         return {
             discordGuild: { ...data.discordGuild },
-        }
+        };
     }
 
     const validator = new FieldValidator();
-    let editData = cloneSystemSettings(data)
+    let editData = cloneSystemSettings(data);
 
-    const { canNavigate, initNavigation } = preventNavigation()
+    const { canNavigate, initNavigation } = preventNavigation();
 
 	let isDirty = false;
 	$: {
-		isDirty = data.discordGuild.id !== editData.discordGuild.id
-		canNavigate.set(!isDirty)
+		isDirty = data.discordGuild.id !== editData.discordGuild.id;
+		canNavigate.set(!isDirty);
 	}
 
-    let guildIdFieldLocked = true
+    let guildIdFieldLocked = true;
 
     async function save() {
         if (!validator.validate()) return;
@@ -55,8 +55,8 @@
 		data = {
 			...data, 
 			...updatedData?.settings
-		}
-        editData = cloneSystemSettings(data)
+		};
+        editData = cloneSystemSettings(data);
 	}
 </script>
 
@@ -103,7 +103,7 @@
     </div>
     <div class="flex justify-end items-center gap-2">
         <Button color="alternative" on:click={() => {
-            editData = cloneSystemSettings(data)
+            editData = cloneSystemSettings(data);
         }}>
             <CloseSolid class="me-2" tabindex="-1" /> Cancel
         </Button>

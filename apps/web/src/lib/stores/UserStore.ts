@@ -53,7 +53,7 @@ if (browser) {
 					variables: {
 						userId: data.data.id
 					}
-				})
+				});
 			}
 			if (!subscription) {
 				subscription = observer.subscribe(({ data }) => {
@@ -67,12 +67,12 @@ if (browser) {
 								primaryRole: data.roles.primaryRole,
 								roles: data.roles.roles
 							}
-						}
-					})
-				})
+						};
+					});
+				});
 			}
 		}
-	})
+	});
 }
 
 export async function login() {
@@ -112,7 +112,7 @@ export async function logout() {
 		await api.get(Routes.logout());
 
 		if (browser) {
-			window.location.reload()
+			window.location.reload();
 		}
 	} catch (err) {
 		user.set({

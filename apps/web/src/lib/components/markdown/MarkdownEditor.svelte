@@ -9,7 +9,7 @@
 	export let value: string = "";
 	export let disabled = false;
 
-	let background = getContext('background');
+	let background = getContext("background");
 </script>
 
 <CodeMirror

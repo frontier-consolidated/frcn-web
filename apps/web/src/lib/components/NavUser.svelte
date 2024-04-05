@@ -11,8 +11,8 @@
 
 	const dispatch = createEventDispatcher();
 
-	$: showSystemSettings = $user.data && hasOneOfPermissions($user.data.permissions, adminPermissions)
-	$: showCms = $user.data && hasAllOfPermissions($user.data.permissions, [Permission.CmsRead, Permission.CmsWrite])
+	$: showSystemSettings = $user.data && hasOneOfPermissions($user.data.permissions, adminPermissions);
+	$: showCms = $user.data && hasAllOfPermissions($user.data.permissions, [Permission.CmsRead, Permission.CmsWrite]);
 </script>
 
 <div class="shrink-0 flex items-center space-x-2 cursor-pointer">

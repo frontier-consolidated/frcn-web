@@ -7,38 +7,38 @@ import type { ContentContainerEditInput, ContentContainerFileEditInput } from ".
 
 export type CmsAttachFileMetadata = {
 	identifier?: string
-}
+};
 
 async function getContainer(identifier: string, type: string, parentId?: string) {
 	return await database.contentContainer.findFirst({
 		where: { identifier, type, parentId: parentId ?? null }
-	})
+	});
 }
 
 async function getContainerById(id: string) {
 	return await database.contentContainer.findUnique({
 		where: { id }
-	})
+	});
 }
 
 async function getContainersOfType(type: string, parentId?: string) {
 	return await database.contentContainer.findMany({
 		where: { type, parentId: parentId ?? null }
-	})
+	});
 }
 
 async function getContainerChildren<T extends Prisma.ContentContainer$childrenArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$childrenArgs>) {
 	const result = await database.contentContainer.findUnique({
 		where: { id }
-	}).children<T>(args)
-	return result ?? []
+	}).children<T>(args);
+	return result ?? [];
 }
 
 async function getContainerParent<T extends Prisma.ContentContainer$parentArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$parentArgs>) {
 	const result = await database.contentContainer.findUnique({
 		where: { id }
-	}).parent<T>(args)
-	return result
+	}).parent<T>(args);
+	return result;
 }
 
 async function createContainer(type: string, identifier?: string, parent?: ContentContainer) {
@@ -53,7 +53,7 @@ async function createContainer(type: string, identifier?: string, parent?: Conte
 					}
 				} : undefined
 			}
-		})
+		});
 
 		if (parent) {
 			await tx.contentContainer.update({
@@ -61,11 +61,11 @@ async function createContainer(type: string, identifier?: string, parent?: Conte
 				data: {
 					childrenOrder: [...parent.childrenOrder, container.id]
 				}
-			})
+			});
 		}
 
-		return container
-	})
+		return container;
+	});
 }
 
 async function editContainer(container: ContentContainer, data: ContentContainerEditInput) {
@@ -76,7 +76,7 @@ async function editContainer(container: ContentContainer, data: ContentContainer
 			title: data.title ?? undefined,
 			content: data.content ?? undefined
 		}
-	})
+	});
 }
 
 async function reorderContainerChildren(container: ContentContainer, order: string[]) {
@@ -85,7 +85,7 @@ async function reorderContainerChildren(container: ContentContainer, order: stri
 		data: {
 			childrenOrder: order
 		}
-	})
+	});
 }
 
 async function reorderContainerFiles(container: ContentContainer, order: string[]) {
@@ -94,29 +94,29 @@ async function reorderContainerFiles(container: ContentContainer, order: string[
 		data: {
 			filesOrder: order
 		}
-	})
+	});
 }
 
 async function deleteContainer(s3Client: S3Client, bucket: string, id: string, deleteFiles = true) {
 	const container = await database.contentContainer.findUnique({
 		where: { id }
-	})
+	});
 	if (!container) return;
 
-	const files = await getContainerDescendantFiles(container.id)
+	const files = await getContainerDescendantFiles(container.id);
 	await database.$transaction(async (tx) => {
 		if (deleteFiles && files.length > 0) {
-			await $files.deleteManyFiles(s3Client, bucket, files, tx)
+			await $files.deleteManyFiles(s3Client, bucket, files, tx);
 		}
 
 		await tx.contentContainer.delete({
 			where: { id: id }
-		})
+		});
 
 		if (container.parentId) {
 			const parent = await tx.contentContainer.findUnique({
 				where: { id: container.parentId }
-			})
+			});
 
 			if (parent) {
 				await tx.contentContainer.update({
@@ -124,48 +124,48 @@ async function deleteContainer(s3Client: S3Client, bucket: string, id: string, d
 					data: {
 						childrenOrder: parent.childrenOrder.filter(c => c !== id)
 					}
-				})
+				});
 			}
 		}
-	})
+	});
 
-	return { files }
+	return { files };
 }
 
 async function getContainerFileLink(id: string) {
 	return await database.contentContainerFile.findUnique({
 		where: { id }
-	})
+	});
 }
 
 async function getContainerFileLinks<T extends Prisma.ContentContainer$filesArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$filesArgs>) {
 	const result = await database.contentContainer.findUnique({
 		where: { id }
-	}).files<T>(args)
-	return result ?? []
+	}).files<T>(args);
+	return result ?? [];
 }
 
 async function getContainerDescendantFiles(id: string) {
-	const collectedFiles: FileUpload[] = []
+	const collectedFiles: FileUpload[] = [];
 
 	async function traverseCollectFiles(containerId: string) {
 		const fileLinks = await getContainerFileLinks(containerId, {
 			include: {
 				file: true
 			}
-		})
-		const files = fileLinks.map(link => link.file)
-		collectedFiles.push(...files)
+		});
+		const files = fileLinks.map(link => link.file);
+		collectedFiles.push(...files);
 
 		const children = await getContainerChildren(containerId, {
 			select: { id: true }
-		})
+		});
 		for (const child of children) {
-			await traverseCollectFiles(child.id)
+			await traverseCollectFiles(child.id);
 		}
 	}
 
-	await traverseCollectFiles(id)
+	await traverseCollectFiles(id);
 
 	return collectedFiles;
 }
@@ -173,10 +173,10 @@ async function getContainerDescendantFiles(id: string) {
 async function attachFile(client: S3Client, bucket: string, file: Express.Multer.File, owner: User, containerId: string, metadata: CmsAttachFileMetadata) {
 	const container = await database.contentContainer.findUniqueOrThrow({
 		where: { id: containerId }
-	})
+	});
 
 	return await $files.uploadFile(client, bucket, file, owner, async (tx, fileUpload) => {
-		let oldLinkId = ""
+		let oldLinkId = "";
 		if (metadata.identifier) {
 			const currentFileLink = await tx.contentContainerFile.findFirst({
 				where: {
@@ -186,7 +186,7 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 				include: {
 					file: true
 				}
-			})
+			});
 
 			if (currentFileLink) {
 				oldLinkId = currentFileLink.id;
@@ -194,13 +194,13 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 				const command = new DeleteObjectCommand({
 					Bucket: bucket,
 					Key: currentFileLink.file.key,
-				})
+				});
 			
 				await tx.fileUpload.delete({
 					where: { id: currentFileLink.fileId }
-				})
+				});
 				
-				await client.send(command)
+				await client.send(command);
 			}
 		}
 		const fileLink = await tx.contentContainerFile.create({
@@ -215,20 +215,20 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 					connect: fileUpload
 				}
 			}
-		})
+		});
 		
 		await tx.contentContainer.update({
 			where: { id: containerId },
 			data: {
 				filesOrder: [...container.filesOrder.filter(id => id !== oldLinkId), fileLink.id]
 			}
-		})
+		});
 
 		return {
 			fileLink,
 			file: fileUpload
-		}
-	})
+		};
+	});
 }
 
 async function editContainerFileLink(fileLink: ContentContainerFile, data: ContentContainerFileEditInput) {
@@ -240,24 +240,24 @@ async function editContainerFileLink(fileLink: ContentContainerFile, data: Conte
 		include: {
 			file: true
 		}
-	})
+	});
 }
 
 async function deleteContainerFileLink(s3Client: S3Client, bucket: string, fileLink: ContentContainerFile) {
-	const file = await $files.getFileById(fileLink.fileId)
-	const container = await getContainerById(fileLink.containerId)
+	const file = await $files.getFileById(fileLink.fileId);
+	const container = await getContainerById(fileLink.containerId);
 	
 	await database.$transaction(async (tx) => {
 		if (file) {
 			await tx.fileUpload.delete({
 				where: { id: file.id }
-			})
+			});
 
 			const command = new DeleteObjectCommand({
 				Bucket: bucket,
 				Key: file.key,
-			})
-			await s3Client.send(command)
+			});
+			await s3Client.send(command);
 		}
 
 		if (container) {
@@ -266,9 +266,9 @@ async function deleteContainerFileLink(s3Client: S3Client, bucket: string, fileL
 				data: {
 					filesOrder: container.filesOrder.filter(id => id !== fileLink.id)
 				}
-			})
+			});
 		}
-	})
+	});
 }
 
 export const $cms = {

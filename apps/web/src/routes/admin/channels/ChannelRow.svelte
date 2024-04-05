@@ -10,14 +10,14 @@
 
 	import type { PageData } from "./$types";
 
-    export let channel: PageData["channels"][number]
+    export let channel: PageData["channels"][number];
 
     let modalOpen = false;
     let deleteRelatedVoiceChannels = false;
 </script>
 
 <TableBodyRow data-channel-id={channel.id} class="group cursor-pointer dark:hover:bg-gray-600" on:click={() => {
-    goto(`/admin/channels/${channel.id}`)
+    goto(`/admin/channels/${channel.id}`);
 }}>
     <TableBodyCell>
         <div class="flex items-center">
@@ -83,8 +83,8 @@
                     aria-disabled={false}
                     class="dark:text-white dark:hover:text-red-600 cursor-pointer"
                     on:click={(ev) => {
-                        ev.stopPropagation()
-                        modalOpen = true
+                        ev.stopPropagation();
+                        modalOpen = true;
                     }}
                 />
                 Delete
@@ -101,7 +101,7 @@
             deleteVoiceChannels: deleteRelatedVoiceChannels
         },
         errorPolicy: "all",
-    })
+    });
 
     if (errors && errors.length > 0) {
         pushNotification({
@@ -112,7 +112,7 @@
         return;
     }
 
-    await invalidate("app:eventchannels")
+    await invalidate("app:eventchannels");
     modalOpen = false;
 }}>
     <p>Are you sure you want to delete the link to the <strong>{channel.discord.name}</strong> event channel? Once deleted it cannot be undone.</p>

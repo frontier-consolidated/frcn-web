@@ -15,8 +15,8 @@ export async function getResources(apollo: TypedApolloClient, url: URL) {
 
         if (!data.resource) {
             const redirectUrl = new URL(url);
-            redirectUrl.searchParams.delete("id")
-            redirect(308, redirectUrl.href)
+            redirectUrl.searchParams.delete("id");
+            redirect(308, redirectUrl.href);
         }
 
         return {
@@ -29,8 +29,8 @@ export async function getResources(apollo: TypedApolloClient, url: URL) {
         };
     }
     
-    const { page, limit } = getPageVars(url.searchParams)
-    const tags = url.searchParams.get("tags")?.split(",") ?? []
+    const { page, limit } = getPageVars(url.searchParams);
+    const tags = url.searchParams.get("tags")?.split(",") ?? [];
 
     const { data } = await apollo.query({
         query: Queries.GET_RESOURCES,
@@ -44,7 +44,7 @@ export async function getResources(apollo: TypedApolloClient, url: URL) {
         }
     });
 
-    const resources = (data.resources?.items ?? [])
+    const resources = (data.resources?.items ?? []);
 
     return {
         resources,

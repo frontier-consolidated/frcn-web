@@ -14,24 +14,24 @@
             subTitle: container.getSubTitle(),
             metaTitle: container.getMetaTitle(),
             metaDescription: container.getMetaDescription()
-        }
+        };
     }
     
     export let container_: CmsContainer;
     export let validator: FieldValidator;
     export let isChild: boolean = false;
 
-    let container = container_.as<IndexContainer>()
-    $: container = container_.as<IndexContainer>()
+    let container = container_.as<IndexContainer>();
+    $: container = container_.as<IndexContainer>();
 
-    let editData = createEditData(container)
+    let editData = createEditData(container);
     $: {
-        container.setIdentifier(editData.identifier)
-        container.setTitle(editData.title)
-        container.setSubTitle(editData.subTitle)
-        container.setMetaTitle(editData.metaTitle)
-        container.setMetaDescription(editData.metaDescription)
-        getContext<() => void>("containerchange")()
+        container.setIdentifier(editData.identifier);
+        container.setTitle(editData.title);
+        container.setSubTitle(editData.subTitle);
+        container.setMetaTitle(editData.metaTitle);
+        container.setMetaDescription(editData.metaDescription);
+        getContext<() => void>("containerchange")();
     }
 
 </script>

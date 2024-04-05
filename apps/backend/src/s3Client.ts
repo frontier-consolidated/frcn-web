@@ -7,7 +7,7 @@ export function createS3Client(region: string, key: string, secret: string) {
             secretAccessKey: secret
         },
         region
-    })
+    });
 
 	return client;
 }

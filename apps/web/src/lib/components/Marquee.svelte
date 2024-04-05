@@ -1,44 +1,44 @@
 <script lang="ts">
 	import { twMerge } from "tailwind-merge";
 
-	type Direction = 'left' | 'up';
-	export let direction: Direction = 'left';
+	type Direction = "left" | "up";
+	export let direction: Direction = "left";
 	export let pauseOnHover: boolean = true;
 	export let reverse: boolean = false;
 	export let fade: boolean = false;
-	export let innerClass: string = '';
+	export let innerClass: string = "";
     export let durationClass: string = "[--duration:5s]";
 	export let numberOfCopies: number = 10;
 </script>
 
 <div
-	class={twMerge("group flex gap-[1rem] overflow-hidden", $$restProps.class, direction === 'left' ? "flex-row" : "flex-col")}
+	class={twMerge("group flex gap-[1rem] overflow-hidden", $$restProps.class, direction === "left" ? "flex-row" : "flex-col")}
 	style={`mask-image: ${
 		fade
 			? `linear-gradient(${
-					direction === 'left' ? 'to right' : 'to bottom'
+					direction === "left" ? "to right" : "to bottom"
 				}, transparent 0%, rgba(0, 0, 0, 1.0) 10%, rgba(0, 0, 0, 1.0) 90%, transparent 100%)`
-			: 'none'
+			: "none"
 	};
 	  -webkit-mask-image: ${
 			fade
 				? `linear-gradient(${
-						direction === 'left' ? 'to right' : 'to bottom'
+						direction === "left" ? "to right" : "to bottom"
 					}, transparent 0%, rgba(0, 0, 0, 1.0) 10%, rgba(0, 0, 0, 1.0) 90%, transparent 100%)`
-				: 'none'
+				: "none"
 		};
 	  `}
 >
 	{#each Array(numberOfCopies).fill(0) as _, i (i)}
 		<div
 			class={twMerge(
-				'flex justify-around gap-[1rem] [--gap:1rem] shrink-0',
+				"flex justify-around gap-[1rem] [--gap:1rem] shrink-0",
                 durationClass,
-				direction === 'left'
-					? 'animate-marquee-left flex-row'
-					: 'animate-marquee-up flex-col',
-				pauseOnHover && 'group-hover:[animation-play-state:paused]',
-				reverse && 'direction-reverse',
+				direction === "left"
+					? "animate-marquee-left flex-row"
+					: "animate-marquee-up flex-col",
+				pauseOnHover && "group-hover:[animation-play-state:paused]",
+				reverse && "direction-reverse",
 				innerClass
 			)}
 		>

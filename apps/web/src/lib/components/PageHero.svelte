@@ -2,8 +2,8 @@
 	import { twMerge } from "tailwind-merge";
 
     export let srcset: string;
-    export let alt = "Page hero"
-	export let height = "h-[50vh]"
+    export let alt = "Page hero";
+	export let height = "h-[50vh]";
 </script>
 
 <div class="relative">

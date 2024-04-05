@@ -13,7 +13,7 @@ export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | nu
 
 	const remindersButton = new ButtonBuilder()
 		.setEmoji("🔔")
-		.setLabel("Reminders")
+		.setLabel("Reminders");
 	
 	if (dmMessageLink) {
 		remindersButton
@@ -73,7 +73,7 @@ export function buildRsvpDmMessage(event: Event, rsvp: EventRsvpRole, eventMessa
 				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`,
 			},
 			{ name: "Duration", value: dates.toDuration(event.duration!) },
-		)
+		);
 	
 	const remindersButton = new ButtonBuilder()
 		.setCustomId(`reminders-${event.id}`)

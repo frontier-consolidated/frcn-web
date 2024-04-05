@@ -11,27 +11,27 @@
 	import { Mutations, getApollo } from "$lib/graphql";
 	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
-    import { user } from "$lib/stores/UserStore"
+    import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
 
-	export let data: PageData
+	export let data: PageData;
 
     const validator = new FieldValidator();
 
-    let editData = {...data.key}
-    const { canNavigate, initNavigation } = preventNavigation()
+    let editData = { ...data.key };
+    const { canNavigate, initNavigation } = preventNavigation();
 
 	let isDirty = false;
 	$: {
-		isDirty = editData.description !== data.key.description || editData.permissions !== data.key.permissions
-		canNavigate.set(!isDirty)
+		isDirty = editData.description !== data.key.description || editData.permissions !== data.key.permissions;
+		canNavigate.set(!isDirty);
 	}
 
-    let key = $page.state.newAccessKey?.key ?? null
+    let key = $page.state.newAccessKey?.key ?? null;
     if ($page.state.newAccessKey?.key) replaceState("", {
         newAccessKey: undefined
-    })
+    });
 
     async function save() {
         if (!validator.validate()) return;
@@ -57,7 +57,7 @@
 			return;
 		}
 
-		await invalidateAll()
+		await invalidateAll();
 		data = {
 			...data, 
 			key: {
@@ -65,7 +65,7 @@
 				...updatedData?.key
 			},
 		} as PageData;
-		editData = {...data.key};
+		editData = { ...data.key };
     }
 
     async function regenerate() {
@@ -75,7 +75,7 @@
                 id: data.key.id
             },
 			errorPolicy: "all",
-        })
+        });
 
         if (errors && errors.length > 0) {
 			pushNotification({
@@ -86,18 +86,18 @@
 			return;
 		}
 
-        key = regeneratedData?.key?.key ?? null
+        key = regeneratedData?.key?.key ?? null;
     }
 
     function copy(e: MouseEvent) {
         if (!key) return;
         navigator.clipboard.writeText(key);
-        (e.currentTarget as HTMLButtonElement).innerHTML = "Copied!"
+        (e.currentTarget as HTMLButtonElement).innerHTML = "Copied!";
         pushNotification({
             type: "success",
             message: "Copied key to clipboard!",
             timeout: 5000
-        })
+        });
     }
 </script>
 
@@ -138,7 +138,7 @@
                     </Button>
                 {/if}
                 <Button size="sm" on:click={() => {
-                    regenerate().catch(console.error)
+                    regenerate().catch(console.error);
                 }}>
                     Reset Key
                 </Button>
@@ -158,7 +158,7 @@
 	</div>
 	<div class="flex justify-end items-center gap-2">
 		<Button color="alternative" on:click={() => {
-			editData = {...data.key}
+			editData = { ...data.key };
 		}}>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>

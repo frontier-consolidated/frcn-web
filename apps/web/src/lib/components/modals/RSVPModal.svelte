@@ -11,7 +11,7 @@
 
     export let event: Omit<EventFragmentFragment, "location">;
     export let open: boolean = false;
-    export let dependency = "app:events"
+    export let dependency = "app:events";
 
     let rsvpRole: string | null = null;
 </script>
@@ -40,7 +40,7 @@
                     eventId: event.id,
                     rsvpId: rsvpRole
                 }
-            })
+            });
 
             if (!rsvpData?.success || (errors && errors.length > 0)) {
                 pushNotification({
@@ -51,7 +51,7 @@
                 return;
             }
 
-            await invalidate(dependency)
+            await invalidate(dependency);
             open = false;
 		}}>RSVP</Button>
 		<Button color="alternative" on:click={() => open = false}>Cancel</Button>

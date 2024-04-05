@@ -1,8 +1,8 @@
-import { Permission, hasPermission } from '@frcn/shared';
+import { Permission, hasPermission } from "@frcn/shared";
 
-import { Queries } from '$lib/graphql';
+import { Queries } from "$lib/graphql";
 
-import type { RequestHandler } from './$types';
+import type { RequestHandler } from "./$types";
 
 export const prerender = false;
 
@@ -12,10 +12,10 @@ export const GET: RequestHandler = async ({ locals }) => {
             query: Queries.GET_ALL_ROLES,
             fetchPolicy: "no-cache",
             errorPolicy: "all"
-        })
+        });
 
         if (errors && errors.length > 0) {
-            console.error("Error fetching all roles", errors)
+            console.error("Error fetching all roles", errors);
         }
     
         return new Response(JSON.stringify({

@@ -2,10 +2,10 @@
 	import { Permission, dates, hasOneOfPermissions } from "@frcn/shared";
 	import { Button, Heading, Indicator, Timeline, TimelineItem } from "flowbite-svelte";
 	import { ArrowLeftSolid, ArrowRightSolid, CirclePlusSolid } from "flowbite-svelte-icons";
-	import { type Writable } from 'svelte/store';
+	import { type Writable } from "svelte/store";
     import { locale } from "svelte-i18n";
 	import { queryParam } from "sveltekit-search-params";
-	import { twMerge } from 'tailwind-merge';
+	import { twMerge } from "tailwind-merge";
 
 	import { TimeBadge } from "$lib/components";
 	import ScreenQuery from "$lib/components/utils/ScreenQuery.svelte";
@@ -18,8 +18,8 @@
 
 
     function getDefaultViewMonth() {
-        const now = new Date()
-        return new Date(now.getFullYear(), now.getMonth())
+        const now = new Date();
+        return new Date(now.getFullYear(), now.getMonth());
     }
 
     function getToday() {
@@ -30,44 +30,44 @@
 
     function getEventStartAt(date: Date) {
         if (date >= getToday() && date < new Date()) {
-            return new Date()
+            return new Date();
         }
-        const startAt = new Date(date)
-        startAt.setHours(12, 0, 0, 0)
-        return startAt
+        const startAt = new Date(date);
+        startAt.setHours(12, 0, 0, 0);
+        return startAt;
     }
 
     const viewMonth = queryParam("month", {
         decode(value) {
             if (!value) return getDefaultViewMonth();
-            const timestamp = Number(value)
+            const timestamp = Number(value);
             if (isNaN(timestamp)) return getDefaultViewMonth();
-            return new Date(timestamp)
+            return new Date(timestamp);
         },
         encode(value) {
-            return value.getTime().toString()
+            return value.getTime().toString();
         },
         defaultValue: getDefaultViewMonth()
-    }) as Writable<Date>
+    }) as Writable<Date>;
 
     const selectedDate = queryParam("selectedDate", {
         decode(value) {
             if (!value) return null;
-            const timestamp = Number(value)
+            const timestamp = Number(value);
             if (isNaN(timestamp)) return null;
-            return new Date(timestamp)
+            return new Date(timestamp);
         },
         encode(value) {
-            return value.getTime().toString()
+            return value.getTime().toString();
         },
-    })
+    });
 
 	export let data: PageData;
 
     
 	let days: { date: Date, events: PageData["events"] }[] = [];
 	$: {
-        const viewDate = $viewMonth ?? new Date()
+        const viewDate = $viewMonth ?? new Date();
 		const previousMonth = dates.getPreviousMonth(viewDate);
 		const daysInMonth = dates.getDaysInMonth(viewDate);
 		const daysInPreviousMonth = dates.getDaysInMonth(previousMonth);
@@ -91,8 +91,8 @@
 				year--;
 			}
 
-            const date = new Date(year, month, day)
-            const nextDate = new Date(year, month, day + 1)
+            const date = new Date(year, month, day);
+            const nextDate = new Date(year, month, day + 1);
 			days.push({
                 date,
                 events: data.events.filter(event => event.startAt && new Date(event.startAt) >= date && new Date(event.startAt) < nextDate)
@@ -106,7 +106,7 @@
         <Button
             class="min-[400px]:ml-auto dark:bg-gray-700 dark:hover:bg-gray-600 py-2"
             on:click={() => {
-                viewMonth.set(getDefaultViewMonth())
+                viewMonth.set(getDefaultViewMonth());
             }}
         >
             Today
@@ -115,7 +115,7 @@
             <Button
                 class="dark:bg-gray-700 dark:hover:bg-gray-600 p-3 aspect-square"
                 on:click={() => {
-                    viewMonth.set(dates.getPreviousMonth($viewMonth))
+                    viewMonth.set(dates.getPreviousMonth($viewMonth));
                 }}
             >
                 <ArrowLeftSolid size="xs" tabindex="-1" />
@@ -129,7 +129,7 @@
             <Button
                 class="dark:bg-gray-700 dark:hover:bg-gray-600 p-3 aspect-square"
                 on:click={() => {
-                    viewMonth.set(dates.getNextMonth($viewMonth))
+                    viewMonth.set(dates.getNextMonth($viewMonth));
                 }}
             >
                 <ArrowRightSolid size="xs" tabindex="-1" />
@@ -147,15 +147,15 @@
                 <button
                     class={twMerge("w-full aspect-square md:aspect-auto min-h-[64px] h-none md:h-32 lg:h-40 flex flex-col items-center bg-zinc-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-l border-b cursor-default", disabled && "text-gray-500", topRow && "border-t", (i + 1) % 7 === 0 && "border-r", i === 0 && "rounded-tl", i === 6 && "rounded-tr", i === dates.daysPerMonth - 7 && "rounded-bl", i === dates.daysPerMonth - 1 && "rounded-br", !matches && "cursor-pointer", (!matches && selected) && "bg-slate-200 dark:bg-gray-700")}
                     on:click={() => {
-                        selectedDate.set(day.date)
+                        selectedDate.set(day.date);
                     }}
                 >
                     <button
                         class={twMerge("group/date relative w-full py-1 sm:py-2 flex flex-col items-center", matches && "cursor-default", (matches && canCreateEvents) && "hover:bg-zinc-200 dark:hover:bg-gray-700 cursor-pointer")}
                         on:click={async (e) => {
                             if (!matches || !canCreateEvents) return;
-                            e.stopPropagation()
-                            await createEvent(getEventStartAt(day.date))
+                            e.stopPropagation();
+                            await createEvent(getEventStartAt(day.date));
                         }}
                     >
                         {#if topRow}
@@ -178,7 +178,7 @@
                                 {#each day.events as event}
                                     {@const eventStart = event.startAt && new Date(event.startAt)}
                                     <Button href="/event/{event.id}" target="_blank" disabled={!!event.endedAt} color="dark" class="flex justify-start gap-1 text-left rounded p-px pl-0" size="xs" on:click={(e) => {
-                                        e.stopPropagation()
+                                        e.stopPropagation();
                                     }}>
                                         <div class="rounded-l h-full w-1 bg-primary-500"></div>
                                         <span class="flex-1 truncate">

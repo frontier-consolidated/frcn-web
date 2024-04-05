@@ -40,20 +40,20 @@ export const resourceResolvers: Resolvers = {
 		},
 		async sizeKb(source) {
 			const { _model } = source as WithModel<GQLResource, Resource>;
-			const file = await $resources.getResourceFile(_model.id)
+			const file = await $resources.getResourceFile(_model.id);
 			if (!file) return 0;
 			return file.fileSizeKb;
 		},
 		async previewUrl(source, args, context) {
 			const { _model } = source as WithModel<GQLResource, Resource>;
 			if (!_model.canPreview) return null;
-			const file = await $resources.getResourceFile(_model.id)
+			const file = await $resources.getResourceFile(_model.id);
 			if (!file) return null;
 			return `${getOrigin(context.req.secure ? "https" : "http")}/media/${file.id}/${file.fileName}`;
 		},
 		async downloadUrl(source, args, context) {
 			const { _model } = source as WithModel<GQLResource, Resource>;
-			const file = await $resources.getResourceFile(_model.id)
+			const file = await $resources.getResourceFile(_model.id);
 			if (!file) return null;
 			return `${getOrigin(context.req.secure ? "https" : "http")}/media/${file.id}/${file.fileName}?download`;
 		}
@@ -64,7 +64,7 @@ export const resourceResolvers: Resolvers = {
 			const resource = await $resources.getResource(id);
 			if (!resource) return null;
 
-			return resolveResource(resource)
+			return resolveResource(resource);
 		},
 		async getResources(source, { filter, page, limit }) {
 			const { search, tags } = filter ?? {};
@@ -93,8 +93,8 @@ export const resourceResolvers: Resolvers = {
 		async createResource(source, args, context) {
 			if (!context.user) throw gqlErrorUnauthenticated();
 
-			const resource = await $resources.createResource(context.user, args.data)
-			return resolveResource(resource)
+			const resource = await $resources.createResource(context.user, args.data);
+			return resolveResource(resource);
 		},
 		async editResource(source, args, context) {
 			const resource = await database.resource.findUnique({
@@ -107,7 +107,7 @@ export const resourceResolvers: Resolvers = {
 						}
 					}
 				}
-			})
+			});
 			if (!resource) return null;
 
 			if (!hasOwnedObjectPermission({
@@ -118,11 +118,11 @@ export const resourceResolvers: Resolvers = {
 				owner: resource.owner,
 				required: Permission.CreateResources,
 				override: Permission.ManageResources
-			})) throw gqlErrorOwnership()
+			})) throw gqlErrorOwnership();
 
-			const updatedResource = await $resources.editResource(args.id, args.data)
+			const updatedResource = await $resources.editResource(args.id, args.data);
 			if (!updatedResource) return null;
-			return resolveResource(updatedResource)
+			return resolveResource(updatedResource);
 		},
 		async deleteResource(source, args, context) {
 			const resource = await database.resource.findUnique({
@@ -135,7 +135,7 @@ export const resourceResolvers: Resolvers = {
 						}
 					}
 				}
-			})
+			});
 			if (!resource) return false;
 
 			if (!hasOwnedObjectPermission({
@@ -146,7 +146,7 @@ export const resourceResolvers: Resolvers = {
 				owner: resource.owner,
 				required: Permission.CreateResources,
 				override: Permission.ManageResources
-			})) throw gqlErrorOwnership()
+			})) throw gqlErrorOwnership();
 
 			await $resources.deleteResource(context.app.s3Client, context.app.s3Bucket, resource.id);
 			return true;

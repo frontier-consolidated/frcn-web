@@ -15,10 +15,10 @@ function deserialize(cookie: string) {
 
 export const middleware: MiddlewareHandler = function ({ deviceTrack, consent, domain }) {
 	return function (req, res, next) {
-		const consentValue = getConsent(req, consent.cookie)
+		const consentValue = getConsent(req, consent.cookie);
 		if (consentValue === "reject") {
 			res.clearCookie(deviceTrack.cookie);
-			return next()
+			return next();
 		}
 
 		function setCookie(value: string) {

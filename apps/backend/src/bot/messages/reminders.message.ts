@@ -11,7 +11,7 @@ const reminderButtonText = {
 	[EventReminder.OneHourBefore]: "1 hour before",
 	[EventReminder.OneDayBefore]: "1 day before",
 	[EventReminder.OneWeekBefore]: "1 week before"
-} satisfies Record<EventReminder, string>
+} satisfies Record<EventReminder, string>;
 
 const reminderText = {
 	[EventReminder.OnStart]: "",
@@ -19,7 +19,7 @@ const reminderText = {
 	[EventReminder.OneHourBefore]: "1 hour",
 	[EventReminder.OneDayBefore]: "1 day",
 	[EventReminder.OneWeekBefore]: "1 week"
-} satisfies Record<EventReminder, string>
+} satisfies Record<EventReminder, string>;
 
 export const reminderTimes = {
     [EventReminder.OnStart]: 0,
@@ -27,7 +27,7 @@ export const reminderTimes = {
     [EventReminder.OneHourBefore]: 60 * 60 * 1000,
     [EventReminder.OneDayBefore]: 24 * 60 * 60 * 1000,
     [EventReminder.OneWeekBefore]: 7 * 24 * 60 * 60 * 1000,
-} satisfies Record<EventReminder, number>
+} satisfies Record<EventReminder, number>;
 
 export function buildRemindersMessage(event: Event, reminders: EventReminder[]) {
 	const embed = new EmbedBuilder()
@@ -39,17 +39,17 @@ export function buildRemindersMessage(event: Event, reminders: EventReminder[]) 
 	buttonsRow.addComponents(Object.values(EventReminder).map(reminder => {
 		const button = new ButtonBuilder()
 			.setCustomId(`set-reminder-${event.id}:${reminder}`)
-			.setLabel(reminderButtonText[reminder])
+			.setLabel(reminderButtonText[reminder]);
 		
 		if (reminders.includes(reminder)) {
-			button.setEmoji("🔔")
-			button.setStyle(ButtonStyle.Primary)
+			button.setEmoji("🔔");
+			button.setStyle(ButtonStyle.Primary);
 		} else {
 			button.setStyle(ButtonStyle.Secondary);
 		}
 
 		if (!event.startAt || event.startAt < new Date(Date.now() + reminderTimes[reminder])) {
-			button.setDisabled(true)
+			button.setDisabled(true);
 		}
 		
 		return button;
@@ -64,12 +64,12 @@ export function buildRemindersMessage(event: Event, reminders: EventReminder[]) 
 export function buildReminderDmMessage(event: Event, reminder: EventReminder, eventMessageLink: string) {
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
-		.setTitle("🔔 RSVP Reminder")
+		.setTitle("🔔 RSVP Reminder");
 
 	if (reminder === EventReminder.OnStart) {
-		embed.setDescription(`This is your reminder that the **[${event.name}](${eventMessageLink})** event is starting now!`)
+		embed.setDescription(`This is your reminder that the **[${event.name}](${eventMessageLink})** event is starting now!`);
 	} else {
-		embed.setDescription(`This is your ${reminderText[reminder]} reminder for the **[${event.name}](${eventMessageLink})** event`)
+		embed.setDescription(`This is your ${reminderText[reminder]} reminder for the **[${event.name}](${eventMessageLink})** event`);
 	}
 	
 	const remindersButton = new ButtonBuilder()

@@ -7,11 +7,11 @@
 	import type { PageData } from "./$types";
 	import EventMember from "./EventMember.svelte";
 
-    export let event: PageData
+    export let event: PageData;
     let open = true;
 
     // TODO: change this to use team id
-    $: optionsId = `event-team-options-${event.id}`
+    $: optionsId = `event-team-options-${event.id}`;
 </script>
 
 <li class="rounded mb-2 bg-gray-200 dark:bg-gray-800">

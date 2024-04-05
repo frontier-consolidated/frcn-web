@@ -40,8 +40,8 @@
     {#if data.events.length > 0}
         <Pagination 
             {pages}
-            on:previous={() => {if (data.prevPage != null) goto(getPageUrl($page.url, data.prevPage + 1))}}
-                on:next={() => {if (data.nextPage != null) goto(getPageUrl($page.url, data.nextPage + 1))}}
+            on:previous={() => { if (data.prevPage != null) goto(getPageUrl($page.url, data.prevPage + 1)); }}
+                on:next={() => { if (data.nextPage != null) goto(getPageUrl($page.url, data.nextPage + 1)); }}
         />
     {/if}
 </div>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { twMerge } from "tailwind-merge";
 
-    export let spanClass = "ms-2"
+    export let spanClass = "ms-2";
 </script>
 
 <li>

@@ -147,10 +147,10 @@ export const Stanton = system("Stanton", [
 		station("Baijini Point"),
 		commArray("Comm Array ST3-90"),
 		moon("Lyria", [
-			outpost('"The Pit"'),
+			outpost("\"The Pit\""),
 			outpost("<= UNINITIALIZED =>"),
 			outpost("Elsewhere"),
-			outpost('"Wheeler\'s"'),
+			outpost("\"Wheeler's\""),
 			outpost("The Orphanage"),
 			outpost("Humboldt Mines"),
 			outpost("Loveridge Mineral Reserve"),

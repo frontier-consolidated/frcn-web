@@ -3,19 +3,19 @@ import type { Request } from "express";
 import type { MiddlewareHandler } from "../types";
 
 export function getConsent(req: Request, cookie: string): "reject" | "necessary" | "all" {
-    const consentValue = req.cookies[cookie] as string | undefined
-    const consentRejected = !consentValue || consentValue === "reject"
+    const consentValue = req.cookies[cookie] as string | undefined;
+    const consentRejected = !consentValue || consentValue === "reject";
     
     if (consentRejected) return "reject";
 
-    const trimmedValue = consentValue!.toLowerCase().trim()
+    const trimmedValue = consentValue!.toLowerCase().trim();
     if (trimmedValue === "necessary") return "necessary";
-    return "all"
+    return "all";
 }
 
 export const middleware: MiddlewareHandler = function ({ consent: config, session, domain }) {
 	return function (req, res, next) {
-		const consentValue = getConsent(req, config.cookie)
+		const consentValue = getConsent(req, config.cookie);
         if (consentValue === "reject") {
             res.clearCookie(session.cookie);
         } else {
@@ -26,16 +26,16 @@ export const middleware: MiddlewareHandler = function ({ consent: config, sessio
                 sameSite: "lax",
                 httpOnly: true,
                 secure: req.secure
-			})
+			});
         }
 
         req.on("end", () => {
             if (getConsent(req, config.cookie) === "reject") {
                 req.session.destroy(() => {
                     // we don't care if this fails since the session record will get cleaned up eventually
-                })
+                });
             }
-        })
-        next()
-	}
+        });
+        next();
+	};
 };

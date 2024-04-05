@@ -13,16 +13,16 @@
 
 	export let category: string;
 	// eslint-disable-next-line no-undef
-	export let categoryIcons: Record<string, string | ConstructorOfATypedSvelteComponent> = {}
+	export let categoryIcons: Record<string, string | ConstructorOfATypedSvelteComponent> = {};
 
 	let icon: any;
 	let imageSrc: string | null = null;
 	$: {
-		const customIcon = categoryIcons[category]
+		const customIcon = categoryIcons[category];
 		imageSrc = null;
 		if (customIcon) {
 			if (typeof customIcon === "string") {
-				imageSrc = customIcon
+				imageSrc = customIcon;
 			} else {
 				icon = customIcon;
 			}

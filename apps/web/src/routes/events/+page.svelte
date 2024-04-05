@@ -4,7 +4,7 @@
 	import { FilterSolid } from "flowbite-svelte-icons";
 	import type { Writable } from "svelte/store";
 	import { slide } from "svelte/transition";
-	import { queryParam } from "sveltekit-search-params"
+	import { queryParam } from "sveltekit-search-params";
 
 	import { Button, Head, Hr, Select } from "$lib/components";
 	import { user } from "$lib/stores/UserStore";
@@ -16,20 +16,20 @@
 
 	export let data: PageData;
 
-	const view = queryParam("view")
-	const search = queryParam("q")
-	let searchInput = $search
+	const view = queryParam("view");
+	const search = queryParam("q");
+	let searchInput = $search;
 
 	let showFilter = false;
 	const includeCompleted = queryParam("includecompleted", {
 		decode(value) {
-			return value === "" ? true : false
+			return value === "" ? true : false;
 		},
 		encode(value) {
-			return value ? "" : undefined
+			return value ? "" : undefined;
 		},
-	}) as Writable<boolean>
-	const eventType = queryParam("type")
+	}) as Writable<boolean>;
+	const eventType = queryParam("type");
 </script>
 
 <Head
@@ -54,7 +54,7 @@
 								if (e.key === "Enter") search.set(searchInput);
 							}} 
 							on:blur={() => {
-								search.set(searchInput)
+								search.set(searchInput);
 							}} 
 						/>
 					</div>
@@ -96,14 +96,14 @@
 		</div>
 		<Tabs contentClass="mt-6" style="underline">
 			<TabItem title="Timeline" open={!$view || $view === "timeline"} on:click={() => {
-				data.events = [] // set events to empty while new events get fetched
-				view.set("timeline")
+				data.events = []; // set events to empty while new events get fetched
+				view.set("timeline");
 			}}>
 				<EventsTimeline {data} />
 			</TabItem>
 			<TabItem title="Calendar" open={$view === "calendar"} on:click={() => {
-				data.events = [] // set events to empty while new events get fetched
-				view.set("calendar")
+				data.events = []; // set events to empty while new events get fetched
+				view.set("calendar");
 			}}>
 				<EventsCalendar {data} />
 			</TabItem>

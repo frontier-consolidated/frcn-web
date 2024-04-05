@@ -19,10 +19,10 @@ export function resolveDiscordChannel(
 		case ChannelType.GuildCategory:
 			break;
 		case ChannelType.GuildVoice:
-			name = `🔊 ${channel.name}`
+			name = `🔊 ${channel.name}`;
 			break;
 		default:
-			name = `#${channel.name}`
+			name = `#${channel.name}`;
 			break;
 	}
 
@@ -87,7 +87,7 @@ export const discordResolvers: Resolvers = {
 		async sendMessages(source) {
 			const { _model: channel } = source as WithModel<DiscordChannel, GuildBasedChannel>;
 			if (!channel || channel.type === ChannelType.GuildCategory) return false;
-			return await $discord.canPostInChannel(channel)
+			return await $discord.canPostInChannel(channel);
 		}
 	},
 
@@ -101,8 +101,8 @@ export const discordResolvers: Resolvers = {
 			return channels.map(resolveDiscordChannel);
 		},
 		async getAllDiscordCategories(source, args, context) {
-			const categories = await $discord.getAllCategories(context.app.discordClient)
-			return categories.map(resolveDiscordChannel)
+			const categories = await $discord.getAllCategories(context.app.discordClient);
+			return categories.map(resolveDiscordChannel);
 		},
 		async getAllDiscordEmojis(source, args, context) {
 			const guild = await $discord.getGuild(context.app.discordClient);
@@ -110,7 +110,7 @@ export const discordResolvers: Resolvers = {
 				serverName: "!UNKNOWN",
 				serverAvatar: null,
 				emojis: []
-			}
+			};
 			
 			const emojis = await $discord.getAllEmojis(context.app.discordClient);
 			return {
@@ -120,7 +120,7 @@ export const discordResolvers: Resolvers = {
 					size: 16
 				}),
 				emojis: await Promise.all(emojis.map((emoji) => resolveDiscordEmoji(emoji, context)))
-			}
+			};
 		},
 		async getAllDiscordRoles(source, args, context) {
 			const roles = await $discord.getAllRoles(context.app.discordClient, args.everyone ?? undefined);

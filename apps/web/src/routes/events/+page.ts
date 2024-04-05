@@ -9,18 +9,18 @@ import { getEvents } from "./helpers";
 
 export const load = (async ({ url, data }) => {
     try {
-        const { couldNotConnect, ...serverData } = data
+        const { couldNotConnect, ...serverData } = data;
         if (!couldNotConnect) {
-            return serverData
+            return serverData;
         }
-        return await getEvents(getApollo(), url)
+        return await getEvents(getApollo(), url);
     } catch (err) {
         if (browser) {
-            console.error(err)
+            console.error(err);
             pushNotification({
                 type: "error",
                 message: "Error connecting to server"
-            })
+            });
         }
 
         return {
@@ -30,6 +30,6 @@ export const load = (async ({ url, data }) => {
             nextPage: null,
             prevPage: null,
             total: 0
-        }
+        };
     }
 }) satisfies PageLoad;

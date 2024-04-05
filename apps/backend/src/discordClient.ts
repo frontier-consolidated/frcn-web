@@ -8,7 +8,7 @@ export function createDiscordClient(token: string) {
 		intents: [GatewayIntentBits.GuildMembers, GatewayIntentBits.Guilds, GatewayIntentBits.DirectMessages, GatewayIntentBits.DirectMessageReactions],
 	});
 
-	load(client)
+	load(client);
 
 	return {
 		client,

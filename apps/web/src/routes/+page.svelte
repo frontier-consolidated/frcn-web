@@ -7,33 +7,33 @@
 	import { transformContainer } from "$lib/cms/transformContainer";
 	import { Head, Hr, Markdown } from "$lib/components";
 	import logo from "$lib/images/logo.png";
-	import activitiesImage from "$lib/images/stock/activities.png?w=580&imagetools"
-	import communityImage from "$lib/images/stock/community.png?w=580&imagetools"
-	import metaImage from "$lib/images/stock/hero.png?w=1200&format=webp&imagetools"
-	import heroImageSrcset from "$lib/images/stock/hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
-	import orgImage from "$lib/images/stock/org.png?w=580&imagetools"
-	import placeholder from "$lib/images/stock/placeholder.jpg"
-	import resourcesImage from "$lib/images/stock/resources.png?w=580&imagetools"
+	import activitiesImage from "$lib/images/stock/activities.png?w=580&imagetools";
+	import communityImage from "$lib/images/stock/community.png?w=580&imagetools";
+	import metaImage from "$lib/images/stock/hero.png?w=1200&format=webp&imagetools";
+	import heroImageSrcset from "$lib/images/stock/hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools";
+	import orgImage from "$lib/images/stock/org.png?w=580&imagetools";
+	import placeholder from "$lib/images/stock/placeholder.jpg";
+	import resourcesImage from "$lib/images/stock/resources.png?w=580&imagetools";
 
 	import type { PageData } from "./$types";
 
-	export let data: PageData
-	$: index = data.index ? transformContainer<IndexContainer>(data.index) : null
-	$: welcomeSection = index?.findFirstChild("welcome")?.as<SectionContainer>()
-	$: welcomeCtas = welcomeSection?.getChildrenOfType(CMSContainerType.CallToAction) ?? []
-	$: galleryImages = index?.findFirstChildOfType(CMSContainerType.Gallery)?.getFiles().map(f => f.getSrc()).filter((src): src is string => !!src) ?? []
+	export let data: PageData;
+	$: index = data.index ? transformContainer<IndexContainer>(data.index) : null;
+	$: welcomeSection = index?.findFirstChild("welcome")?.as<SectionContainer>();
+	$: welcomeCtas = welcomeSection?.getChildrenOfType(CMSContainerType.CallToAction) ?? [];
+	$: galleryImages = index?.findFirstChildOfType(CMSContainerType.Gallery)?.getFiles().map(f => f.getSrc()).filter((src): src is string => !!src) ?? [];
 
 	const pageCards = [
 		{ src: communityImage, name: "COMMUNITY", href: "/about/community", icon: UsersSolid },
 		{ src: orgImage, name: "ORGANISATION", href: "/about/org", icon: BuildingSolid },
 		{ src: activitiesImage, name: "ACTIVITES", href: "/about/activities", icon: MapPinAltSolid },
 		{ src: resourcesImage, name: "GUIDES & RESOURCES", href: "/resources", icon: BookSolid }
-	]
+	];
 
 	const partners = [
 		{ src: "https://www.teamspeak.com/user/themes/teamspeak/images/logo_inverse.svg", href: "https://www.teamspeak.com/", alt: "Teamspeak" },
 		{ src: "https://robertsspaceindustries.com/media/6wlp3kdl35hz6r/logo/ANZIA-Logo.png", href: "https://anziaracing.com/", alt: "ANZIA Racing" },
-	]
+	];
 </script>
 
 <Head

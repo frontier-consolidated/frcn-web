@@ -8,7 +8,7 @@
 		"plugin:import/typescript"
 	],
 	"parser": "@typescript-eslint/parser",
-	"plugins": ["@typescript-eslint", "import"],
+	"plugins": ["@typescript-eslint", "import", "@stylistic/ts"],
 	"parserOptions": {
 		"sourceType": "module",
 		"ecmaVersion": 2020
@@ -32,6 +32,7 @@
 			}
 		}
 	},
+	"ignorePatterns": ["/docs", "dist", "node_modules"],
 	"rules": {
 		"import/order": [
 			"warn",
@@ -52,6 +53,11 @@
 				"varsIgnorePattern": "^_",
 				"caughtErrorsIgnorePattern": "^_"
 			}
-		]
+		],
+		// Formatting
+		"@stylistic/ts/semi": ["error", "always"],
+		"@stylistic/ts/quotes": ["error", "double"],
+		"@stylistic/ts/object-curly-spacing": ["error", "always"],
+		"@stylistic/ts/block-spacing": ["error", "always"]
 	}
 }

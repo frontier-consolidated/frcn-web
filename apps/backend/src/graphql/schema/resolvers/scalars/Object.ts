@@ -50,6 +50,6 @@ export const ObjectScalar = new GraphQLScalarType<unknown, unknown>({
 		return value;
 	},
 	parseLiteral(ast, variables) {
-		return parseLiteral('JSON', ast, variables);
+		return parseLiteral("JSON", ast, variables);
 	},
 });

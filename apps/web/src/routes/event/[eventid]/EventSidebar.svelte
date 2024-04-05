@@ -50,7 +50,7 @@
 							variables: {
 								id: data.id
 							}
-						})
+						});
 
 						if (!endData?.ended || (errors && errors.length > 0)) {
 							pushNotification({
@@ -61,7 +61,7 @@
 							return;
 						}
 
-						await invalidate("app:currentevent")
+						await invalidate("app:currentevent");
 					}}
 				/>
 			{/if}
@@ -77,7 +77,7 @@
 								variables: {
 									eventId: data.id
 								}
-							})
+							});
 
 							if (!unrsvpData?.success || (errors && errors.length > 0)) {
 								pushNotification({
@@ -89,7 +89,7 @@
 							}
 
 							data.rsvp = null;
-							data.members = data.members.filter(member => member.user.id !== $user.data?.id)
+							data.members = data.members.filter(member => member.user.id !== $user.data?.id);
 						}}
 					>
 						<svelte:fragment slot="icon">

@@ -14,7 +14,7 @@
 			spinnerTimeout = setTimeout(() => {
 				if ($navigating) showSpinner = true;
 				spinnerTimeout = null;
-			}, 200)
+			}, 200);
 		} else if (showSpinner && !$navigating) {
 			showSpinner = false;
 		}

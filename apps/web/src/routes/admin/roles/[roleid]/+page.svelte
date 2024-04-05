@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { invalidateAll } from "$app/navigation";
 	import { page } from "$app/stores";
-	import { Permission, hasAdmin } from "@frcn/shared"
+	import { Permission, hasAdmin } from "@frcn/shared";
 	import { Avatar, Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
 	import { ArrowLeftSolid, CloseCircleSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
@@ -12,7 +12,7 @@
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
-    import type { PageData } from './$types';
+    import type { PageData } from "./$types";
 
 	function cloneRoleData(data: PageData["role"]) {
 		return {
@@ -20,7 +20,7 @@
 			primary: data.primary,
 			permissions: data.permissions,
 			discordId: data.discordId
-		}
+		};
 	}
 
 	function checkIfDirty(source: PageData["role"], mutable: ReturnType<typeof cloneRoleData>) {
@@ -38,12 +38,12 @@
     export let data: PageData;
 	let editData = cloneRoleData(data.role);
 
-	const { canNavigate, initNavigation } = preventNavigation()
+	const { canNavigate, initNavigation } = preventNavigation();
 
 	let isDirty = false;
 	$: {
-		isDirty = checkIfDirty(data.role, editData)
-		canNavigate.set(!isDirty)
+		isDirty = checkIfDirty(data.role, editData);
+		canNavigate.set(!isDirty);
 	}
 
 	function checkIfCanToggleAdmin(roles: PageData["roles"], role: PageData["role"], user: GetCurrentUserQuery["user"]) {
@@ -51,14 +51,14 @@
 		if (!hasAdmin(user.permissions)) return false;
 		if (role.default) return false;
 
-		const userRoles = [user.primaryRole, ...user.roles]
-		const adminRoles = roles.filter(r => !!userRoles.find(r2 => r2.id === r.id) && hasAdmin(r.permissions))
+		const userRoles = [user.primaryRole, ...user.roles];
+		const adminRoles = roles.filter(r => !!userRoles.find(r2 => r2.id === r.id) && hasAdmin(r.permissions));
 		if (adminRoles.length === 0) return true; // root admin user
 		if (adminRoles.length > 1) return true; // user has multiple admin roles, let them toggle it
-		return adminRoles[0].id != role.id
+		return adminRoles[0].id != role.id;
 	}
 
-	$: canToggleAdmin = checkIfCanToggleAdmin(data.roles, data.role, $user.data)
+	$: canToggleAdmin = checkIfCanToggleAdmin(data.roles, data.role, $user.data);
 
 	const validator = new FieldValidator();
 
@@ -88,7 +88,7 @@
 			return;
 		}
 
-		await invalidateAll()
+		await invalidateAll();
 		data = {
 			...data, 
 			role: {

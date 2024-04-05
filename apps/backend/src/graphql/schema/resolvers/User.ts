@@ -90,8 +90,8 @@ export const userResolvers: Resolvers = {
 			if (_model.id !== context.user.id) throw gqlErrorOwnership();
 
 			const events = await $users.getEvents(_model.id);
-			events.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-			return events.map((event) => resolveEvent(event))
+			events.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+			return events.map((event) => resolveEvent(event));
 		},
 		async status(source) {
 			const { _model } = source as WithModel<GQLUser, User>;
@@ -159,8 +159,8 @@ export const userResolvers: Resolvers = {
 			subscribe: withFilter(
 				() => pubsub.asyncIterator("USER_ROLES_UPDATED"),
 				async function (source, args) {
-					const value = await Promise.resolve(source.userRolesUpdated)
-					return value.userId === args.userId
+					const value = await Promise.resolve(source.userRolesUpdated);
+					return value.userId === args.userId;
 				}
 			)
 		}

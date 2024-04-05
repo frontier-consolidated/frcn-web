@@ -54,10 +54,10 @@ export function createApolloClient(headers?: Record<string, string>) {
 	});
 }
 
-export type TypedApolloClient = ReturnType<typeof createApolloClient>
+export type TypedApolloClient = ReturnType<typeof createApolloClient>;
 const browserApollo = browser ? createApolloClient() : null;
 
 export function getApollo() {
-	if (!browser) throw new Error("DO NOT USE SHARED APOLLO CLIENT ON SERVER, use locals.apollo")
-	return browserApollo!
+	if (!browser) throw new Error("DO NOT USE SHARED APOLLO CLIENT ON SERVER, use locals.apollo");
+	return browserApollo!;
 }

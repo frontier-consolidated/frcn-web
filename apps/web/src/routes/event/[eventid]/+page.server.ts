@@ -1,12 +1,12 @@
-import { Permission, hasOwnedObjectPermission } from '@frcn/shared';
-import { error } from '@sveltejs/kit';
+import { Permission, hasOwnedObjectPermission } from "@frcn/shared";
+import { error } from "@sveltejs/kit";
 
-import { Queries } from '$lib/graphql';
+import { Queries } from "$lib/graphql";
 
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ params, locals, depends }) => {
-    depends("app:currentevent")
+    depends("app:currentevent");
 
     const { data: eventData } = await locals.apollo.query({
 		query: Queries.GET_EVENT,
@@ -24,7 +24,7 @@ export const load = (async ({ params, locals, depends }) => {
         owner: eventData.event.owner,
         required: Permission.CreateEvents,
         override: Permission.ManageEvents
-    })
+    });
 
     if (canEdit) {
         const { data: eventSettingsData, errors } = await locals.apollo.query({

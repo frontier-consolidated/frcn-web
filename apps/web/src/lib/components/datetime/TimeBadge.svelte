@@ -101,21 +101,21 @@
 			datetime,
 			text,
 			popoverText
-		}
+		};
 	}
 
-	let { datetime, text, popoverText } = formatTime(value)
+	let { datetime, text, popoverText } = formatTime(value);
 
 	onMount(() => {
 		const interval = setInterval(() => {
 			const updated = formatTime(value);
-			datetime = updated.datetime
-			text = updated.text
-			popoverText = updated.popoverText
-		}, 15000)
+			datetime = updated.datetime;
+			text = updated.text;
+			popoverText = updated.popoverText;
+		}, 15000);
 
-		return () => clearInterval(interval)
-	})
+		return () => clearInterval(interval);
+	});
 </script>
 
 <Badge {id} color="none" {...$$restProps} class={twMerge("tabular-nums dark:text-gray-300", $$restProps.class)}>

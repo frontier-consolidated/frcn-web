@@ -14,18 +14,18 @@
     $: joinDate = $userProfileView.data ? new Intl.DateTimeFormat($locale!, {
         month: "long",
         year: "numeric"
-    }).format(new Date($userProfileView.data.createdAt)) : "Loading..."
+    }).format(new Date($userProfileView.data.createdAt)) : "Loading...";
 
     function getAllRoles(data: UserFragmentFragment) {
-        return [data.primaryRole, ...data.roles]
+        return [data.primaryRole, ...data.roles];
     }
 
-    $: allRoles = $userProfileView.open && $userProfileView.data ? getAllRoles($userProfileView.data) : []
-    $: canEdit = hasPermission($user.data?.permissions ?? 0, Permission.ManageRoles)
+    $: allRoles = $userProfileView.open && $userProfileView.data ? getAllRoles($userProfileView.data) : [];
+    $: canEdit = hasPermission($user.data?.permissions ?? 0, Permission.ManageRoles);
 </script>
 
 <Modal size="sm" bodyClass="space-y-0" open={$userProfileView.open} dismissable outsideclose on:close={() => {
-    userProfileView.update(view => ({ ...view, open: false }))
+    userProfileView.update(view => ({ ...view, open: false }));
 }}>
     <div>
         <div class="flex gap-4 items-center">

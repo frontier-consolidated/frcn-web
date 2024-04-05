@@ -11,11 +11,11 @@
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
 	import type { PageData } from "./$types";
-	import KeyRow from "./KeyRow.svelte"
+	import KeyRow from "./KeyRow.svelte";
 
-	const keySearch = queryParam("q")
+	const keySearch = queryParam("q");
 
-	export let data: PageData
+	export let data: PageData;
 </script>
 
 <Head
@@ -48,8 +48,8 @@
 			pushNotification({
 				type: "error",
 				message: "Failed to create access key"
-			})
-			console.error(err)
+			});
+			console.error(err);
 		}
 	}}>
         Create Key

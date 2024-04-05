@@ -10,17 +10,17 @@
 
 	import type { PageData } from "./$types";
 
-    export let role: PageData["roles"][number]
+    export let role: PageData["roles"][number];
     export let canMove: boolean = false;
     export let locked: boolean = false;
 
-    $: internalCanMove = canMove && !locked
+    $: internalCanMove = canMove && !locked;
 
     let modalOpen = false;
 </script>
 
 <TableBodyRow data-role-id={role.id} class={twMerge("group cursor-pointer dark:hover:bg-gray-600", internalCanMove ? undefined : "cannot-reorder")} on:click={() => {
-    goto(`/admin/roles/${role.id}`)
+    goto(`/admin/roles/${role.id}`);
 }}>
     <TableBodyCell class={twMerge("px-1", internalCanMove ? "move-handle opacity-0 group-hover:opacity-100 cursor-grab" : "opacity-100")}>
         <div class="flex items-center justify-center">
@@ -70,9 +70,9 @@
                     aria-disabled={false}
                     class={twMerge("dark:text-white dark:hover:text-red-600", locked ? "cursor-not-allowed opacity-50" : "cursor-pointer")}
                     on:click={(ev) => {
-                        ev.stopPropagation()
+                        ev.stopPropagation();
                         if (locked) return;
-                        modalOpen = true
+                        modalOpen = true;
                     }}
                 />
                 Delete
@@ -88,7 +88,7 @@
             roleId: role.id
         },
         errorPolicy: "all",
-    })
+    });
 
     if (errors && errors.length > 0) {
         pushNotification({
@@ -99,7 +99,7 @@
         return;
     }
 
-    await invalidate("app:allroles")
+    await invalidate("app:allroles");
     modalOpen = false;
 }}>
     <span>Are you sure you want to delete the <strong>{role.name}</strong> role? Once deleted it cannot be undone.</span>

@@ -3,9 +3,9 @@ export type Task = {
     fn: () => Promise<any>,
     fulfil: (value: any) => void,
     reject: (error: Error) => void
-}
+};
 
-export type Queue = ReturnType<typeof queue>
+export type Queue = ReturnType<typeof queue>;
 
 export function queue(concurrency: number) {
 	const tasks: Task[] = [];
@@ -54,7 +54,7 @@ export function queue(concurrency: number) {
 	return {
 		/** @param {() => any} fn */
 		add: (fn: () => any) => {
-			if (closed) throw new Error('Cannot add tasks to a queue that has ended');
+			if (closed) throw new Error("Cannot add tasks to a queue that has ended");
 
 			const promise = new Promise((fulfil, reject) => {
 				tasks.push({ fn, fulfil, reject });

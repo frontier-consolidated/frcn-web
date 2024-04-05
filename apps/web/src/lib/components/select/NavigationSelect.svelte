@@ -12,46 +12,46 @@
 	type S = $$Generic<Record<string, any>>;
 
     function flattenOptions(options: (NavigationOption<S> | OptionGroup<NavigationOption<S>>)[]) {
-        let flattened: NavigationOption<S>[] = []
+        let flattened: NavigationOption<S>[] = [];
         for (const opt of options) {
             if ("options" in opt) {
-                flattened = flattened.concat(opt.options)
+                flattened = flattened.concat(opt.options);
             } else {
-                flattened.push(opt)
+                flattened.push(opt);
             }
         }
-        return flattened
+        return flattened;
     }
 
     function getOptionGroups(options: (NavigationOption<S> | OptionGroup<NavigationOption<S>>)[]) {
-        let groups: OptionGroup<NavigationOption<S>>[] = []
+        let groups: OptionGroup<NavigationOption<S>>[] = [];
         for (const opt of options) {
             if ("options" in opt) {
-                groups.push(opt)
+                groups.push(opt);
             }
         }
-        return groups
+        return groups;
     }
 
     function getLooseOptions(options: (NavigationOption<S> | OptionGroup<NavigationOption<S>>)[]) {
-        let opts: NavigationOption<S>[] = []
+        let opts: NavigationOption<S>[] = [];
         for (const opt of options) {
             if ("options" in opt) continue;
-            opts.push(opt)
+            opts.push(opt);
 
         }
-        return opts
+        return opts;
     }
 
     export let activeUrl: string | undefined = undefined;
     export let placeholder = "None";
     export let options: (NavigationOption<S> | OptionGroup<NavigationOption<S>>)[] = [];
-    let clazz = ""
-    export { clazz as class }
+    let clazz = "";
+    export { clazz as class };
 
-    $: currentOption = flattenOptions(options).find(opt => opt.href === activeUrl)
+    $: currentOption = flattenOptions(options).find(opt => opt.href === activeUrl);
 
-    let background = getContext('background');
+    let background = getContext("background");
 </script>
 
 <div class={twMerge("relative w-full", clazz)}>
@@ -91,7 +91,7 @@
                             <DropdownItem
                                 class="pl-6"
                                 on:click={() => {
-                                    goto(option.href)
+                                    goto(option.href);
                                 }}
                             >
                                 <slot {option}>
@@ -107,7 +107,7 @@
             {#key option}
                 <DropdownItem
                     on:click={() => {
-                        goto(option.href)
+                        goto(option.href);
                     }}
                 >
                     <slot {option}>

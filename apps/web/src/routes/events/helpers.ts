@@ -27,18 +27,18 @@ function getCalendarDate(relative: Date, index: number) {
         year--;
     }
 
-    return new Date(year, month, day)
+    return new Date(year, month, day);
 }
 
 export async function getEvents(apollo: TypedApolloClient, url: URL) {
-    let variables: GetEventsQueryVariables
+    let variables: GetEventsQueryVariables;
 
-    const view = url.searchParams.get("view")
-    const monthTimestamp = Number(url.searchParams.get("month"))
+    const view = url.searchParams.get("view");
+    const monthTimestamp = Number(url.searchParams.get("month"));
 
     if (view === "calendar") {
-        const initDate = new Date(isNaN(monthTimestamp) ? Date.now() : monthTimestamp)
-        const date = new Date(initDate.getFullYear(), initDate.getMonth())
+        const initDate = new Date(isNaN(monthTimestamp) ? Date.now() : monthTimestamp);
+        const date = new Date(initDate.getFullYear(), initDate.getMonth());
 
         variables = {
             filter: {
@@ -47,10 +47,10 @@ export async function getEvents(apollo: TypedApolloClient, url: URL) {
                 minStartAt: getCalendarDate(date, 0).getTime(),
                 maxStartAt: getCalendarDate(date, dates.daysPerMonth).getTime(),
             }
-        }
+        };
     } else {
-        const { page, limit } = getPageVars(url.searchParams)
-        const includeCompleted = url.searchParams.has("includecompleted")
+        const { page, limit } = getPageVars(url.searchParams);
+        const includeCompleted = url.searchParams.has("includecompleted");
         
         variables = {
             filter: {
@@ -59,13 +59,13 @@ export async function getEvents(apollo: TypedApolloClient, url: URL) {
             },
             page,
             limit
-        }
+        };
     }
 
-    const eventType = url.searchParams.get("type")
+    const eventType = url.searchParams.get("type");
     if (eventType) {
-        variables.filter ??= {}
-        variables.filter.eventType = eventType
+        variables.filter ??= {};
+        variables.filter.eventType = eventType;
     }
 
     const { data } = await apollo.query({
@@ -76,7 +76,7 @@ export async function getEvents(apollo: TypedApolloClient, url: URL) {
     const events = (data.events?.items ?? []).map(event => ({
         ...event,
         location: event.location ? getLocations(event.location) : null
-    }))
+    }));
 
     return {
         events,
@@ -92,8 +92,8 @@ export async function createEvent(startAt?: Date) {
     try {
         // rounded to next hour
         if (startAt) {
-            const hourMs = 60 * 60 * 1000
-            startAt = new Date(Math.ceil(startAt.getTime() / hourMs) * hourMs)
+            const hourMs = 60 * 60 * 1000;
+            startAt = new Date(Math.ceil(startAt.getTime() / hourMs) * hourMs);
         }
 
         const { data: createData } = await getApollo().mutate({
@@ -110,7 +110,7 @@ export async function createEvent(startAt?: Date) {
         pushNotification({
             type: "error",
             message: "Failed to create event"
-        })
-        console.error(err)
+        });
+        console.error(err);
     }
 }

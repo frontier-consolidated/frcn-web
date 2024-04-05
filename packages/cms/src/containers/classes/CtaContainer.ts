@@ -10,26 +10,26 @@ export enum CallToActionPreset {
 
 type CtaContainerContent = {
     preset: CallToActionPreset;
-}
+};
 
 export class CtaContainer extends CmsJsonContainer<CtaContainerContent> {
     constructor(init: Omit<CmsContainerInit, "type">) {
         super({
             type: CMSContainerType.CallToAction,
             ...init
-        })
+        });
     }
 
     override getAllowedChildren() {
-        return []
+        return [];
     }
 
     getPreset() {
-        return this.getData().preset
+        return this.getData().preset;
     }
 
     setPreset(preset: CallToActionPreset) {
-        this.updateData(data => ({...data, preset}))
+        this.updateData(data => ({ ...data, preset }));
     }
 
     clone(): CtaContainer {
@@ -38,12 +38,12 @@ export class CtaContainer extends CmsJsonContainer<CtaContainerContent> {
             identifier: this.identifier,
             title: this.title,
             content: this.content,
-        })
+        });
     }
 
     protected override getDefaultData(): CtaContainerContent {
         return {
             preset: CallToActionPreset.None
-        }
+        };
     }
 }

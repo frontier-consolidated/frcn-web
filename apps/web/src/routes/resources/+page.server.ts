@@ -1,16 +1,16 @@
-import { isRedirect } from '@sveltejs/kit';
+import { isRedirect } from "@sveltejs/kit";
 
-import type { PageServerLoad } from './$types';
-import { getResources } from './helpers';
+import type { PageServerLoad } from "./$types";
+import { getResources } from "./helpers";
 
 export const load = (async ({ locals, url, depends }) => {
-    depends("app:resources")
+    depends("app:resources");
 
     try {
-        return await getResources(locals.apollo, url)
+        return await getResources(locals.apollo, url);
     } catch (err) {
         if (isRedirect(err)) {
-            throw err
+            throw err;
         }
 
         return {
@@ -21,6 +21,6 @@ export const load = (async ({ locals, url, depends }) => {
             nextPage: null,
             prevPage: null,
             total: 0
-        }
+        };
     }
 }) satisfies PageServerLoad;

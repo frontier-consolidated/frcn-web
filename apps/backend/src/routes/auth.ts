@@ -17,16 +17,16 @@ export default function route(context: Context, config: RouteConfig) {
 			redirect_uri?: string;
 		};
 
-		const consentValue = getConsent(req, config.consent.cookie)
+		const consentValue = getConsent(req, config.consent.cookie);
 		if (consentValue === "reject") {
 			if (!redirect_uri) {
 				return res.status(400).send({
 					message: "Missing consent"
-				})
+				});
 			}
-			const url = new URL(redirect_uri)
-			url.searchParams.set("missing_consent", "true")
-			return res.redirect(url.toString())
+			const url = new URL(redirect_uri);
+			url.searchParams.set("missing_consent", "true");
+			return res.redirect(url.toString());
 		}
 
 		const state = Buffer.from(
@@ -60,13 +60,13 @@ export default function route(context: Context, config: RouteConfig) {
 			if (!redirect_uri) {
 				return res.status(400).send({
 					message: "Missing oauth code"
-				})
+				});
 			}
-			const url = new URL(redirect_uri)
+			const url = new URL(redirect_uri);
 			url.searchParams.set("login_err", Buffer.from(JSON.stringify({
 				error: "Missing oauth code"
-			})).toString("base64url"))
-			return res.redirect(url.toString())
+			})).toString("base64url"));
+			return res.redirect(url.toString());
 		}
 
 		try {
@@ -91,16 +91,16 @@ export default function route(context: Context, config: RouteConfig) {
 				authPrefix: "Bearer",
 			})) as APIUser;
 
-			const adminIds = getAdminIds()
+			const adminIds = getAdminIds();
 			if (!adminIds.includes(discordUser.id) && !(await $discord.isInGuild(context.discordClient, discordUser.id))) {
 				if (!redirect_uri) {
 					return res.status(400).send({
 						message: "Not in guild"
-					})
+					});
 				}
-				const url = new URL(redirect_uri)
-				url.searchParams.set("not_in_guild", "true")
-				return res.redirect(url.toString())
+				const url = new URL(redirect_uri);
+				url.searchParams.set("not_in_guild", "true");
+				return res.redirect(url.toString());
 			}
 
 			const user = await $users.getOrCreateUser(discordUser, context.discordClient);
@@ -109,13 +109,13 @@ export default function route(context: Context, config: RouteConfig) {
 			if (!redirect_uri) {
 				return res.status(400).send({
 					message: (err as Error).message
-				})
+				});
 			}
-			const url = new URL(redirect_uri)
+			const url = new URL(redirect_uri);
 			url.searchParams.set("login_err", Buffer.from(JSON.stringify({
 				error: (err as Error).message
-			})).toString("base64url"))
-			return res.redirect(url.toString())
+			})).toString("base64url"));
+			return res.redirect(url.toString());
 		}
 
 		res.redirect(redirect_uri ?? "/");

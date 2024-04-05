@@ -18,10 +18,10 @@
 	let editRole = structuredClone(role);
 
 	function updateRole(edit: PageData["rsvpRoles"][number]) {
-		const index = roles.findIndex(r => r.id === role.id)
+		const index = roles.findIndex(r => r.id === role.id);
 		const updatedRoles = [...roles.filter((r) => r.id != role.id)];
-		updatedRoles.splice(index, 0, edit)
-		roles = updatedRoles
+		updatedRoles.splice(index, 0, edit);
+		roles = updatedRoles;
 		role = edit;
 		return structuredClone(role);
 	}

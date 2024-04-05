@@ -12,7 +12,7 @@ import { database, type Transaction } from "../database";
 import { getDomain } from "../env";
 import { ffmpeg, ffprobe } from "../ffmpeg";
 
-const FILE_UPLOAD_DIR = path.join(os.tmpdir(), "frcn-web-uploads")
+const FILE_UPLOAD_DIR = path.join(os.tmpdir(), "frcn-web-uploads");
 const MAX_FILE_SIZE_MB = 100;
 const MAX_IMAGE_DIMENSION = 1600;
 
@@ -31,62 +31,62 @@ function toHTTPTimestamp(date: Date): string {
 async function getFileById(id: string) {
     return await database.fileUpload.findUnique({
         where: { id }
-    })
+    });
 }
 
 function generateUploadId() {
     const id = randomUUID();
-    const key = `${getDomain(true)}-${id}`
-    return { id, key }
+    const key = `${getDomain(true)}-${id}`;
+    return { id, key };
 }
 
 async function compressImage(input: string, output: string) {
-    const probeData = await ffprobe(input)
-    const imageData = probeData.streams[0]
+    const probeData = await ffprobe(input);
+    const imageData = probeData.streams[0];
     
     const width = imageData.width!;
     const height = imageData.height!;
     
     await ffmpeg(command => {
-        command.input(input)
+        command.input(input);
         if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION) {
-            command.size(width > height ? `${MAX_IMAGE_DIMENSION}x?` : `?x${MAX_IMAGE_DIMENSION}`)
+            command.size(width > height ? `${MAX_IMAGE_DIMENSION}x?` : `?x${MAX_IMAGE_DIMENSION}`);
         }
-        command.addOutputOption("-quality", "95")
-        command.saveToFile(output)
+        command.addOutputOption("-quality", "95");
+        command.saveToFile(output);
         return command;
-    })
+    });
 }
 
 async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Express.Multer.File, owner: User, effect: (tx: Transaction, fileUpload: FileUpload) => Promise<T>) {
-    const filesToCleanup = [file.path]
+    const filesToCleanup = [file.path];
 
     function cleanup() {
         for (const path of filesToCleanup) {
-            if (fs.existsSync(path)) fs.unlinkSync(path)
+            if (fs.existsSync(path)) fs.unlinkSync(path);
         }
     }
 
-    let targetFile = file.path
+    let targetFile = file.path;
     let fileName = file.originalname;
     let fileSize = file.size;
     // use file.mimetype here?
-    let contentType = mime.contentType(fileName) || undefined
+    let contentType = mime.contentType(fileName) || undefined;
     const parsedFileName = path.parse(fileName);
 
     if (contentType?.startsWith("image/") && !contentType.includes("xml")) {
-        contentType = "image/webp"
+        contentType = "image/webp";
         fileName = `${parsedFileName.name}.webp`;
 
         targetFile = path.join(FILE_UPLOAD_DIR, `${randomUUID()}.webp`);
-        filesToCleanup.push(targetFile)
+        filesToCleanup.push(targetFile);
         try {
             await compressImage(file.path, targetFile);
 
-            const stats = fs.statSync(targetFile)
-            fileSize = stats.size
+            const stats = fs.statSync(targetFile);
+            fileSize = stats.size;
         } catch (err) {
-            cleanup()
+            cleanup();
             throw err;
         }
     }
@@ -104,7 +104,7 @@ async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Express.M
         queueSize: 4,
         partSize: 5 * 1024 * 1024,
         leavePartsOnError: false,
-    })
+    });
 
     try {
         return await database.$transaction(async (tx) => {
@@ -121,18 +121,18 @@ async function uploadFile<T>(s3Client: S3Client, bucket: string, file: Express.M
                         }
                     }
                 }
-            })
+            });
 
             const result = await effect(tx, fileUpload);
 
-            await s3Upload.done()
-            return result
-        })
+            await s3Upload.done();
+            return result;
+        });
     } catch (err) {
         await s3Upload.abort();
-        throw err
+        throw err;
     } finally {
-        cleanup()
+        cleanup();
     }
 }
 
@@ -141,11 +141,11 @@ export async function copyFile(s3Client: S3Client, bucket: string, key: string, 
         const command = new GetObjectCommand({
             Bucket: bucket,
             Key: key,
-        })
+        });
     
-        const response = await s3Client.send(command)
+        const response = await s3Client.send(command);
         if (!response.Body) {
-            return null
+            return null;
         }
 
         const { id: uploadId, key: uploadKey } = generateUploadId();
@@ -161,7 +161,7 @@ export async function copyFile(s3Client: S3Client, bucket: string, key: string, 
             queueSize: 4,
             partSize: 5 * 1024 * 1024,
             leavePartsOnError: false,
-        })
+        });
 
         try {
             return await database.$transaction(async (tx) => {
@@ -173,17 +173,17 @@ export async function copyFile(s3Client: S3Client, bucket: string, key: string, 
                         fileSizeKb: Math.ceil((response.ContentLength ?? 0) / 1024),
                         contentType: response.ContentType ?? "application/octet-stream",
                     }
-                })
+                });
     
-                await s3Upload.done()
-                return fileUpload
-            })
+                await s3Upload.done();
+                return fileUpload;
+            });
         } catch (err) {
             await s3Upload.abort();
-            throw err
+            throw err;
         }
     } catch (err) {
-        console.error(`Error copying file '${key}':`, err)
+        console.error(`Error copying file '${key}':`, err);
         return null;
     }
 }
@@ -194,18 +194,18 @@ async function deleteFile(client: S3Client, bucket: string, id: string, tx?: Tra
         select: {
             key: true,
         }
-    })
+    });
     if (!file) return;
 
     const command = new DeleteObjectCommand({
         Bucket: bucket,
         Key: file.key,
-    })
+    });
 
     await (tx ?? database).fileUpload.delete({
         where: { id }
-    })
-    await client.send(command)
+    });
+    await client.send(command);
 }
 
 async function deleteManyFiles(client: S3Client, bucket: string, files: readonly { id: string, key: string }[], tx?: Transaction) {
@@ -218,7 +218,7 @@ async function deleteManyFiles(client: S3Client, bucket: string, files: readonly
                 Key: f.key
             }))
         }
-    })
+    });
 
     await (tx ?? database).fileUpload.deleteMany({
         where: {
@@ -226,8 +226,8 @@ async function deleteManyFiles(client: S3Client, bucket: string, files: readonly
                 in: files.map(f => f.id)
             }
         }
-    })
-    await client.send(command)
+    });
+    await client.send(command);
 }
 
 export const $files = {

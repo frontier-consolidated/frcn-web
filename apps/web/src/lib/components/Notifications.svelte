@@ -25,9 +25,9 @@
 			case "error":
 				return "red";
 			case "info":
-				return "blue"
+				return "blue";
 			case "success":
-				return "green"
+				return "green";
 		}
 	}
 

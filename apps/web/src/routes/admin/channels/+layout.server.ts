@@ -1,20 +1,20 @@
-import { Permission, hasPermission } from '@frcn/shared';
-import { error } from '@sveltejs/kit';
+import { Permission, hasPermission } from "@frcn/shared";
+import { error } from "@sveltejs/kit";
 
-import { Queries } from '$lib/graphql';
+import { Queries } from "$lib/graphql";
 
-import type { LayoutServerLoad } from './$types';
+import type { LayoutServerLoad } from "./$types";
 
 export const load = (async ({ locals, depends }) => {
-    depends("app:eventchannels")
+    depends("app:eventchannels");
     
     if (!locals.user || !hasPermission(locals.user.permissions, Permission.ManageSystem)) {
-        error(403, "Missing permission")
+        error(403, "Missing permission");
     }
 
     const { data } = await locals.apollo.query({
         query: Queries.GET_ALL_EVENT_CHANNELS
-    })
+    });
 
     return {
         ...data.settings,
@@ -24,5 +24,5 @@ export const load = (async ({ locals, depends }) => {
             voiceChannels: data.discordVoiceChannels,
             categories: data.discordCategories
         }
-    }
+    };
 }) satisfies LayoutServerLoad;

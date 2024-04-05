@@ -14,7 +14,7 @@
 
 	$: eventType = data.eventType ? strings.toTitleCase(data.eventType) : null;
 
-	let settingsOpen = data.posted ? undefined : true
+	let settingsOpen = data.posted ? undefined : true;
 </script>
 
 <Head

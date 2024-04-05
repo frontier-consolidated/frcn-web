@@ -13,51 +13,51 @@ class CustomPubSub<Events extends Record<string, any>> extends PubSubEngine {
     private nextId = 0;
 
     constructor() {
-        super()
-        this.emitter = new EventEmitter()
+        super();
+        this.emitter = new EventEmitter();
     }
 
     // eslint-disable-next-line require-await
     async publish<TKey extends Exclude<keyof Events, symbol | number>>(triggerName: TKey, payload: Events[TKey]) {
-        this.emitter.emit(triggerName, payload)
+        this.emitter.emit(triggerName, payload);
     }
 
     // eslint-disable-next-line require-await
     async subscribe<TKey extends Exclude<keyof Events, symbol | number>>(triggerName: TKey, onMessage: (payload: Events[TKey]) => void) {
-        this.emitter.addListener(triggerName, onMessage)
-        this.subscriptions[this.nextId++] = [triggerName, onMessage as (payload: Events[keyof Events]) => void]
+        this.emitter.addListener(triggerName, onMessage);
+        this.subscriptions[this.nextId++] = [triggerName, onMessage as (payload: Events[keyof Events]) => void];
         return this.nextId - 1;
     }
 
     unsubscribe(subId: number) {
-        const subscription = this.subscriptions[subId]
-        delete this.subscriptions[subId]
-        this.emitter.removeListener(subscription[0], subscription[1])
+        const subscription = this.subscriptions[subId];
+        delete this.subscriptions[subId];
+        this.emitter.removeListener(subscription[0], subscription[1]);
     }
 
     asyncIteratable<TKey extends Exclude<keyof Events, symbol | number>>(trigger: TKey): AsyncIterable<Events[TKey]> {
         return {
             [Symbol.asyncIterator]() {
-                return super.asyncIterator(trigger)
+                return super.asyncIterator(trigger);
             }
-        }
+        };
     }
 }
 
 export type SubscriptionResult<TKey extends keyof SubscriptionResolvers> = {
     [key in TKey]: NonNullable<SubscriptionResolvers[TKey]> extends SubscriptionResolver<infer Result, TKey, infer _TParent, infer _TContext, infer _TArgs> ? Result : never
-}
+};
 
 export const pubsub = new CustomPubSub<{
     USER_ROLES_UPDATED: SubscriptionResult<"userRolesUpdated">
-}>()
+}>();
 
 export type SubscribeFn<TResult, TParent, TContext, TArgs> = (
     parent: TParent,
     args: TArgs,
     context: TContext,
     info: GraphQLResolveInfo
-  ) => AsyncIterator<TResult>
+  ) => AsyncIterator<TResult>;
 export type FilterFn<TResult, TContext, TArgs> = (
     parent: TResult,
     args: TArgs,
@@ -70,7 +70,7 @@ export function withFilter<TResult, TKey extends string, TParent, TContext, TArg
     filterFn: FilterFn<{ [key in TKey]: TResult }, TContext, TArgs>,
 ) {
     const resolver: SubscriptionSubscribeFn<{ [key in TKey]: TResult }, TParent, TContext, TArgs> = (parent, args, context, info) => {
-        const asyncIterator = subscribeFn(parent, args, context, info)
+        const asyncIterator = subscribeFn(parent, args, context, info);
 
         return {
             [Symbol.asyncIterator]() {
@@ -81,33 +81,33 @@ export function withFilter<TResult, TKey extends string, TParent, TContext, TArg
                                 asyncIterator.next()
                                     .then((payload) => {
                                         if (payload.done) {
-                                            resolve(payload)
+                                            resolve(payload);
                                             return;
                                         }
                                         Promise.resolve(filterFn(payload.value, args, context, info))
-                                            .catch(() => { return false })
+                                            .catch(() => { return false; })
                                             .then(result => {
                                                 if (result) {
-                                                    resolve(payload)
+                                                    resolve(payload);
                                                     return;
                                                 }
-                                                innerNext()
-                                            })
+                                                innerNext();
+                                            });
                                     })
-                                    .catch(reject)
+                                    .catch(reject);
                             }
-                            innerNext()
-                        })
+                            innerNext();
+                        });
                     },
                     return() {
-                        return asyncIterator.return!()
+                        return asyncIterator.return!();
                     },
                     throw(err) {
-                        return asyncIterator.throw!(err)
+                        return asyncIterator.throw!(err);
                     }
-                }
+                };
             }
-        }
-    }
+        };
+    };
     return resolver;
 }

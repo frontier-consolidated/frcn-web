@@ -1,8 +1,8 @@
-import { error } from '@sveltejs/kit';
+import { error } from "@sveltejs/kit";
 
-import { Queries } from '$lib/graphql';
+import { Queries } from "$lib/graphql";
 
-import type { PageServerLoad } from './$types';
+import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ locals, params }) => {
     const { data: roleData } = await locals.apollo.query({
@@ -10,7 +10,7 @@ export const load = (async ({ locals, params }) => {
         variables: {
             roleId: params.roleid
         }
-    })
+    });
 
     if (!roleData.role) {
 		error(404, "Role not found");
@@ -21,5 +21,5 @@ export const load = (async ({ locals, params }) => {
         options: {
             discordRoles: roleData.discordRoles
         }
-    }
+    };
 }) satisfies PageServerLoad;

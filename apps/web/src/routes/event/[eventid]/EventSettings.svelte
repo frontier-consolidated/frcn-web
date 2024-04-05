@@ -11,7 +11,7 @@
 		ArchiveSolid,
 	} from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
-	import isURL from "validator/lib/isURL"
+	import isURL from "validator/lib/isURL";
 
 	import { DatetimePicker, DurationPicker, LocationSelectInput, MarkdownEditor, ConfirmationModal, SectionHeading, Select, Field, FieldValidator, Button } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
@@ -29,21 +29,21 @@
 	export let data: PageData;
 	let editData = cloneEventSettingsData(data);
 
-	const { canNavigate, initNavigation } = preventNavigation()
+	const { canNavigate, initNavigation } = preventNavigation();
 
 	let isDirty = false;
 	$: {
 		isDirty = checkIfDirty(data, editData);
-		canNavigate.set(!isDirty)
+		canNavigate.set(!isDirty);
 	}
 
-	$: canEdit = !data.archived && !data.endedAt
+	$: canEdit = !data.archived && !data.endedAt;
 
 	let startDate: Date | null = editData.startAt ? new Date(editData.startAt) : null;
 	$: if (startDate) editData.startAt = startDate.getTime();
 
-	let imagePlaceholder = false
-	let validator = new FieldValidator()
+	let imagePlaceholder = false;
+	let validator = new FieldValidator();
 
 	let deleteModalOpen = false;
 	let archiveModalOpen = false;
@@ -125,7 +125,7 @@
 			return false;
 		}
 
-		await invalidate("app:currentevent")
+		await invalidate("app:currentevent");
 		return true;
 	}
 </script>
@@ -186,9 +186,9 @@
 						require_valid_protocol: true,
 						protocols: ["https"],
 						validate_length: true,
-					})
+					});
 					if (valid) return [true, null];
-					return [false, "Not a valid or allowed image url"]
+					return [false, "Not a valid or allowed image url"];
 				}}>
 					<Label for="event-image" class="mb-2">Event Image</Label>
 					<Input
@@ -206,9 +206,9 @@
 					{#if editData.imageUrl}
 						<div class="mt-2">
 							<img src={editData.imageUrl} alt="Event thumbnail" class={twMerge("rounded h-48", imagePlaceholder ? "hidden" : undefined)} on:error={() => {
-								imagePlaceholder = true
+								imagePlaceholder = true;
 							}} on:load={() => {
-								imagePlaceholder = false
+								imagePlaceholder = false;
 							}} />
 							<div role="status" class={twMerge("animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700", imagePlaceholder ? undefined : "hidden")}>
 								<svg width="48" height="48" class="text-gray-200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" viewBox="0 0 640 512">
@@ -445,7 +445,7 @@
             id: data.id
         },
 		errorPolicy: "all",
-    })
+    });
 
     if (errors && errors.length > 0) {
         pushNotification({
@@ -457,7 +457,7 @@
     }
 
     deleteModalOpen = false;
-	goto("/events")
+	goto("/events");
 }}>
     <span>Are you sure you want to delete this event? Once deleted it cannot be undone.</span>
 </ConfirmationModal>
@@ -469,7 +469,7 @@
             id: data.id
         },
 		errorPolicy: "all",
-    })
+    });
 
     if (errors && errors.length > 0) {
         pushNotification({
@@ -481,7 +481,7 @@
     }
 
     archiveModalOpen = false;
-	await invalidate("app:currentevent")
+	await invalidate("app:currentevent");
 }}>
     <p>Are you sure you want to archive this event?</p>
 	{#if !data.endedAt}

@@ -11,7 +11,7 @@
 
 	import type { PageData } from "./$types";
 
-	export let data: PageData
+	export let data: PageData;
 
     const validator = new FieldValidator();
 
@@ -20,16 +20,16 @@
 			channelId: data.discord.id,
             categoryId: data.discordCategory?.id,
             readyRoomName: data.readyRoomName
-		}
+		};
 	}
 
-    let editData = cloneChannelData(data.channel)
-    const { canNavigate, initNavigation } = preventNavigation()
+    let editData = cloneChannelData(data.channel);
+    const { canNavigate, initNavigation } = preventNavigation();
 
 	let isDirty = false;
 	$: {
-		isDirty = editData.channelId !== data.channel.discord.id || editData.categoryId !== data.channel.discordCategory?.id || editData.readyRoomName !== data.channel.readyRoomName
-		canNavigate.set(!isDirty)
+		isDirty = editData.channelId !== data.channel.discord.id || editData.categoryId !== data.channel.discordCategory?.id || editData.readyRoomName !== data.channel.readyRoomName;
+		canNavigate.set(!isDirty);
 	}
 
     async function save() {
@@ -57,7 +57,7 @@
 			return;
 		}
 
-		await invalidate("app:eventchannels")
+		await invalidate("app:eventchannels");
 		data = {
 			...data, 
 			channel: {
@@ -140,7 +140,7 @@
 	</div>
 	<div class="flex justify-end items-center gap-2">
 		<Button color="alternative" on:click={() => {
-			editData = cloneChannelData(data.channel)
+			editData = cloneChannelData(data.channel);
 		}}>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>

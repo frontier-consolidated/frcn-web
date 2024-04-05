@@ -65,8 +65,8 @@ export function hasAllOfPermissions(permissions: number, allOf: Permission[]) {
 
 export function hasOwnedObjectPermission({ user, owner, required, override }: { user: { id?: string, permissions: number } | null | undefined, owner: { id?: string } | null | undefined, required: Permission, override?: Permission }) {
 	if (!user) return false;
-	const isOwner = !!user.id && !!owner?.id && user.id === owner?.id
+	const isOwner = !!user.id && !!owner?.id && user.id === owner?.id;
 
 	if (isOwner && hasPermission(user.permissions, required)) return true;
-	return override && hasPermission(user.permissions, override)
+	return override && hasPermission(user.permissions, override);
 }
