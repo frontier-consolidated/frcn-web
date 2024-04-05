@@ -16,5 +16,5 @@
 }}>
     <span class="text-sm dark:text-white">By</span>
     <Avatar rounded size="xs" src={user?.avatarUrl} />
-    <span class="text-sm font-semibold text-gray-500 group-hover/owner:text-gray-700 dark:text-gray-200 dark:group-hover/owner:text-white">{user?.name ?? "[DELETED USER]"}</span>
+    <span class="text-sm font-semibold text-gray-600 group-hover/owner:text-gray-800 dark:text-gray-200 dark:group-hover/owner:text-white">{user?.name ?? "[DELETED USER]"}</span>
 </button>
