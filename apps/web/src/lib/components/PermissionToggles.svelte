@@ -37,7 +37,7 @@
         },
         {
             permission: Permission.ManageRoles,
-            name: "Manage System",
+            name: "Manage Roles",
             help: "Allows modifying of roles and ability to add/remove roles from users"
         },
         {
