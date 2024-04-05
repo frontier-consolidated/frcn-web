@@ -1,6 +1,7 @@
 import { createApp } from "./app";
 import { seedDatabase } from "./database";
 import { getDomain, getOrigin, getOrigins, getPort, validateEnvironment } from "./env";
+import { $events } from "./services/events";
 
 process.env.NODE_ENV ??= "development"
 validateEnvironment()
@@ -74,3 +75,5 @@ console.log(
 );
 
 await onStart()
+
+setInterval(() => $events.$update().catch(console.error), 120 * 1000)

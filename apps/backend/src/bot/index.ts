@@ -16,7 +16,7 @@ function isTime(target: Date, now: number) {
     return target >= new Date(now - eventUpdateBufferTime) && target < new Date(now + eventUpdateBufferTime)
 }
 
-async function updateEventReminders(client: Client) {
+async function updateEvents(client: Client) {
     const guild = await $discord.getGuild(client)
     if (!guild) return;
 
@@ -114,5 +114,5 @@ export function load(client: Client) {
         await $users.unauthenticateSessions(user)
     })
 
-    setInterval(() => updateEventReminders(client), EVENT_UPDATE_INTERVAL)
+    setInterval(() => updateEvents(client), EVENT_UPDATE_INTERVAL)
 }

@@ -773,7 +773,17 @@ async function editEventChannel(channel: EventChannel, data: EventChannelEditInp
 }
 
 async function deleteEventChannel(channel: EventChannel, discordClient: DiscordClient, deleteVoiceChannels = false) {
-	// TODO: Update all scheduled events to be reposted
+	const events = await database.event.findMany({
+		where: {
+			channelId: channel.id,
+			posted: true,
+			endedAt: null,
+			archived: false
+		}
+	})
+	for (const event of events) {
+		await unpostEvent(event, discordClient)
+	}
 
 	if (deleteVoiceChannels) {
 		const vcs = await getEventChannelVoiceChannels(channel.id)
@@ -790,7 +800,26 @@ async function deleteEventChannel(channel: EventChannel, discordClient: DiscordC
 	})
 }
 
+async function $update() {
+	// Update all expired events with an endedAt time
+	await database.event.updateMany({
+		where: {
+			posted: true,
+			endedAt: null,
+			startAt: {
+				lt: new Date(Date.now() - EVENT_EXPIRE_AFTER)
+			},
+			archived: false
+		},
+		data: {
+			endedAt: new Date(),
+			expired: true
+		}
+	})
+}
+
 export const $events = {
+	$update,
 	getEvent,
 	getEventFromMessageId,
 	getEvents,

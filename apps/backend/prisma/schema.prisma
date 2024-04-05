@@ -224,7 +224,8 @@ model Event {
   startAt               DateTime?                     @map("start_at")
   endedAt               DateTime?                     @map("ended_at")
   duration              Int?
-  posted                Boolean
+  posted                Boolean                       @default(false)
+  expired               Boolean                       @default(false)
   archived              Boolean                       @default(false)
   archivedAt            DateTime?                     @map("archived_at")
   updatedAt             DateTime                      @updatedAt @map("updated_at")
