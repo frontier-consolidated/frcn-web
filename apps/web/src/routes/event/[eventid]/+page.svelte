@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { strings } from "@frcn/shared";
 	import { Tabs, TabItem } from "flowbite-svelte";
-	import { matches } from "validator";
 
 	import { Head, ScreenQuery } from "$lib/components";
 
