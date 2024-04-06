@@ -155,7 +155,7 @@ export const roleResolvers: Resolvers = {
 			await $roles.reorderRoles(args.order);
 			return args.order;
 		},
-		async changePrimaryRole(source, args) {
+		async changeUserPrimaryRole(source, args) {
 			const role = await $roles.getRole(args.roleId);
 			if (!role) throw gqlErrorBadInput(`Could not find role with id: ${args.roleId}`);
 			if (!role.primary) throw gqlErrorBadInput("Role is not a primary role");

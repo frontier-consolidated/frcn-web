@@ -263,7 +263,7 @@ export type EventTeamEditInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   archiveEvent: Scalars['Boolean']['output'];
-  changePrimaryRole?: Maybe<UserRole>;
+  changeUserPrimaryRole?: Maybe<UserRole>;
   createAccessKey: AccessKey;
   createContentContainer: ContentContainer;
   createEvent: Scalars['ID']['output'];
@@ -315,7 +315,7 @@ export type MutationArchiveEventArgs = {
 };
 
 
-export type MutationChangePrimaryRoleArgs = {
+export type MutationChangeUserPrimaryRoleArgs = {
   roleId: Scalars['ID']['input'];
   userId: Scalars['ID']['input'];
 };
@@ -1184,7 +1184,7 @@ export type EventTeamResolvers<ContextType = GQLContext, ParentType extends Reso
 
 export type MutationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   archiveEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationArchiveEventArgs, 'id'>>;
-  changePrimaryRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<MutationChangePrimaryRoleArgs, 'roleId' | 'userId'>>;
+  changeUserPrimaryRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<MutationChangeUserPrimaryRoleArgs, 'roleId' | 'userId'>>;
   createAccessKey?: Resolver<ResolversTypes['AccessKey'], ParentType, ContextType>;
   createContentContainer?: Resolver<ResolversTypes['ContentContainer'], ParentType, ContextType, RequireFields<MutationCreateContentContainerArgs, 'type'>>;
   createEvent?: Resolver<ResolversTypes['ID'], ParentType, ContextType, Partial<MutationCreateEventArgs>>;
