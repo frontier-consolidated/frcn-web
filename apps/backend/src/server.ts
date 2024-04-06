@@ -28,7 +28,7 @@ const { context: { server, discordClient }, onStart } = await createApp({
 		}
 	},
 	sessionConfig: {
-		domain: getDomain(),
+		domain: getDomain(true),
 		consent: {
 			cookie: process.env.CONSENT_COOKIE
 		},
