@@ -340,6 +340,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 		}
 	});
 
+	if (!updatedMember.event.posted) return;
 	await updateEventMessage(discordClient, updatedMember.event);
 
 	if (updatedMember.user) {
@@ -642,6 +643,8 @@ async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, curre
 			}
 		}
 	});
+
+	if (!event.posted) return;
 
 	await updateEventMessage(discordClient, updatedEvent);
 
