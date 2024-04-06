@@ -17,7 +17,7 @@ export default function route(context: Context, config: RouteConfig) {
 			}
 			res.cookie(config.consent.cookie, trimmedAction, {
                 maxAge: 400 * 24 * 3600 * 1000,
-                domain: getDomain(),
+                domain: getDomain(true),
                 sameSite: "lax",
                 httpOnly: true,
                 secure: req.secure
