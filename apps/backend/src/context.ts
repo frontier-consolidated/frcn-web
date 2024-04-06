@@ -30,4 +30,4 @@ export type RouteConfig = {
 	files: {
 		bucketName: string;
 	}
-}
+};

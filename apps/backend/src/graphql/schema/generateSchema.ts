@@ -6,7 +6,7 @@ import { Permission } from "@frcn/shared";
 
 const enums = {
 	Permission
-}
+};
 
 function generatePagedTypes(typeDefs: string) {
 	let extTypeDefs = typeDefs;
@@ -38,14 +38,14 @@ function generateEnumTypes(typeDefs: string) {
 	let extTypeDefs = typeDefs;
 
 	for (const [name, obj] of Object.entries(enums)) {
-		const keys = Object.keys(obj).filter(key => !(Number(key) >= 0))
+		const keys = Object.keys(obj).filter(key => !(Number(key) >= 0));
 
 		extTypeDefs += `
 enum ${name} {
 	${keys.join("\n\t")}
-}`
+}`;
 	}
-	return extTypeDefs
+	return extTypeDefs;
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

@@ -3,14 +3,14 @@
 
 	import CallToActionRenderer from "$lib/cms/CallToActionRenderer.svelte";
 	import { Markdown } from "$lib/components";
-    import placeholder from "$lib/images/stock/placeholder.jpg"
+    import placeholder from "$lib/images/stock/placeholder.jpg";
 
 	import AboutSection from "./AboutSection.svelte";
 
-	export let container: AboutSectionContainer
+	export let container: AboutSectionContainer;
 
-    $: desktopImage = container.getDesktopImageFile()
-    $: ctas = container.getChildrenOfType(CMSContainerType.CallToAction)
+    $: desktopImage = container.getDesktopImageFile();
+    $: ctas = container.getChildrenOfType(CMSContainerType.CallToAction);
 </script>
 
 <AboutSection

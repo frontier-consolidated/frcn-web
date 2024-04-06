@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { Permission, hasPermission } from "@frcn/shared";
 	import { Avatar, Dropdown, DropdownDivider, DropdownItem } from "flowbite-svelte";
-	import { DotsVerticalOutline, UserRemoveSolid, UserGroupSolid, ArrowLeftToBracketOutline } from "flowbite-svelte-icons";
+	import { DotsVerticalOutline, UserRemoveSolid, ArrowLeftToBracketOutline } from "flowbite-svelte-icons";
 
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -13,11 +12,12 @@
 	export let event: PageData;
 	export let member: PageData["members"][number];
 
-	$: role = member.rsvp ? event.rsvpRoles.find(role => role.id === member.rsvp) : null
+	$: optionsId = `event-member-options-${member.id}`;
+	$: role = member.rsvp ? event.rsvpRoles.find(role => role.id === member.rsvp) : null;
 </script>
 
 <button class="rounded flex items-center gap-2 px-1 w-full dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700" on:click={() => {
-	viewUserProfile(member.user.id)
+	viewUserProfile(member.user.id);
 }}>
 	<Avatar rounded size="sm" src={member.user.avatarUrl} />
 	<div class="flex flex-col items-start">
@@ -39,28 +39,30 @@
 		</div>
 	</div>
 	<DotsVerticalOutline
+		id={optionsId}
 		class="ml-auto dark:hover:text-gray-500"
 		size="sm"
 		on:click={(e) => e.stopPropagation()}
 	/>
-	<Dropdown>
-		<DropdownItem on:click={(e) => {
-			e.stopPropagation()
-			viewUserProfile(member.user.id)
-		}}>
-			View Profile
-		</DropdownItem>
+</button>
+
+<Dropdown containerClass="rounded divide-y z-50" triggeredBy="#{optionsId}">
+	<DropdownItem on:click={() => {
+		viewUserProfile(member.user.id);
+	}}>
+		View Profile
+	</DropdownItem>
+	{#if !event.endedAt}
 		<DropdownDivider />
 		{#if $user.data?.id === member.user.id}
-			<DropdownItem class="flex dark:hover:bg-red-500" on:click={async (e) => {
-				e.stopPropagation()
-
+			<DropdownItem class="flex dark:hover:bg-red-500" on:click={async () => {
 				const { data: unrsvpData, errors } = await getApollo().mutate({
 					mutation: Mutations.UNRSVP_FOR_EVENT,
 					variables: {
 						eventId: event.id
-					}
-				})
+					},
+					errorPolicy: "all"
+				});
 
 				if (!unrsvpData?.success || (errors && errors.length > 0)) {
 					pushNotification({
@@ -72,22 +74,35 @@
 				}
 
 				event.rsvp = null;
-				event.members = event.members.filter(member => member.user.id !== $user.data?.id)
+				event.members = event.members.filter(m => m.user.id !== $user.data?.id);
 			}}>
 				<ArrowLeftToBracketOutline class="me-2" tabindex="-1" /> Leave Event
 			</DropdownItem>
 		{:else}
-			<DropdownItem class="flex">
-				<UserGroupSolid class="me-2" tabindex="-1" /> Join {member.user.name}'s crew
-			</DropdownItem>
-			<DropdownItem class="flex">
-				<UserGroupSolid class="me-2" tabindex="-1" /> Add to my crew
-			</DropdownItem>
-			{#if (event.owner && $user.data?.id === event.owner?.id) || hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
-				<DropdownItem class="flex dark:hover:bg-red-500">
+			{#if event.canEdit}
+				<DropdownItem class="flex dark:hover:bg-red-500" on:click={async () => {
+					const { data: kickData, errors } = await getApollo().mutate({
+						mutation: Mutations.KICK_EVENT_MEMBER,
+						variables: {
+							id: member.id
+						},
+						errorPolicy: "all"
+					});
+
+					if (!kickData?.kicked || (errors && errors.length > 0)) {
+						pushNotification({
+							type: "error",
+							message: "Failed to kick user",
+						});
+						console.error(errors);
+						return;
+					}
+
+					event.members = event.members.filter(m => m.id !== member.id);
+				}}>
 					<UserRemoveSolid class="me-2" tabindex="-1" /> Kick Member
 				</DropdownItem>
 			{/if}
 		{/if}
-	</Dropdown>
-</button>
+	{/if}
+</Dropdown>

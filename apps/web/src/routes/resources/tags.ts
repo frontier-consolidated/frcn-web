@@ -9,4 +9,4 @@ export const tags = [
     "Medical",
     "Support",
     "Trading",
-]
+];

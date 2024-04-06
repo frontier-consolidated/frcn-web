@@ -10,12 +10,12 @@ export const handle: Handle = async ({ event, resolve }) => {
 		locale.set(lang);
 	}
 
-	const cookie = event.request.headers.get("cookie")
+	const cookie = event.request.headers.get("cookie");
 	const apollo = createApolloClient(cookie ? {
 		cookie
-	} : undefined)
+	} : undefined);
 
-	event.locals.apollo = apollo
+	event.locals.apollo = apollo;
 
 	if (cookie) {
 		try {
@@ -23,9 +23,9 @@ export const handle: Handle = async ({ event, resolve }) => {
 				query: Queries.CURRENT_USER,
 			});
 
-			if (data.user) event.locals.user = { ...data.user, cookie }
+			if (data.user) event.locals.user = { ...data.user, cookie };
 		} catch (err) {
-			console.error(err)
+			console.error(err);
 		}
 	}
 

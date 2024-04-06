@@ -10,20 +10,20 @@
     function createEditData(container: GalleryContainer) {
         return {
             identifier: container.getIdentifier(),
-        }
+        };
     }
     
     export let container_: CmsContainer;
     export let validator: FieldValidator;
     export let isChild: boolean = false;
 
-    let container = container_.as<GalleryContainer>()
-    $: container = container_.as<GalleryContainer>()
+    let container = container_.as<GalleryContainer>();
+    $: container = container_.as<GalleryContainer>();
 
-    let editData = createEditData(container)
+    let editData = createEditData(container);
     $: {
-        container.setIdentifier(editData.identifier)
-        getContext<() => void>("containerchange")()
+        container.setIdentifier(editData.identifier);
+        getContext<() => void>("containerchange")();
     }
 </script>
 

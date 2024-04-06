@@ -119,9 +119,9 @@
 		setSeconds(seconds.valueOf());
 	}
 
-	const spanClass = "block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer"
-	const activeClass = "bg-primary-600 dark:hover:bg-primary-700"
-	const inactiveClass = "dark:hover:bg-gray-600"
+	const spanClass = "block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer";
+	const activeClass = "bg-primary-600 dark:hover:bg-primary-700";
+	const inactiveClass = "dark:hover:bg-gray-600";
 </script>
 
 <div>

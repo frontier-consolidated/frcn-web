@@ -24,6 +24,9 @@
 </svelte:head>
 
 <div class="flex flex-col items-center">
+    {#if data.events.length === 0}
+        <span class="text-gray-400 dark:text-gray-600">No events</span>
+    {/if}
     <Timeline class="w-full">
         {#each data.events as event}
             <TimelineItem>
@@ -34,9 +37,11 @@
             </TimelineItem>
         {/each}
     </Timeline>
-    <Pagination 
-        {pages}
-        on:previous={() => {if (data.prevPage != null) goto(getPageUrl($page.url, data.prevPage + 1))}}
-			on:next={() => {if (data.nextPage != null) goto(getPageUrl($page.url, data.nextPage + 1))}}
-    />
+    {#if data.events.length > 0}
+        <Pagination 
+            {pages}
+            on:previous={() => { if (data.prevPage != null) goto(getPageUrl($page.url, data.prevPage + 1)); }}
+                on:next={() => { if (data.nextPage != null) goto(getPageUrl($page.url, data.nextPage + 1)); }}
+        />
+    {/if}
 </div>

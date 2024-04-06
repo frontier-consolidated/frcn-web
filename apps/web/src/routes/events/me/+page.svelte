@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Heading, Search } from "flowbite-svelte";
-	import { queryParam } from "sveltekit-search-params"
+	import { queryParam } from "sveltekit-search-params";
 
 	import { Button, Head, Hr } from "$lib/components";
 
@@ -10,8 +10,8 @@
 
 	export let data: PageData;
 
-	const search = queryParam("q")
-	let searchInput = $search
+	const search = queryParam("q");
+	let searchInput = $search;
 </script>
 
 <Head
@@ -31,7 +31,7 @@
 						if (e.key === "Enter") search.set(searchInput);
 					}} 
 					on:blur={() => {
-						search.set(searchInput)
+						search.set(searchInput);
 					}} 
 				/>
 				<div class="shrink-0 flex flex-col justify-end min-[480px]:flex-row gap-2">

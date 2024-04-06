@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { invalidateAll } from "$app/navigation";
-    import { Modal, Label, Input, Textarea } from "flowbite-svelte"
-    import { UploadSolid, FileSolid } from "flowbite-svelte-icons"
+    import { Modal, Label, Input, Textarea } from "flowbite-svelte";
+    import { UploadSolid, FileSolid } from "flowbite-svelte-icons";
 
 	import { Routes, api } from "$lib/api";
     import { Select, Field, FieldValidator, Button } from "$lib/components";
@@ -16,43 +16,43 @@
 			name: data?.name ?? "",
 			shortDescription: data?.shortDescription ?? "",
 			tags: data?.tags ?? []
-		}
+		};
 	}
 
     export let open: boolean = false;
 	export let data: ResourceFragmentFragment | null = null;
-	let editData = cloneResourceData(data)
+	let editData = cloneResourceData(data);
 
-	$: isDirty = !!data && (data.name !== editData.name || data.shortDescription !== editData.shortDescription || data.tags.length !== editData.tags.length || data.tags.some(tag => !editData.tags.find(t => t === tag)))
+	$: isDirty = !!data && (data.name !== editData.name || data.shortDescription !== editData.shortDescription || data.tags.length !== editData.tags.length || data.tags.some(tag => !editData.tags.find(t => t === tag)));
 
 	let lastData = data;
 
 	$: {
 		if (lastData !== data) {
-			editData = cloneResourceData(data)
+			editData = cloneResourceData(data);
 		}
-		lastData = data
+		lastData = data;
 	}
 
     let uploadInput: HTMLInputElement | null = null;
 	let uploadFiles: FileList;
 
 	function handleFileKeydown(ev: KeyboardEvent) {
-		if (uploadInput && [' ', 'Enter'].includes(ev.key)) {
+		if (uploadInput && [" ", "Enter"].includes(ev.key)) {
 			ev.preventDefault();
 			uploadInput.click();
 		}
 	}
 
-	const validator = new FieldValidator()
+	const validator = new FieldValidator();
 
 	function clear() {
-		editData = cloneResourceData(data)
+		editData = cloneResourceData(data);
 		if (uploadInput) uploadInput.value = "";
 	}
 
 	async function upload() {
-		const valid = validator.validate()
+		const valid = validator.validate();
 		if (!valid) return;
 
 		if (!uploadFiles || uploadFiles.length < 1) {
@@ -60,7 +60,7 @@
 				type: "error",
 				message: "No file found",
 			});
-			return 
+			return; 
 		}
 
 		const { data: createData, errors } = await getApollo().mutate({
@@ -89,14 +89,14 @@
 			message: "Uploading file...",
 		});
 
-		const formData = new FormData()
-		formData.append("file", uploadFiles[0])
+		const formData = new FormData();
+		formData.append("file", uploadFiles[0]);
 		try {
 			await api.post(Routes.upload("resource", createData!.resource.id), formData, {
 				headers: {
 					"Content-Type": "multipart/form-data"
 				},
-			})
+			});
 		} catch (err) {
 			pushNotification({
 				type: "error",
@@ -111,8 +111,8 @@
 			message: "Resource created!",
 		});
 
-		clear()
-		await invalidateAll()
+		clear();
+		await invalidateAll();
 		open = false;
 	}
 
@@ -142,7 +142,7 @@
 			return;
 		}
 
-		await invalidateAll()
+		await invalidateAll();
 		open = false;
 	}
 </script>
@@ -245,20 +245,20 @@
 	<svelte:fragment slot="footer">
 		{#if data}
 			<Button disabled={!isDirty} on:click={() => {
-				save().catch(console.error)
+				save().catch(console.error);
 			}}>
 				Save
 			</Button>
 		{:else}
 			<Button on:click={() => {
-				upload().catch(console.error)
+				upload().catch(console.error);
 			}}>
 				Upload
 			</Button>
 		{/if}
 			<Button color="alternative" on:click={() => {
-				open = false
-				clear()
+				open = false;
+				clear();
 			}}>
 				Cancel
 			</Button>

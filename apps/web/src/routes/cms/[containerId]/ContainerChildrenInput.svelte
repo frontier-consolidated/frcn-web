@@ -15,14 +15,14 @@
     export let container: CmsContainer;
     export let validator: FieldValidator;
     export let allowedChildren: CMSContainerType[];
-    export let addName = "Add"
+    export let addName = "Add";
 
     let openDropdown = false;
     let deleteContainer: CmsContainer | null = null;
 
     $: children = container.getChildrenOfTypes(allowedChildren);
 
-    let changeFn = getContext<() => void>("containerchange")
+    let changeFn = getContext<() => void>("containerchange");
 
     async function addChild(type: CMSContainerType) {
         openDropdown = false;
@@ -44,10 +44,10 @@
 			return;
 		}
 
-        const childContainer = transformContainer(data.container)
-        container.pushChild(childContainer)
+        const childContainer = transformContainer(data.container);
+        container.pushChild(childContainer);
         children = container.getChildrenOfTypes(allowedChildren);
-        changeFn()
+        changeFn();
     }
 </script>
 
@@ -55,7 +55,7 @@
     <div class="flex justify-end gap-2">
         <Button disabled={allowedChildren.length === 0} size="sm" on:click={() => {
             if (allowedChildren.length > 1) return;
-            addChild(allowedChildren[0]).catch(console.error)
+            addChild(allowedChildren[0]).catch(console.error);
         }}>
             {addName}
             {#if allowedChildren.length > 1}
@@ -90,8 +90,8 @@
                             <ArrowUpRightFromSquareOutline size="sm" />
                         </a>
                         <TrashBinSolid class="text-black hover:text-red-500 dark:text-white dark:hover:text-red-600" on:click={(e) => {
-                            e.stopPropagation()
-                            deleteContainer = container
+                            e.stopPropagation();
+                            deleteContainer = container;
                         }} />
                         <div class="self-stretch w-px ml-2 bg-gray-300 dark:bg-gray-600"></div>
                     </div>
@@ -115,7 +115,7 @@
             id: deleteContainer.id
         },
 		errorPolicy: "all",
-    })
+    });
 
     if (errors && errors.length > 0) {
         pushNotification({
@@ -126,7 +126,7 @@
         return;
     }
 
-    container.removeChild(deleteContainer)
+    container.removeChild(deleteContainer);
     deleteContainer = null;
     children = container.getChildrenOfTypes(allowedChildren);
 }}>

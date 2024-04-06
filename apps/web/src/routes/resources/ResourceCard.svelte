@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
-	import { Permission, hasPermission } from "@frcn/shared";
+	import { Permission, hasOwnedObjectPermission } from "@frcn/shared";
 	import { Dropdown, DropdownItem, Frame, Toolbar, ToolbarButton } from "flowbite-svelte";
 	import { DotsVerticalOutline, DownloadSolid, EditOutline, FilePdfSolid, LinkSolid, TrashBinSolid } from "flowbite-svelte-icons";
     import { createEventDispatcher } from "svelte";
@@ -12,7 +12,7 @@
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
-    const dispatch = createEventDispatcher()
+    const dispatch = createEventDispatcher();
 
     export let selectedTags: Writable<string[] | null>;
     export let resource: ResourceFragmentFragment;
@@ -37,11 +37,11 @@
                 <Frame
                     class="border-gray-200 dark:border-gray-700 divide-gray-200 dark:divide-gray-700 font-medium inline-flex items-center justify-center px-2.5 py-0.5 text-xs bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-300 rounded cursor-pointer"
                     on:click={() => {
-                        console.log("click")
+                        console.log("click");
                         if ($selectedTags?.includes(tag)) {
-                            selectedTags.update(tags => (tags ?? []).filter(t => t !== tag))
+                            selectedTags.update(tags => (tags ?? []).filter(t => t !== tag));
                         } else {
-                            selectedTags.update(tags => [...(tags ?? []), tag])
+                            selectedTags.update(tags => [...(tags ?? []), tag]);
                         }
                     }}
                 >
@@ -64,10 +64,10 @@
         <div class="flex gap-2 pt-4 mt-auto">
             <Button class="flex-1" on:click={() => {
                 if (!resource.downloadUrl) return;
-                const link = document.createElement("a")
-                link.href = resource.downloadUrl
-                link.click()
-                URL.revokeObjectURL(link.href)
+                const link = document.createElement("a");
+                link.href = resource.downloadUrl;
+                link.click();
+                URL.revokeObjectURL(link.href);
             }}>
                 <DownloadSolid class="me-2" tabindex="-1" /> Download
             </Button>
@@ -83,13 +83,13 @@
                             type: "success",
                             message: "Link copied to clipboard!",
                             timeout: 5000
-                        })
+                        });
                     }}>
                         <LinkSolid size="sm" class="me-2" tabindex="-1" /> Share
                     </DropdownItem>
-                    {#if hasPermission($user.data?.permissions ?? 0, Permission.UploadResources)}
+                    {#if hasOwnedObjectPermission({ user: $user.data, owner: resource.owner, required: Permission.CreateResources, override: Permission.ManageResources })}
                         <DropdownItem class="flex items-center" on:click={() => {
-                            dispatch("edit", resource)
+                            dispatch("edit", resource);
                         }}>
                             <EditOutline size="sm" class="me-2" tabindex="-1" /> Edit
                         </DropdownItem>
@@ -110,7 +110,7 @@
             id: resource.id
         },
         errorPolicy: "all",
-    })
+    });
 
     if (errors && errors.length > 0) {
         pushNotification({
@@ -121,7 +121,7 @@
         return;
     }
 
-    await invalidate("app:resources")
+    await invalidate("app:resources");
     deleteModalOpen = false;
 }}>
     <span>Are you sure you want to delete the <strong>{resource.name}</strong> resource? Once deleted it cannot be undone.</span>

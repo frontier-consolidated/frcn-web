@@ -1,8 +1,8 @@
 <script lang="ts">
-    import * as dom from "@floating-ui/dom"
-	import { Frame } from 'flowbite-svelte';
+    import * as dom from "@floating-ui/dom";
+	import { Frame } from "flowbite-svelte";
 	import { CheckCircleSolid, ExclamationCircleSolid } from "flowbite-svelte-icons";
-    import { onMount } from 'svelte';
+    import { onMount } from "svelte";
 
 	import type { FieldValidator, ValidateFn } from "./FieldValidator";
 
@@ -10,7 +10,7 @@
 	type T = $$Generic;
 
     let reference: string;
-    export { reference as for }
+    export { reference as for };
     export let validator: FieldValidator;
     export let value: T;
     export let required = false;
@@ -22,39 +22,39 @@
 		((v: T) => v === undefined || v === null || ((Array.isArray(v) || typeof v === "string" || (typeof FileList !== "undefined" && v instanceof FileList)) && v.length === 0));
 
     let showMessage = false;
-    let valid: boolean = true, msg: string | null = null
+    let valid: boolean = true, msg: string | null = null;
 
-    function internalValidate(val: T) {
+    function internalValidate(val: T, ignoreRequired = false) {
         let newValid = true, newMsg: string | null = null;
 
-        if (required && isEmpty(val)) {
+        if (required && isEmpty(val) && !ignoreRequired) {
             newValid = false;
-            newMsg = "Field is required"
+            newMsg = "Field is required";
         } else if (validate) {
-            [newValid, newMsg] = validate(value)
+            [newValid, newMsg] = validate(value);
         }
 
-        valid = newValid
-        msg = newMsg
+        valid = newValid;
+        msg = newMsg;
 
-        return valid
+        return valid;
     }
 
     $: {
         validate;
-        validator.addField(`field-${reference}`, () => {
-            showMessage = true
-            return internalValidate(value);
-        })
+        validator.addField(`field-${reference}`, (ignoreRequired) => {
+            showMessage = true;
+            return internalValidate(value, ignoreRequired);
+        });
     }
 
     $: {
         showMessage = false;
-        internalValidate(value)
+        internalValidate(value);
     }
 
     const offset = 8;
-    const px = (n?: number | null) => (n != null ? `${n}px` : '');
+    const px = (n?: number | null) => (n != null ? `${n}px` : "");
 
     let contentEl: HTMLElement;
     let floatingEl: HTMLElement;
@@ -104,9 +104,9 @@
         }
 
         return () => {
-            validator.removeField(`field-${reference}`)
-        }
-    })
+            validator.removeField(`field-${reference}`);
+        };
+    });
 </script>
 
 <field for={reference}>

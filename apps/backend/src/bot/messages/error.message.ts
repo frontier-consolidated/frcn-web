@@ -1,10 +1,10 @@
 import { type BaseMessageOptions, EmbedBuilder } from "discord.js";
 
-import { PRIMARY_COLOR } from "../constants";
+import { ERROR_COLOR } from "../constants";
 
 export function buildErrorMessage(message: string) {
 	const embed = new EmbedBuilder()
-		.setColor(PRIMARY_COLOR)
+		.setColor(ERROR_COLOR)
 		.setTitle(":warning: Error")
 		.setDescription(message);
 

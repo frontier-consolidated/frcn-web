@@ -22,7 +22,7 @@ export async function seed(database: typeof Database) {
 	let adminRole: UserRole | null = null;
 	for (const role of sortedRoles) {
 		if (hasPermission(role.permissions, Permission.Admin)) {
-			adminRole = role
+			adminRole = role;
 			break;
 		}
 	}
@@ -44,9 +44,9 @@ export async function seed(database: typeof Database) {
 				permissions: permissions([Permission.Admin]),
 			},
 		});
-		sortedRoles.unshift(adminRole)
+		sortedRoles.push(adminRole);
 		updateRoleOrder = true;
-		console.log("Created Admin role")
+		console.log("Created Admin role");
 	}
 
 	if (!defaultRole) {
@@ -57,12 +57,12 @@ export async function seed(database: typeof Database) {
 				permissions: 0,
 			},
 		});
-		sortedRoles.push(defaultRole)
+		sortedRoles.unshift(defaultRole);
 		updateRoleOrder = true;
-		console.log("Created Default role")
+		console.log("Created Default role");
 	}
 
-	const adminIds = getAdminIds()
+	const adminIds = getAdminIds();
 
 	for (const id of adminIds) {
 		await database.user.upsert({
@@ -92,7 +92,7 @@ export async function seed(database: typeof Database) {
 				},
 			},
 		});
-		console.log(`Upsert Admin user '${id}'`)
+		console.log(`Upsert Admin user '${id}'`);
 	}
 
 	if (updateRoleOrder) {

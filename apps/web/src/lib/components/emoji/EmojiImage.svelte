@@ -27,6 +27,7 @@ import type { Emoji } from "./types";
 		{...$$restProps}
 		class={clazz}
 	>
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html emoji.svg}
 	</svg>
 {/if}

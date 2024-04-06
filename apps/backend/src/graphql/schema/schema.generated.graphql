@@ -17,6 +17,13 @@ enum EventAccessType {
 	CHANNEL
 }
 
+enum EventState {
+	NONE
+	STARTED
+	ENDED
+	ARCHIVED
+}
+
 # Directives
 
 directive @cacheControl(
@@ -37,7 +44,7 @@ directive @permission(has: Permission, one: [Permission!], all: [Permission!]) o
 
 type SystemSettings {
 	discordGuild: DiscordGuild!
-	defaultEventChannel: DiscordChannel
+	defaultEventChannel: EventChannel
 }
 
 type AccessKey {
@@ -54,6 +61,7 @@ type UserRole {
 	name: String!
 	discordId: String
 	primary: Boolean!
+	default: Boolean!
 	permissions: Int! @permission(has: ManageRoles)
 	users: [User!]! @permission(has: ManageRoles)
 	updatedAt: Timestamp!
@@ -110,6 +118,7 @@ type EventMember {
 	id: ID!
 	pending: Boolean!
 	user: User!
+	team: EventTeam
 	rsvp: ID
 	rsvpAt: Timestamp!
 }
@@ -118,18 +127,18 @@ type EventSettings {
 	hideLocation: Boolean!
 	inviteOnly: Boolean!
 	openToJoinRequests: Boolean!
-	allowTeamSwitching: Boolean!
 }
 
 type EventTeam {
 	id: ID!
 	name: String!
 	members: [EventMember!]!
+	event: Event!
 }
 
 type Event {
 	id: ID!
-	channel: DiscordChannel
+	channel: EventChannel
 	owner: User
 	name: String!
 	summary: String!
@@ -140,7 +149,10 @@ type Event {
 	startAt: Timestamp
 	endedAt: Timestamp
 	duration: Int
+	state: EventState!
 	posted: Boolean!
+	archived: Boolean!
+	archivedAt: Timestamp
 	updatedAt: Timestamp!
 	createdAt: Timestamp!
 
@@ -148,10 +160,18 @@ type Event {
 	roles: [EventRsvpRole!]!
 	members: [EventMember!]!
 	teams: [EventTeam!]!
-	mentions: [ID!]! @permission(has: CreateEvents)
-	settings: EventSettings! @permission(has: CreateEvents)
-	accessType: EventAccessType! @permission(has: CreateEvents)
-	accessRoles: [UserRole!]! @permission(has: CreateEvents)
+	mentions: [ID!]! @permission(one: [CreateEvents, ManageEvents])
+	settings: EventSettings! @permission(one: [CreateEvents, ManageEvents])
+	accessType: EventAccessType! @permission(one: [CreateEvents, ManageEvents])
+	accessRoles: [UserRole!]! @permission(one: [CreateEvents, ManageEvents])
+}
+
+type EventChannel {
+	id: Int!
+	discord: DiscordChannel!
+	discordCategory: DiscordChannel
+	readyRoomName: String
+	events: [Event!]! @permission(has: ManageSystem)
 }
 
 type DiscordGuild {
@@ -163,6 +183,8 @@ type DiscordChannel {
 	id: ID!
 	name: String!
 	type: String
+	parentId: ID
+	sendMessages: Boolean!
 }
 
 type DiscordRole {
@@ -238,7 +260,6 @@ input EventSettingsInput {
 	hideLocation: Boolean!
 	inviteOnly: Boolean!
 	openToJoinRequests: Boolean!
-	allowTeamSwitching: Boolean!
 }
 
 input EventRoleInput {
@@ -250,7 +271,7 @@ input EventRoleInput {
 }
 
 input EventEditInput {
-	channel: ID
+	channel: Int
 	name: String @constraint(minLength: 1, maxLength: 255)
 	summary: String @constraint(minLength: 1, maxLength: 255)
 	description: String @constraint(maxLength: 2048)
@@ -266,22 +287,28 @@ input EventEditInput {
 	accessRoles: [ID!]
 }
 
-input EventTeamCreateInput {
-	name: String!
+input EventTeamEditInput {
+	name: String @constraint(maxLength: 255)
 }
 
-input EventTeamEditInput {
-	name: String
+input UserFilterInput {
+	search: String @constraint(maxLength: 255)
 }
 
 input SystemEditInput {
 	discordGuildId: ID
-	defaultEventChannelId: ID
+	defaultEventChannelId: Int
 }
 
 input AccessKeyEditInput {
 	description: String @constraint(maxLength: 255)
 	permissions: Int @constraint(min: 0, max: 2147483647)
+}
+
+input EventChannelEditInput {
+	channelId: ID
+	categoryId: ID
+	readyRoomName: String @constraint(maxLength: 255)
 }
 
 input RoleEditInput {
@@ -345,16 +372,26 @@ type Query {
 	): PagedResource
 
 	# Roles
-	getRoles: [UserRole!]! @permission(one: [CreateEvents, ManageRoles])
+	getRoles: [UserRole!]! @permission(one: [CreateEvents, ManageEvents, ManageRoles])
 	getRole(id: ID!): UserRole @permission(has: ManageRoles)
-	getRoleOrder: [ID!]! @permission(has: ManageRoles)
 
 	# System
-	getAllEventChannels: [DiscordChannel!]! @permission(one: [CreateEvents, ManageSystem])
-	getAllDiscordChannels: [DiscordChannel!]! @permission(has: ManageSystem)
-	getAllDiscordEmojis: DiscordEmojis! @permission(has: CreateEvents)
+	getAllUsers(
+		filter: UserFilterInput
+		page: Int @constraint(min: 0)
+		limit: Int @constraint(min: 1, max: 100)
+	): PagedUser! @permission(has: ManageSystem)
+
+	getAllEventChannels: [EventChannel!]!
+		@permission(one: [CreateEvents, ManageEvents, ManageSystem])
+	getEventChannel(id: Int!): EventChannel @permission(has: ManageSystem)
+
+	getAllDiscordTextChannels: [DiscordChannel!]! @permission(has: ManageSystem)
+	getAllDiscordVoiceChannels: [DiscordChannel!]! @permission(has: ManageSystem)
+	getAllDiscordCategories: [DiscordChannel!]! @permission(has: ManageSystem)
+	getAllDiscordEmojis: DiscordEmojis! @permission(one: [CreateEvents, ManageEvents])
 	getAllDiscordRoles(everyone: Boolean): [DiscordRole!]!
-		@permission(one: [CreateEvents, ManageRoles])
+		@permission(one: [CreateEvents, ManageEvents, ManageRoles])
 	getSystemSettings: SystemSettings! @permission(has: ManageSystem)
 
 	getCurrentAccessKey: AccessKey
@@ -377,25 +414,33 @@ type Mutation {
 	deleteCurrentUser: Boolean!
 
 	# Events
-	createEvent: ID! @permission(has: CreateEvents)
-	editEvent(id: ID!, data: EventEditInput!): Event @permission(has: CreateEvents)
-	postEvent(id: ID!): Boolean! @permission(has: CreateEvents)
-	deleteEvent(id: ID!): Boolean! @permission(has: CreateEvents)
-
+	createEvent(startAt: Timestamp): ID! @permission(one: [CreateEvents, ManageEvents])
+	editEvent(id: ID!, data: EventEditInput!): Event @permission(one: [CreateEvents, ManageEvents])
+	postEvent(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
+	unpostEvent(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
+	endEvent(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
+	archiveEvent(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
+	deleteEvent(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
 	rsvpForEvent(id: ID!, rsvp: ID!): Boolean!
 	unrsvpForEvent(id: ID!): Boolean!
+	inviteToEvent(eventId: ID!, userId: ID!): Boolean!
+		@permission(one: [CreateEvents, ManageEvents])
+	setEventMemberTeam(member: ID!, team: ID): Boolean!
+		@permission(one: [CreateEvents, ManageEvents])
+	kickEventMember(member: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
 
-	setEventMemberTeam(id: ID!, member: ID!, team: ID): Boolean!
-	kickEventMember(id: ID!, member: ID!): Boolean! @permission(has: CreateEvents)
-
-	createEventTeam(id: ID!, data: EventTeamCreateInput!): EventTeam!
-	editEventTeam(id: ID!, data: EventTeamEditInput!): EventTeam!
-	deleteEventTeam(id: ID!, team: ID!): Boolean!
+	createEventTeam(eventId: ID!, name: String!): EventTeam!
+		@permission(one: [CreateEvents, ManageEvents])
+	editEventTeam(id: ID!, data: EventTeamEditInput!): EventTeam
+		@permission(one: [CreateEvents, ManageEvents])
+	deleteEventTeam(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
 
 	# Resources
-	createResource(data: ResourceCreateInput!): Resource! @permission(has: UploadResources)
-	editResource(id: ID!, data: ResourceEditInput!): Resource @permission(has: UploadResources)
-	deleteResource(id: ID!): Boolean! @permission(has: UploadResources)
+	createResource(data: ResourceCreateInput!): Resource!
+		@permission(one: [CreateResources, ManageResources])
+	editResource(id: ID!, data: ResourceEditInput!): Resource
+		@permission(one: [CreateResources, ManageResources])
+	deleteResource(id: ID!): Boolean! @permission(one: [CreateResources, ManageResources])
 
 	# Roles
 	createRole: ID! @permission(has: ManageRoles)
@@ -404,12 +449,19 @@ type Mutation {
 	syncRole(id: ID!): UserRole @permission(has: ManageRoles)
 	reorderRoles(order: [ID!]!): [ID!]! @permission(has: ManageRoles)
 
-	giveUserRole(userId: ID!, roleId: ID!): Boolean! @permission(has: ManageRoles)
+	changeUserPrimaryRole(userId: ID!, roleId: ID!): UserRole @permission(has: ManageRoles)
+	giveUserRole(userId: ID!, roleId: ID!): UserRole @permission(has: ManageRoles)
 	removeUserRole(userId: ID!, roleId: ID!): Boolean! @permission(has: ManageRoles)
 
 	# System
-	editEventChannels(channels: [ID!]!): [DiscordChannel!]! @permission(has: ManageSystem)
 	editSystemSettings(data: SystemEditInput!): SystemSettings! @permission(has: ManageSystem)
+
+	createEventChannel(linkTo: ID!, categoryId: ID!, existingReadyRoomId: ID): EventChannel!
+		@permission(has: ManageSystem)
+	editEventChannel(id: Int!, data: EventChannelEditInput!): EventChannel
+		@permission(has: ManageSystem)
+	deleteEventChannel(id: Int!, deleteVoiceChannels: Boolean): Boolean!
+		@permission(has: ManageSystem)
 
 	createAccessKey: AccessKey! @permission(has: ManageSystem)
 	editAccessKey(id: Int!, data: AccessKeyEditInput!): AccessKey @permission(has: ManageSystem)
@@ -462,9 +514,17 @@ type PagedResource {
     nextPage: Int
 	prevPage: Int
 }
+type PagedUser {
+    items: [User!]!
+	itemsPerPage: Int!
+    page: Int!
+    total: Int!
+    nextPage: Int
+	prevPage: Int
+}
 enum Permission {
 	CreateEvents
-	UploadResources
+	CreateResources
 	CmsRead
 	CmsWrite
 	Unassigned4
@@ -489,8 +549,8 @@ enum Permission {
 	Unassigned23
 	Unassigned24
 	Unassigned25
-	Unassigned26
-	Unassigned27
+	ManageEvents
+	ManageResources
 	ManageRoles
 	ManageSystem
 	Admin

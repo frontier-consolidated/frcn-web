@@ -12,6 +12,7 @@
 	}));
 
 	export let value: AnyLocation[] = [];
+	export let disabled = false;
 	let liOptions: Option<AnyLocation>[][] = [rootOptions];
 
 	let canAdd = false;
@@ -50,7 +51,7 @@
 		<LocationSelectLi
 			{options}
 			deletable={i > 0}
-			disabled={i + 1 != liOptions.length}
+			disabled={disabled || i + 1 != liOptions.length}
 			bind:value={value[i]}
 			on:delete={() => {
 				if (i + 1 != liOptions.length) return;
@@ -61,6 +62,7 @@
 	{/each}
 	{#if canAdd}
 		<Button
+			{disabled}
 			on:click={() => {
 				const lastValue = value.slice(-1)[0];
 				const children = getChildren(lastValue);

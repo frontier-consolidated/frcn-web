@@ -5,51 +5,51 @@ import json from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
 
-const rollupModules = ["rollup", "@rollup/plugin-typescript", "@rollup/plugin-node-resolve", "@rollup/plugin-json", "@rollup/plugin-commonjs"]
+const rollupModules = ["rollup", "@rollup/plugin-typescript", "@rollup/plugin-node-resolve", "@rollup/plugin-json", "@rollup/plugin-commonjs"];
 
 export default [
 	{
-		input: 'src/index.ts',
+		input: "src/index.ts",
 		output: {
-			file: 'index.js',
-			format: 'esm'
+			file: "index.js",
+			format: "esm"
 		},
 		plugins: [typescript({ declaration: true, declarationDir: "types" })],
 		external: [...rollupModules, "./global.d.ts", ...builtinModules]
 	},
 	{
-		input: 'src/server/index.ts',
+		input: "src/server/index.ts",
 		output: {
-			file: 'files/index.js',
-			format: 'esm'
+			file: "files/index.js",
+			format: "esm"
 		},
 		plugins: [typescript(), nodeResolve({ preferBuiltins: true }), commonjs(), json()],
-		external: ['ENV', 'HANDLER', ...builtinModules]
+		external: ["ENV", "HANDLER", ...builtinModules]
 	},
 	{
-		input: 'src/server/env.ts',
+		input: "src/server/env.ts",
 		output: {
-			file: 'files/env.js',
-			format: 'esm'
+			file: "files/env.js",
+			format: "esm"
 		},
 		plugins: [typescript(), nodeResolve(), commonjs(), json()],
-		external: ['HANDLER', ...builtinModules]
+		external: ["HANDLER", ...builtinModules]
 	},
 	{
-		input: 'src/server/handler.ts',
+		input: "src/server/handler.ts",
 		output: {
-			file: 'files/handler.js',
-			format: 'esm',
+			file: "files/handler.js",
+			format: "esm",
 			inlineDynamicImports: true
 		},
 		plugins: [typescript(), nodeResolve(), commonjs(), json()],
-		external: ['ENV', 'MANIFEST', 'SERVER', 'SHIMS', ...builtinModules]
+		external: ["ENV", "MANIFEST", "SERVER", "SHIMS", ...builtinModules]
 	},
 	{
-		input: 'src/server/shims.ts',
+		input: "src/server/shims.ts",
 		output: {
-			file: 'files/shims.js',
-			format: 'esm'
+			file: "files/shims.js",
+			format: "esm"
 		},
 		plugins: [typescript(), nodeResolve(), commonjs()],
 		external: builtinModules

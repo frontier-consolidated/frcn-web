@@ -7,12 +7,6 @@ export const GET_SYSTEM_SETTINGS = gql(`
 				id
 				name
 			}
-			defaultEventChannel {
-				...ChannelFragment
-			}
-		}
-		eventChannels: getAllEventChannels {
-			...ChannelFragment
 		}
 	}
 `);

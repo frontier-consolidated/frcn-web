@@ -15,11 +15,11 @@ function logout(): "/logout" {
 }
 
 function consent(): "/consent" {
-	return "/consent"
+	return "/consent";
 }
 
 function upload(type: "resource" | "cms_container", attachTo: string): `/media/upload?type=${string}&attach_to=${string}` {
-	return `/media/upload?type=${type}&attach_to=${attachTo}`
+	return `/media/upload?type=${type}&attach_to=${attachTo}`;
 }
 
 export const Routes = {

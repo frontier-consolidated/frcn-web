@@ -1,35 +1,24 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import { Permission, hasPermission } from "@frcn/shared";
+	import { Permission, hasOneOfPermissions } from "@frcn/shared";
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
+	import { twMerge } from "tailwind-merge";
 
 	import { Button } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
+
+	import { createEvent } from "./helpers";
+
+    export let startAt: Date | undefined = undefined;
 </script>
 
-{#if hasPermission($user.data?.permissions ?? 0, Permission.CreateEvents)}
+{#if hasOneOfPermissions($user.data?.permissions ?? 0, [Permission.CreateEvents, Permission.ManageEvents])}
     <Button
-        class="sm:shrink-0"
+        {...$$restProps}
+        class={twMerge("sm:shrink-0", $$restProps.class)}
         on:click={async () => {
-            try {
-                const { data: createData } = await getApollo().mutate({
-                    mutation: Mutations.CREATE_EVENT,
-                });
-    
-                if (createData && createData.event) {
-                    goto(`/event/${createData.event}`);
-                }
-            } catch (err) {
-                pushNotification({
-                    type: "error",
-                    message: "Failed to create event"
-                })
-                console.error(err)
-            }
+            await createEvent(startAt);
         }}
     >
-        <CirclePlusSolid class="me-2" tabindex="-1" /> Create New Event
+        <CirclePlusSolid class="me-2 outline-none" tabindex="-1" /> Create New Event
     </Button>
 {/if}

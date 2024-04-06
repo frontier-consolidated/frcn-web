@@ -7,7 +7,7 @@
         "top-left": "top-0 left-0",
         "bottom-right": "bottom-0 right-0",
         "bottom-left": "bottom-0 left-0"
-    } satisfies Record<AboutSectionContainerPosition, string>
+    } satisfies Record<AboutSectionContainerPosition, string>;
 
     const breakpoints = {
 		sm: "640px",
@@ -24,12 +24,12 @@
     
     export let sources: Partial<Record<keyof typeof breakpoints, string>> = {};
 
-    export let position: keyof typeof positions = "bottom-right"
-    export let figureClass = "relative p-px rounded md:bg-gray-400 md:dark:bg-gray-800"
-    export let captionClass = "relative md:absolute rounded-b md:rounded md:m-8 md:max-w-[50%] flex flex-col pb-6 md:py-6 text-gray-900 dark:text-white md:backdrop-blur-xl md:clip-opposite-reverse-8 bg-white dark:bg-gray-900 md:bg-white/50 md:dark:bg-black/50"
-    export let imgClass = "rounded-t md:rounded object-cover w-full h-72 sm:h-96 md:h-[36rem]"
+    export let position: keyof typeof positions = "bottom-right";
+    export let figureClass = "relative p-px rounded md:bg-gray-400 md:dark:bg-gray-800";
+    export let captionClass = "relative md:absolute rounded-b md:rounded md:m-8 md:max-w-[50%] flex flex-col pb-6 md:py-6 text-gray-900 dark:text-white md:backdrop-blur-xl md:clip-opposite-reverse-8 bg-white dark:bg-gray-900 md:bg-white/50 md:dark:bg-black/50";
+    export let imgClass = "rounded-t md:rounded object-cover w-full h-72 sm:h-96 md:h-[36rem]";
 
-    $: sourceEntries = Object.entries(sources) as [keyof typeof breakpoints, string][]
+    $: sourceEntries = Object.entries(sources) as [keyof typeof breakpoints, string][];
 </script>
 
 <figure class={twMerge(figureClass, $$restProps.class)}>

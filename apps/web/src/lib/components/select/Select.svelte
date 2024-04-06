@@ -6,7 +6,7 @@
 
 	import type { Option } from "./types";
 
-	const searchClass = "flex-1 bg-transparent border-transparent w-full text-sm focus:outline-none"
+	const searchClass = "flex-1 bg-transparent border-transparent w-full text-sm focus:outline-none";
 
 	// eslint-disable-next-line no-undef
 	type T = $$Generic;
@@ -20,35 +20,35 @@
 	export let disabled: boolean = false;
 	export let options: Option<T, S>[] = [];
 	export let multi: Multi = false as Multi;
-	export let search: boolean = false
+	export let search: boolean = false;
 
-	let clazz: string = ""
-	export { clazz as class }
+	let clazz: string = "";
+	export { clazz as class };
 
-	let searchInput: string = ""
-	let lastSearchInput: string = searchInput
+	let searchInput: string = "";
+	let lastSearchInput: string = searchInput;
 	let dropdownOpen = false;
 
-	type Value = (Multi extends true ? T[] : T | undefined)
+	type Value = (Multi extends true ? T[] : T | undefined);
 
 	export let value: Value = (multi ? [] : undefined) as Value;
-	$: selectableOptions = (multi ? options.filter(option => !(value as T[]).includes(option.value)) : options).filter(option => !searchInput || option.name.toLowerCase().includes(searchInput))
+	$: selectableOptions = (multi ? options.filter(option => !(value as T[]).includes(option.value)) : options).filter(option => !searchInput || option.name.toLowerCase().includes(searchInput));
 
 	function getSelectedOptions(multi: boolean, value: Value, options: Option<T, S>[]) {
 		if (multi) {
-			if (!Array.isArray(value)) return []
-			const selected = options.filter(option => value.includes(option.value))
-			const indexed = selected.map(option => ({option, index: value.indexOf(option.value)}))
+			if (!Array.isArray(value)) return [];
+			const selected = options.filter(option => value.includes(option.value));
+			const indexed = selected.map(option => ({ option, index: value.indexOf(option.value) }));
 			indexed.sort((a, b) => a.index - b.index);
-			return indexed.map(idx => idx.option)
+			return indexed.map(idx => idx.option);
 		} else {
-			if (value === undefined) return []
+			if (value === undefined) return [];
 			const option = options.find(opt => opt.value === value);
 			if (!option) return [];
-			return [option]
+			return [option];
 		}
 	}
-	$: selectedOptions = getSelectedOptions(multi, value, options)
+	$: selectedOptions = getSelectedOptions(multi, value, options);
 
 	let input: HTMLInputElement | null = null;
 	function initInput(el: HTMLInputElement) {
@@ -57,49 +57,49 @@
 	
 	$: {
 		if (searchInput != lastSearchInput) {
-			lastSearchInput = searchInput
-			dropdownOpen = true
+			lastSearchInput = searchInput;
+			dropdownOpen = true;
 			if (searchInput && !multi) {
-				value = undefined as Value
+				value = undefined as Value;
 			}
 		}
 	}
-	$: if (search && input && dropdownOpen) input.focus()
+	$: if (search && input && dropdownOpen) input.focus();
 
 	function selectOption(option: Option<T, S>) {
 		dropdownOpen = multi;
-		searchInput = ""
-		lastSearchInput = ""
+		searchInput = "";
+		lastSearchInput = "";
 		if (multi) {
 			if (!Array.isArray(value)) return;
 			if (!value.includes(option.value)) {
-				value = [...value, option.value] as Value
+				value = [...value, option.value] as Value;
 			} else {
-				value = value.filter(v => v !== option.value) as Value
+				value = value.filter(v => v !== option.value) as Value;
 			}
 		} else {
-			value = option.value as Value
+			value = option.value as Value;
 		}
-		if (multi && input) input.focus()
+		if (multi && input) input.focus();
 	}
 
 	function removeOption(option: Option<T, S>) {
 		if (!multi || !Array.isArray(value)) return;
-		value = (value as T[]).filter(v => v !== option.value) as Value
-		if (input) input.focus()
+		value = (value as T[]).filter(v => v !== option.value) as Value;
+		if (input) input.focus();
 	}
 
 	function onInputKeydown(ev: KeyboardEvent) {
 		if (ev.key === "Backspace") {
 			if (multi && Array.isArray(value)) {
-				value = value.slice(0, -1) as Value
+				value = value.slice(0, -1) as Value;
 			} else {
-				value = undefined as Value
+				value = undefined as Value;
 			}
 		}
 	}
 
-	let background = getContext('background');
+	let background = getContext("background");
 </script>
 
 <div {id} class={twMerge("relative w-full", clazz)}>
@@ -112,7 +112,7 @@
 		aria-disabled={disabled}
 		tabindex="-1"
 		role="listbox"
-		class={twMerge("flex items-center w-full text-gray-900 bg-gray-50 border border-gray-300 rounded text-sm p-2.5 min-h-[3rem]", background ? "dark:bg-gray-600 dark:border-gray-500" : "dark:bg-gray-700 dark:border-gray-600", disabled ? "cursor-not-allowed dark:text-gray-400" : "focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:text-white")}
+		class={twMerge("flex items-center w-full text-gray-900 dark:text-white bg-gray-50 border border-gray-300 rounded text-sm p-2.5 min-h-[3rem]", background ? "dark:bg-gray-600 dark:border-gray-500" : "dark:bg-gray-700 dark:border-gray-600", disabled ? "cursor-not-allowed opacity-50" : "focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500")}
 	>
 		<span class="flex flex-wrap gap-1 w-full">
 			{#if selectedOptions.length > 0}
@@ -164,7 +164,7 @@
 				{#key option}
 					<DropdownItem
 						on:click={() => {
-							selectOption(option)
+							selectOption(option);
 						}}
 					>
 						<slot {option}>

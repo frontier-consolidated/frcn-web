@@ -4,7 +4,7 @@ export const EVENT_FRAGMENT = gql(`
     fragment EventFragment on Event {
         id
         channel {
-            ...ChannelFragment
+            ...EventChannelFragment
         }
         owner {
             ...UserFragment
@@ -32,10 +32,13 @@ export const EVENT_FRAGMENT = gql(`
         members {
             ...EventMemberFragment
         }
+        state
         posted
         duration
         startAt
         endedAt
+        archived
+        archivedAt
         updatedAt
         createdAt
     }

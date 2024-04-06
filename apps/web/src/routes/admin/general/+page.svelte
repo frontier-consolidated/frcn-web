@@ -1,26 +1,34 @@
 <script lang="ts">
-	import { Helper, Input, Label } from 'flowbite-svelte';
-	import { CloseSolid, EditOutline } from 'flowbite-svelte-icons';
+	import { Helper, Input, Label } from "flowbite-svelte";
+	import { CloseSolid, EditOutline, LockOpenSolid, LockSolid } from "flowbite-svelte-icons";
 
-	import { SectionHeading, Select, Field, FieldValidator, Button, Head } from '$lib/components';
-	import { Mutations, getApollo } from '$lib/graphql';
-	import { pushNotification } from '$lib/stores/NotificationStore';
+	import { SectionHeading, Field, FieldValidator, Button, Head } from "$lib/components";
+	import { Mutations, getApollo } from "$lib/graphql";
+	import preventNavigation from "$lib/preventNavigation";
+	import { pushNotification } from "$lib/stores/NotificationStore";
 
-	import type { PageData } from './$types';
+	import type { PageData } from "./$types";
 
     export let data: PageData;
 
     function cloneSystemSettings(data: PageData) {
         return {
             discordGuild: { ...data.discordGuild },
-            defaultEventChannel: { ...data.defaultEventChannel },
-        }
+        };
     }
 
-    let validator = new FieldValidator();
-    let editData = cloneSystemSettings(data)
+    const validator = new FieldValidator();
+    let editData = cloneSystemSettings(data);
 
-    $: isDirty = data.discordGuild.id !== editData.discordGuild.id || data.defaultEventChannel?.id !== editData.defaultEventChannel.id
+    const { canNavigate, initNavigation } = preventNavigation();
+
+	let isDirty = false;
+	$: {
+		isDirty = data.discordGuild.id !== editData.discordGuild.id;
+		canNavigate.set(!isDirty);
+	}
+
+    let guildIdFieldLocked = true;
 
     async function save() {
         if (!validator.validate()) return;
@@ -30,7 +38,6 @@
 			variables: {
 				data: {
                     discordGuildId: editData.discordGuild.id,
-                    defaultEventChannelId: editData.defaultEventChannel.id
                 }
 			},
 			errorPolicy: "all",
@@ -48,8 +55,8 @@
 		data = {
 			...data, 
 			...updatedData?.settings
-		}
-        editData = cloneSystemSettings(data)
+		};
+        editData = cloneSystemSettings(data);
 	}
 </script>
 
@@ -60,39 +67,31 @@
 <SectionHeading>
     General Settings
 </SectionHeading>
-<div class="flex-1 flex flex-col justify-between">
+<div class="flex-1 flex flex-col justify-between" use:initNavigation>
     <div class="flex flex-col gap-4 p-4">
         <Field {validator} for="system-general-guildid" value={"a"} required>
             <Label for="system-general-guildid" class="mb-1">Discord Guild</Label>
             <span class="block mb-1 text-xs text-gray-500">Current Guild: {data.discordGuild.name}</span>
             <Input
-                class="rounded"
+                class="flex-1 rounded"
                 id="system-general-guildid"
                 name="system-general-guildid"
                 type="text"
                 placeholder="0"
                 pattern="[0-9]+"
+                disabled={guildIdFieldLocked}
                 required
                 bind:value={editData.discordGuild.id}
-            />
+            >
+                <button slot="right" class="text-gray-600 dark:text-gray-300" on:click={() => (guildIdFieldLocked = !guildIdFieldLocked)}>
+                    <svelte:component this={guildIdFieldLocked ? LockSolid : LockOpenSolid} tabindex="-1" class="outline-none" size="sm" />
+                </button>
+            </Input>
             <Helper class="mt-1">
-                The discord guild that all roles and events will be linked to
+                The discord guild that all discord related connections will be related to.
             </Helper>
-        </Field>
-        <Field {validator} for="system-general-guildid" value={"a"} required>
-            <Label for="system-general-default-channel" class="mb-2">Default Event Channel</Label>
-            <Select
-                id="system-general-default-channel"
-                name="system-general-default-channel"
-                options={data.options?.channels.map((channel) => ({
-                    value: channel.id,
-                    name: channel.name,
-                })) ?? [{ value: editData.defaultEventChannel.id, name: editData.defaultEventChannel.name }]}
-                required
-                bind:value={editData.defaultEventChannel.id}
-            />
-            <Helper class="mt-1">
-                The default channel where events will be posted
+            <Helper color="red" class="mt-1">
+                * DO NOT CHANGE UNLESS YOU ABSOLUTELY NEED TO - THINGS WILL BREAK
             </Helper>
         </Field>
         <div>
@@ -104,7 +103,7 @@
     </div>
     <div class="flex justify-end items-center gap-2">
         <Button color="alternative" on:click={() => {
-            editData = cloneSystemSettings(data)
+            editData = cloneSystemSettings(data);
         }}>
             <CloseSolid class="me-2" tabindex="-1" /> Cancel
         </Button>

@@ -1,40 +1,17 @@
 import { dates, strings } from "@frcn/shared";
 import { getEmojiByName } from "@frcn/shared/emojis";
-import { type AnyLocation, getLocations } from "@frcn/shared/locations";
 import type { Event } from "@prisma/client";
-import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadAutoArchiveDuration } from "discord.js";
+import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadChannel } from "discord.js";
 
 import { database } from "../../database";
 import { getWebURL } from "../../env";
 import { $discord } from "../../services/discord";
 import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
+import { getLocationBreadcrumbs } from "../helpers";
 
-function getLocationEmoji(location: AnyLocation) {
-	switch (location.type) {
-		case "SYSTEM":
-			return "<:System:1200467538841194506>"
-		case "PLANET":
-			return "<:Planet:1200467536358162553>"
-		case "MOON":
-			return "<:Moon:1200467530783920238>"
-		case "STATION":
-		case "COMM_ARRAY":
-			return "<:Station:1200467537574506526>"
-		case "LAGRANGE_POINT":
-		case "JUMP_POINT":
-			return "<:OrbitalMarker:1200467532805574717>"
-		case "CITY":
-			return "<:City:1200467529722761326>"
-		case "OUTPOST":
-			return "<:Outpost:1200467533975781507>"
-		default:
-			return ""
-	}
-}
-
-export async function buildEventMessage(id: string, client: Client) {
-	const guild = await $discord.getGuild(client)
+export async function buildEventMessage(id: string, client: Client, threadId?: string) {
+	const guild = await $discord.getGuild(client);
 	if (!guild) return null;
 
 	const event = await database.event.findUnique({
@@ -66,7 +43,7 @@ export async function buildEventMessage(id: string, client: Client) {
 		},
 	});
 
-	if (!event) throw new Error(`Could not create event message, since an event with id '${id}' could not be found`)
+	if (!event) throw new Error(`Could not create event message, since an event with id '${id}' could not be found`);
 
 	const startAtSeconds = Math.floor(event.startAt!.getTime() / 1000);
 	const eventEmbed = new EmbedBuilder()
@@ -76,26 +53,18 @@ export async function buildEventMessage(id: string, client: Client) {
 		.addFields({
 			name: "Event Type",
 			value: strings.toTitleCase(event.eventType!)
-		})
+		});
 	
 	
 	if (!event.settings!.hideLocation) {
-		let value = ""
-		if (event.location.length > 0) {
-			const locations = getLocations(event.location)
-			value = locations.map((loc) => `${getLocationEmoji(loc)} **${strings.toTitleCase(loc.name)}**`.trim()).join(" > ")
-		} else {
-			value = "Anywhere"
-		}
-
 		eventEmbed.addFields({
 			name: "Location",
-			value
+			value: getLocationBreadcrumbs(event.location)
 		});
 	}
 
-	event.roles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())
-
+	event.roles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+	
 	eventEmbed
 		.addFields(
 			{
@@ -103,18 +72,22 @@ export async function buildEventMessage(id: string, client: Client) {
 				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`,
 			},
 			{ name: "Duration", value: dates.toDuration(event.duration!) },
-			...event.roles.map((role) => ({
-				name: `${
-					role.emoji === role.emojiId
-						? `:${role.emoji}:`
-						: `<:${role.emoji}:${role.emojiId}>`
-				} ${role.name} (${role.members.length}${role.limit > 0 ? `/${role.limit}` : ""})`,
-				value:
-					role.members.length > 0
-						? `> ${role.members.map((member) => member.user.discordName).join("\n")}`
-						: " ",
-				inline: true,
-			}))
+			{ name: "Thread", value: `<#${threadId ?? event.discordThreadId}>` },
+			...event.roles.map((role) => {
+				const members = role.members.filter(m => !!m.user);
+				return {
+					name: `${
+						role.emoji === role.emojiId
+							? `:${role.emoji}:`
+							: `<:${role.emoji}:${role.emojiId}>`
+					} ${role.name} (${members.length}${role.limit > 0 ? `/${role.limit}` : ""})`,
+					value:
+						members.length > 0
+							? `>>> ${members.map((member) => member.user!.discordName).join("\n")}`
+							: " ",
+					inline: true,
+				};
+			})
 		)
 		.setFooter({
 			text: `Created by ${event.owner?.discordName ?? "[DELETED USER]"}`,
@@ -132,9 +105,9 @@ export async function buildEventMessage(id: string, client: Client) {
 			})
 			.setStyle(ButtonStyle.Secondary);
 		
-		const needsLabel = !!event.roles.find(r => r.emojiId === role.emojiId)
+		const needsLabel = !!event.roles.find(r => r.emojiId === role.emojiId);
 		if (needsLabel) {
-			button.setLabel(role.name)
+			button.setLabel(role.name);
 		}
 
 		buttonsRow.addComponents(button);
@@ -153,70 +126,78 @@ export async function buildEventMessage(id: string, client: Client) {
 	} satisfies BaseMessageOptions;
 }
 
-async function getEventMessage(client: Client, event: Event) {
+export async function getEventMessage(client: Client, event: Event) {
 	if (!event.discordEventMessageId) return null;
-	const eventChannel = await $events.getEventChannel(event.id);
-	if (!eventChannel) return null;
 
-	const channel = await $discord.getChannel(
-		client,
-		eventChannel.discordId
-	);
-	if (!channel?.isTextBased()) throw new Error("Could not find event channel, or channel is somehow not text based");
+	const channel = await $events.getEventDiscordChannel(event, client);
 	return await channel.messages.fetch(event.discordEventMessageId);
 }
 
 export async function postEventMessage(client: Client, event: Event) {
-	const eventChannel = await $events.getEventChannel(event.id);
-	if (!eventChannel) throw new Error("Could not find event channel")
+	const channel = await $events.getEventDiscordChannel(event, client);
 
-	const channel = await $discord.getChannel(client, eventChannel.discordId);
-	if (!channel?.isTextBased()) throw new Error("Could not find event channel, or channel is somehow not text based");
-
-	const payload = await buildEventMessage(event.id, client);
-	if (!payload) throw new Error("Failed to build event message")
-	const eventMessage = await channel.send(payload);
-
-	let createThread = !event.discordThreadId
+	let createThread = !event.discordThreadId;
 	if (!createThread) {
 		try {
-			await $events.getEventThread(event, client)
+			await $events.getEventThread(event, client);
 		} catch (err) {
-			createThread = true
+			createThread = true;
 		}
 	}
 
-	let threadId = event.discordThreadId
+	let threadId = event.discordThreadId;
+	let thread: ThreadChannel | null = null;
 	if (createThread) {
-		const thread = await eventMessage.startThread({
-			name: event.name,
-			reason: "Create thread for event: " + event.name,
-			autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays
-		})
-		threadId = thread.id
+		thread = await $events.createEventThread(event, client, channel);
+		threadId = thread.id;
 	}
 
-	await database.event.update({
-		where: { id: event.id },
-		data: {
-			discordEventMessageId: eventMessage.id,
-			discordThreadId: threadId,
-			posted: true,
-		},
-	});
+	const payload = await buildEventMessage(event.id, client, threadId ?? undefined);
+	if (!payload) throw new Error("Failed to build event message");
+	const eventMessage = await channel.send(payload);
+	
+	if (createThread && thread) {
+		const postLinkEmbed = new EmbedBuilder()
+			.setColor(PRIMARY_COLOR)
+			.setTitle(`:calendar_spiral: ${event.name}`)
+			.setDescription(`This is the **${event.name}** event thread`);
+		
+		const postButton = new ButtonBuilder()
+			.setLabel("See Details")
+			.setURL(eventMessage.url)
+			.setStyle(ButtonStyle.Link);
+			
+		const weblinkButton = new ButtonBuilder()
+			.setLabel("View")
+			.setURL(getWebURL(`/event/${event.id}`).href)
+			.setStyle(ButtonStyle.Link);
+			
+		const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
+		buttonsRow.addComponents(postButton, weblinkButton);
+		
+		await thread.send({
+			embeds: [postLinkEmbed],
+			components: [buttonsRow]
+		});
+	}
+
+	return {
+		messageId: eventMessage.id,
+		threadId
+	};
 }
 
 export async function updateEventMessage(client: Client, event: Event) {
-	if (!event.posted) return;
+	if (!event.posted || event.endedAt) return;
 
 	try {
-		const message = await getEventMessage(client, event)
+		const message = await getEventMessage(client, event);
 		if (!message) {
 			// Message must have been deleted, repost it!
-			await postEventMessage(client, event)
+			await $events.postEvent(event, client);
 		} else {
 			const payload = await buildEventMessage(event.id, client);
-			if (!payload) throw new Error("Failed to build event message")
+			if (!payload) throw new Error("Failed to build event message");
 			await message.edit(payload);
 		}
 	} catch (err) {
@@ -229,12 +210,11 @@ export async function deleteEventMessage(client: Client, event: Event) {
 	if (!event.posted) return;
 
 	try {
-		const message = await getEventMessage(client, event)
+		const message = await getEventMessage(client, event);
 
 		if (!message || !message.deletable) return;
-		await message.delete()
+		await message.delete();
 	} catch (err) {
-		console.error("Failed to delete event message");
-		console.error(err);
+		console.error("Failed to delete event message", err);
 	}
 }

@@ -1,3 +1,4 @@
+import { Permission, hasOwnedObjectPermission } from "@frcn/shared";
 import type { Resource, User } from "@prisma/client";
 
 import type { WithModel } from "./types";
@@ -10,7 +11,8 @@ import type {
 	Resource as GQLResource,
 	Resolvers,
 } from "../../__generated__/resolvers-types";
-import { gqlErrorUnauthenticated } from "../gqlError";
+import { calculatePermissions } from "../calculatePermissions";
+import { gqlErrorOwnership, gqlErrorUnauthenticated } from "../gqlError";
 
 export function resolveResource(resource: Resource) {
 	return {
@@ -38,20 +40,20 @@ export const resourceResolvers: Resolvers = {
 		},
 		async sizeKb(source) {
 			const { _model } = source as WithModel<GQLResource, Resource>;
-			const file = await $resources.getResourceFile(_model.id)
+			const file = await $resources.getResourceFile(_model.id);
 			if (!file) return 0;
 			return file.fileSizeKb;
 		},
 		async previewUrl(source, args, context) {
 			const { _model } = source as WithModel<GQLResource, Resource>;
 			if (!_model.canPreview) return null;
-			const file = await $resources.getResourceFile(_model.id)
+			const file = await $resources.getResourceFile(_model.id);
 			if (!file) return null;
 			return `${getOrigin(context.req.secure ? "https" : "http")}/media/${file.id}/${file.fileName}`;
 		},
 		async downloadUrl(source, args, context) {
 			const { _model } = source as WithModel<GQLResource, Resource>;
-			const file = await $resources.getResourceFile(_model.id)
+			const file = await $resources.getResourceFile(_model.id);
 			if (!file) return null;
 			return `${getOrigin(context.req.secure ? "https" : "http")}/media/${file.id}/${file.fileName}?download`;
 		}
@@ -62,7 +64,7 @@ export const resourceResolvers: Resolvers = {
 			const resource = await $resources.getResource(id);
 			if (!resource) return null;
 
-			return resolveResource(resource)
+			return resolveResource(resource);
 		},
 		async getResources(source, { filter, page, limit }) {
 			const { search, tags } = filter ?? {};
@@ -91,30 +93,60 @@ export const resourceResolvers: Resolvers = {
 		async createResource(source, args, context) {
 			if (!context.user) throw gqlErrorUnauthenticated();
 
-			const resource = await $resources.createResource(context.user, args.data)
-			return resolveResource(resource)
+			const resource = await $resources.createResource(context.user, args.data);
+			return resolveResource(resource);
 		},
-		async editResource(source, args) {
+		async editResource(source, args, context) {
 			const resource = await database.resource.findUnique({
 				where: { id: args.id },
 				select: {
-					id: true
+					id: true,
+					owner: {
+						select: {
+							id: true
+						}
+					}
 				}
-			})
+			});
 			if (!resource) return null;
 
-			const updatedResource = await $resources.editResource(args.id, args.data)
+			if (!hasOwnedObjectPermission({
+				user: {
+					id: context.user?.id,
+					permissions: await calculatePermissions(context)
+				},
+				owner: resource.owner,
+				required: Permission.CreateResources,
+				override: Permission.ManageResources
+			})) throw gqlErrorOwnership();
+
+			const updatedResource = await $resources.editResource(args.id, args.data);
 			if (!updatedResource) return null;
-			return resolveResource(updatedResource)
+			return resolveResource(updatedResource);
 		},
 		async deleteResource(source, args, context) {
 			const resource = await database.resource.findUnique({
 				where: { id: args.id },
 				select: {
-					id: true
+					id: true,
+					owner: {
+						select: {
+							id: true
+						}
+					}
 				}
-			})
+			});
 			if (!resource) return false;
+
+			if (!hasOwnedObjectPermission({
+				user: {
+					id: context.user?.id,
+					permissions: await calculatePermissions(context)
+				},
+				owner: resource.owner,
+				required: Permission.CreateResources,
+				override: Permission.ManageResources
+			})) throw gqlErrorOwnership();
 
 			await $resources.deleteResource(context.app.s3Client, context.app.s3Bucket, resource.id);
 			return true;

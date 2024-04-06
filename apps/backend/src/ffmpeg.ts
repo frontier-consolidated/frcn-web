@@ -12,7 +12,7 @@ export function ffmpeg(fn: (command: fluentFfmpeg.FfmpegCommand) => fluentFfmpeg
         });
         fn(command);
         command.on("end", resolve);
-        command.on("error", reject)
+        command.on("error", reject);
 	});
 }
 

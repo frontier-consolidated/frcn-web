@@ -8,19 +8,19 @@ type ResponsePayload = {
 } | {
     requestId: string;
     error: { message: string };
-}
+};
 
 type IntegrationPayload = {
     type: string;
     message: ResponsePayload;
-}
+};
 
 type SpectrumResponse<T> = {
     code: string;
     msg: string;
     success: number;
     data: T;
-}
+};
 
 export type SpectrumMember = {
     id: string;
@@ -30,7 +30,7 @@ export type SpectrumMember = {
     signature: string;
     isGM: boolean;
     spoken_languages: string[];
-}
+};
 
 type SpectrumIdentityData = SpectrumResponse<{
     config: Record<string, string> & {
@@ -40,7 +40,7 @@ type SpectrumIdentityData = SpectrumResponse<{
     member: SpectrumMember;
     settings: Record<string, string | number | boolean | string[] | null>;
     friends: SpectrumMember[];
-}>
+}>;
 
 type SpectrumMemberAutocompleteData = SpectrumResponse<{
     total: number;
@@ -63,51 +63,51 @@ type SpectrumMemberAutocompleteData = SpectrumResponse<{
     pagesize: number;
     timed_out: boolean;
     took: number;
-}>
+}>;
 
 class Integration {
     private metaTag: HTMLMetaElement | null = null;
 
     constructor() {
         if (browser) {
-            const element = document.head.querySelector("meta[name='frcn-integration-version']")
-            this.metaTag = element as HTMLMetaElement | null
+            const element = document.head.querySelector("meta[name='frcn-integration-version']");
+            this.metaTag = element as HTMLMetaElement | null;
         }
     }
 
     isLoaded() {
-        return !!this.metaTag
+        return !!this.metaTag;
     }
 
     getVersion() {
-        return this.metaTag ? this.metaTag.getAttribute("content") ?? "0.0.0" : "0.0.0"
+        return this.metaTag ? this.metaTag.getAttribute("content") ?? "0.0.0" : "0.0.0";
     }
 
     request<T>(type: string, message: any) {
         return new Promise<T>((resolve, reject) => {
             if (!this.isLoaded()) {
-                reject(new Error("Integration not loaded"))
+                reject(new Error("Integration not loaded"));
                 return;
             }
 
-            const requestId = uuid()
+            const requestId = uuid();
             function listener(event: MessageEvent<IntegrationPayload>) {
                 if (!event.data || event.data.type !== "frcnIntegrationResponse") return;
                 
-                const message = event.data.message
+                const message = event.data.message;
                 if (message.requestId !== requestId) return;
 
                 if ("error" in message) {
-                    reject(new Error(message.error.message))
+                    reject(new Error(message.error.message));
                     return;
                 }
 
                 const response = JSON.parse(message.value) as T;
-                resolve(response)
-                window.removeEventListener("message", listener)
+                resolve(response);
+                window.removeEventListener("message", listener);
             }
         
-            window.addEventListener("message", listener)
+            window.addEventListener("message", listener);
             window.postMessage({
                 type: "frcnIntegrationRequest",
                 message: {
@@ -115,8 +115,8 @@ class Integration {
                     type,
                     message
                 }
-            })
-        })
+            });
+        });
     }
 
     async identify() {
@@ -124,9 +124,9 @@ class Integration {
             method: "POST",
             path: "/auth/identify",
             data: {}
-        })
+        });
 
-        return response.data.data
+        return response.data.data;
     }
 
     async searchUsers(text: string) {
@@ -137,10 +137,10 @@ class Integration {
                 ignore_self: true,
                 text,
             }
-        })
+        });
 
-        console.log(response)
-        return response.data.data
+        console.log(response);
+        return response.data.data;
     }
 
     async addFriend(id: string) {
@@ -150,10 +150,10 @@ class Integration {
             data: {
                 member_id: id
             }
-        })
+        });
 
-        console.log(response)
+        console.log(response);
     }
 }
 
-export const integration = new Integration()
+export const integration = new Integration();

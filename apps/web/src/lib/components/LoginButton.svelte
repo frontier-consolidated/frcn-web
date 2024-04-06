@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { browser } from "$app/environment";
 	import { Spinner } from "flowbite-svelte";
+	import { twMerge } from "tailwind-merge";
 
 	import { login, user } from "$lib/stores/UserStore";
 
@@ -10,8 +11,9 @@
 </script>
 
 <Button
+    {...$$restProps}
     size="sm"
-    class="px-8 hidden sm:!block"
+    class={twMerge("px-8", $$restProps.class)}
     on:click={() => {
         if ($user.loading) return;
         login().catch(console.error);

@@ -13,7 +13,7 @@ export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | nu
 
 	const remindersButton = new ButtonBuilder()
 		.setEmoji("🔔")
-		.setLabel("Reminders")
+		.setLabel("Reminders");
 	
 	if (dmMessageLink) {
 		remindersButton
@@ -40,6 +40,26 @@ export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | nu
 	} satisfies BaseMessageOptions;
 }
 
+export function buildRsvpSwitchMessage(rsvp: EventRsvpRole) {
+	const embed = new EmbedBuilder()
+		.setColor(PRIMARY_COLOR)
+		.setTitle(`${rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`} RSVP Change Confirmed`)
+		.setDescription(`Successfully changed RSVP to __${rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`} ${rsvp.name}__`);
+		
+	const weblinkButton = new ButtonBuilder()
+		.setLabel("View")
+		.setURL(getWebURL(`/event/${rsvp.eventId}`).href)
+		.setStyle(ButtonStyle.Link);
+		
+	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
+	buttonsRow.addComponents(weblinkButton);
+	
+	return {
+		embeds: [embed],
+		components: [buttonsRow]
+	} satisfies BaseMessageOptions;
+}
+
 export function buildRsvpDmMessage(event: Event, rsvp: EventRsvpRole, eventMessageLink: string) {
 	const startAtSeconds = Math.floor(event.startAt!.getTime() / 1000);
 
@@ -53,7 +73,13 @@ export function buildRsvpDmMessage(event: Event, rsvp: EventRsvpRole, eventMessa
 				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`,
 			},
 			{ name: "Duration", value: dates.toDuration(event.duration!) },
-		)
+		);
+	
+	const remindersButton = new ButtonBuilder()
+		.setCustomId(`reminders-${event.id}`)
+		.setEmoji("🔔")
+		.setLabel("Reminders")
+		.setStyle(ButtonStyle.Secondary);
 	
 	const unrsvpButton = new ButtonBuilder()
 		.setCustomId(`unrsvp-${event.id}`)
@@ -66,7 +92,7 @@ export function buildRsvpDmMessage(event: Event, rsvp: EventRsvpRole, eventMessa
 		.setStyle(ButtonStyle.Link);
 		
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
-	buttonsRow.addComponents(unrsvpButton, weblinkButton);
+	buttonsRow.addComponents(remindersButton, unrsvpButton, weblinkButton);
 	
 	return {
 		embeds: [embed],

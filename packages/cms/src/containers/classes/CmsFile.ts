@@ -5,7 +5,7 @@ export type CmsFileInit = {
     fileName: string;
     fileSizeKb: number;
     contentType: string;
-}
+};
 
 export class CmsFile {
     readonly id: string;
@@ -21,23 +21,23 @@ export class CmsFile {
         this.identifier = init.identifier;
         this.src = init.fileSrc;
         this.name = init.fileName;
-        this.sizeKb = init.fileSizeKb
-        this.contentType = init.contentType
+        this.sizeKb = init.fileSizeKb;
+        this.contentType = init.contentType;
     }
 
     getIdentifier() {
-        return this.identifier
+        return this.identifier;
     }
 
     setIdentifier(value: string | null | undefined) {
-        this.identifier = value ?? undefined
+        this.identifier = value ?? undefined;
     }
 
     getSrc() {
-        return this.src
+        return this.src;
     }
 
     setSrc(value: string | null | undefined) {
-        this.src = value ?? undefined
+        this.src = value ?? undefined;
     }
 }

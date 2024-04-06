@@ -17,26 +17,26 @@
             position: container.getPosition() ?? "top-left",
             title: container.getTitle(),
             content: container.getContent() ?? "",
-        }
+        };
     }
     
     export let container_: CmsContainer;
     export let validator: FieldValidator;
     export let isChild: boolean = false;
 
-    let container = container_.as<AboutSectionContainer>()
-    $: container = container_.as<AboutSectionContainer>()
+    let container = container_.as<AboutSectionContainer>();
+    $: container = container_.as<AboutSectionContainer>();
 
-    let defaultImageFile = container.getDefaultImageFile()
-    let desktopImageFile = container.getDesktopImageFile()
+    let defaultImageFile = container.getDefaultImageFile();
+    let desktopImageFile = container.getDesktopImageFile();
 
-    let editData = createEditData(container)
+    let editData = createEditData(container);
     $: {
-        container.setIdentifier(editData.identifier)
-        container.setPosition(editData.position)
-        container.setTitle(editData.title)
-        container.setContent(editData.content)
-        getContext<() => void>("containerchange")()
+        container.setIdentifier(editData.identifier);
+        container.setPosition(editData.position);
+        container.setTitle(editData.title);
+        container.setContent(editData.content);
+        getContext<() => void>("containerchange")();
     }
 
     async function uploadFile(file: File, identifier: string, currentFile: CmsFile | null) {
@@ -45,18 +45,18 @@
 			message: "Uploading file...",
 		});
 
-		const formData = new FormData()
-		formData.append("file", file)
-        formData.append("metadata", JSON.stringify({ identifier }))
+		const formData = new FormData();
+		formData.append("file", file);
+        formData.append("metadata", JSON.stringify({ identifier }));
 		try {
 			const response = await api.post(Routes.upload("cms_container", container.id), formData, {
 				headers: {
 					"Content-Type": "multipart/form-data"
 				},
-			})
+			});
 
             if (currentFile) {
-                container.removeFile(currentFile)
+                container.removeFile(currentFile);
             }
 
             currentFile = new CmsFile({
@@ -66,8 +66,8 @@
                 contentType: response.data.contentType,
                 fileSrc: response.data.previewUrl,
                 identifier
-            })
-            container.pushFile(currentFile)
+            });
+            container.pushFile(currentFile);
             
             pushNotification({
                 type: "success",
@@ -89,7 +89,7 @@
             variables: {
                 id: file.id
             }
-        })
+        });
 
         if (errors && errors.length > 0) {
             pushNotification({
@@ -99,7 +99,7 @@
             console.error(errors);
             return false;
         }
-        return true
+        return true;
     }
 </script>
 
@@ -157,12 +157,12 @@
     <Label for="about-section-default-image-{container.id}" class="mb-2">Default Image</Label>
     <ImageInput id="about-section-default-image-{container.id}" name="about-section-default-image" src={defaultImageFile?.getSrc()} 
         upload={async (file) => {
-            defaultImageFile = await uploadFile(file, AboutSectionContainer.DEFAULT_IMAGE_IDENTIFIER, defaultImageFile)
+            defaultImageFile = await uploadFile(file, AboutSectionContainer.DEFAULT_IMAGE_IDENTIFIER, defaultImageFile);
         }}
         remove={async () => {
             if (!defaultImageFile) return;
             if (await removeFile(defaultImageFile)) {
-                defaultImageFile = null
+                defaultImageFile = null;
             }
         }}
     />
@@ -174,12 +174,12 @@
     <Label for="about-section-default-image-{container.id}" class="mb-2">Desktop Image</Label>
     <ImageInput id="about-section-default-image-{container.id}" name="about-section-default-image" src={desktopImageFile?.getSrc()} 
         upload={async (file) => {
-            desktopImageFile = await uploadFile(file, AboutSectionContainer.DESKTOP_IMAGE_IDENTIFIER, desktopImageFile)
+            desktopImageFile = await uploadFile(file, AboutSectionContainer.DESKTOP_IMAGE_IDENTIFIER, desktopImageFile);
         }}
         remove={async () => {
             if (!desktopImageFile) return;
             if (await removeFile(desktopImageFile)) {
-                desktopImageFile = null
+                desktopImageFile = null;
             }
         }}
     />

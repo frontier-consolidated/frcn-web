@@ -12,9 +12,9 @@ import { Queue, queue } from "./queue";
 
 const concurrency = 1;
 
-const prerenderedDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "prerendered")
+const prerenderedDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "prerendered");
 if (!fs.existsSync(prerenderedDir)) {
-	mkdirp(prerenderedDir)
+	mkdirp(prerenderedDir);
 }
 
 let server: Server;
@@ -24,7 +24,7 @@ const invalidateIsrFiles = new Map<string, boolean>();
 
 export function configure_isr(opts: { server: Server, asset_dir: string }) {
 	server = opts.server;
-	assetsDir = opts.asset_dir
+	assetsDir = opts.asset_dir;
 }
 
 export function is_isr_route(pathname: string) {
@@ -33,21 +33,21 @@ export function is_isr_route(pathname: string) {
 
 export function invalidate_isr_route(pathname: string) {
 	if (!is_isr_route(pathname)) {
-		throw new Error("Tried to invalidate non-isr route: " + pathname)
+		throw new Error("Tried to invalidate non-isr route: " + pathname);
 	}
 
-	console.log("Invalidate route", pathname, "- rerendering...")
+	console.log("Invalidate route", pathname, "- rerendering...");
 	setImmediate(async () => {
 		const q = queue(concurrency);
 		const saved = new Map<string, string>();
-		q.add(() => render_isr_route(pathname, q, saved))
-		await q.done()
-	})
+		q.add(() => render_isr_route(pathname, q, saved));
+		await q.done();
+	});
 }
 
 async function compress_file(file: string, format: "gz" | "br" = "gz") {
 	const compress =
-		format == 'br'
+		format == "br"
 			? zlib.createBrotliCompress({
 					params: {
 						[zlib.constants.BROTLI_PARAM_MODE]: zlib.constants.BROTLI_MODE_TEXT,
@@ -68,7 +68,7 @@ function mkdirp(dir: string) {
 		fs.mkdirSync(dir, { recursive: true });
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (e: any) {
-		if (e.code === 'EEXIST') {
+		if (e.code === "EEXIST") {
 			if (!fs.statSync(dir).isDirectory()) {
 				throw new Error(`Cannot create directory ${dir}, a file already exists at this position`);
 			}
@@ -78,10 +78,10 @@ function mkdirp(dir: string) {
 	}
 }
 
-const internal = new URL('isr-internal://');
+const internal = new URL("isr-internal://");
 function resolve(base: string, path: string) {
 	// special case
-	if (path[0] === '/' && path[1] === '/') return path;
+	if (path[0] === "/" && path[1] === "/") return path;
 
 	let url = new URL(base, internal);
 	url = new URL(path, url);
@@ -90,7 +90,7 @@ function resolve(base: string, path: string) {
 }
 
 function is_root_relative(path: string) {
-	return path[0] === '/' && path[1] !== '/';
+	return path[0] === "/" && path[1] !== "/";
 }
 
 function decode_uri(uri: string) {
@@ -105,22 +105,22 @@ function decode_uri(uri: string) {
 }
 
 const escape_html_attr_dict = {
-	'&': '&amp;',
-	'"': '&quot;'
+	"&": "&amp;",
+	"\"": "&quot;"
 } as Record<string, string>;
 
 const escape_html_attr_regex = new RegExp(
 	// special characters
-	`[${Object.keys(escape_html_attr_dict).join('')}]|` +
+	`[${Object.keys(escape_html_attr_dict).join("")}]|` +
 		// high surrogate without paired low surrogate
-		'[\\ud800-\\udbff](?![\\udc00-\\udfff])|' +
+		"[\\ud800-\\udbff](?![\\udc00-\\udfff])|" +
 		// a valid surrogate pair, the only match with 2 code units
 		// we match it so that we can match unpaired low surrogates in the same pass
 		// TODO: use lookbehind assertions once they are widely supported: (?<![\ud800-udbff])[\udc00-\udfff]
-		'[\\ud800-\\udbff][\\udc00-\\udfff]|' +
+		"[\\ud800-\\udbff][\\udc00-\\udfff]|" +
 		// unpaired low surrogate (see previous match)
-		'[\\udc00-\\udfff]',
-	'g'
+		"[\\udc00-\\udfff]",
+	"g"
 );
 
 function escape_html_attr(str: string) {
@@ -137,10 +137,10 @@ function escape_html_attr(str: string) {
 }
 
 function output_filename(path: string, is_html: boolean) {
-	const file = path.slice(base.length + 1) || 'index.html';
+	const file = path.slice(base.length + 1) || "index.html";
 
-	if (is_html && !file.endsWith('.html')) {
-		return file + (file.endsWith('/') ? 'index.html' : '.html');
+	if (is_html && !file.endsWith(".html")) {
+		return file + (file.endsWith("/") ? "index.html" : ".html");
 	}
 
 	return file;
@@ -149,28 +149,28 @@ function output_filename(path: string, is_html: boolean) {
 const REDIRECT = 3;
 
 async function save_isr_render(response: Response, body: Buffer, pathname: string, q: Queue, saved: Map<string, string>) {
-	const encoded = encodeURI(pathname)
+	const encoded = encodeURI(pathname);
 	const response_type = Math.floor(response.status / 100);
 
 	const headers = Object.fromEntries(response.headers);
 
-	const type = headers['content-type'];
-	const is_html = response_type === REDIRECT || type === 'text/html';
+	const type = headers["content-type"];
+	const is_html = response_type === REDIRECT || type === "text/html";
 
 	const file = output_filename(pathname, is_html);
 	const dest = path.join(prerenderedDir, file);
-	const dir = path.dirname(dest)
+	const dir = path.dirname(dest);
 
 	if (response_type === REDIRECT) {
-		const location = headers['location'];
+		const location = headers["location"];
 
 		if (location) {
 			const resolved = resolve(encoded, location);
 			if (is_root_relative(resolved)) {
-				q.add(() => render_isr_route(decode_uri(resolved), q, saved))
+				q.add(() => render_isr_route(decode_uri(resolved), q, saved));
 			}
 
-			if (!headers['x-sveltekit-normalize']) {
+			if (!headers["x-sveltekit-normalize"]) {
 				mkdirp(dir);
 
 				fs.writeFileSync(
@@ -191,12 +191,12 @@ async function save_isr_render(response: Response, body: Buffer, pathname: strin
 		mkdirp(dir);
 	
 		fs.writeFileSync(dest, body);
-		await Promise.all([compress_file(dest, 'gz'), compress_file(dest, 'br')]);
+		await Promise.all([compress_file(dest, "gz"), compress_file(dest, "br")]);
 		
-		console.log(`Successfully rendered isr route '${pathname}' to ${dest}`)
+		console.log(`Successfully rendered isr route '${pathname}' to ${dest}`);
 	}
 
-	saved.set(file, dest)
+	saved.set(file, dest);
 }
 
 export async function render_isr_route(pathname: string, q: Queue, saved: Map<string, string>) {
@@ -204,7 +204,7 @@ export async function render_isr_route(pathname: string, q: Queue, saved: Map<st
 
 	const response = await server.respond(new Request("http://isr" + pathname), {
 		getClientAddress() {
-			throw new Error('Cannot read clientAddress during prerendering');
+			throw new Error("Cannot read clientAddress during prerendering");
 		},
 		// @ts-expect-error not in public type
 		prerendering: {
@@ -219,14 +219,14 @@ export async function render_isr_route(pathname: string, q: Queue, saved: Map<st
 			// stuff in `static`
 			return fs.readFileSync(path.join(assetsDir, file));
 		}
-	})
+	});
 
 	const body = Buffer.from(await response.arrayBuffer());
 
-	await save_isr_render(response, body, pathname, q, saved)
+	await save_isr_render(response, body, pathname, q, saved);
 
 	for (const [dependency_path, result] of dependencies) {
-		const encoded_dependency_path = new URL(dependency_path, 'http://localhost').pathname;
+		const encoded_dependency_path = new URL(dependency_path, "http://localhost").pathname;
 		const decoded_dependency_path = decode_uri(encoded_dependency_path);
 
 		const body = result.body ?? new Uint8Array(await result.response.arrayBuffer());
@@ -238,8 +238,8 @@ export async function render_isr_route(pathname: string, q: Queue, saved: Map<st
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const headers = Object.fromEntries(response.headers);
 
-	isrRendered.set(pathname, true)
-	invalidateIsrFiles.set(pathname, true)
+	isrRendered.set(pathname, true);
+	invalidateIsrFiles.set(pathname, true);
 }
 
 export async function render_isr_routes() {
@@ -250,14 +250,14 @@ export async function render_isr_routes() {
 	const saved = new Map<string, string>();
 
 	function enqueue(pathname: string) {
-		return q.add(() => render_isr_route(pathname, q, saved))
+		return q.add(() => render_isr_route(pathname, q, saved));
 	}
 
-	console.log("Initial rendering isr routes...")
+	console.log("Initial rendering isr routes...");
 	for (const pathname of pathnames) {
-		enqueue(base + pathname)
+		enqueue(base + pathname);
 	}
 
 	await q.done();
-	console.log("Isr routes rendered!")
+	console.log("Isr routes rendered!");
 }

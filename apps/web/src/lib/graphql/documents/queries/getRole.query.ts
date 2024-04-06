@@ -3,11 +3,7 @@ import { gql } from "../../__generated__";
 export const GET_ROLE = gql(`
 	query GetRole($roleId: ID!) {
 		role: getRole(id: $roleId) {
-			id
-			name
-			discordId
-			primary
-			permissions
+			...RoleFragment
 			users {
 				id
 				name

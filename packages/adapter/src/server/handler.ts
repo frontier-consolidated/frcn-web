@@ -1,35 +1,35 @@
 /* eslint-disable import/no-unresolved */
-import 'SHIMS';
+import "SHIMS";
 import fs from "node:fs";
-import type { IncomingHttpHeaders } from 'node:http';
+import type { IncomingHttpHeaders } from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { parse as polka_url_parser } from '@polka/url';
+import { parse as polka_url_parser } from "@polka/url";
 import { getRequest, setResponse, createReadableStream } from "@sveltejs/kit/node";
 import { env } from "ENV";
 import { manifest, prerendered, base } from "MANIFEST";
-import type { Middleware } from 'polka';
+import type { Middleware } from "polka";
 import { Server } from "SERVER";
 import sirv from "sirv";
 
-import { invalidate_isr_route, render_isr_routes, configure_isr } from './isr';
+import { invalidate_isr_route, render_isr_routes, configure_isr } from "./isr";
 
 /* global ENV_PREFIX */
 
 const server = new Server(manifest);
 
-const origin = env('ORIGIN', undefined);
-const xff_depth = parseInt(env('XFF_DEPTH', '1'));
-const address_header = env('ADDRESS_HEADER', '').toLowerCase();
-const protocol_header = env('PROTOCOL_HEADER', '').toLowerCase();
-const host_header = env('HOST_HEADER', 'host').toLowerCase();
-const port_header = env('PORT_HEADER', '').toLowerCase();
-const body_size_limit = Number(env('BODY_SIZE_LIMIT', '524288'));
+const origin = env("ORIGIN", undefined);
+const xff_depth = parseInt(env("XFF_DEPTH", "1"));
+const address_header = env("ADDRESS_HEADER", "").toLowerCase();
+const protocol_header = env("PROTOCOL_HEADER", "").toLowerCase();
+const host_header = env("HOST_HEADER", "host").toLowerCase();
+const port_header = env("PORT_HEADER", "").toLowerCase();
+const body_size_limit = Number(env("BODY_SIZE_LIMIT", "524288"));
 
 if (isNaN(body_size_limit)) {
 	throw new Error(
-		`Invalid BODY_SIZE_LIMIT: '${env('BODY_SIZE_LIMIT')}'. Please provide a numeric value.`
+		`Invalid BODY_SIZE_LIMIT: '${env("BODY_SIZE_LIMIT")}'. Please provide a numeric value.`
 	);
 }
 
@@ -42,7 +42,7 @@ await server.init({
 	read: (file) => createReadableStream(`${asset_dir}/${file}`)
 });
 
-configure_isr({ server, asset_dir })
+configure_isr({ server, asset_dir });
 
 function serve(path: string, client: boolean = false, prerendered = false): Middleware | null {
     if (!fs.existsSync(path)) return null;
@@ -56,11 +56,11 @@ function serve(path: string, client: boolean = false, prerendered = false): Midd
             ? ((res, pathname) => {
                 // only apply to build directory, not e.g. version.json
                 if (pathname.startsWith(`/${manifest.appPath}/immutable/`) && res.statusCode === 200) {
-                    res.setHeader('cache-control', 'public,max-age=31536000,immutable');
+                    res.setHeader("cache-control", "public,max-age=31536000,immutable");
                 }
             })
             : undefined
-    })
+    });
 }
 
 // required because the static file server ignores trailing slashes
@@ -82,7 +82,7 @@ function serve_prerendered(): Middleware {
 		}
 
 		// remove or add trailing slash as appropriate
-		let location = pathname.at(-1) === '/' ? pathname.slice(0, -1) : pathname + '/';
+		let location = pathname.at(-1) === "/" ? pathname.slice(0, -1) : pathname + "/";
 		if (prerendered.has(location)) {
 			if (query) location += search;
 			res.writeHead(308, { location }).end();
@@ -103,7 +103,7 @@ const ssr: Middleware = async (req, res) => {
 		});
 	} catch {
 		res.statusCode = 400;
-		res.end('Bad Request');
+		res.end("Bad Request");
 		return;
 	}
 
@@ -116,23 +116,23 @@ const ssr: Middleware = async (req, res) => {
 					if (!(address_header in req.headers)) {
 						throw new Error(
 							`Address header was specified with ${
-								ENV_PREFIX + 'ADDRESS_HEADER'
+								ENV_PREFIX + "ADDRESS_HEADER"
 							}=${address_header} but is absent from request`
 						);
 					}
 
-					const value = /** @type {string} */ (req.headers[address_header]) || '';
+					const value = /** @type {string} */ (req.headers[address_header]) || "";
 
-					if (address_header === 'x-forwarded-for') {
-						const addresses = (value as string).split(',');
+					if (address_header === "x-forwarded-for") {
+						const addresses = (value as string).split(",");
 
 						if (xff_depth < 1) {
-							throw new Error(`${ENV_PREFIX + 'XFF_DEPTH'} must be a positive integer`);
+							throw new Error(`${ENV_PREFIX + "XFF_DEPTH"} must be a positive integer`);
 						}
 
 						if (xff_depth > addresses.length) {
 							throw new Error(
-								`${ENV_PREFIX + 'XFF_DEPTH'} is ${xff_depth}, but only found ${
+								`${ENV_PREFIX + "XFF_DEPTH"} is ${xff_depth}, but only found ${
 									addresses.length
 								} addresses`
 							);
@@ -171,7 +171,7 @@ function sequence(handlers: Middleware[]): Middleware {
 }
 
 function get_origin(headers: IncomingHttpHeaders) {
-	const protocol = (protocol_header && headers[protocol_header]) || 'https';
+	const protocol = (protocol_header && headers[protocol_header]) || "https";
 	const host = headers[host_header];
 	const port = port_header && headers[port_header];
 	if (port) {
@@ -184,19 +184,19 @@ function get_origin(headers: IncomingHttpHeaders) {
 export async function on_start() {
 	await render_isr_routes();
 
-	const main = "MAIN_ENTRYPOINT" as string
+	const main = "MAIN_ENTRYPOINT" as string;
 	if (main === "false") return;
 
-	const mainModule = await import(/* @vite-ignore */ main) as { default?: () => void | Promise<void> }
+	const mainModule = await import(/* @vite-ignore */ main) as { default?: () => void | Promise<void> };
 	if (!mainModule.default) throw new Error("No default export from main server module: " + main);
-	console.log("Starting main server module...")
-	await Promise.resolve(mainModule.default())
+	console.log("Starting main server module...");
+	await Promise.resolve(mainModule.default());
 }
 
 export const handler = sequence(
 	[
-		serve(path.join(dir, 'client'), true),
-		serve(path.join(dir, 'static')),
+		serve(path.join(dir, "client"), true),
+		serve(path.join(dir, "static")),
 		serve_prerendered(),
 		ssr
 	].filter((m): m is Middleware => Boolean(m))

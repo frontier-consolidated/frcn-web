@@ -6,11 +6,11 @@ export class SectionContainer extends CmsContainer {
         super({
             type: CMSContainerType.Section,
             ...init
-        })
+        });
     }
 
     override getAllowedChildren() {
-        return [CMSContainerType.Section, CMSContainerType.CallToAction]
+        return [CMSContainerType.Section, CMSContainerType.CallToAction];
     }
 
     clone(): SectionContainer {
@@ -19,6 +19,6 @@ export class SectionContainer extends CmsContainer {
             identifier: this.identifier,
             title: this.title,
             content: this.content,
-        })
+        });
     }
 }

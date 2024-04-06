@@ -50,8 +50,8 @@ export async function createApp(config: CreateAppOptions) {
 
     const monitor = statusMonitor({
         socketPath: getBasePath() + "/socket.io"
-    }) as RequestHandler & { middleware: RequestHandler, pageRoute: RequestHandler }
-    app.use(monitor.middleware)
+    }) as RequestHandler & { middleware: RequestHandler, pageRoute: RequestHandler };
+    app.use(monitor.middleware);
 
     app.get("/health", (_req, res) => {
         res.setHeader("Cache-Control", "private, no-cache, no-store, max-ages=0");
@@ -77,23 +77,23 @@ export async function createApp(config: CreateAppOptions) {
     app.use(express.urlencoded({ extended: true }));
 
     app.use(sessionMiddlewares(config.sessionConfig));
-    app.use(accesskeyMiddleware(config.accesskeyConfig))
+    app.use(accesskeyMiddleware(config.accesskeyConfig));
 
     app.get("/metrics", async (req, res, next) => {
         if (!req.user) {
             return res.status(401).send({
                 message: "Must be authenticated"
-            })
+            });
         }
 
         if (!hasPermission(await $users.getPermissions(req.user), Permission.Admin)) {
             return res.status(403).send({
                 message: "Missing permissions"
-            })
+            });
         }
 
-        next()
-    }, monitor.pageRoute)
+        next();
+    }, monitor.pageRoute);
 
     const apolloServer = createApolloServer(server, {
         introspection: true,
@@ -101,9 +101,9 @@ export async function createApp(config: CreateAppOptions) {
 
     const { client: discordClient, rest: discordRest } = createDiscordClient(config.discordConfig.token);
 
-    const s3Client = createS3Client(config.s3Config.region, config.s3Config.clientKey, config.s3Config.clientSecret)
+    const s3Client = createS3Client(config.s3Config.region, config.s3Config.clientKey, config.s3Config.clientSecret);
 
-    const cmsBus = await createCmsEventBus(config.cmsConfig.databaseUrl, config.cmsConfig.schema)
+    const cmsBus = await createCmsEventBus(config.cmsConfig.databaseUrl, config.cmsConfig.schema);
 
     const context: Context = {
         expressApp: app,
@@ -131,15 +131,15 @@ export async function createApp(config: CreateAppOptions) {
     }
 
     let webOnStart: (() => Promise<void>) | null = null;
-    const webHandler = path.join(__dirname, "../../web/build/handler.js")
+    const webHandler = path.join(__dirname, "../../web/build/handler.js");
     if (fs.existsSync(webHandler) && process.env.SERVE_WEB === "true" && isProd()) {
         const { handler, on_start } = await import(webHandler) as {
             handler: RequestHandler;
             on_start: () => Promise<void>;
-        }
+        };
 
-        app.use(handler)
-        webOnStart = on_start
+        app.use(handler);
+        webOnStart = on_start;
     }
 
     app.use((err: Error | Error[], req: Request, res: Response, _next: NextFunction) => {
@@ -160,7 +160,7 @@ export async function createApp(config: CreateAppOptions) {
         context,
         async onStart() {
             if (webOnStart) {
-                await webOnStart()
+                await webOnStart();
             }
         }
     };

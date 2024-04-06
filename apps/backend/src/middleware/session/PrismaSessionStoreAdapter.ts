@@ -95,7 +95,7 @@ export default class PrismaSessionStoreAdapter extends Store {
 						userId,
 						expiresAt,
 					},
-				})
+				});
 			})
 			.then(() => {
 				// Delete sessions from the same device that are not being used
