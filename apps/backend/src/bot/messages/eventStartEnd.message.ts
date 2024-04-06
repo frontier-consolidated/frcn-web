@@ -86,6 +86,8 @@ export function buildEventEndedMessage(event: Event) {
 }
 
 export async function postEventEndMessage(client: Client, event: Event) {
+	if (!event.posted) return;
+	
 	const thread = await $events.getEventThread(event, client);
 
 	const payload = buildEventEndedMessage(event);
