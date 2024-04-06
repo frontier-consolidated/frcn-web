@@ -123,12 +123,12 @@
 				</svelte:fragment>
 				{hideMembers ? "Show Members" : "Hide Members"}
 			</SidebarButton>
-			<SidebarButton class="text-white bg-primary-500 hover:bg-primary-600 dark:bg-primary-700 dark:hover:bg-primary-600">
+			<!-- <SidebarButton class="text-white bg-primary-500 hover:bg-primary-600 dark:bg-primary-700 dark:hover:bg-primary-600">
 				<PlusSolid slot="icon" size="sm" tabindex="-1" />
 				Create Team
-			</SidebarButton>
+			</SidebarButton> -->
 			<SidebarGroup ulClass={hideMembers ? "hidden" : ""}>
-				<EventTeam bind:event={data} />
+				<!-- <EventTeam bind:event={data} /> -->
 				{#if data.members.length > 0}
 					{#each data.members as member}
 						<EventMember bind:event={data} {member} />
