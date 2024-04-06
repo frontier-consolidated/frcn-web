@@ -2,9 +2,8 @@
 	import { goto, invalidate } from "$app/navigation";
 	import { strings, EventTypeOptions } from "@frcn/shared";
 	import { getLocations } from "@frcn/shared/locations";
-	import { Alert, Checkbox, Helper, Input, Label, Toggle } from "flowbite-svelte";
+	import { Checkbox, Helper, Input, Label, Toggle } from "flowbite-svelte";
 	import {
-		InfoCircleSolid,
 		EditOutline,
 		CaretRightSolid,
 		CloseSolid,
@@ -218,16 +217,6 @@
 						</div>
 					{/if}
 				</Field>
-				<Alert color="red" class="dark:bg-gray-900">
-					<span slot="icon">
-						<InfoCircleSolid slot="icon" size="sm" tabindex="-1" />
-						<span class="sr-only">Info</span>
-					</span>
-					<p class="font-medium"
-						>NOTE: The above settings will be visible to anyone with a
-						link to the event</p
-					>
-				</Alert>
 				<Field {validator} for="event-description" value={editData.description}>
 					<Label for="event-description" class="mb-2">Event Description</Label>
 					<MarkdownEditor
