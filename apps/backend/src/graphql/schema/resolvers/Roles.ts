@@ -154,6 +154,43 @@ export const roleResolvers: Resolvers = {
 
 			await $roles.reorderRoles(args.order);
 			return args.order;
+		},
+		async changePrimaryRole(source, args) {
+			const role = await $roles.getRole(args.roleId);
+			if (!role) throw gqlErrorBadInput(`Could not find role with id: ${args.roleId}`);
+			if (!role.primary) throw gqlErrorBadInput("Role is not a primary role");
+			
+			const user = await $users.getUser(args.userId);
+			if (!user) throw gqlErrorBadInput(`Could not find user with id: ${args.userId}`);
+
+			await $roles.changePrimaryRole(role, user);
+			return resolveUserRole(role);
+		},
+		async giveUserRole(source, args) {
+			const role = await $roles.getRole(args.roleId);
+			if (!role) throw gqlErrorBadInput(`Could not find role with id: ${args.roleId}`);
+			if (role.primary) throw gqlErrorBadInput("Cannot give primary role use changePrimaryRole");
+			
+			const user = await $users.getUser(args.userId);
+			if (!user) throw gqlErrorBadInput(`Could not find user with id: ${args.userId}`);
+			
+			if (await $roles.hasRole(role, user)) return null;
+
+			await $roles.giveRole(role, user);
+			return resolveUserRole(role);
+		},
+		async removeUserRole(source, args) {
+			const role = await $roles.getRole(args.roleId);
+			if (!role) throw gqlErrorBadInput(`Could not find role with id: ${args.roleId}`);
+			if (role.primary) throw gqlErrorBadInput("Cannot remove primary role use changePrimaryRole");
+			
+			const user = await $users.getUser(args.userId);
+			if (!user) throw gqlErrorBadInput(`Could not find user with id: ${args.userId}`);
+			
+			if (!(await $roles.hasRole(role, user))) return false;
+
+			await $roles.removeRole(role, user);
+			return true;
 		}
 	}
 };

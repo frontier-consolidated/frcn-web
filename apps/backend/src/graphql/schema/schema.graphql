@@ -291,6 +291,10 @@ input EventTeamEditInput {
 	name: String @constraint(maxLength: 255)
 }
 
+input UserFilterInput {
+	search: String @constraint(maxLength: 255)
+}
+
 input SystemEditInput {
 	discordGuildId: ID
 	defaultEventChannelId: Int
@@ -372,7 +376,11 @@ type Query {
 	getRole(id: ID!): UserRole @permission(has: ManageRoles)
 
 	# System
-	getAllUsers: [User!]! @permission(has: ManageSystem)
+	getAllUsers(
+		filter: UserFilterInput
+		page: Int @constraint(min: 0)
+		limit: Int @constraint(min: 1, max: 100)
+	): PagedUser! @permission(has: ManageSystem)
 
 	getAllEventChannels: [EventChannel!]!
 		@permission(one: [CreateEvents, ManageEvents, ManageSystem])
@@ -441,7 +449,8 @@ type Mutation {
 	syncRole(id: ID!): UserRole @permission(has: ManageRoles)
 	reorderRoles(order: [ID!]!): [ID!]! @permission(has: ManageRoles)
 
-	giveUserRole(userId: ID!, roleId: ID!): Boolean! @permission(has: ManageRoles)
+	changePrimaryRole(userId: ID!, roleId: ID!): UserRole @permission(has: ManageRoles)
+	giveUserRole(userId: ID!, roleId: ID!): UserRole @permission(has: ManageRoles)
 	removeUserRole(userId: ID!, roleId: ID!): Boolean! @permission(has: ManageRoles)
 
 	# System

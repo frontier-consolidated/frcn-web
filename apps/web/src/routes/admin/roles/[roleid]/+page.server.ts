@@ -4,7 +4,9 @@ import { Queries } from "$lib/graphql";
 
 import type { PageServerLoad } from "./$types";
 
-export const load = (async ({ locals, params }) => {
+export const load = (async ({ locals, params, depends }) => {
+    depends("app:currentrole");
+    
     const { data: roleData } = await locals.apollo.query({
         query: Queries.GET_ROLE,
         variables: {

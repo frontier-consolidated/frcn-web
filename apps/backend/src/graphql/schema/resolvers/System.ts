@@ -68,9 +68,23 @@ export const systemResolvers: Resolvers = {
 	},
 
 	Query: {
-		async getAllUsers() {
-			const users = await $users.getAllUsers();
-			return users.map(resolveUser);
+		async getAllUsers(source, { filter, page, limit }) {
+			const result = await $users.getUsers(
+				{
+					search: filter?.search ?? undefined,
+				},
+				page ?? undefined,
+				limit ?? undefined
+			);
+
+			return {
+				items: result.items.map(resolveUser),
+				itemsPerPage: result.itemsPerPage,
+				page: result.page,
+				nextPage: result.nextPage,
+				prevPage: result.prevPage,
+				total: result.total,
+			};
 		},
 		async getEventChannel(source, args) {
 			const channel = await $events.getEventChannel(args.id);

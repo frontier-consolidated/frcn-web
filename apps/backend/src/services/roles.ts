@@ -198,6 +198,58 @@ async function hasOneOfRoles(roles: UserRole[], user: User) {
 	return false;
 }
 
+async function changePrimaryRole(role: UserRole, user: User) {
+	if (!role.primary) throw new Error("Use giveRole()/removeRole() to add/remove non primary roles");
+
+	await database.user.update({
+		where: { id: user.id },
+		data: {
+			primaryRole: {
+				connect: {
+					id: role.id
+				}
+			}
+		}
+	});
+}
+
+async function giveRole(role: UserRole, user: User) {
+	if (role.primary) throw new Error("Use changePrimaryRole() to change a user's primary role");
+
+	await database.user.update({
+		where: { id: user.id },
+		data: {
+			roles: {
+				create: {
+					role: {
+						connect: {
+							id: role.id
+						}
+					}
+				}
+			}
+		}
+	});
+}
+
+async function removeRole(role: UserRole, user: User) {
+	if (role.primary) throw new Error("Use changePrimaryRole() to change a user's primary role");
+
+	await database.user.update({
+		where: { id: user.id },
+		data: {
+			roles: {
+				delete: {
+					roleId_userId: {
+						roleId: role.id,
+						userId: user.id
+					}
+				}
+			}
+		}
+	});
+}
+
 function resolvePermissions(roles: UserRole[]) {
 	let permissions = 0;
 	for (const role of roles) {
@@ -219,5 +271,8 @@ export const $roles = {
 	hasPrimaryRolePrivileges,
 	hasRole,
 	hasOneOfRoles,
+	changePrimaryRole,
+	giveRole,
+	removeRole,
 	resolvePermissions,
 };

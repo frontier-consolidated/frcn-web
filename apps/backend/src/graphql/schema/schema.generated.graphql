@@ -160,10 +160,10 @@ type Event {
 	roles: [EventRsvpRole!]!
 	members: [EventMember!]!
 	teams: [EventTeam!]!
-	mentions: [ID!]! @permission(has: CreateEvents)
-	settings: EventSettings! @permission(has: CreateEvents)
-	accessType: EventAccessType! @permission(has: CreateEvents)
-	accessRoles: [UserRole!]! @permission(has: CreateEvents)
+	mentions: [ID!]! @permission(one: [CreateEvents, ManageEvents])
+	settings: EventSettings! @permission(one: [CreateEvents, ManageEvents])
+	accessType: EventAccessType! @permission(one: [CreateEvents, ManageEvents])
+	accessRoles: [UserRole!]! @permission(one: [CreateEvents, ManageEvents])
 }
 
 type EventChannel {
@@ -291,6 +291,10 @@ input EventTeamEditInput {
 	name: String @constraint(maxLength: 255)
 }
 
+input UserFilterInput {
+	search: String @constraint(maxLength: 255)
+}
+
 input SystemEditInput {
 	discordGuildId: ID
 	defaultEventChannelId: Int
@@ -368,21 +372,26 @@ type Query {
 	): PagedResource
 
 	# Roles
-	getRoles: [UserRole!]! @permission(one: [CreateEvents, ManageRoles])
+	getRoles: [UserRole!]! @permission(one: [CreateEvents, ManageEvents, ManageRoles])
 	getRole(id: ID!): UserRole @permission(has: ManageRoles)
 
 	# System
-	getAllUsers: [User!]! @permission(has: ManageSystem)
+	getAllUsers(
+		filter: UserFilterInput
+		page: Int @constraint(min: 0)
+		limit: Int @constraint(min: 1, max: 100)
+	): PagedUser! @permission(has: ManageSystem)
 
-	getAllEventChannels: [EventChannel!]! @permission(one: [CreateEvents, ManageSystem])
+	getAllEventChannels: [EventChannel!]!
+		@permission(one: [CreateEvents, ManageEvents, ManageSystem])
 	getEventChannel(id: Int!): EventChannel @permission(has: ManageSystem)
 
 	getAllDiscordTextChannels: [DiscordChannel!]! @permission(has: ManageSystem)
 	getAllDiscordVoiceChannels: [DiscordChannel!]! @permission(has: ManageSystem)
 	getAllDiscordCategories: [DiscordChannel!]! @permission(has: ManageSystem)
-	getAllDiscordEmojis: DiscordEmojis! @permission(has: CreateEvents)
+	getAllDiscordEmojis: DiscordEmojis! @permission(one: [CreateEvents, ManageEvents])
 	getAllDiscordRoles(everyone: Boolean): [DiscordRole!]!
-		@permission(one: [CreateEvents, ManageRoles])
+		@permission(one: [CreateEvents, ManageEvents, ManageRoles])
 	getSystemSettings: SystemSettings! @permission(has: ManageSystem)
 
 	getCurrentAccessKey: AccessKey
@@ -405,27 +414,33 @@ type Mutation {
 	deleteCurrentUser: Boolean!
 
 	# Events
-	createEvent(startAt: Timestamp): ID! @permission(has: CreateEvents)
-	editEvent(id: ID!, data: EventEditInput!): Event @permission(has: CreateEvents)
-	postEvent(id: ID!): Boolean! @permission(has: CreateEvents)
-	unpostEvent(id: ID!): Boolean! @permission(has: CreateEvents)
-	endEvent(id: ID!): Boolean! @permission(has: CreateEvents)
-	archiveEvent(id: ID!): Boolean! @permission(has: CreateEvents)
-	deleteEvent(id: ID!): Boolean! @permission(has: CreateEvents)
+	createEvent(startAt: Timestamp): ID! @permission(one: [CreateEvents, ManageEvents])
+	editEvent(id: ID!, data: EventEditInput!): Event @permission(one: [CreateEvents, ManageEvents])
+	postEvent(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
+	unpostEvent(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
+	endEvent(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
+	archiveEvent(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
+	deleteEvent(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
 	rsvpForEvent(id: ID!, rsvp: ID!): Boolean!
 	unrsvpForEvent(id: ID!): Boolean!
-	inviteToEvent(eventId: ID!, userId: ID!): Boolean! @permission(has: CreateEvents)
+	inviteToEvent(eventId: ID!, userId: ID!): Boolean!
+		@permission(one: [CreateEvents, ManageEvents])
 	setEventMemberTeam(member: ID!, team: ID): Boolean!
-	kickEventMember(member: ID!): Boolean! @permission(has: CreateEvents)
+		@permission(one: [CreateEvents, ManageEvents])
+	kickEventMember(member: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
 
-	createEventTeam(eventId: ID!, name: String!): EventTeam! @permission(has: CreateEvents)
-	editEventTeam(id: ID!, data: EventTeamEditInput!): EventTeam @permission(has: CreateEvents)
-	deleteEventTeam(id: ID!): Boolean! @permission(has: CreateEvents)
+	createEventTeam(eventId: ID!, name: String!): EventTeam!
+		@permission(one: [CreateEvents, ManageEvents])
+	editEventTeam(id: ID!, data: EventTeamEditInput!): EventTeam
+		@permission(one: [CreateEvents, ManageEvents])
+	deleteEventTeam(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
 
 	# Resources
-	createResource(data: ResourceCreateInput!): Resource! @permission(has: CreateResources)
-	editResource(id: ID!, data: ResourceEditInput!): Resource @permission(has: CreateResources)
-	deleteResource(id: ID!): Boolean! @permission(has: CreateResources)
+	createResource(data: ResourceCreateInput!): Resource!
+		@permission(one: [CreateResources, ManageResources])
+	editResource(id: ID!, data: ResourceEditInput!): Resource
+		@permission(one: [CreateResources, ManageResources])
+	deleteResource(id: ID!): Boolean! @permission(one: [CreateResources, ManageResources])
 
 	# Roles
 	createRole: ID! @permission(has: ManageRoles)
@@ -434,7 +449,8 @@ type Mutation {
 	syncRole(id: ID!): UserRole @permission(has: ManageRoles)
 	reorderRoles(order: [ID!]!): [ID!]! @permission(has: ManageRoles)
 
-	giveUserRole(userId: ID!, roleId: ID!): Boolean! @permission(has: ManageRoles)
+	changePrimaryRole(userId: ID!, roleId: ID!): UserRole @permission(has: ManageRoles)
+	giveUserRole(userId: ID!, roleId: ID!): UserRole @permission(has: ManageRoles)
 	removeUserRole(userId: ID!, roleId: ID!): Boolean! @permission(has: ManageRoles)
 
 	# System
@@ -492,6 +508,14 @@ type PagedEvent {
 }
 type PagedResource {
     items: [Resource!]!
+	itemsPerPage: Int!
+    page: Int!
+    total: Int!
+    nextPage: Int
+	prevPage: Int
+}
+type PagedUser {
+    items: [User!]!
 	itemsPerPage: Int!
     page: Int!
     total: Int!

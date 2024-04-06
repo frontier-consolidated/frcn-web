@@ -263,6 +263,7 @@ export type EventTeamEditInput = {
 export type Mutation = {
   __typename?: 'Mutation';
   archiveEvent: Scalars['Boolean']['output'];
+  changePrimaryRole?: Maybe<UserRole>;
   createAccessKey: AccessKey;
   createContentContainer: ContentContainer;
   createEvent: Scalars['ID']['output'];
@@ -290,7 +291,7 @@ export type Mutation = {
   editSystemSettings: SystemSettings;
   editUserStatus: UserStatus;
   endEvent: Scalars['Boolean']['output'];
-  giveUserRole: Scalars['Boolean']['output'];
+  giveUserRole?: Maybe<UserRole>;
   inviteToEvent: Scalars['Boolean']['output'];
   kickEventMember: Scalars['Boolean']['output'];
   postEvent: Scalars['Boolean']['output'];
@@ -311,6 +312,12 @@ export type Mutation = {
 
 export type MutationArchiveEventArgs = {
   id: Scalars['ID']['input'];
+};
+
+
+export type MutationChangePrimaryRoleArgs = {
+  roleId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -554,6 +561,16 @@ export type PagedResource = {
   total: Scalars['Int']['output'];
 };
 
+export type PagedUser = {
+  __typename?: 'PagedUser';
+  items: Array<User>;
+  itemsPerPage: Scalars['Int']['output'];
+  nextPage?: Maybe<Scalars['Int']['output']>;
+  page: Scalars['Int']['output'];
+  prevPage?: Maybe<Scalars['Int']['output']>;
+  total: Scalars['Int']['output'];
+};
+
 export enum Permission {
   Admin = 'Admin',
   CmsRead = 'CmsRead',
@@ -598,7 +615,7 @@ export type Query = {
   getAllDiscordTextChannels: Array<DiscordChannel>;
   getAllDiscordVoiceChannels: Array<DiscordChannel>;
   getAllEventChannels: Array<EventChannel>;
-  getAllUsers: Array<User>;
+  getAllUsers: PagedUser;
   getContentContainer?: Maybe<ContentContainer>;
   getContentContainerById?: Maybe<ContentContainer>;
   getContentContainersOfType: Array<ContentContainer>;
@@ -624,6 +641,13 @@ export type QueryGetAccessKeyArgs = {
 
 export type QueryGetAllDiscordRolesArgs = {
   everyone?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type QueryGetAllUsersArgs = {
+  filter?: InputMaybe<UserFilterInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -772,6 +796,10 @@ export type User = {
   verified: Scalars['Boolean']['output'];
 };
 
+export type UserFilterInput = {
+  search?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UserRole = {
   __typename?: 'UserRole';
   createdAt: Scalars['Timestamp']['output'];
@@ -908,6 +936,7 @@ export type ResolversTypes = ResolversObject<{
   Object: ResolverTypeWrapper<Scalars['Object']['output']>;
   PagedEvent: ResolverTypeWrapper<PagedEvent>;
   PagedResource: ResolverTypeWrapper<PagedResource>;
+  PagedUser: ResolverTypeWrapper<PagedUser>;
   Permission: Permission;
   Query: ResolverTypeWrapper<{}>;
   Resource: ResolverTypeWrapper<Resource>;
@@ -922,6 +951,7 @@ export type ResolversTypes = ResolversObject<{
   Timestamp: ResolverTypeWrapper<Scalars['Timestamp']['output']>;
   UpdatedUserRoles: ResolverTypeWrapper<UpdatedUserRoles>;
   User: ResolverTypeWrapper<User>;
+  UserFilterInput: UserFilterInput;
   UserRole: ResolverTypeWrapper<UserRole>;
   UserSettings: ResolverTypeWrapper<UserSettings>;
   UserStatus: ResolverTypeWrapper<UserStatus>;
@@ -961,6 +991,7 @@ export type ResolversParentTypes = ResolversObject<{
   Object: Scalars['Object']['output'];
   PagedEvent: PagedEvent;
   PagedResource: PagedResource;
+  PagedUser: PagedUser;
   Query: {};
   Resource: Resource;
   ResourceCreateInput: ResourceCreateInput;
@@ -974,6 +1005,7 @@ export type ResolversParentTypes = ResolversObject<{
   Timestamp: Scalars['Timestamp']['output'];
   UpdatedUserRoles: UpdatedUserRoles;
   User: User;
+  UserFilterInput: UserFilterInput;
   UserRole: UserRole;
   UserSettings: UserSettings;
   UserStatus: UserStatus;
@@ -1152,6 +1184,7 @@ export type EventTeamResolvers<ContextType = GQLContext, ParentType extends Reso
 
 export type MutationResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = ResolversObject<{
   archiveEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationArchiveEventArgs, 'id'>>;
+  changePrimaryRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<MutationChangePrimaryRoleArgs, 'roleId' | 'userId'>>;
   createAccessKey?: Resolver<ResolversTypes['AccessKey'], ParentType, ContextType>;
   createContentContainer?: Resolver<ResolversTypes['ContentContainer'], ParentType, ContextType, RequireFields<MutationCreateContentContainerArgs, 'type'>>;
   createEvent?: Resolver<ResolversTypes['ID'], ParentType, ContextType, Partial<MutationCreateEventArgs>>;
@@ -1179,7 +1212,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   editSystemSettings?: Resolver<ResolversTypes['SystemSettings'], ParentType, ContextType, RequireFields<MutationEditSystemSettingsArgs, 'data'>>;
   editUserStatus?: Resolver<ResolversTypes['UserStatus'], ParentType, ContextType, RequireFields<MutationEditUserStatusArgs, 'data'>>;
   endEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationEndEventArgs, 'id'>>;
-  giveUserRole?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationGiveUserRoleArgs, 'roleId' | 'userId'>>;
+  giveUserRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<MutationGiveUserRoleArgs, 'roleId' | 'userId'>>;
   inviteToEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationInviteToEventArgs, 'eventId' | 'userId'>>;
   kickEventMember?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationKickEventMemberArgs, 'member'>>;
   postEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationPostEventArgs, 'id'>>;
@@ -1221,6 +1254,16 @@ export type PagedResourceResolvers<ContextType = GQLContext, ParentType extends 
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 
+export type PagedUserResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['PagedUser'] = ResolversParentTypes['PagedUser']> = ResolversObject<{
+  items?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
+  itemsPerPage?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  nextPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  page?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  prevPage?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+}>;
+
 export type QueryResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   getAccessKey?: Resolver<Maybe<ResolversTypes['AccessKey']>, ParentType, ContextType, RequireFields<QueryGetAccessKeyArgs, 'id'>>;
   getAllAccessKeys?: Resolver<Array<ResolversTypes['AccessKey']>, ParentType, ContextType>;
@@ -1230,7 +1273,7 @@ export type QueryResolvers<ContextType = GQLContext, ParentType extends Resolver
   getAllDiscordTextChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
   getAllDiscordVoiceChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
   getAllEventChannels?: Resolver<Array<ResolversTypes['EventChannel']>, ParentType, ContextType>;
-  getAllUsers?: Resolver<Array<ResolversTypes['User']>, ParentType, ContextType>;
+  getAllUsers?: Resolver<ResolversTypes['PagedUser'], ParentType, ContextType, Partial<QueryGetAllUsersArgs>>;
   getContentContainer?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainerArgs, 'identifier' | 'type'>>;
   getContentContainerById?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainerByIdArgs, 'id'>>;
   getContentContainersOfType?: Resolver<Array<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainersOfTypeArgs, 'type'>>;
@@ -1350,6 +1393,7 @@ export type Resolvers<ContextType = GQLContext> = ResolversObject<{
   Object?: GraphQLScalarType;
   PagedEvent?: PagedEventResolvers<ContextType>;
   PagedResource?: PagedResourceResolvers<ContextType>;
+  PagedUser?: PagedUserResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Resource?: ResourceResolvers<ContextType>;
   Subscription?: SubscriptionResolvers<ContextType>;

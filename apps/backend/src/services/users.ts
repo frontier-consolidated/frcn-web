@@ -11,6 +11,63 @@ async function getAllUsers() {
 	return await database.user.findMany();
 }
 
+type GetUsersFilter = {
+	search?: string;
+};
+
+async function getUsers(
+	filter: GetUsersFilter,
+	page: number = 0,
+	limit: number = -1
+) {
+	const { search } = filter;
+
+	if (limit === -1) limit = 15;
+	limit = Math.min(100, limit);
+
+	const where: Prisma.UserWhereInput = {
+		OR: search ? [
+			{
+				discordName: {
+					contains: search,
+					mode: "insensitive"
+				}
+			},
+			{
+				scName: {
+					contains: search,
+					mode: "insensitive"
+				}
+			},
+			{
+				id: {
+					equals: search.trim(),
+					mode: "insensitive"
+				}
+			}
+		] : undefined
+	};
+
+	const count = await database.user.count({ where });
+	const result = await database.user.findMany({
+		take: limit,
+		skip: page * limit,
+		where,
+		orderBy: [{
+			createdAt: "desc"
+		}]
+	});
+
+	return {
+		items: result,
+		total: count,
+		itemsPerPage: limit,
+		page,
+		nextPage: (page + 1) * limit < count ? page + 1 : null,
+		prevPage: page > 0 ? page - 1 : null,
+	};
+}
+
 async function getUser(id: string) {
 	const user = await database.user.findUnique({
 		where: { id },
@@ -185,6 +242,7 @@ async function deleteUser(id: string) {
 
 export const $users = {
 	getAllUsers,
+	getUsers,
 	getUser,
 	getUserByDiscordId,
 	getOrCreateUser,
