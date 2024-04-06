@@ -5,7 +5,9 @@
 	import { AngleDownSolid, ArrowUpRightFromSquareOutline, CirclePlusSolid, CloseSolid, DiscordSolid, StarSolid } from "flowbite-svelte-icons";
     import { locale } from "svelte-i18n";
 
+	import { Mutations, getApollo } from "$lib/graphql";
 	import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";
+	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { userProfileView } from "$lib/stores/UserProfileViewStore";
 	import { user } from "$lib/stores/UserStore";
 
@@ -58,15 +60,68 @@
                             {/if}
                             {role.name}
                             {#if canEdit}
-                                {#if primaryRole}
+                                {#if primaryRole && $page.data.roles}
                                     <AngleDownSolid class="w-2 h-2 ms-2 cursor-pointer" />
-                                    <Dropdown>
-        
+                                    <Dropdown class="px-2 text-sm">
+                                        <div slot="header" class="px-2 py-1">
+                                            <Search size="sm" />
+                                        </div>
+                                        {#each $page.data.roles.filter(role => role.primary && $userProfileView.data?.primaryRole.id !== role.id) as role}
+                                            <li>
+                                                <button class="w-full rounded px-2 py-1 text-left hover:bg-gray-600 cursor-pointer" on:click={async () => {
+                                                    if (!$userProfileView.data) return;
+            
+                                                    const { errors } = await getApollo().mutate({
+                                                        mutation: Mutations.CHANGE_USER_PRIMARY_ROLE,
+                                                        variables: {
+                                                            roleId: role.id,
+                                                            userId: $userProfileView.data.id
+                                                        },
+                                                        errorPolicy: "all",
+                                                    });
+            
+                                                    if (errors && errors.length > 0) {
+                                                        pushNotification({
+                                                            type: "error",
+                                                            message: "Failed to change primary role",
+                                                        });
+                                                        console.error(errors);
+                                                        return;
+                                                    }
+            
+                                                    $userProfileView.data.primaryRole = role;
+                                                }}>
+                                                    {role.name}
+                                                </button>
+                                            </li>
+                                        {/each}
                                     </Dropdown>
-                                {:else}
-                                    <button class="focus:outline-none whitespace-normal m-0.5 rounded-sm focus:ring-1 p-0.5 ms-1.5 -me-1.5">
+                                {:else if !primaryRole}
+                                    <button class="focus:outline-none whitespace-normal m-0.5 rounded-sm focus:ring-1 p-0.5 ms-1.5 -me-1.5" on:click={async () => {
+                                        if (!$userProfileView.data) return;
+
+                                        const { errors } = await getApollo().mutate({
+                                            mutation: Mutations.REMOVE_USER_ROLE,
+                                            variables: {
+                                                roleId: role.id,
+                                                userId: $userProfileView.data.id
+                                            },
+                                            errorPolicy: "all",
+                                        });
+
+                                        if (errors && errors.length > 0) {
+                                            pushNotification({
+                                                type: "error",
+                                                message: "Failed to remove role",
+                                            });
+                                            console.error(errors);
+                                            return;
+                                        }
+
+                                        $userProfileView.data.roles = $userProfileView.data.roles.filter(r => r.id !== role.id);
+                                    }}>
                                         <span class="sr-only">Remove {role.name}</span>
-                                        <CloseSolid class="w-2.5 h-2.5" />
+                                        <CloseSolid class="w-2 h-2" />
                                     </button>
                                 {/if}
                             {/if}
@@ -78,8 +133,34 @@
                             <div slot="header" class="px-2 py-1">
                                 <Search size="sm" />
                             </div>
-                            {#each $page.data.roles.filter(role => !role.primary) as role}
-                                <li class="rounded px-2 py-1 hover:bg-gray-600 cursor-pointer">{role.name}</li>
+                            {#each $page.data.roles.filter(role => !role.primary && !$userProfileView.data?.roles.find(r => r.id === role.id)) as role}
+                                <li>
+                                    <button class="w-full rounded px-2 py-1 text-left hover:bg-gray-600 cursor-pointer" on:click={async () => {
+                                        if (!$userProfileView.data) return;
+
+                                        const { errors } = await getApollo().mutate({
+                                            mutation: Mutations.GIVE_USER_ROLE,
+                                            variables: {
+                                                roleId: role.id,
+                                                userId: $userProfileView.data.id
+                                            },
+                                            errorPolicy: "all",
+                                        });
+
+                                        if (errors && errors.length > 0) {
+                                            pushNotification({
+                                                type: "error",
+                                                message: "Failed to give role",
+                                            });
+                                            console.error(errors);
+                                            return;
+                                        }
+
+                                        $userProfileView.data.roles = [...$userProfileView.data.roles, role];
+                                    }}>
+                                        {role.name}
+                                    </button>
+                                </li>
                             {/each}
                         </Dropdown>
                     {/if}

@@ -4,12 +4,13 @@
 	import { CloseCircleSolid } from "flowbite-svelte-icons";
 
 	import { ConfirmationModal, Tooltip } from "$lib/components";
-	import { getApollo } from "$lib/graphql";
+	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { viewUserProfile } from "$lib/stores/UserProfileViewStore";
 
 	import type { PageData } from "./$types";
 
+    export let role: PageData["role"];
     export let user: PageData["role"]["users"][number];
 
     let removeModalOpen = false;
@@ -33,9 +34,10 @@
 
 <ConfirmationModal title="Remove user from role" bind:open={removeModalOpen} on:confirm={async () => {
     const { errors } = await getApollo().mutate({
-        mutation: Mutations.DELETE_RESOURCE,
+        mutation: Mutations.REMOVE_USER_ROLE,
         variables: {
-            id: resource.id
+            roleId: role.id,
+            userId: user.id
         },
         errorPolicy: "all",
     });
@@ -52,5 +54,5 @@
     await invalidate("app:currentrole");
     removeModalOpen = false;
 }}>
-    <span>Are you sure you want to remove <strong>{user.name}</strong> from this role? Once deleted it cannot be undone.</span>
+    <span>Are you sure you want to remove <strong>{user.name}</strong> from this role?</span>
 </ConfirmationModal>

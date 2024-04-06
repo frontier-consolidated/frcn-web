@@ -199,7 +199,7 @@
 			<TabItem title="Users ({data.role.users.length})" open={$page.url.hash === "#users"} on:click={() => window.location.hash = "#users"}>
 				<div class="flex flex-col gap-1 p-4 max-h-screen overflow-y-auto">
 					{#each data.role.users as user}
-						<UserButton {user} />
+						<UserButton role={data.role} {user} />
 					{/each}
 				</div>
 			</TabItem>

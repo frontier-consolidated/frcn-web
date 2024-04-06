@@ -1,13 +1,12 @@
 import { hasAdmin } from "@frcn/shared";
-import type { User, UserRole } from "@prisma/client";
+import type { UserRole } from "@prisma/client";
 
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
 import { $roles } from "../../../services/roles";
 import { $system } from "../../../services/system";
 import { $users } from "../../../services/users";
-import type { UserRole as GQLUserRole, UpdatedUserRoles as GQLUpdatedUserRoles, Resolvers } from "../../__generated__/resolvers-types";
-import { pubsub } from "../../pubsub";
+import type { UserRole as GQLUserRole, Resolvers } from "../../__generated__/resolvers-types";
 import { calculatePermissions } from "../calculatePermissions";
 import { gqlErrorBadInput } from "../gqlError";
 
@@ -24,20 +23,6 @@ export function resolveUserRole(role: UserRole) {
 		updatedAt: role.updatedAt,
 		createdAt: role.createdAt,
 	} satisfies WithModel<GQLUserRole, UserRole>;
-}
-
-export function publishUserRolesUpdated(users: User[]) {
-	for (const user of users) {
-		pubsub.publish("USER_ROLES_UPDATED", {
-			userRolesUpdated: {
-				_model: user,
-				userId: user.id,
-				permissions: 0, // field-resolved
-				primaryRole: null as unknown as GQLUserRole, // field-resolved
-				roles: [], // field-resolved
-			} as WithModel<GQLUpdatedUserRoles, User>
-		});
-	}
 }
 
 export const roleResolvers: Resolvers = {

@@ -1,4 +1,5 @@
 import { ARCHIVE_EVENT } from "./archiveEvent.mutation";
+import { CHANGE_USER_PRIMARY_ROLE } from "./changeUserPrimaryRole.mutation";
 import { CREATE_ACCESS_KEY } from "./createAccessKey.mutation";
 import { CREATE_CONTENT_CONTAINER } from "./createContentContainer.mutation";
 import { CREATE_EVENT } from "./createEvent.mutation";
@@ -22,9 +23,11 @@ import { EDIT_RESOURCE } from "./editResource.mutation";
 import { EDIT_ROLE } from "./editRole.mutation";
 import { EDIT_SYSTEM_SETTINGS } from "./editSystemSettings.mutation";
 import { END_EVENT } from "./endEvent.mutation";
+import { GIVE_USER_ROLE } from "./giveUserRole.mutation";
 import { KICK_EVENT_MEMBER } from "./kickEventMember.mutation";
 import { POST_EVENT } from "./postEvent.mutation";
 import { REGENERATE_ACCESS_KEY } from "./regenerateAccessKey.mutation";
+import { REMOVE_USER_ROLE } from "./removeUserRole.mutation";
 import { REORDER_ROLES } from "./reorderRoles.mutation";
 import { RSVP_FOR_EVENT } from "./rsvpForEvent.mutation";
 import { UNRSVP_FOR_EVENT } from "./unrsvpForEvent.mutation";
@@ -47,6 +50,9 @@ export const Mutations = {
 	EDIT_ROLE,
 	DELETE_ROLE,
 	REORDER_ROLES,
+	GIVE_USER_ROLE,
+	REMOVE_USER_ROLE,
+	CHANGE_USER_PRIMARY_ROLE,
 	CREATE_RESOURCE,
 	EDIT_RESOURCE,
 	DELETE_RESOURCE,

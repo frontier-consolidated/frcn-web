@@ -4,7 +4,7 @@ import { $system } from "./system";
 import { $users } from "./users";
 import { database } from "../database";
 import type { RoleEditInput } from "../graphql/__generated__/resolvers-types";
-import { publishUserRolesUpdated } from "../graphql/schema/resolvers/Roles";
+import { publishUserRolesUpdated } from "../graphql/events";
 
 async function getRole(id: string) {
 	return await database.userRole.findUnique({
@@ -211,6 +211,8 @@ async function changePrimaryRole(role: UserRole, user: User) {
 			}
 		}
 	});
+
+	publishUserRolesUpdated([user]);
 }
 
 async function giveRole(role: UserRole, user: User) {
@@ -230,6 +232,8 @@ async function giveRole(role: UserRole, user: User) {
 			}
 		}
 	});
+
+	publishUserRolesUpdated([user]);
 }
 
 async function removeRole(role: UserRole, user: User) {
@@ -248,6 +252,8 @@ async function removeRole(role: UserRole, user: User) {
 			}
 		}
 	});
+
+	publishUserRolesUpdated([user]);
 }
 
 function resolvePermissions(roles: UserRole[]) {
