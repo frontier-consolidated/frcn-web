@@ -1,6 +1,5 @@
 import { dates, strings } from "@frcn/shared";
 import { getEmojiByName } from "@frcn/shared/emojis";
-import { getLocations } from "@frcn/shared/locations";
 import type { Event } from "@prisma/client";
 import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadChannel } from "discord.js";
 
@@ -9,7 +8,7 @@ import { getWebURL } from "../../env";
 import { $discord } from "../../services/discord";
 import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
-import { getLocationEmoji } from "../helpers";
+import { getLocationBreadcrumbs } from "../helpers";
 
 export async function buildEventMessage(id: string, client: Client, threadId?: string) {
 	const guild = await $discord.getGuild(client);
@@ -58,17 +57,9 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 	
 	
 	if (!event.settings!.hideLocation) {
-		let value = "";
-		if (event.location.length > 0) {
-			const locations = getLocations(event.location);
-			value = locations.map((loc) => `${getLocationEmoji(loc)} **${strings.toTitleCase(loc.name)}**`.trim()).join(" > ");
-		} else {
-			value = "Anywhere";
-		}
-
 		eventEmbed.addFields({
 			name: "Location",
-			value
+			value: getLocationBreadcrumbs(event.location)
 		});
 	}
 

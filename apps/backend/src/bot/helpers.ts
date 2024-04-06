@@ -1,4 +1,5 @@
-import type { AnyLocation } from "@frcn/shared/locations";
+import { strings } from "@frcn/shared";
+import { getLocations, type AnyLocation } from "@frcn/shared/locations";
 
 export function getLocationEmoji(location: AnyLocation) {
 	switch (location.type) {
@@ -21,4 +22,15 @@ export function getLocationEmoji(location: AnyLocation) {
 		default:
 			return "";
 	}
+}
+
+export function getLocationBreadcrumbs(location: string[]) {
+    let value = "";
+    if (location.length > 0) {
+        const locations = getLocations(location);
+        value = locations.map((loc) => `${getLocationEmoji(loc)} **${strings.toTitleCase(loc.name)}**`.trim()).join(" > ");
+    } else {
+        value = "Anywhere";
+    }
+    return value;
 }

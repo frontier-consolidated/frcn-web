@@ -9,6 +9,7 @@ import { $roles } from "./roles";
 import { $system } from "./system";
 import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
 import { postEventEndMessage } from "../bot/messages/eventStartEnd.message";
+import { postEventUpdateMessage } from "../bot/messages/eventUpdate.message";
 import { database } from "../database";
 import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 import type { EventReminder } from "../graphql/schema/resolvers/Event";
@@ -527,6 +528,8 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 	});
 
 	await updateEventMessage(discordClient, updatedEvent);
+	await postEventUpdateMessage(discordClient, event, updatedEvent);
+
 	return updatedEvent;
 }
 

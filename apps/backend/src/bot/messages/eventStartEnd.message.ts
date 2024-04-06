@@ -1,12 +1,11 @@
-import { dates, strings } from "@frcn/shared";
-import { getLocations } from "@frcn/shared/locations";
+import { dates } from "@frcn/shared";
 import type { Event } from "@prisma/client";
 import { type BaseMessageOptions, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Client } from "discord.js";
 
 import { $discord } from "../../services/discord";
 import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
-import { getLocationEmoji } from "../helpers";
+import { getLocationBreadcrumbs } from "../helpers";
 
 export async function buildEventStartMessage(client: Client, event: Event, eventMessageLink: string) {
 	const scheduledEndTime = Math.floor((event.startAt!.getTime() + event.duration!) / 1000);
@@ -16,19 +15,10 @@ export async function buildEventStartMessage(client: Client, event: Event, event
 		.setTitle(`${event.name} - Event starting!`)
 		.setDescription(`The event is now starting! Scheduled event end: <t:${scheduledEndTime}:R>`);
 
-	{
-		// location
-		let value = "";
-		if (event.location.length > 0) {
-			const locations = getLocations(event.location);
-			value = locations.map((loc) => `${getLocationEmoji(loc)} **${strings.toTitleCase(loc.name)}**`.trim()).join(" > ");
-		} else {
-			value = "Anywhere";
-		}
-	
+	if (event.location) {
 		embed.addFields({
 			name: "Location",
-			value
+			value: getLocationBreadcrumbs(event.location)
 		});
 	}
 	
