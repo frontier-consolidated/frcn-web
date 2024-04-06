@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
+	import { goto, invalidateAll } from "$app/navigation";
 	import { hasAdmin } from "@frcn/shared";
 	import { Search, Table, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { CloseSolid, EditOutline } from "flowbite-svelte-icons";
@@ -90,9 +90,12 @@
 		}
 
 		data = {
-			...data, 
+			...data,
 			roles: editRoles.toReversed(),
 		} as PageData;
+		editRoles = data.roles.toReversed();
+		// not sure why just invalidating app:allroles doesn't work here
+		await invalidateAll();
 	}
 </script>
 

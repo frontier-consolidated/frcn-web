@@ -15,9 +15,10 @@ function base64URLdecode(str: string) {
 export const prerender = false;
 
 export const load = async ({ url, depends, fetch }) => {
+	depends("app:allroles");
+	
 	let rolesData: { roles: GetAllRolesQuery["roles"] } = { roles: [] };
 	if (browser) {
-		depends("app:allroles");
 		const rolesResponse = await fetch("/_api/roles.json");
 		rolesData = await rolesResponse.json();
 
