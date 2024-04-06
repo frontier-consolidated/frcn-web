@@ -265,7 +265,7 @@
 						Hide Location
 					</Checkbox>
 					<Helper>
-						If enabled, the event location will only be shown to users once they join the event
+						If enabled, the event location will only be shown to users once the event starts
 					</Helper>
 				</Field>
 				<Field {validator} for="event-location" value={editData.location}>
