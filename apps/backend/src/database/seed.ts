@@ -2,6 +2,7 @@ import { Permission, hasPermission, permissions } from "@frcn/shared";
 import type { UserRole } from "@prisma/client";
 
 import { getAdminIds } from "../env";
+import { logger } from "../logger";
 import { $roles } from "../services/roles";
 
 import type { database as Database } from ".";
@@ -46,7 +47,7 @@ export async function seed(database: typeof Database) {
 		});
 		sortedRoles.push(adminRole);
 		updateRoleOrder = true;
-		console.log("Created Admin role");
+		logger.log("Created Admin role");
 	}
 
 	if (!defaultRole) {
@@ -59,7 +60,7 @@ export async function seed(database: typeof Database) {
 		});
 		sortedRoles.unshift(defaultRole);
 		updateRoleOrder = true;
-		console.log("Created Default role");
+		logger.log("Created Default role");
 	}
 
 	const adminIds = getAdminIds();
@@ -92,7 +93,7 @@ export async function seed(database: typeof Database) {
 				},
 			},
 		});
-		console.log(`Upsert Admin user '${id}'`);
+		logger.log(`Upsert Admin user '${id}'`);
 	}
 
 	if (updateRoleOrder) {

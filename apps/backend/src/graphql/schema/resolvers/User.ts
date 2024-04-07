@@ -3,6 +3,7 @@ import type { User, UserSettings, UserStatus } from "@prisma/client";
 import { resolveEvent, resolveEventRsvp } from "./Event";
 import { resolveUserRole } from "./Roles";
 import type { WithModel } from "./types";
+import { logger } from "../../../logger";
 import { $users } from "../../../services/users";
 import type {
 	Resolvers,
@@ -127,6 +128,7 @@ export const userResolvers: Resolvers = {
 		async deleteCurrentUser(source, args, context) {
 			if (!context.user) return false;
 
+			logger.audit(context, "deleted there account", args);
 			await $users.deleteUser(context.user.id);
 			return true;
 		}

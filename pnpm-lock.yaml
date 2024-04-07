@@ -140,6 +140,9 @@ importers:
       pg-tbus:
         specifier: ^1.0.0
         version: 1.0.0
+      pidusage:
+        specifier: ^3.0.2
+        version: 3.0.2
       prisma:
         specifier: ^5.12.0
         version: 5.12.0
@@ -198,6 +201,9 @@ importers:
       '@types/node':
         specifier: ^20.11.5
         version: 20.11.5
+      '@types/pidusage':
+        specifier: ^2.0.5
+        version: 2.0.5
       '@types/validator':
         specifier: ^13.11.8
         version: 13.11.8
@@ -5400,6 +5406,10 @@ packages:
       pg-types: 4.0.2
     dev: true
 
+  /@types/pidusage@2.0.5:
+    resolution: {integrity: sha512-MIiyZI4/MK9UGUXWt0jJcCZhVw7YdhBuTOuqP/BjuLDLZ2PmmViMIQgZiWxtaMicQfAz/kMrZ5T7PKxFSkTeUA==}
+    dev: true
+
   /@types/pug@2.0.10:
     resolution: {integrity: sha512-Sk/uYFOBAB7mb74XcpizmH0KOR2Pv3D2Hmrh1Dmy5BmK3MpdSa5kqZcg6EKBdklU0bFXX9gCfzvpnyUehrPIuA==}
     dev: true
@@ -9812,6 +9822,13 @@ packages:
   /pidusage@2.0.18:
     resolution: {integrity: sha512-Y/VfKfh3poHjMEINxU+gJTeVOBjiThQeFAmzR7z56HSNiMx+etl+yBhk42nRPciPYt/VZl8DQLVXNC6P5vH11A==}
     engines: {node: '>=8'}
+    dependencies:
+      safe-buffer: 5.2.1
+    dev: false
+
+  /pidusage@3.0.2:
+    resolution: {integrity: sha512-g0VU+y08pKw5M8EZ2rIGiEBaB8wrQMjYGFfW2QVIfyT8V+fq8YFLkvlz4bz5ljvFDJYNFCWT3PWqcRr2FKO81w==}
+    engines: {node: '>=10'}
     dependencies:
       safe-buffer: 5.2.1
     dev: false

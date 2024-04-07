@@ -6,6 +6,7 @@ import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { database } from "../database";
 import { getAdminIds } from "../env";
+import { logger } from "../logger";
 
 async function getAllUsers() {
 	return await database.user.findMany();
@@ -96,7 +97,7 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 		const member = await guild.members.fetch(discordUser.id);
 		discordName = member.nickname ?? member.displayName;
 	} catch (err) {
-		console.error(err);
+		logger.error("Failed to fetch user's guild member object", err);
 	}
 	
 	const avatarUrl = discordUser.avatar ? "https://cdn.discordapp.com" +
@@ -229,7 +230,7 @@ async function unauthenticateSessions(user: User) {
 				}
 			});
 		} catch (err) {
-			console.error("Failed to unauthenticate session", err);
+			logger.error("Failed to unauthenticate session for user: " + user.id, err);
 		}
 	}
 }

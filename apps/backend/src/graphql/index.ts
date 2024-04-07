@@ -10,6 +10,7 @@ import { WebSocketServer } from "ws";
 import type { GQLContext } from "./context";
 import { PluginDrainWebSocketServer } from "./plugins/drainWebSocketServer";
 import schema from "./schema";
+import { logger } from "../logger";
 
 type CreateApolloServerOptions = Partial<Omit<ApolloServerOptionsWithSchema<GQLContext>, "schema">>;
 
@@ -24,7 +25,7 @@ export function createApolloServer(server: HttpServer, config: CreateApolloServe
 	return new ApolloServer<GQLContext>({
 		schema,
 		formatError(formattedError, error) {
-			console.error(error);
+			logger.error(error);
 			return formattedError;
 		},
 		...config,

@@ -14,6 +14,7 @@ import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
 import { getBasePath, isProd } from "./env";
 import { createApolloServer } from "./graphql";
+import { logger } from "./logger";
 import { accesskeyMiddleware, type AccessKeyMiddlewareConfig } from "./middleware/accesskey.middleware";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/session";
 import { createS3Client } from "./s3Client";
@@ -69,6 +70,24 @@ export async function createApp(config: CreateAppOptions) {
             respond: true,
         }),
     );
+
+    app.use((req, _, next) => {
+        const timestamp = new Date();
+        req.timestamp = timestamp;
+
+        const interval = setInterval(() => {
+            const elapsed = Date.now() - timestamp.getTime();
+            if (elapsed > 5000) {
+                logger.warn(`HTTP Request taking a long time! Elapsed: ${elapsed}ms`, logger.requestDetails(req));
+            }
+        }, 1000);
+
+        req.on("end", () => {
+            clearInterval(interval);
+        });
+
+        next();
+    });
 
     app.use(cookieParser());
 
@@ -143,11 +162,9 @@ export async function createApp(config: CreateAppOptions) {
 
     app.use((err: Error | Error[], req: Request, res: Response, _next: NextFunction) => {
         const errors = Array.isArray(err) ? err : [err];
-        for (const error of errors) {
-            console.error(error);
-        }
-    
-        // if (res.headersSent) return;
+        logger.error("HTTP Server Error", logger.requestDetails(req), ...errors);
+        
+        if (res.headersSent) return;
     
         res.status(500).send({
             message: "An error occured on the server!",

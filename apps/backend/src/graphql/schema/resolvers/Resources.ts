@@ -5,6 +5,7 @@ import type { WithModel } from "./types";
 import { resolveUser } from "./User";
 import { database } from "../../../database";
 import { getOrigin } from "../../../env";
+import { logger } from "../../../logger";
 import { $resources } from "../../../services/resources";
 import type {
 	User as GQLUser,
@@ -93,6 +94,7 @@ export const resourceResolvers: Resolvers = {
 		async createResource(source, args, context) {
 			if (!context.user) throw gqlErrorUnauthenticated();
 
+			logger.audit(context, "created a Resource", args);
 			const resource = await $resources.createResource(context.user, args.data);
 			return resolveResource(resource);
 		},
@@ -120,6 +122,7 @@ export const resourceResolvers: Resolvers = {
 				override: Permission.ManageResources
 			})) throw gqlErrorOwnership();
 
+			logger.audit(context, "updated a Resource", args);
 			const updatedResource = await $resources.editResource(args.id, args.data);
 			if (!updatedResource) return null;
 			return resolveResource(updatedResource);
@@ -148,6 +151,7 @@ export const resourceResolvers: Resolvers = {
 				override: Permission.ManageResources
 			})) throw gqlErrorOwnership();
 
+			logger.audit(context, "deleted a Resource", args);
 			await $resources.deleteResource(context.app.s3Client, context.app.s3Bucket, resource.id);
 			return true;
 		}

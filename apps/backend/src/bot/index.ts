@@ -5,6 +5,7 @@ import { eventDmInteraction } from "./handlers/eventDm.interaction";
 import { buildEventScheduledEndMessage, buildEventStartMessage } from "./messages/eventStartEnd.message";
 import { buildReminderDmMessage, reminderTimes } from "./messages/reminders.message";
 import { EventReminder } from "../graphql/schema/resolvers/Event";
+import { logger } from "../logger";
 import { $discord } from "../services/discord";
 import { $events } from "../services/events";
 import { $users } from "../services/users";
@@ -37,7 +38,7 @@ async function updateEvents(client: Client) {
                     const payload = await buildEventStartMessage(client, event, eventMessageLink);
                     await thread.send(payload);
                 } catch (err) {
-                    console.log("Error while posting event start message", err);
+                    logger.error("Error while posting event start message", err);
                 }
             }
 
@@ -66,7 +67,7 @@ async function updateEvents(client: Client) {
                     await dmChannel.send(dmPayload);
                 } catch (err) {
                     // failed to dm
-                    console.log("Failed to dm user", rsvp.userId, err);
+                    logger.error("Failed to dm user", rsvp.userId, err);
                 }
             }
             break;
@@ -84,7 +85,7 @@ async function updateEvents(client: Client) {
                 const payload = buildEventScheduledEndMessage(event);
                 await thread.send(payload);
             } catch (err) {
-                console.log("Error while posting event scheduled end message", err);
+                logger.error("Error while posting event scheduled end message", err);
             }
         }
     }
@@ -103,7 +104,7 @@ export function load(client: Client) {
                 }
             }
         } catch (err) {
-            console.error("Error during interaction:", err);
+            logger.error("Error during interaction:", err);
         }
     });
 

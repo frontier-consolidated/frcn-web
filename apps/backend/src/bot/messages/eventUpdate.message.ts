@@ -2,6 +2,7 @@ import { dates } from "@frcn/shared";
 import type { Event } from "@prisma/client";
 import { EmbedBuilder, Client } from "discord.js";
 
+import { logger } from "../../logger";
 import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
 import { getLocationBreadcrumbs } from "../helpers";
@@ -55,6 +56,6 @@ export async function postEventUpdateMessage(client: Client, oldEvent: Event, ne
 		const thread = await $events.getEventThread(newEvent, client);
 		await thread.send({ embeds });
 	} catch (err) {
-		console.error("Failed to post event update message", err);
+		logger.error("Failed to post event update message", err);
 	}
 }

@@ -5,6 +5,7 @@ import { ChannelType, type GuildBasedChannel } from "discord.js";
 import { resolveEventChannel } from "./Event";
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
+import { logger } from "../../../logger";
 import { $discord } from "../../../services/discord";
 import { $events } from "../../../services/events";
 import { $system } from "../../../services/system";
@@ -115,7 +116,7 @@ export const systemResolvers: Resolvers = {
 	},
 
 	Mutation: {
-		async editSystemSettings(source, args) {
+		async editSystemSettings(source, args, context) {
 			if (args.data.discordGuildId && args.data.discordGuildId.length < 17) {
 				throw gqlErrorBadInput(`Invalid guild id: ${args.data.discordGuildId}`);
 			}
@@ -124,6 +125,7 @@ export const systemResolvers: Resolvers = {
 				throw gqlErrorBadInput(`Event channel not found: ${args.data.defaultEventChannelId}`);
 			}
 
+			logger.audit(context, "updated SystemSettings", args);
 			const updatedSettings = await $system.editSystemSettings(args.data);
 			return resolveSystemSettings(updatedSettings);
 		},
@@ -162,6 +164,7 @@ export const systemResolvers: Resolvers = {
 				}
 			}
 
+			logger.audit(context, "created an EventChannel", args);
 			const channel = await $events.createEventChannel(discordChannel, discordCategory, existingReadyRoom ?? undefined);
 			return resolveEventChannel(channel);
 		},
@@ -191,6 +194,7 @@ export const systemResolvers: Resolvers = {
 				}
 			}
 
+			logger.audit(context, "updated an EventChannel", args);
 			const updatedChannel = await $events.editEventChannel(channel, args.data);
 			return resolveEventChannel(updatedChannel);
 		},
@@ -198,10 +202,12 @@ export const systemResolvers: Resolvers = {
 			const channel = await $events.getEventChannel(args.id);
 			if (!channel) return false;
 
+			logger.audit(context, "deleted an EventChannel", args);
 			await $events.deleteEventChannel(channel, context.app.discordClient, args.deleteVoiceChannels ?? false);
 			return true;
 		},
-		async createAccessKey() {
+		async createAccessKey(source, args, context) {
+			logger.audit(context, "created an AccessKey");
 			const [accessKey, key] = await $system.createAccessKey();
 			return resolveAccessKey(accessKey, key);
 		},
@@ -213,20 +219,23 @@ export const systemResolvers: Resolvers = {
 				throw gqlErrorPermission("Admin");
 			}
 
+			logger.audit(context, "updated an AccessKey", args);
 			const updatedAccessKey = await $system.editAccessKey(accessKey, args.data);
 			return resolveAccessKey(updatedAccessKey);
 		},
-		async regenerateAccessKey(source, args) {
+		async regenerateAccessKey(source, args, context) {
 			const accessKey = await $system.getAccessKeyById(args.id);
 			if (!accessKey) return null;
 
+			logger.audit(context, "regenerated an AccessKey", args);
 			const key = await $system.regenerateAccessKey(accessKey);
 			return resolveAccessKey(accessKey, key);
 		},
-		async deleteAccessKey(source, args) {
+		async deleteAccessKey(source, args, context) {
 			const accessKey = await $system.getAccessKeyById(args.id);
 			if (!accessKey) return false;
 			
+			logger.audit(context, "deleted an AccessKey", args);
 			await $system.deleteAccessKey(accessKey);
 			return true;
 		}
