@@ -9,6 +9,7 @@ import { WebSocketServer } from "ws";
 
 import type { GQLContext } from "./context";
 import { PluginDrainWebSocketServer } from "./plugins/drainWebSocketServer";
+import { PluginLogging } from "./plugins/logging";
 import schema from "./schema";
 import { logger } from "../logger";
 
@@ -24,12 +25,14 @@ export function createApolloServer(server: HttpServer, config: CreateApolloServe
 
 	return new ApolloServer<GQLContext>({
 		schema,
+		logger,
 		formatError(formattedError, error) {
 			logger.error(error);
 			return formattedError;
 		},
 		...config,
 		plugins: [
+			PluginLogging(),
 			ApolloServerPluginDrainHttpServer({ httpServer: server }),
 			PluginDrainWebSocketServer(wsCleanup),
 			createApollo4QueryValidationPlugin({
