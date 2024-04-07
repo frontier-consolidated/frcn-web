@@ -7,10 +7,13 @@ import type { RequestHandler } from "./$types";
 export const prerender = false;
 
 export const GET: RequestHandler = async ({ locals }) => {
+    const headers: HeadersInit = {
+        "Cache-Control": "private, must-revalidate, max-age=600"
+    };
+
     if (locals.user && hasPermission(locals.user.permissions, Permission.ManageRoles)) {
         const { data: rolesData, errors } = await locals.apollo.query({
             query: Queries.GET_ALL_ROLES,
-            fetchPolicy: "no-cache",
             errorPolicy: "all"
         });
 
@@ -18,12 +21,18 @@ export const GET: RequestHandler = async ({ locals }) => {
             console.error("Error fetching all roles", errors);
         }
     
-        return new Response(JSON.stringify({
-            roles: rolesData?.roles ?? []
-        }));
+        return new Response(
+            JSON.stringify({
+                roles: rolesData?.roles ?? []
+            }),
+            { headers }
+        );
     }
     
-    return new Response(JSON.stringify({
-        roles: []
-    }));
+    return new Response(
+        JSON.stringify({
+            roles: []
+        }),
+        { headers }
+    );
 };

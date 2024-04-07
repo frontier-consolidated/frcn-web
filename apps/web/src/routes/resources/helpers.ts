@@ -4,7 +4,7 @@ import { redirect } from "@sveltejs/kit";
 import { Queries, type TypedApolloClient } from "$lib/graphql";
 import { getPageVars } from "$lib/pageHelpers";
 
-export async function getResources(apollo: TypedApolloClient, url: URL) {
+export async function getResources(apollo: TypedApolloClient, url: URL, setHeaders: (headers: Record<string, string>) => void) {
     if (url.searchParams.has("id")) {
         const { data } = await apollo.query({
             query: Queries.GET_RESOURCE,
@@ -41,10 +41,14 @@ export async function getResources(apollo: TypedApolloClient, url: URL) {
             },
             page,
             limit
-        }
+        },
     });
 
     const resources = (data.resources?.items ?? []);
+
+    setHeaders({
+        "Cache-Control": "public, must-revalidate, max-age=1800, s-maxage=300"
+    });
 
     return {
         resources,

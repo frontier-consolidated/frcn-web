@@ -20,7 +20,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	if (cookie) {
 		try {
 			const { data } = await apollo.query({
-				query: Queries.CURRENT_USER,
+				query: Queries.CURRENT_USER_SERVER,
 			});
 
 			if (data.user) event.locals.user = { ...data.user, cookie };
