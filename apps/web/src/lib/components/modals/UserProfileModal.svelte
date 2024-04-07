@@ -88,8 +88,6 @@
                                                         console.error(errors);
                                                         return;
                                                     }
-            
-                                                    $userProfileView.data.primaryRole = role;
                                                 }}>
                                                     {role.name}
                                                 </button>
@@ -117,8 +115,6 @@
                                             console.error(errors);
                                             return;
                                         }
-
-                                        $userProfileView.data.roles = $userProfileView.data.roles.filter(r => r.id !== role.id);
                                     }}>
                                         <span class="sr-only">Remove {role.name}</span>
                                         <CloseSolid class="w-2 h-2" />
@@ -155,8 +151,6 @@
                                             console.error(errors);
                                             return;
                                         }
-
-                                        $userProfileView.data.roles = [...$userProfileView.data.roles, role];
                                     }}>
                                         {role.name}
                                     </button>
