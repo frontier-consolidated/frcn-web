@@ -1,6 +1,9 @@
+import pidusage from "pidusage";
+
 import { createApp } from "./app";
 import { seedDatabase } from "./database";
 import { getDomain, getOrigin, getOrigins, getPort, validateEnvironment } from "./env";
+import { logger } from "./logger";
 import { $events } from "./services/events";
 
 process.env.NODE_ENV ??= "development";
@@ -77,3 +80,42 @@ console.log(
 await onStart();
 
 setInterval(() => $events.$update().catch(console.error), 120 * 1000);
+
+const usageThresholds = {
+	cpu: {
+		warning: 35,
+		severe: 50
+	},
+	memory: {
+		warning: 250_000_000,
+		severe: 300_000_000
+	},
+};
+
+function memFormat(memory: number) {
+	return `${Math.round((memory / 1024 / 1024) * 10) / 10}MB`;
+}
+
+setTimeout(() => {
+	// Wait a few seconds as startup uses more initial memory
+	setInterval(() => {
+		pidusage(process.pid, (err, stats) => {
+			if (err) {
+				logger.error("Error getting process metrics", err);
+				return;
+			}
+	
+			if (stats.cpu > usageThresholds.cpu.severe) {
+				logger.error(logger.style("Cpu exceeded severe threshold!", { fg: "red" }), { threshold: usageThresholds.cpu.severe, usage: stats.cpu });
+			} else if (stats.cpu > usageThresholds.cpu.warning) {
+				logger.warn(logger.style("Cpu exceeded warning threshold!", { fg: "yellow" }), { threshold: usageThresholds.cpu.warning, usage: stats.cpu });
+			}
+	
+			if (stats.memory > usageThresholds.memory.severe) {
+				logger.error(logger.style(`Memory usage exceeded severe threshold! Usage: ${memFormat(stats.memory)}`, { fg: "red" }), { threshold: usageThresholds.memory.severe, usage: stats.memory });
+			} else if (stats.memory > usageThresholds.memory.warning) {
+				logger.warn(logger.style(`Memory usage exceeded warning threshold! Usage: ${memFormat(stats.memory)}`, { fg: "yellow" }), { threshold: usageThresholds.memory.warning, usage: stats.memory });
+			}
+		});
+	}, 2000);
+}, 5000);

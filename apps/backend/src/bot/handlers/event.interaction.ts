@@ -1,6 +1,7 @@
 import { Permission, hasOwnedObjectPermission } from "@frcn/shared";
 import type { AnySelectMenuInteraction, ButtonInteraction } from "discord.js";
 
+import { logger } from "../../logger";
 import { $discord } from "../../services/discord";
 import { $events } from "../../services/events";
 import { $users } from "../../services/users";
@@ -151,7 +152,7 @@ async function handleEventRsvp(interaction: ButtonInteraction | AnySelectMenuInt
                 dmMessageLink = dmMessage.url;
             } catch (err) {
                 // failed to dm
-                console.log("Failed to dm user", interaction.user.username, err);
+                logger.error("Failed to dm user", interaction.user.username, err);
             }
         }
 

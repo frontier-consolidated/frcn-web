@@ -6,6 +6,7 @@ import { resolveDiscordChannel, resolveDiscordEmoji } from "./Discord";
 import { resolveUserRole } from "./Roles";
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
+import { logger } from "../../../logger";
 import { $discord } from "../../../services/discord";
 import { $events } from "../../../services/events";
 import { $roles } from "../../../services/roles";
@@ -334,6 +335,7 @@ export const eventResolvers: Resolvers = {
 		async createEvent(source, args, context) {
 			if (!context.user) throw gqlErrorUnauthenticated();
 
+			logger.audit(context, "created a new Event", args);
 			const event = await $events.createEvent(
 				context.user,
 				args.startAt ?? undefined,
@@ -434,6 +436,7 @@ export const eventResolvers: Resolvers = {
 				}
 			}
 
+			logger.audit(context, "updated an Event", args);
 			const updatedEvent = await $events.editEvent(
 				event,
 				data,
@@ -497,6 +500,7 @@ export const eventResolvers: Resolvers = {
 				throw gqlErrorBadState("Event expected atleast 1 role");
 			}
 
+			logger.audit(context, "posted an Event", args);
 			await $events.postEvent(event, context.app.discordClient);
 			return true;
 		},
@@ -515,6 +519,7 @@ export const eventResolvers: Resolvers = {
 				override: Permission.ManageEvents
 			})) throw gqlErrorOwnership();
 
+			logger.audit(context, "unposted an Event", args);
 			await $events.unpostEvent(event, context.app.discordClient);
 			return true;
 		},
@@ -534,6 +539,7 @@ export const eventResolvers: Resolvers = {
 				override: Permission.ManageEvents
 			})) throw gqlErrorOwnership();
 
+			logger.audit(context, "ended an Event", args);
 			await $events.endEvent(event, context.app.discordClient);
 			return true;
 		},
@@ -552,6 +558,7 @@ export const eventResolvers: Resolvers = {
 				override: Permission.ManageEvents
 			})) throw gqlErrorOwnership();
 
+			logger.audit(context, "archived an Event", args);
 			await $events.archiveEvent(event, context.app.discordClient);
 			return true;
 		},
@@ -570,6 +577,7 @@ export const eventResolvers: Resolvers = {
 				override: Permission.ManageEvents
 			})) throw gqlErrorOwnership();
 
+			logger.audit(context, "deleted an Event", args);
 			await $events.deleteEvent(event, context.app.discordClient);
 			return true;
 		},
@@ -589,6 +597,7 @@ export const eventResolvers: Resolvers = {
 			
 			const currentRsvp = await $events.getUserRsvp(event, context.user);
 
+			logger.audit(context, "rsvped for an Event", args);
 			await $events.rsvpForEvent(event, role, context.user, currentRsvp, context.app.discordClient);
 			return true;
 		},
@@ -601,6 +610,7 @@ export const eventResolvers: Resolvers = {
 				throw gqlErrorBadInput("Cannot unrsvp from event after it has ended or been archived");
 			}
 
+			logger.audit(context, "unrsvped for an Event", args);
 			await $events.unrsvpForEvent(event, context.user, context.app.discordClient);
 			return true;
 		},
@@ -625,6 +635,7 @@ export const eventResolvers: Resolvers = {
 				throw gqlErrorBadInput("Cannot kick user from event after it has ended or been archived");
 			}
 
+			logger.audit(context, "kicked user from an Event", args);
 			await $events.kickEventMember(member, context.app.discordClient);
 			return true;
 		}

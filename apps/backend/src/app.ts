@@ -10,11 +10,11 @@ import cors from "cors";
 import express, { type NextFunction, type Request, type RequestHandler, type Response } from "express";
 import statusMonitor from "express-status-monitor";
 
-import { createCmsEventBus } from "./cmsEvents";
 import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
 import { getBasePath, isProd } from "./env";
 import { createApolloServer } from "./graphql";
+import { logger } from "./logger";
 import { accesskeyMiddleware, type AccessKeyMiddlewareConfig } from "./middleware/accesskey.middleware";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/session";
 import { createS3Client } from "./s3Client";
@@ -71,6 +71,36 @@ export async function createApp(config: CreateAppOptions) {
         }),
     );
 
+    app.use((req, res, next) => {
+        const timestamp = new Date();
+        req.timestamp = timestamp;
+
+        const interval = setInterval(() => {
+            if (req.closed || req.complete) {
+                clearInterval(interval);
+                return;
+            }
+            const elapsed = Date.now() - timestamp.getTime();
+            if (elapsed > 5000) {
+                logger.warn(`HTTP Request taking a long time! Elapsed: ${elapsed}ms`, logger.requestDetails(req));
+            }
+        }, 1000);
+
+        req.on("end", () => {
+            clearInterval(interval);
+        });
+
+        req.on("error", () => {
+            clearInterval(interval);
+        });
+
+        res.on("finish", () => {
+            clearInterval(interval);
+        });
+
+        next();
+    });
+
     app.use(cookieParser());
 
     app.use(express.json());
@@ -103,7 +133,7 @@ export async function createApp(config: CreateAppOptions) {
 
     const s3Client = createS3Client(config.s3Config.region, config.s3Config.clientKey, config.s3Config.clientSecret);
 
-    const cmsBus = await createCmsEventBus(config.cmsConfig.databaseUrl, config.cmsConfig.schema);
+    // const cmsBus = await createCmsEventBus(config.cmsConfig.databaseUrl, config.cmsConfig.schema);
 
     const context: Context = {
         expressApp: app,
@@ -113,7 +143,7 @@ export async function createApp(config: CreateAppOptions) {
         discordRest,
         s3Client,
         s3Bucket: config.s3Config.bucketName,
-        cmsBus
+        // cmsBus
     };
 
     const files = fs.readdirSync(path.join(__dirname, "routes"), {
@@ -144,11 +174,9 @@ export async function createApp(config: CreateAppOptions) {
 
     app.use((err: Error | Error[], req: Request, res: Response, _next: NextFunction) => {
         const errors = Array.isArray(err) ? err : [err];
-        for (const error of errors) {
-            console.error(error);
-        }
-    
-        // if (res.headersSent) return;
+        logger.error("HTTP Server Error", logger.requestDetails(req), ...errors);
+        
+        if (res.headersSent) return;
     
         res.status(500).send({
             message: "An error occured on the server!",

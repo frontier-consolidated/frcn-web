@@ -11,6 +11,7 @@ import * as mime from "mime-types";
 import { database, type Transaction } from "../database";
 import { getDomain } from "../env";
 import { ffmpeg, ffprobe } from "../ffmpeg";
+import { logger } from "../logger";
 
 const FILE_UPLOAD_DIR = path.join(os.tmpdir(), "frcn-web-uploads");
 const MAX_FILE_SIZE_MB = 100;
@@ -183,7 +184,7 @@ export async function copyFile(s3Client: S3Client, bucket: string, key: string, 
             throw err;
         }
     } catch (err) {
-        console.error(`Error copying file '${key}':`, err);
+        logger.error(`Error copying file '${key}':`, err);
         return null;
     }
 }

@@ -3,6 +3,7 @@ import type { UserRole } from "@prisma/client";
 
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
+import { logger } from "../../../logger";
 import { $roles } from "../../../services/roles";
 import { $system } from "../../../services/system";
 import { $users } from "../../../services/users";
@@ -55,11 +56,12 @@ export const roleResolvers: Resolvers = {
 	},
 
 	Mutation: {
-		async createRole() {
+		async createRole(source, args, context) {
+			logger.audit(context, "created a Role");
 			const role = await $roles.createRole();
 			return role.id;
 		},
-		async editRole(source, args) {
+		async editRole(source, args, context) {
 			const role = await $roles.getRole(args.id);
 			if (!role) return null;
 
@@ -89,11 +91,13 @@ export const roleResolvers: Resolvers = {
 				}
 			}
 
+			logger.audit(context, "updated a Role", args);
 			const updatedRole = await $roles.editRole(args.id, data);
 			return updatedRole && resolveUserRole(updatedRole);
 		},
-		async deleteRole(source, args) {
+		async deleteRole(source, args, context) {
 			// TODO: Add validation
+			logger.audit(context, "deleted a Role", args);
 			await $roles.deleteRole(args.id);
 			return true;
 		},
@@ -137,11 +141,11 @@ export const roleResolvers: Resolvers = {
 				}
 			}
 
-
+			logger.audit(context, "reordered roles", args);
 			await $roles.reorderRoles(args.order);
 			return args.order;
 		},
-		async changeUserPrimaryRole(source, args) {
+		async changeUserPrimaryRole(source, args, context) {
 			const role = await $roles.getRole(args.roleId);
 			if (!role) throw gqlErrorBadInput(`Could not find role with id: ${args.roleId}`);
 			if (!role.primary) throw gqlErrorBadInput("Role is not a primary role");
@@ -149,10 +153,11 @@ export const roleResolvers: Resolvers = {
 			const user = await $users.getUser(args.userId);
 			if (!user) throw gqlErrorBadInput(`Could not find user with id: ${args.userId}`);
 
+			logger.audit(context, "changed a user's primary Role", args);
 			await $roles.changePrimaryRole(role, user);
 			return resolveUserRole(role);
 		},
-		async giveUserRole(source, args) {
+		async giveUserRole(source, args, context) {
 			const role = await $roles.getRole(args.roleId);
 			if (!role) throw gqlErrorBadInput(`Could not find role with id: ${args.roleId}`);
 			if (role.primary) throw gqlErrorBadInput("Cannot give primary role use changePrimaryRole");
@@ -162,10 +167,11 @@ export const roleResolvers: Resolvers = {
 			
 			if (await $roles.hasRole(role, user)) return null;
 
+			logger.audit(context, "gave a user a Role", args);
 			await $roles.giveRole(role, user);
 			return resolveUserRole(role);
 		},
-		async removeUserRole(source, args) {
+		async removeUserRole(source, args, context) {
 			const role = await $roles.getRole(args.roleId);
 			if (!role) throw gqlErrorBadInput(`Could not find role with id: ${args.roleId}`);
 			if (role.primary) throw gqlErrorBadInput("Cannot remove primary role use changePrimaryRole");
@@ -175,6 +181,7 @@ export const roleResolvers: Resolvers = {
 			
 			if (!(await $roles.hasRole(role, user))) return false;
 
+			logger.audit(context, "removed a user's Role", args);
 			await $roles.removeRole(role, user);
 			return true;
 		}
