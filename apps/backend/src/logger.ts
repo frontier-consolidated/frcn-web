@@ -122,7 +122,7 @@ function audit(actor: User | AccessKey | GQLContext, message: string, data?: any
     msg.push(style(resolvedActor.name, { fg: "white", modifier: "bright" }));
     msg.push(message);
 
-    log(style(msg.join(" "), { fg: "cyan" }), { actor: resolvedActor, data });
+    log(style(msg.join(" "), { fg: "cyan" }), JSON.stringify({ actor: resolvedActor, data }, null, 2).replace(/\s+/g, " "));
 }
 
 function requestDetails(req: Request) {
