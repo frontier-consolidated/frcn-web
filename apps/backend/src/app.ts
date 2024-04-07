@@ -10,7 +10,6 @@ import cors from "cors";
 import express, { type NextFunction, type Request, type RequestHandler, type Response } from "express";
 import statusMonitor from "express-status-monitor";
 
-import { createCmsEventBus } from "./cmsEvents";
 import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
 import { getBasePath, isProd } from "./env";
@@ -103,7 +102,7 @@ export async function createApp(config: CreateAppOptions) {
 
     const s3Client = createS3Client(config.s3Config.region, config.s3Config.clientKey, config.s3Config.clientSecret);
 
-    const cmsBus = await createCmsEventBus(config.cmsConfig.databaseUrl, config.cmsConfig.schema);
+    // const cmsBus = await createCmsEventBus(config.cmsConfig.databaseUrl, config.cmsConfig.schema);
 
     const context: Context = {
         expressApp: app,
@@ -113,7 +112,7 @@ export async function createApp(config: CreateAppOptions) {
         discordRest,
         s3Client,
         s3Bucket: config.s3Config.bucketName,
-        cmsBus
+        // cmsBus
     };
 
     const files = fs.readdirSync(path.join(__dirname, "routes"), {

@@ -25,22 +25,22 @@ export default async function () {
         throw new Error("expected CMS_BUS_SCHEMA to be set");
     }
 
-    const bus = createTBus("cms", {
-        db: { connectionString: bus_database_url },
-        schema: bus_schema
-    });
+    // const bus = createTBus("cms", {
+    //     db: { connectionString: bus_database_url },
+    //     schema: bus_schema
+    // });
 
-    bus.registerHandler(createEventHandler({
-        task_name: "handle_index_updated",
-        eventDef: CMSEvents.IndexUpdated,
-        handler: async (props) => {
-            console.log("CMS UPDATE", props);
-            const pathname = indexToRoute[props.input];
-            if (!pathname) return;
+    // bus.registerHandler(createEventHandler({
+    //     task_name: "handle_index_updated",
+    //     eventDef: CMSEvents.IndexUpdated,
+    //     handler: async (props) => {
+    //         console.log("CMS UPDATE", props);
+    //         const pathname = indexToRoute[props.input];
+    //         if (!pathname) return;
 
-            invalidateRoute(pathname);
-        }
-    }));
+    //         invalidateRoute(pathname);
+    //     }
+    // }));
 
-    await bus.start();
+    // await bus.start();
 }

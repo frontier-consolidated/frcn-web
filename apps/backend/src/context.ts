@@ -4,7 +4,6 @@ import type { ApolloServer } from "@apollo/server";
 import type { S3Client } from "@aws-sdk/client-s3";
 import type { Client as DiscordClient, REST as DiscordREST } from "discord.js";
 import type { Express } from "express";
-import type { Bus } from "pg-tbus";
 
 import type { GQLContext } from "./graphql/context";
 
@@ -16,7 +15,7 @@ export type Context = {
 	discordRest: DiscordREST;
 	s3Client: S3Client;
 	s3Bucket: string;
-	cmsBus: Bus;
+	// cmsBus: Bus;
 };
 
 export type RouteConfig = {
