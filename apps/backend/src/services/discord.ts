@@ -1,13 +1,19 @@
 import type { User } from "@prisma/client";
-import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuildBasedChannel, type GuildBasedChannel, CategoryChannel } from "discord.js";
+import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuildBasedChannel, type GuildBasedChannel, CategoryChannel, VoiceChannel } from "discord.js";
 
 import { $system } from "./system";
+
+const cacheTimestamps = {
+	channels: -1,
+	roles: -1,
+	emojis: -1,
+};
 
 async function getGuild(client: Client) {
 	try {
 		const { discordGuildId } = await $system.getSystemSettings();
 	
-		return await client.guilds.fetch(discordGuildId);
+		return client.guilds.cache.get(discordGuildId) ?? await client.guilds.fetch(discordGuildId);
 	} catch (err) {
 		return null;
 	}
@@ -17,6 +23,7 @@ async function isInGuild(client: Client, userId: string) {
 	try {
 		const guild = await getGuild(client);
 		if (!guild) return false;
+		if (guild.members.cache.has(userId)) return true;
 		await guild.members.fetch(userId);
 
 		return true;
@@ -25,48 +32,44 @@ async function isInGuild(client: Client, userId: string) {
 	}
 }
 
-const textChannelTypes: ChannelType[] = [ChannelType.GuildAnnouncement, ChannelType.GuildText];
-async function getAllTextChannels(client: Client) {
+async function fetchAllChannels(client: Client) {
 	try {
 		const guild = await getGuild(client);
 		if (!guild) return [];
-		const channels = await guild.channels.fetch();
 
-		return Array.from(channels.values()).filter((channel) => !!channel && textChannelTypes.includes(channel.type)) as NonThreadGuildBasedChannel[];
+		let channels;
+		if ((Date.now() - cacheTimestamps.channels) > 30 * 60 * 1000) {
+			channels = await guild.channels.fetch();
+			cacheTimestamps.channels = Date.now();
+		} else {
+			channels = guild.channels.cache;
+		}
+
+		return Array.from(channels.values()).filter((channel): channel is GuildBasedChannel => !!channel);
 	} catch (err) {
 		return [];
 	}
+}
+
+const textChannelTypes: ChannelType[] = [ChannelType.GuildAnnouncement, ChannelType.GuildText];
+async function getAllTextChannels(client: Client) {
+	return (await fetchAllChannels(client)).filter((channel) => textChannelTypes.includes(channel.type)) as NonThreadGuildBasedChannel[];
 }
 
 async function getAllVoiceChannels(client: Client) {
-	try {
-		const guild = await getGuild(client);
-		if (!guild) return [];
-		const channels = await guild.channels.fetch();
-
-		return Array.from(channels.values()).filter((channel) => !!channel && channel.type === ChannelType.GuildVoice) as NonThreadGuildBasedChannel[];
-	} catch (err) {
-		return [];
-	}
+	return (await fetchAllChannels(client)).filter((channel) => channel.type === ChannelType.GuildVoice) as VoiceChannel[];
 }
 
 async function getAllCategories(client: Client) {
-	try {
-		const guild = await getGuild(client);
-		if (!guild) return [];
-		const channels = await guild.channels.fetch();
-
-		return Array.from(channels.values()).filter((channel) => !!channel && channel.type === ChannelType.GuildCategory) as CategoryChannel[];
-	} catch (err) {
-		return [];
-	}
+	return (await fetchAllChannels(client)).filter((channel) => !!channel && channel.type === ChannelType.GuildCategory) as CategoryChannel[];
 }
 
 async function getChannel(client: Client, id: string) {
 	try {
 		const guild = await getGuild(client);
 		if (!guild) return null;
-		const channel = await guild.channels.fetch(id);
+
+		const channel = guild.channels.cache.get(id) ?? await guild.channels.fetch(id);
 		return channel;
 	} catch (err) {
 		return null;
@@ -93,18 +96,31 @@ async function canManageChannelsInCategory(category: GuildBasedChannel) {
 	return permissions.has("ManageChannels") && permissions.has("ViewChannel") && permissions.has("Connect") && permissions.has("MoveMembers");
 }
 
+async function getMember(client: Client, user: string) {
+	try {
+		const guild = await getGuild(client);
+		if (!guild) return null;
+
+		const guildMember = guild.members.cache.get(user) ?? await guild.members.fetch({
+			user,
+			cache: true
+		});
+		return guildMember;
+	} catch (err) {
+		return null;
+	}
+}
+
 async function canUserViewChannel(client: Client, user: User | undefined, channelId: string) {
 	try {
 		const guild = await getGuild(client);
 		if (!guild) return false;
 
-		const channel = await guild.channels.fetch(channelId);
+		const channel = await getChannel(client, channelId);
 		if (!channel) return false;
 		if (!user) return channel.permissionsFor(guild.roles.everyone).has("ViewChannel");
 
-		const guildMember = await guild.members.fetch({
-			user: user.discordId,
-		});
+		const guildMember = await getMember(client, user.discordId);
 		if (!guildMember) return false;
 
 		if (channel.isThread()) {
@@ -120,7 +136,14 @@ async function getAllRoles(client: Client, includeEveryone?: boolean) {
 	try {
 		const guild = await getGuild(client);
 		if (!guild) return [];
-		const roles = await guild.roles.fetch();
+
+		let roles;
+		if ((Date.now() - cacheTimestamps.roles) > 30 * 60 * 1000) {
+			roles = await guild.roles.fetch();
+			cacheTimestamps.roles = Date.now();
+		} else {
+			roles = guild.roles.cache;
+		}
 
 		let arr = Array.from(roles.values());
 		if (includeEveryone === false) {
@@ -137,7 +160,7 @@ async function getRole(client: Client, id: string) {
 	try {
 		const guild = await getGuild(client);
 		if (!guild) return null;
-		const role = await guild.roles.fetch(id);
+		const role = guild.roles.cache.get(id) ?? await guild.roles.fetch(id);
 
 		return role;
 	} catch (err) {
@@ -149,7 +172,14 @@ async function getAllEmojis(client: Client) {
 	try {
 		const guild = await getGuild(client);
 		if (!guild) return [];
-		const emojis = await guild.emojis.fetch();
+		
+		let emojis;
+		if ((Date.now() - cacheTimestamps.emojis) > 30 * 60 * 1000) {
+			emojis = await guild.emojis.fetch();
+			cacheTimestamps.emojis = Date.now();
+		} else {
+			emojis = guild.emojis.cache;
+		}
 
 		return Array.from(emojis.values());
 	} catch (err) {
@@ -161,7 +191,7 @@ async function getEmoji(client: Client, id: string) {
 	try {
 		const guild = await getGuild(client);
 		if (!guild) return null;
-		const emoji = await guild.emojis.fetch(id);
+		const emoji = guild.emojis.cache.get(id) ?? await guild.emojis.fetch(id);
 
 		return emoji;
 	} catch (err) {
@@ -189,6 +219,7 @@ export const $discord = {
 	canPostInChannel,
 	canCreateThreadInChannel,
 	canManageChannelsInCategory,
+	getMember,
 	canUserViewChannel,
 	getAllRoles,
 	getRole,
