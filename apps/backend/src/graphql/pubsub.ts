@@ -55,6 +55,7 @@ export type SubscriptionResult<TKey extends keyof SubscriptionResolvers> = {
 };
 
 export const pubsub = new CustomPubSub<{
+    ROLES_UPDATED: SubscriptionResult<"rolesUpdated">
     USER_ROLES_UPDATED: SubscriptionResult<"userRolesUpdated">
 }>();
 

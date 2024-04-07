@@ -748,6 +748,7 @@ export type RoleEditInput = {
 
 export type Subscription = {
   __typename?: 'Subscription';
+  rolesUpdated: Array<UserRole>;
   userRolesUpdated: UpdatedUserRoles;
 };
 
@@ -1302,6 +1303,7 @@ export type ResourceResolvers<ContextType = GQLContext, ParentType extends Resol
 }>;
 
 export type SubscriptionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
+  rolesUpdated?: SubscriptionResolver<Array<ResolversTypes['UserRole']>, "rolesUpdated", ParentType, ContextType>;
   userRolesUpdated?: SubscriptionResolver<ResolversTypes['UpdatedUserRoles'], "userRolesUpdated", ParentType, ContextType, Partial<SubscriptionUserRolesUpdatedArgs>>;
 }>;
 

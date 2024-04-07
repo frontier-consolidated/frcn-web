@@ -490,6 +490,7 @@ type UpdatedUserRoles {
 }
 
 type Subscription {
+	rolesUpdated: [UserRole!]! @permission(one: [CreateEvents, ManageEvents, ManageRoles])
 	userRolesUpdated(userId: ID): UpdatedUserRoles!
 }
 

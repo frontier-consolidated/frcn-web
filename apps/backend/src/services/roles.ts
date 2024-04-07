@@ -4,7 +4,7 @@ import { $system } from "./system";
 import { $users } from "./users";
 import { database } from "../database";
 import type { RoleEditInput } from "../graphql/__generated__/resolvers-types";
-import { publishUserRolesUpdated } from "../graphql/events";
+import { publishRolesUpdated, publishUserRolesUpdated } from "../graphql/events";
 
 async function getRole(id: string) {
 	return await database.userRole.findUnique({
@@ -92,6 +92,8 @@ async function createRole() {
 		}
 	});
 
+	await publishRolesUpdated();
+
 	return role;
 }
 
@@ -141,6 +143,7 @@ async function editRole(id: string, data: RoleEditInput) {
 	});
 
 	publishUserRolesUpdated(updatedRole.primary ? updatedRole.primaryUsers : updatedRole.users.map(u => u.user));
+	await publishRolesUpdated();
 
 	return updatedRole;
 }
@@ -169,6 +172,8 @@ async function deleteRole(id: string) {
 			where: { id }
 		});
 	});
+
+	await publishRolesUpdated();
 }
 
 async function hasPrimaryRolePrivileges(role: UserRole, user: User) {

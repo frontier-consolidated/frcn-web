@@ -2,7 +2,9 @@ import type { User } from "@prisma/client";
 
 import type { UserRole as GQLUserRole, UpdatedUserRoles as GQLUpdatedUserRoles } from "./__generated__/resolvers-types";
 import { pubsub } from "./pubsub";
+import { resolveUserRole } from "./schema/resolvers/Roles";
 import type { WithModel } from "./schema/resolvers/types";
+import { $roles } from "../services/roles";
 
 export function publishUserRolesUpdated(users: User[]) {
 	for (const user of users) {
@@ -16,4 +18,13 @@ export function publishUserRolesUpdated(users: User[]) {
             } as WithModel<GQLUpdatedUserRoles, User>
 		});
 	}
+}
+
+export async function publishRolesUpdated() {
+    const roles = await $roles.getAllRoles();
+    const sortedRoles = await $roles.sort(roles);
+
+    pubsub.publish("ROLES_UPDATED", {
+        rolesUpdated: sortedRoles.map(resolveUserRole)
+    });
 }
