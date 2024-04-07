@@ -5,6 +5,7 @@ import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonB
 
 import { database } from "../../database";
 import { getWebURL } from "../../env";
+import { logger } from "../../logger";
 import { $discord } from "../../services/discord";
 import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
@@ -201,8 +202,7 @@ export async function updateEventMessage(client: Client, event: Event) {
 			await message.edit(payload);
 		}
 	} catch (err) {
-		console.error("Failed to update event message");
-		console.error(err);
+		logger.error("Failed to update event message", err);
 	}
 }
 
@@ -215,6 +215,6 @@ export async function deleteEventMessage(client: Client, event: Event) {
 		if (!message || !message.deletable) return;
 		await message.delete();
 	} catch (err) {
-		console.error("Failed to delete event message", err);
+		logger.error("Failed to delete event message", err);
 	}
 }

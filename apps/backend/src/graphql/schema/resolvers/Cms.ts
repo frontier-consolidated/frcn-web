@@ -4,6 +4,7 @@ import type { ContentContainer, ContentContainerFile, FileUpload } from "@prisma
 
 import type { WithModel } from "./types";
 import { getOrigin } from "../../../env";
+import { logger } from "../../../logger";
 import { $cms } from "../../../services/cms";
 import type {
 	ContentContainer as GQLContentContainer,
@@ -130,7 +131,7 @@ export const cmsResolvers: Resolvers = {
 	},
 
 	Mutation: {
-		async createContentContainer(source, args) {
+		async createContentContainer(source, args, context) {
 			let parent: ContentContainer | null = null;
 			if (args.parent) {
 				parent = await $cms.getContainerById(args.parent);
@@ -151,17 +152,19 @@ export const cmsResolvers: Resolvers = {
 				throw gqlErrorBadInput(`Invalid container type '${args.type}'`);
 			}
 
+			logger.audit(context, "created a new ContentContainer", args);
 			const container = await $cms.createContainer(args.type, args.identifier ?? undefined, parent ?? undefined);
 			return resolveContentContainer(container);
 		},
-		async editContentContainer(source, args) {
+		async editContentContainer(source, args, context) {
 			const container = await $cms.getContainerById(args.id);
 			if (!container) return null;
 
+			logger.audit(context, "updated a ContentContainer", args);
 			const updatedContainer = await $cms.editContainer(container, args.data);
 			return resolveContentContainer(updatedContainer);
 		},
-		async reorderContentContainerChildren(source, args) {
+		async reorderContentContainerChildren(source, args, context) {
 			const container = await $cms.getContainerById(args.id);
 			if (!container) return null;
 
@@ -181,10 +184,11 @@ export const cmsResolvers: Resolvers = {
 				seen.push(id);
 			}
 
+			logger.audit(context, "reordered ContentContainer children", args);
 			const updatedContainer = await $cms.reorderContainerChildren(container, args.order);
 			return resolveContentContainer(updatedContainer);
 		},
-		async reorderContentContainerFiles(source, args) {
+		async reorderContentContainerFiles(source, args, context) {
 			const container = await $cms.getContainerById(args.id);
 			if (!container) return null;
 
@@ -204,6 +208,7 @@ export const cmsResolvers: Resolvers = {
 				seen.push(id);
 			}
 
+			logger.audit(context, "reordered ContentContainer files", args);
 			const updatedContainer = await $cms.reorderContainerFiles(container, args.order);
 			return resolveContentContainer(updatedContainer);
 		},
@@ -211,6 +216,7 @@ export const cmsResolvers: Resolvers = {
 			const container = await $cms.getContainerById(args.id);
 			if (!container) return false;
 
+			logger.audit(context, "deleted ContentContainer", args);
 			await $cms.deleteContainer(context.app.s3Client, context.app.s3Bucket, args.id);
 			return true;
 		},
@@ -218,6 +224,7 @@ export const cmsResolvers: Resolvers = {
 			const fileLink = await $cms.getContainerFileLink(args.id);
 			if (!fileLink) return null;
 
+			logger.audit(context, "updated ContentContainerFile", args);
 			const updatedFileLink = await $cms.editContainerFileLink(fileLink, args.data);
 			return resolveContentContainerFile(updatedFileLink, updatedFileLink.file, context);
 		},
@@ -225,6 +232,7 @@ export const cmsResolvers: Resolvers = {
 			const fileLink = await $cms.getContainerFileLink(args.id);
 			if (!fileLink) return false;
 
+			logger.audit(context, "deleted ContentContainerFile", args);
 			await $cms.deleteContainerFileLink(context.app.s3Client, context.app.s3Bucket, fileLink);
 			return true;
 		}

@@ -7,6 +7,7 @@ import { Cache as FileSystemCache } from "file-system-cache";
 import type { Context, RouteConfig } from "../context";
 import { database } from "../database";
 import { getOrigin } from "../env";
+import { logger } from "../logger";
 import { fileField } from "../middleware/fileField.middleware";
 import { $cms, type CmsAttachFileMetadata } from "../services/cms";
 import { $files } from "../services/files";
@@ -16,7 +17,7 @@ async function setupCache(cache: FileSystemCache) {
     try {
         await cache.clear();
     } catch (err) {
-        console.error("Error clearing media cache", err);
+        logger.error("Error clearing media cache", err);
     }
 
     try {

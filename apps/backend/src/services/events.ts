@@ -13,6 +13,7 @@ import { postEventUpdateMessage } from "../bot/messages/eventUpdate.message";
 import { database } from "../database";
 import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 import type { EventReminder } from "../graphql/schema/resolvers/Event";
+import { logger } from "../logger";
 
 const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000;
 
@@ -233,7 +234,7 @@ async function createEventThread(event: Event, discordClient: DiscordClient, cha
 		try {
 			await thread.members.add(rsvp.user.discordId, "RSVPed");
 		} catch (err) {
-			console.error("Failed to add user to event thread", err);
+			logger.error("Failed to add user to event thread", err);
 		}
 	}
 
@@ -247,7 +248,7 @@ async function archiveEventThread(event: Event, discordClient: DiscordClient) {
 		const thread = await getEventThread(event, discordClient);
 		await thread.setArchived(true);
 	} catch (err) {
-		console.error("Failed to archive event thread", err);
+		logger.error("Failed to archive event thread", err);
 	}
 }
 
@@ -258,7 +259,7 @@ async function deleteEventThread(event: Event, discordClient: DiscordClient) {
 		const thread = await getEventThread(event, discordClient);
 		await thread.delete();
 	} catch (err) {
-		console.error("Failed to delete event thread", err);
+		logger.error("Failed to delete event thread", err);
 	}
 }
 
@@ -349,8 +350,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 			const thread = await getEventThread(updatedMember.event, discordClient);
 			await thread.members.remove(updatedMember.user.discordId, "UnRSVPed / Kicked from event");
 		} catch (err) {
-			console.error("Failed to remove user to event thread");
-			console.error(err);
+			logger.error("Failed to remove user to event thread", err);
 		}
 	}
 }
@@ -571,7 +571,7 @@ async function endEvent(event: Event, discordClient: DiscordClient) {
 	try {
 		await postEventEndMessage(discordClient, endedEvent);
 	} catch (err) {
-		console.error("Error posting event end message", err);
+		logger.error("Error posting event end message", err);
 	}
 
 	return endedEvent;
@@ -655,7 +655,7 @@ async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, curre
 		const thread = await getEventThread(updatedEvent, discordClient);
 		await thread.members.add(user.discordId, "RSVPed");
 	} catch (err) {
-		console.error("Failed to add user to event thread", err);
+		logger.error("Failed to add user to event thread", err);
 	}
 }
 

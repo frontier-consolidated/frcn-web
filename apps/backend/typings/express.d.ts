@@ -10,6 +10,7 @@ declare global {
 		interface Request {
 			user?: User;
 			accessKey?: AccessKey;
+			timestamp: Date;
 
 			login(user: User): Promise<void>;
 			logout(): Promise<void>;
