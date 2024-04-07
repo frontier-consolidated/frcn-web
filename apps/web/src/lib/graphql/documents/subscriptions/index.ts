@@ -1,5 +1,7 @@
-import { USER_ROLES_UPDATED } from "./rolesUpdated.subscription";
+import { CURRENT_USER_ROLES_UPDATED } from "./currentUserRolesUpdated.subscription";
+import { USER_ROLES_UPDATED } from "./userRolesUpdated.subscription";
 
 export const Subscriptions = {
-	USER_ROLES_UPDATED
+	CURRENT_USER_ROLES_UPDATED,
+	USER_ROLES_UPDATED,
 };

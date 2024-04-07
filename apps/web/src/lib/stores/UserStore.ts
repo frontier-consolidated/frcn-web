@@ -5,7 +5,7 @@ import type { Subscription } from "zen-observable-ts";
 
 import { Routes, api } from "$lib/api";
 import { Queries, Subscriptions, getApollo } from "$lib/graphql";
-import type { GetCurrentUserQuery, OnRolesUpdatedSubscription } from "$lib/graphql/__generated__/graphql";
+import type { GetCurrentUserQuery, OnCurrentUserRolesUpdatedSubscription } from "$lib/graphql/__generated__/graphql";
 
 type UserData = (NonNullable<GetCurrentUserQuery["user"]> & { __permissions: number }) | null | undefined;
 
@@ -47,7 +47,7 @@ export const user = writable<{ loading: boolean; adminMode: boolean; data: UserD
 );
 
 if (browser) {
-	let observer: Observable<FetchResult<OnRolesUpdatedSubscription>> | null = null;
+	let observer: Observable<FetchResult<OnCurrentUserRolesUpdatedSubscription>> | null = null;
 	let subscription: Subscription | null = null;
 	user.subscribe((data) => {
 		if (data.loading || !data.data) {
@@ -59,7 +59,7 @@ if (browser) {
 		if (!data.loading && data.data) {
 			if (!observer) {
 				observer = getApollo().subscribe({
-					query: Subscriptions.USER_ROLES_UPDATED,
+					query: Subscriptions.CURRENT_USER_ROLES_UPDATED,
 					variables: {
 						userId: data.data.id
 					}

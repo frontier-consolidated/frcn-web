@@ -76,7 +76,8 @@ const documents = {
     "\n\tquery GetRole($roleId: ID!) {\n\t\trole: getRole(id: $roleId) {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t\tavatarUrl\n\t\t\t}\n\t\t}\n\t\tdiscordRoles: getAllDiscordRoles(everyone: false) {\n\t\t\tid\n\t\t\tname\n\t\t\tcolor\n\t\t}\n\t}\n": types.GetRoleDocument,
     "\n\tquery GetSystemSettings {\n\t\tsettings: getSystemSettings {\n\t\t\tdiscordGuild {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n": types.GetSystemSettingsDocument,
     "\n\tquery GetUser($id: ID!) {\n\t\tuser: getUser(id: $id) {\n\t\t\t...UserFragment\n\t\t}\n\t}\n": types.GetUserDocument,
-    "\n\tsubscription OnRolesUpdated($userId: ID!) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tpermissions\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n": types.OnRolesUpdatedDocument,
+    "\n\tsubscription OnCurrentUserRolesUpdated($userId: ID!) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tpermissions\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n": types.OnCurrentUserRolesUpdatedDocument,
+    "\n\tsubscription OnUserRolesUpdated {\n\t\troles: userRolesUpdated {\n\t\t\tuserId\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n": types.OnUserRolesUpdatedDocument,
 };
 
 /**
@@ -348,7 +349,11 @@ export function gql(source: "\n\tquery GetUser($id: ID!) {\n\t\tuser: getUser(id
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tsubscription OnRolesUpdated($userId: ID!) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tpermissions\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tsubscription OnRolesUpdated($userId: ID!) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tpermissions\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"];
+export function gql(source: "\n\tsubscription OnCurrentUserRolesUpdated($userId: ID!) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tpermissions\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tsubscription OnCurrentUserRolesUpdated($userId: ID!) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tpermissions\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\n\tsubscription OnUserRolesUpdated {\n\t\troles: userRolesUpdated {\n\t\t\tuserId\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tsubscription OnUserRolesUpdated {\n\t\troles: userRolesUpdated {\n\t\t\tuserId\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

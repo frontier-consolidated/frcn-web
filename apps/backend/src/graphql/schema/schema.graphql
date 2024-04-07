@@ -490,5 +490,5 @@ type UpdatedUserRoles {
 }
 
 type Subscription {
-	userRolesUpdated(userId: ID!): UpdatedUserRoles!
+	userRolesUpdated(userId: ID): UpdatedUserRoles!
 }

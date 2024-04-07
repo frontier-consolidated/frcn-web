@@ -133,8 +133,12 @@ export const userResolvers: Resolvers = {
 	},
 
 	UpdatedUserRoles: {
-		async permissions(source) {
+		async permissions(source, args, context) {
+			if (!context.user) throw gqlErrorUnauthenticated();
+
 			const { _model } = source as WithModel<GQLUpdatedUserRoles, User>;
+			if (_model.id !== context.user.id) throw gqlErrorOwnership();
+
 			const permissions = await $users.getPermissions(_model);
 			return permissions;
 		},
@@ -160,6 +164,7 @@ export const userResolvers: Resolvers = {
 				() => pubsub.asyncIterator("USER_ROLES_UPDATED"),
 				async function (source, args) {
 					const value = await Promise.resolve(source.userRolesUpdated);
+					if (!args.userId) return true;
 					return value.userId === args.userId;
 				}
 			)

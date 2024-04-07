@@ -753,7 +753,7 @@ export type Subscription = {
 
 
 export type SubscriptionUserRolesUpdatedArgs = {
-  userId: Scalars['ID']['input'];
+  userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type SystemEditInput = {
@@ -1019,10 +1019,6 @@ export type CacheControlDirectiveArgs = {
 };
 
 export type CacheControlDirectiveResolver<Result, Parent, ContextType = GQLContext, Args = CacheControlDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
-
-export type OwnershipDirectiveArgs = { };
-
-export type OwnershipDirectiveResolver<Result, Parent, ContextType = GQLContext, Args = OwnershipDirectiveArgs> = DirectiveResolverFn<Result, Parent, ContextType, Args>;
 
 export type PermissionDirectiveArgs = {
   all?: Maybe<Array<Permission>>;
@@ -1306,7 +1302,7 @@ export type ResourceResolvers<ContextType = GQLContext, ParentType extends Resol
 }>;
 
 export type SubscriptionResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Subscription'] = ResolversParentTypes['Subscription']> = ResolversObject<{
-  userRolesUpdated?: SubscriptionResolver<ResolversTypes['UpdatedUserRoles'], "userRolesUpdated", ParentType, ContextType, RequireFields<SubscriptionUserRolesUpdatedArgs, 'userId'>>;
+  userRolesUpdated?: SubscriptionResolver<ResolversTypes['UpdatedUserRoles'], "userRolesUpdated", ParentType, ContextType, Partial<SubscriptionUserRolesUpdatedArgs>>;
 }>;
 
 export type SystemSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['SystemSettings'] = ResolversParentTypes['SystemSettings']> = ResolversObject<{
@@ -1408,6 +1404,5 @@ export type Resolvers<ContextType = GQLContext> = ResolversObject<{
 
 export type DirectiveResolvers<ContextType = GQLContext> = ResolversObject<{
   cacheControl?: CacheControlDirectiveResolver<any, any, ContextType>;
-  ownership?: OwnershipDirectiveResolver<any, any, ContextType>;
   permission?: PermissionDirectiveResolver<any, any, ContextType>;
 }>;
