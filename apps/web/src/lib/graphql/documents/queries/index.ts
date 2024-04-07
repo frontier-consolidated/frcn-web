@@ -1,5 +1,6 @@
 import { CURRENT_RSVPS } from "./currentRsvps.query";
 import { CURRENT_USER } from "./currentUser.query";
+import { CURRENT_USER_SERVER } from "./currentUserServer.query";
 import { GET_ALL_ACCESS_KEYS } from "./getAllAccessKeys.query";
 import { GET_ALL_EVENT_CHANNELS } from "./getAllEventChannels.query";
 import { GET_ALL_ROLES } from "./getAllRoles.query";
@@ -22,6 +23,7 @@ import { GET_USER } from "./getUser.query";
 export const Queries = {
 	CURRENT_USER,
 	CURRENT_RSVPS,
+	CURRENT_USER_SERVER,
 	GET_OWNED_EVENTS,
 	GET_USER,
 	GET_ALL_USERS,
