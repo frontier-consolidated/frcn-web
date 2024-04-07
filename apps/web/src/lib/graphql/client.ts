@@ -1,16 +1,19 @@
 import { browser } from "$app/environment";
-import type { Operation } from "@apollo/client";
+import type { Operation, TypedDocumentNode } from "@apollo/client";
 import { ApolloClient, InMemoryCache } from "@apollo/client/core";
 import { setContext } from "@apollo/client/link/context";
 import { HttpLink } from "@apollo/client/link/http";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
+import type { ResultOf } from "@graphql-typed-document-node/core";
 import { Kind, OperationTypeNode } from "graphql";
 import { createClient } from "graphql-ws";
+import { onMount } from "svelte";
 
 import { Routes, apiUri } from "$lib/api";
 
 import { fragments } from "./documents/fragments";
+
 
 export function createApolloClient(headers?: Record<string, string>) {
 	const httpLink = new HttpLink({
@@ -60,4 +63,20 @@ const browserApollo = browser ? createApolloClient() : null;
 export function getApollo() {
 	if (!browser) throw new Error("DO NOT USE SHARED APOLLO CLIENT ON SERVER, use locals.apollo");
 	return browserApollo!;
+}
+
+export function subscribe<T extends TypedDocumentNode<any, any>>(document: T, callback: (data: NonNullable<ResultOf<T>>) => void) {
+	onMount(() => {
+		const observer = getApollo().subscribe({
+			query: document,
+		});
+		const subscription = observer.subscribe(({ data }) => {
+			if (!data) return;
+			callback(data as NonNullable<ResultOf<T>>);
+		});
+
+		return () => {
+			subscription.unsubscribe();
+		};
+	});
 }

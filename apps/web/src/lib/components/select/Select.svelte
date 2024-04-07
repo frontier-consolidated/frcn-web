@@ -21,6 +21,7 @@
 	export let options: Option<T, S>[] = [];
 	export let multi: Multi = false as Multi;
 	export let search: boolean = false;
+	export let max: number | undefined = undefined;
 
 	let clazz: string = "";
 	export { clazz as class };
@@ -32,7 +33,6 @@
 	type Value = (Multi extends true ? T[] : T | undefined);
 
 	export let value: Value = (multi ? [] : undefined) as Value;
-	$: selectableOptions = (multi ? options.filter(option => !(value as T[]).includes(option.value)) : options).filter(option => !searchInput || option.name.toLowerCase().includes(searchInput));
 
 	function getSelectedOptions(multi: boolean, value: Value, options: Option<T, S>[]) {
 		if (multi) {
@@ -48,7 +48,10 @@
 			return [option];
 		}
 	}
+
 	$: selectedOptions = getSelectedOptions(multi, value, options);
+	$: selectableOptions = (multi ? (!max || selectedOptions.length < max) ? options.filter(option => !(value as T[]).includes(option.value)) : [] : options).filter(option => !searchInput || option.name.toLowerCase().includes(searchInput));
+
 
 	let input: HTMLInputElement | null = null;
 	function initInput(el: HTMLInputElement) {

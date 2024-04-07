@@ -24,20 +24,25 @@
 
     $: allRoles = $userProfileView.open && $userProfileView.data ? getAllRoles($userProfileView.data) : [];
     $: canEdit = hasPermission($user.data?.permissions ?? 0, Permission.ManageRoles);
+
+    let primaryRoleSearch = "";
+    let nonPrimaryRoleSearch = "";
+    $: giveableNonPrimaryRoles = $page.data.roles?.filter(role => !role.primary && !$userProfileView.data?.roles.find(r => r.id === role.id)) ?? [];
+    $: availablePrimaryRoles = $page.data.roles?.filter(role => role.primary && $userProfileView.data?.primaryRole.id !== role.id) ?? [];
 </script>
 
 <Modal size="sm" bodyClass="space-y-0" open={$userProfileView.open} dismissable outsideclose on:close={() => {
     userProfileView.update(view => ({ ...view, open: false }));
 }}>
     <div>
-        <div class="flex gap-4 items-center">
+        <div class="flex gap-4 items-center mr-8">
             <Avatar src={$userProfileView.data?.avatarUrl} rounded size="lg" />
-            <div class="flex flex-col gap-1">
+            <div class="flex flex-col">
                 <span class="text-2xl font-semibold text-black dark:text-white">{$userProfileView.data?.name ?? "Loading..."}</span>
                 <span class="text-sm">Created in {joinDate}</span>
             </div>
         </div>
-        <Hr class="my-4 mt-6" />
+        <Hr class="my-4" />
         <div class="flex flex-col gap-4">
             <a href={$userProfileView.data ? `discord://-/users/${$userProfileView.data.discordId}` : "/"} class="group font-medium text-sm text-gray-700 dark:text-gray-400 rounded border border-gray-600 p-3 flex items-center gap-2">
                 <DiscordSolid class="text-discord" />
@@ -60,13 +65,13 @@
                             {/if}
                             {role.name}
                             {#if canEdit}
-                                {#if primaryRole && $page.data.roles}
+                                {#if primaryRole && availablePrimaryRoles.length > 0}
                                     <AngleDownSolid class="w-2 h-2 ms-2 cursor-pointer" />
-                                    <Dropdown class="px-2 text-sm">
+                                    <Dropdown class="px-2 text-sm" >
                                         <div slot="header" class="px-2 py-1">
-                                            <Search size="sm" />
+                                            <Search size="sm" bind:value={primaryRoleSearch} />
                                         </div>
-                                        {#each $page.data.roles.filter(role => role.primary && $userProfileView.data?.primaryRole.id !== role.id) as role}
+                                        {#each availablePrimaryRoles.filter(role => !primaryRoleSearch || role.name.toLowerCase().includes(primaryRoleSearch.trim().toLowerCase())) as role}
                                             <li>
                                                 <button class="w-full rounded px-2 py-1 text-left hover:bg-gray-600 cursor-pointer" on:click={async () => {
                                                     if (!$userProfileView.data) return;
@@ -88,8 +93,6 @@
                                                         console.error(errors);
                                                         return;
                                                     }
-            
-                                                    $userProfileView.data.primaryRole = role;
                                                 }}>
                                                     {role.name}
                                                 </button>
@@ -117,8 +120,6 @@
                                             console.error(errors);
                                             return;
                                         }
-
-                                        $userProfileView.data.roles = $userProfileView.data.roles.filter(r => r.id !== role.id);
                                     }}>
                                         <span class="sr-only">Remove {role.name}</span>
                                         <CloseSolid class="w-2 h-2" />
@@ -127,13 +128,13 @@
                             {/if}
                         </Badge>
                     {/each}
-                    {#if canEdit && $page.data.roles}
+                    {#if canEdit && giveableNonPrimaryRoles.length > 0}
                         <CirclePlusSolid size="sm" class="cursor-pointer hover:text-white" />
                         <Dropdown class="px-2 text-sm">
                             <div slot="header" class="px-2 py-1">
-                                <Search size="sm" />
+                                <Search size="sm" bind:value={nonPrimaryRoleSearch} />
                             </div>
-                            {#each $page.data.roles.filter(role => !role.primary && !$userProfileView.data?.roles.find(r => r.id === role.id)) as role}
+                            {#each giveableNonPrimaryRoles.filter(role => !nonPrimaryRoleSearch || role.name.toLowerCase().includes(nonPrimaryRoleSearch.trim().toLowerCase())) as role}
                                 <li>
                                     <button class="w-full rounded px-2 py-1 text-left hover:bg-gray-600 cursor-pointer" on:click={async () => {
                                         if (!$userProfileView.data) return;
@@ -155,8 +156,6 @@
                                             console.error(errors);
                                             return;
                                         }
-
-                                        $userProfileView.data.roles = [...$userProfileView.data.roles, role];
                                     }}>
                                         {role.name}
                                     </button>

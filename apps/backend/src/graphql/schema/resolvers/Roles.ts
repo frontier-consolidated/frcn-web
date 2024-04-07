@@ -7,6 +7,7 @@ import { $roles } from "../../../services/roles";
 import { $system } from "../../../services/system";
 import { $users } from "../../../services/users";
 import type { UserRole as GQLUserRole, Resolvers } from "../../__generated__/resolvers-types";
+import { pubsub } from "../../pubsub";
 import { calculatePermissions } from "../calculatePermissions";
 import { gqlErrorBadInput } from "../gqlError";
 
@@ -176,6 +177,12 @@ export const roleResolvers: Resolvers = {
 
 			await $roles.removeRole(role, user);
 			return true;
+		}
+	},
+
+	Subscription: {
+		rolesUpdated: {
+			subscribe: () => pubsub.asyncIterable("ROLES_UPDATED")
 		}
 	}
 };

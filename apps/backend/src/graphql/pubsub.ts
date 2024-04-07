@@ -35,10 +35,16 @@ class CustomPubSub<Events extends Record<string, any>> extends PubSubEngine {
         this.emitter.removeListener(subscription[0], subscription[1]);
     }
 
-    asyncIteratable<TKey extends Exclude<keyof Events, symbol | number>>(trigger: TKey): AsyncIterable<Events[TKey]> {
+    override asyncIterator<TKey extends Exclude<keyof Events, symbol | number>>(triggers: TKey | TKey[]): AsyncIterator<Events[TKey]> {
+        return super.asyncIterator<Events[TKey]>(triggers);
+    }
+
+    asyncIterable<TKey extends Exclude<keyof Events, symbol | number>>(triggers: TKey | TKey[]): AsyncIterable<Events[TKey]> {
+        const asyncIterator = this.asyncIterator<TKey>(triggers);
+
         return {
             [Symbol.asyncIterator]() {
-                return super.asyncIterator(trigger);
+                return asyncIterator;
             }
         };
     }
@@ -49,6 +55,7 @@ export type SubscriptionResult<TKey extends keyof SubscriptionResolvers> = {
 };
 
 export const pubsub = new CustomPubSub<{
+    ROLES_UPDATED: SubscriptionResult<"rolesUpdated">
     USER_ROLES_UPDATED: SubscriptionResult<"userRolesUpdated">
 }>();
 

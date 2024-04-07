@@ -31,10 +31,7 @@ directive @cacheControl(
 	scope: CacheControlScope
 	inheritMaxAge: Boolean
 ) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
-"""
-Marks a field as only accessible by the object owner
-"""
-directive @ownership on FIELD_DEFINITION
+
 """
 Enforces a field as requiring the given permission
 """
@@ -93,10 +90,10 @@ type User {
 	permissions: Int!
 	primaryRole: UserRole!
 	roles: [UserRole!]!
-	rsvps: [EventRsvp!]! @ownership
-	events: [Event!]! @ownership
+	rsvps: [EventRsvp!]!
+	events: [Event!]!
 	status: UserStatus!
-	settings: UserSettings! @ownership
+	settings: UserSettings!
 }
 
 type EventRsvpRole {
@@ -493,5 +490,6 @@ type UpdatedUserRoles {
 }
 
 type Subscription {
-	userRolesUpdated(userId: ID!): UpdatedUserRoles!
+	rolesUpdated: [UserRole!]! @permission(one: [CreateEvents, ManageEvents, ManageRoles])
+	userRolesUpdated(userId: ID): UpdatedUserRoles!
 }

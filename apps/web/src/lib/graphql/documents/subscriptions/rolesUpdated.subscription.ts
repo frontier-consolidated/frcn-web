@@ -1,16 +1,11 @@
 import { gql } from "../../__generated__";
 
-export const USER_ROLES_UPDATED = gql(`
-	subscription OnRolesUpdated($userId: ID!) {
-		roles: userRolesUpdated(userId: $userId) {
-			permissions
-			primaryRole {
+export const ROLES_UPDATED = gql(`
+	subscription OnRolesUpdated {
+		roles: rolesUpdated {
+			...RoleFragment
+			users {
 				id
-				name
-			}
-			roles {
-				id
-				name
 			}
 		}
 	}
