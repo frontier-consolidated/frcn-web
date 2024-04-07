@@ -7,13 +7,13 @@ import { pushNotification } from "$lib/stores/NotificationStore";
 import type { PageLoad } from "./$types";
 import { getResources } from "./helpers";
 
-export const load = (async ({ url, data }) => {
+export const load = (async ({ url, data, setHeaders }) => {
     try {
         const { couldNotConnect, ...serverData } = data;
         if (!couldNotConnect) {
             return serverData;
         }
-        return await getResources(getApollo(), url);
+        return await getResources(getApollo(), url, setHeaders);
     } catch (err) {
         if (isRedirect(err)) {
             throw err;

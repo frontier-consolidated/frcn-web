@@ -2,6 +2,7 @@
 import type { AccessKey, User } from "@prisma/client";
 import type { Request } from "express";
 
+import { isProd } from "./env";
 import type { GQLContext } from "./graphql/context";
 
 const FOREGROUND_COLORS = {
@@ -66,10 +67,23 @@ function get_primary_message(...args: any[]) {
     return [message, args];
 }
 
+function debug(...params: any[]) {
+    if (isProd()) return;
+    const [message, args] = get_primary_message(...params);
+
+    console.debug(`(${new Date().toISOString()}) ${style(`[DEBUG] ${message}`, { fg: "gray" })}${args.length > 0 ? "\n" : ""}`, ...args);
+}
+
 function log(...params: any[]) {
     const [message, args] = get_primary_message(...params);
 
     console.log(`(${new Date().toISOString()}) ${message}${args.length > 0 ? "\n" : ""}`, ...args);
+}
+
+function info(...params: any[]) {
+    const [message, args] = get_primary_message(...params);
+
+    console.info(`(${new Date().toISOString()}) [INFO] ${message}${args.length > 0 ? "\n" : ""}`, ...args);
 }
 
 function warn(...params: any[]) {
@@ -108,7 +122,7 @@ function audit(actor: User | AccessKey | GQLContext, message: string, data?: any
     msg.push(style(resolvedActor.name, { fg: "white", modifier: "bright" }));
     msg.push(message);
 
-    log(style(msg.join(" "), { fg: "cyan" }), { actor: resolvedActor, data });
+    log(style(msg.join(" "), { fg: "cyan" }), JSON.stringify({ actor: resolvedActor, data }, null, 2).replace(/\s+/g, " "));
 }
 
 function requestDetails(req: Request) {
@@ -117,7 +131,9 @@ function requestDetails(req: Request) {
 
 export const logger = {
     style,
+    debug,
     log,
+    info,
     warn,
     error,
     audit,
