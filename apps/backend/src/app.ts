@@ -71,11 +71,15 @@ export async function createApp(config: CreateAppOptions) {
         }),
     );
 
-    app.use((req, _, next) => {
+    app.use((req, res, next) => {
         const timestamp = new Date();
         req.timestamp = timestamp;
 
         const interval = setInterval(() => {
+            if (req.closed || req.complete) {
+                clearInterval(interval);
+                return;
+            }
             const elapsed = Date.now() - timestamp.getTime();
             if (elapsed > 5000) {
                 logger.warn(`HTTP Request taking a long time! Elapsed: ${elapsed}ms`, logger.requestDetails(req));
@@ -83,6 +87,14 @@ export async function createApp(config: CreateAppOptions) {
         }, 1000);
 
         req.on("end", () => {
+            clearInterval(interval);
+        });
+
+        req.on("error", () => {
+            clearInterval(interval);
+        });
+
+        res.on("finish", () => {
             clearInterval(interval);
         });
 
