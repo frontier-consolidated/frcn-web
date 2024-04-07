@@ -76,6 +76,7 @@
 				name="event-role-name"
 				class="!bg-transparent !border-transparent !p-1 text-ellipsis rounded"
 				placeholder="Role name"
+				maxlength="255"
 				bind:value={editRole.name}
 			/>
 		</Field>

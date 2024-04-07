@@ -58,7 +58,7 @@
 					channel: editData.channel.id ? editData.channel.id : undefined,
 					name: editData.name ? editData.name : undefined,
 					summary: editData.summary ? editData.summary : undefined,
-					description: editData.description ? editData.description : undefined,
+					description: editData.description ? editData.description.slice(0, 2024) : undefined,
 					imageUrl: editData.imageUrl,
 					eventType: editData.eventType,
 					location: editData.location.map((loc) => loc.name),
@@ -155,6 +155,7 @@
 						type="text"
 						placeholder="Event name"
 						required
+						maxlength="255"
 						autocomplete="new-password"
 						class="rounded"
 						disabled={!canEdit}
@@ -169,6 +170,7 @@
 						type="text"
 						placeholder="Event summary"
 						required
+						maxlength="255"
 						autocomplete="new-password"
 						class="rounded"
 						disabled={!canEdit}
@@ -197,6 +199,7 @@
 						placeholder="https://example.com/image.png"
 						pattern={urlPattern}
 						required
+						maxlength="2084"
 						autocomplete="new-password"
 						class="rounded"
 						disabled={!canEdit}
@@ -220,6 +223,7 @@
 				<Field {validator} for="event-description" value={editData.description}>
 					<Label for="event-description" class="mb-2">Event Description</Label>
 					<MarkdownEditor
+						maxlength="2048"
 						placeholder="Describe the event"
 						disabled={!canEdit}
 						bind:value={editData.description}
@@ -283,7 +287,7 @@
 					<Select
 						id="event-access"
 						name="event-access"
-						options={Object.values(EventAccessType).map((type) => ({
+						options={[EventAccessType.Channel, EventAccessType.Everyone].map((type) => ({
 							value: type,
 							name: strings.toTitleCase(type),
 						}))}
@@ -292,7 +296,7 @@
 						bind:value={editData.accessType}
 					/>
 				</Field>
-				<Field {validator} for="event-require-invite" value={editData.settings.inviteOnly}>
+				<!-- <Field {validator} for="event-require-invite" value={editData.settings.inviteOnly}>
 					<Toggle id="event-require-invite" disabled={!canEdit} bind:checked={editData.settings.inviteOnly}>
 						Require Invite to Join
 					</Toggle>
@@ -311,7 +315,7 @@
 						</Toggle>
 					{/key}
 					<Helper class="mt-1">Selected users can request to join the event</Helper>
-				</Field>
+				</Field> -->
 			</div>
 		</section>
 		<section>
@@ -348,6 +352,7 @@
 						required
 						multi
 						search
+						max={10}
 						disabled={!canEdit}
 						bind:value={editData.mentions}
 						let:option
