@@ -49,6 +49,7 @@
 
 	async function save() {
 		if (!validator.validate(!data.posted)) return false;
+		if (editData.location.some(loc => !loc)) return false;
 		
 		const { data: updatedData, errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_EVENT,

@@ -37,11 +37,13 @@ export function checkIfDirty(source: PageData, mutable: MutableData) {
 				break;
 			case "location":
 				{
-					const mutableLocation = mutable.location.map((loc) => loc.name).join("/");
-					const sourceLocation = source.location?.map((loc) => loc.name).join("/");
-					const valueClean = mutableLocation === sourceLocation;
-					if (!valueClean) diff.push(key);
-					clean &&= valueClean;
+					if (!mutable.location.some(loc => !loc)) {
+						const mutableLocation = mutable.location.map((loc) => loc.name).join("/");
+						const sourceLocation = source.location?.map((loc) => loc.name).join("/");
+						const valueClean = mutableLocation === sourceLocation;
+						if (!valueClean) diff.push(key);
+						clean &&= valueClean;
+					}
 				}
 				break;
 			case "rsvpRoles":
