@@ -4,7 +4,7 @@ export type MutableData = ReturnType<typeof cloneEventSettingsData>;
 
 export function cloneEventSettingsData(data: PageData) {
 	return {
-		channel: data.channel ? structuredClone(data.channel) : { id: null, name: "!ERROR" },
+		channel: data.channel ? structuredClone(data.channel) : { id: null, discord: { name: "!ERROR" } },
 		name: data.name,
 		summary: data.summary,
 		description: data.description,
@@ -37,11 +37,13 @@ export function checkIfDirty(source: PageData, mutable: MutableData) {
 				break;
 			case "location":
 				{
-					const mutableLocation = mutable.location.map((loc) => loc.name).join("/");
-					const sourceLocation = source.location?.map((loc) => loc.name).join("/");
-					const valueClean = mutableLocation === sourceLocation;
-					if (!valueClean) diff.push(key);
-					clean &&= valueClean;
+					if (!mutable.location.some(loc => !loc)) {
+						const mutableLocation = mutable.location.map((loc) => loc.name).join("/");
+						const sourceLocation = source.location?.map((loc) => loc.name).join("/");
+						const valueClean = mutableLocation === sourceLocation;
+						if (!valueClean) diff.push(key);
+						clean &&= valueClean;
+					}
 				}
 				break;
 			case "rsvpRoles":

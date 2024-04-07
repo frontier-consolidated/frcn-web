@@ -2,7 +2,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import type { Prisma, User } from "@prisma/client";
 
 import { $files } from "./files";
-import { database, type Transaction } from "../database";
+import { database } from "../database";
 import type { ResourceCreateInput, ResourceEditInput } from "../graphql/__generated__/resolvers-types";
 
 async function getResource(id: string) {
@@ -40,11 +40,11 @@ async function getResources(
 		fileId: {
 			not: null
 		}
-	}
+	};
 
 	const count = await database.resource.count({
 		where
-	})
+	});
 	const result = await database.resource.findMany({
 		take: limit,
 		skip: page * limit,
@@ -66,18 +66,18 @@ async function getResources(
 	};
 }
 
-async function getResourceOwner<T extends Prisma.Resource$ownerArgs>(id: string, args?: Prisma.Subset<T, Prisma.Resource$ownerArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).resource.findUnique({
+async function getResourceOwner<T extends Prisma.Resource$ownerArgs>(id: string, args?: Prisma.Subset<T, Prisma.Resource$ownerArgs>) {
+	const result = await database.resource.findUnique({
 		where: { id }
-	}).owner<T>(args)
-	return result
+	}).owner<T>(args);
+	return result;
 }
 
-async function getResourceFile<T extends Prisma.Resource$fileArgs>(id: string, args?: Prisma.Subset<T, Prisma.Resource$fileArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).resource.findUnique({
+async function getResourceFile<T extends Prisma.Resource$fileArgs>(id: string, args?: Prisma.Subset<T, Prisma.Resource$fileArgs>) {
+	const result = await database.resource.findUnique({
 		where: { id }
-	}).file<T>(args)
-	return result
+	}).file<T>(args);
+	return result;
 }
 
 async function createResource(owner: User, data: ResourceCreateInput) {
@@ -93,7 +93,7 @@ async function createResource(owner: User, data: ResourceCreateInput) {
 			tags: data.tags,
 			canPreview: false,
 		}
-	})
+	});
 
 	return resource;
 }
@@ -104,7 +104,7 @@ async function editResource(id: string, data: ResourceEditInput) {
 		select: {
 			id: true
 		}
-	})
+	});
 	if (!resource) return null;
 
 	const updatedResource = await database.resource.update({
@@ -114,7 +114,7 @@ async function editResource(id: string, data: ResourceEditInput) {
 			shortDescription: data.shortDescription ?? undefined,
 			tags: data.tags ?? undefined,
 		}
-	})
+	});
 
 	return updatedResource;
 }
@@ -126,19 +126,18 @@ async function deleteResource(client: S3Client, bucket: string, id: string) {
 			id: true,
 			file: true
 		}
-	})
+	});
 	if (!resource) return;
 
-	// TODO: Look at why transactions here was causing long process time
 	database.$transaction(async (tx) => {
 		await tx.resource.delete({
 			where: { id }
-		})
+		});
 	
 		if (resource.file) {
-			await $files.deleteFile(client, bucket, resource.file.id, tx)
+			await $files.deleteFile(client, bucket, resource.file.id, tx);
 		}
-	})
+	});
 }
 
 export const $resources = {

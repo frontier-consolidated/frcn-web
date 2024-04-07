@@ -1,5 +1,5 @@
-import path from 'path';
-import { fileURLToPath, pathToFileURL } from 'url';
+import path from "path";
+import { fileURLToPath, pathToFileURL } from "url";
 
 function isBrowser() {
     // @ts-expect-error window will not be defined on server

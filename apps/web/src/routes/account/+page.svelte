@@ -8,7 +8,7 @@
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
-    let deleteModalOpen = false
+    let deleteModalOpen = false;
 </script>
 
 <Head
@@ -33,7 +33,7 @@
     const { errors } = await getApollo().mutate({
         mutation: Mutations.DELETE_CURRENT_USER,
 		errorPolicy: "all",
-    })
+    });
 
     if (errors && errors.length > 0) {
         pushNotification({
@@ -49,7 +49,7 @@
 		loading: false,
 		data: null,
 	});
-	goto("/")
+	goto("/");
 }}>
     <span>Are you sure you want to delete your account?</span>
 </ConfirmationModal>

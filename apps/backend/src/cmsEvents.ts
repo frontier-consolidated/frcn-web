@@ -4,9 +4,9 @@ export async function createCmsEventBus(connectionString: string, schema: string
     const bus = createTBus("cms", {
         db: { connectionString },
         schema
-    })
+    });
 
-    await bus.start()
+    await bus.start();
 
 	return bus;
 }

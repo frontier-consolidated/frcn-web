@@ -1,7 +1,7 @@
 import { Stanton } from "./systems/Stanton";
 import type { AnyLocation, Area, Universe } from "./types";
 
-export type * from "./types"
+export type * from "./types";
 
 export const locations = [Stanton] satisfies Universe;
 

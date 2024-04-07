@@ -4,7 +4,7 @@
 
 	import { DISCORD_URL, GITHUB_URL, YOUTUBE_URL } from "$lib/constants";
     import logo from "$lib/images/logo.png";
-    import madeByTheCommunity from "$lib/images/mbtc.png"
+    import madeByTheCommunity from "$lib/images/mbtc.png";
 	import { cookieConsentModal } from "$lib/stores/CookieConsentModalStore";
 
 	import Hr from "./Hr.svelte";
@@ -46,7 +46,7 @@
                     <FooterLink liClass="mb-4" href="/legal/privacy">Privacy Policy</FooterLink>
                     <li class="mb-4">
                         <button class="hover:underline" on:click={() => {
-                            cookieConsentModal.set(true)
+                            cookieConsentModal.set(true);
                         }}>Cookie Settings</button>
                     </li>
                     <FooterLink liClass="mb-4" href="/legal/cookies">Cookie Policy</FooterLink>
@@ -73,9 +73,9 @@
             </FooterIcon>
             <button class="absolute rounded top-0 bottom-0 right-0 h-[180%] my-auto z-40 p-1 hover:bg-gray-400/30" on:click={() => {
                 if (document.documentElement.classList.contains("dark")) {
-                    document.documentElement.classList.remove("dark")
+                    document.documentElement.classList.remove("dark");
                 } else {
-                    document.documentElement.classList.add("dark")
+                    document.documentElement.classList.add("dark");
                 }
             }}>
                 <SunSolid class="hidden dark:block h-full text-gray-400" tabindex="-1" />

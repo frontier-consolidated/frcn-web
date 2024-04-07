@@ -4,16 +4,16 @@
 
 	import { Button, Head, LoginButton } from "$lib/components";
 
-	let heading = "Critical Error"
+	let heading = "Critical Error";
 	$: switch ($page.status) {
 		case 401:
-			heading = "Access Denied"
+			heading = "Access Denied";
 			break;
 		case 404:
-			heading = "Page Not Found"
+			heading = "Page Not Found";
 			break;
 		default:
-			heading = "Server Error"
+			heading = "Server Error";
 			break;
 	}
 </script>
@@ -30,7 +30,7 @@
 		<div class="flex flex-col">
 			<div class="relative w-max">
 				<div class="rounded animate-glow px-4 py-1 pr-10 clip-br-8">
-					<Heading tag="h1" class="font-medium text-4xl text-center text-white">{heading}</Heading>
+					<Heading tag="h1" class="font-medium text-2xl min-[400px]:text-3xl sm:text-4xl text-center text-white">{heading}</Heading>
 				</div>
 				<div class="absolute bottom-0 -right-[0rem] skew-x-[-45deg] h-8 w-2 animate-glow"></div>
 				<div class="absolute bottom-0 -right-[1rem] skew-x-[-45deg] h-8 w-2 animate-glow"></div>

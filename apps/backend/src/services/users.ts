@@ -4,8 +4,69 @@ import { type APIUser, CDNRoutes, ImageFormat, Client as DiscordClient } from "d
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
-import { database, type Transaction } from "../database";
+import { database } from "../database";
 import { getAdminIds } from "../env";
+
+async function getAllUsers() {
+	return await database.user.findMany();
+}
+
+type GetUsersFilter = {
+	search?: string;
+};
+
+async function getUsers(
+	filter: GetUsersFilter,
+	page: number = 0,
+	limit: number = -1
+) {
+	const { search } = filter;
+
+	if (limit === -1) limit = 15;
+	limit = Math.min(100, limit);
+
+	const where: Prisma.UserWhereInput = {
+		OR: search ? [
+			{
+				discordName: {
+					contains: search,
+					mode: "insensitive"
+				}
+			},
+			{
+				scName: {
+					contains: search,
+					mode: "insensitive"
+				}
+			},
+			{
+				id: {
+					equals: search.trim(),
+					mode: "insensitive"
+				}
+			}
+		] : undefined
+	};
+
+	const count = await database.user.count({ where });
+	const result = await database.user.findMany({
+		take: limit,
+		skip: page * limit,
+		where,
+		orderBy: [{
+			createdAt: "desc"
+		}]
+	});
+
+	return {
+		items: result,
+		total: count,
+		itemsPerPage: limit,
+		page,
+		nextPage: (page + 1) * limit < count ? page + 1 : null,
+		prevPage: page > 0 ? page - 1 : null,
+	};
+}
 
 async function getUser(id: string) {
 	const user = await database.user.findUnique({
@@ -17,7 +78,7 @@ async function getUser(id: string) {
 async function getUserByDiscordId(id: string) {
 	const user = await database.user.findUnique({
 		where: { discordId: id }
-	})
+	});
 	return user;
 }
 
@@ -26,20 +87,20 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 
 	const discordUsername = discordUser.discriminator === "0"
 		? `@${discordUser.username}`
-		: `${discordUser.username}#${discordUser.discriminator}`
+		: `${discordUser.username}#${discordUser.discriminator}`;
 	
-	let discordName = discordUser.global_name ?? discordUsername
+	let discordName = discordUser.global_name ?? discordUsername;
 	try {
-		const guild = await $discord.getGuild(discordClient)
-		if (!guild) throw new Error("Could not fetch guild")
-		const member = await guild.members.fetch(discordUser.id)
-		discordName = member.nickname ?? member.displayName
+		const guild = await $discord.getGuild(discordClient);
+		if (!guild) throw new Error("Could not fetch guild");
+		const member = await guild.members.fetch(discordUser.id);
+		discordName = member.nickname ?? member.displayName;
 	} catch (err) {
-		console.error(err)
+		console.error(err);
 	}
 	
 	const avatarUrl = discordUser.avatar ? "https://cdn.discordapp.com" +
-		CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP) : ""
+		CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP) : "";
 
 	const user = await database.user.upsert({
 		where: {
@@ -74,25 +135,25 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 	return user;
 }
 
-async function getSessions<T extends Prisma.User$sessionsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$sessionsArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getSessions<T extends Prisma.User$sessionsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$sessionsArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
-	}).sessions<T>(args)
-	return result ?? []
+	}).sessions<T>(args);
+	return result ?? [];
 }
 
-async function getRoles<T extends Prisma.User$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rolesArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getRoles<T extends Prisma.User$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rolesArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
-	}).roles<T>(args)
-	return result ?? []
+	}).roles<T>(args);
+	return result ?? [];
 }
 
-async function getPrimaryRole<T extends Prisma.UserRoleDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserRoleDefaultArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getPrimaryRole<T extends Prisma.UserRoleDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserRoleDefaultArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
-	}).primaryRole<T>(args)
-	return result
+	}).primaryRole<T>(args);
+	return result;
 }
 
 async function getAllRolesUnordered(user: User) {
@@ -102,59 +163,59 @@ async function getAllRolesUnordered(user: User) {
 			role: true
 		}
 	});
-	return [...(primaryRole ? [primaryRole] : []), ...roles.map(r => r.role)]
+	return [...(primaryRole ? [primaryRole] : []), ...roles.map(r => r.role)];
 }
 
 async function getAllRoles(user: User) {
-	return $roles.sort(await getAllRolesUnordered(user))
+	return $roles.sort(await getAllRolesUnordered(user));
 }
 
 async function getPermissions(user: User) {
 	const roles = await getAllRolesUnordered(user);
 	let permissions = $roles.resolvePermissions(roles);
 
-	const adminIds = getAdminIds()
+	const adminIds = getAdminIds();
 	if (adminIds.includes(user.discordId)) {
-		permissions |= Permission.Admin
+		permissions |= Permission.Admin;
 	}
 
-	return permissions
+	return permissions;
 }
 
-async function getRSVPs<T extends Prisma.User$rsvpsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rsvpsArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getRSVPs<T extends Prisma.User$rsvpsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rsvpsArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
-	}).rsvps<T>(args)
-	return result ?? []
+	}).rsvps<T>(args);
+	return result ?? [];
 }
 
-async function getEvents<T extends Prisma.User$eventsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$eventsArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getEvents<T extends Prisma.User$eventsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$eventsArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
-	}).events<T>(args)
-	return result ?? []
+	}).events<T>(args);
+	return result ?? [];
 }
 
-async function getStatus<T extends Prisma.User$statusArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$statusArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getStatus<T extends Prisma.User$statusArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$statusArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
-	}).status<T>(args)
-	return result
+	}).status<T>(args);
+	return result;
 }
 
-async function getSettings<T extends Prisma.User$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$settingsArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).user.findUnique({
+async function getSettings<T extends Prisma.User$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$settingsArgs>) {
+	const result = await database.user.findUnique({
 		where: { id }
-	}).settings<T>(args)
-	return result
+	}).settings<T>(args);
+	return result;
 }
 
 async function unauthenticateSessions(user: User) {
-	const sessions = await $users.getSessions(user.id)
+	const sessions = await $users.getSessions(user.id);
 	for (const session of sessions) {
 		try {
 			const data = JSON.parse(session.data);
-			delete data["user"]
+			delete data["user"];
 
 			await database.userSession.update({
 				where: { sid: session.sid },
@@ -166,9 +227,9 @@ async function unauthenticateSessions(user: User) {
 					},
 					data: JSON.stringify(data)
 				}
-			})
+			});
 		} catch (err) {
-			console.error("Failed to unauthenticate session", err)
+			console.error("Failed to unauthenticate session", err);
 		}
 	}
 }
@@ -176,10 +237,12 @@ async function unauthenticateSessions(user: User) {
 async function deleteUser(id: string) {
 	await database.user.delete({
 		where: { id }
-	})
+	});
 }
 
 export const $users = {
+	getAllUsers,
+	getUsers,
 	getUser,
 	getUserByDiscordId,
 	getOrCreateUser,

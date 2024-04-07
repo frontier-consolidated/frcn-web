@@ -19,7 +19,7 @@
 
     $: files = container.getFiles();
 
-    let changeFn = getContext<() => void>("containerchange")
+    let changeFn = getContext<() => void>("containerchange");
 
     async function uploadFile(file: File) {
         pushNotification({
@@ -27,15 +27,15 @@
 			message: "Uploading file...",
 		});
 
-		const formData = new FormData()
-		formData.append("file", file)
+		const formData = new FormData();
+		formData.append("file", file);
         
 		try {
 			const response = await api.post(Routes.upload("cms_container", container.id), formData, {
 				headers: {
 					"Content-Type": "multipart/form-data"
 				},
-			})
+			});
 
             const newFile = new CmsFile({
                 id: response.data.id,
@@ -43,10 +43,10 @@
                 fileSizeKb: response.data.fileSizeKb,
                 contentType: response.data.contentType,
                 fileSrc: response.data.previewUrl,
-            })
-            container.pushFile(newFile)
-            files = container.getFiles()
-            changeFn()
+            });
+            container.pushFile(newFile);
+            files = container.getFiles();
+            changeFn();
             
             pushNotification({
                 type: "success",
@@ -82,8 +82,8 @@
                         </div>
                         <span class="ml-auto text-gray-500 text-xs">{file.sizeKb}KB</span>
                         <TrashBinSolid class="text-black hover:text-red-500 dark:text-white dark:hover:text-red-600" on:click={(e) => {
-                            e.stopPropagation()
-                            deleteFile = file
+                            e.stopPropagation();
+                            deleteFile = file;
                         }} />
                         <div class="self-stretch w-px ml-2 bg-gray-300 dark:bg-gray-600"></div>
                     </div>
@@ -103,7 +103,7 @@
         <Label for="upload-file-{container.id}" class="mb-2">Image</Label>
         <ImageInput id="upload-file-{container.id}" name="upload-file" class="max-w-none"
             upload={async (file) => {
-                await uploadFile(file)
+                await uploadFile(file);
                 openUploadModal = false;
             }}
         />
@@ -122,7 +122,7 @@
             id: deleteFile.id
         },
 		errorPolicy: "all",
-    })
+    });
 
     if (errors && errors.length > 0) {
         pushNotification({
@@ -133,7 +133,7 @@
         return;
     }
 
-    container.removeFile(deleteFile)
+    container.removeFile(deleteFile);
     deleteFile = null;
     files = container.getFiles();
 }}>

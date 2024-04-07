@@ -1,16 +1,12 @@
-import { Permission, hasPermission } from '@frcn/shared';
-import { error } from '@sveltejs/kit';
+import { Permission, hasOwnedObjectPermission } from "@frcn/shared";
+import { error } from "@sveltejs/kit";
 
-import { Queries } from '$lib/graphql';
-import type { DiscordChannel } from '$lib/graphql/__generated__/graphql';
+import { Queries } from "$lib/graphql";
 
-import type { PageServerLoad } from './$types';
-
-
-const editingEnabled = true
+import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ params, locals, depends }) => {
-    depends("app:currentevent")
+    depends("app:currentevent");
 
     const { data: eventData } = await locals.apollo.query({
 		query: Queries.GET_EVENT,
@@ -23,7 +19,12 @@ export const load = (async ({ params, locals, depends }) => {
 		error(404, "Event not found");
 	}
     
-    const canEdit = editingEnabled && locals.user && (locals.user.id === eventData.event.owner?.id || hasPermission(locals.user.permissions, Permission.CreateEvents))
+    const canEdit = hasOwnedObjectPermission({
+        user: locals.user,
+        owner: eventData.event.owner,
+        required: Permission.CreateEvents,
+        override: Permission.ManageEvents
+    });
 
     if (canEdit) {
         const { data: eventSettingsData, errors } = await locals.apollo.query({
@@ -44,7 +45,7 @@ export const load = (async ({ params, locals, depends }) => {
             ...eventSettingsData.event,
             canEdit,
             options: {
-                channels: eventSettingsData.eventChannels.filter((channel): channel is DiscordChannel => !!channel),
+                channels: eventSettingsData.eventChannels.filter(channel => channel.discord.sendMessages),
                 emojis: eventSettingsData.customEmojis,
                 discordRoles: eventSettingsData.discordRoles
             },

@@ -5,6 +5,7 @@ export const ROLE_FRAGMENT = gql(`
         id
         name
         primary
+        default
         discordId
         permissions
         updatedAt

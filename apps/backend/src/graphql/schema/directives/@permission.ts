@@ -27,7 +27,7 @@ export default function directive(schema: GraphQLSchema) {
 			fieldConfig.resolve = async function (source, args, context: GQLContext, info) {
 				if (!context.user && !context.accesskey) throw gqlErrorUnauthenticated();
 
-				const permissions = await calculatePermissions(context)
+				const permissions = await calculatePermissions(context);
 
 				if (
 					directiveArgs.has &&

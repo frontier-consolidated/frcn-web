@@ -1,21 +1,21 @@
 /* global ENV_PREFIX */
 
 const expected = new Set([
-	'SOCKET_PATH',
-	'HOST',
-	'PORT',
-	'ORIGIN',
-	'XFF_DEPTH',
-	'ADDRESS_HEADER',
-	'PROTOCOL_HEADER',
-	'HOST_HEADER',
-	'PORT_HEADER',
-	'BODY_SIZE_LIMIT',
-	'SHUTDOWN_TIMEOUT',
-	'IDLE_TIMEOUT',
+	"SOCKET_PATH",
+	"HOST",
+	"PORT",
+	"ORIGIN",
+	"XFF_DEPTH",
+	"ADDRESS_HEADER",
+	"PROTOCOL_HEADER",
+	"HOST_HEADER",
+	"PORT_HEADER",
+	"BODY_SIZE_LIMIT",
+	"SHUTDOWN_TIMEOUT",
+	"IDLE_TIMEOUT",
 ]);
 
-const expected_unprefixed = new Set(['LISTEN_PID', 'LISTEN_FDS']);
+const expected_unprefixed = new Set(["LISTEN_PID", "LISTEN_FDS"]);
 
 if (ENV_PREFIX) {
 	for (const name in process.env) {
@@ -32,7 +32,7 @@ if (ENV_PREFIX) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function env(name: string, fallback: any) {
-	const prefix = expected_unprefixed.has(name) ? '' : ENV_PREFIX;
+	const prefix = expected_unprefixed.has(name) ? "" : ENV_PREFIX;
 	const prefixed = prefix + name;
 	return prefixed in process.env ? process.env[prefixed] : fallback;
 }

@@ -13,7 +13,7 @@
 	export let init: string | undefined = undefined;
 	export let additionalEmojis: Emoji[] = [];
 	// eslint-disable-next-line no-undef
-	export let categoryIcons: Record<string, string | ConstructorOfATypedSvelteComponent> = {}
+	export let categoryIcons: Record<string, string | ConstructorOfATypedSvelteComponent> = {};
 	let emojis = [...additionalEmojis, ...(defaultEmojis.emojis as Emoji[])];
 	$: emojis = [...additionalEmojis, ...(defaultEmojis.emojis as Emoji[])];
 

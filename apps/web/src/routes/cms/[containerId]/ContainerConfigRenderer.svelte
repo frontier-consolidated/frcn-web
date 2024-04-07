@@ -10,8 +10,8 @@
 	import IndexContainerConfig from "./IndexContainerConfig.svelte";
 	import SectionContainerConfig from "./SectionContainerConfig.svelte";
     
-    export let validator: FieldValidator
-    export let container: CmsContainer
+    export let validator: FieldValidator;
+    export let container: CmsContainer;
     export let isChild: boolean = false;
 </script>
 

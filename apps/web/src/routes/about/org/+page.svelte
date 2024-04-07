@@ -4,14 +4,14 @@
 
 	import { transformContainer } from "$lib/cms/transformContainer";
 	import { Head, PageHero } from "$lib/components";
-	import metaImage from "$lib/images/stock/org-hero.png?w=1200&format=webp&imagetools"
-	import heroImageSrcset from "$lib/images/stock/org-hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools"
+	import metaImage from "$lib/images/stock/org-hero.png?w=1200&format=webp&imagetools";
+	import heroImageSrcset from "$lib/images/stock/org-hero.png?w=500;900;1200;1600;2000&format=webp&as=srcset&imagetools";
 
 	import type { PageData } from "./$types";
 	import CmsAboutSectionRenderer from "../CmsAboutSectionRenderer.svelte";
 
 	export let data: PageData;
-	$: index = data.index ? transformContainer<IndexContainer>(data.index) : null
+	$: index = data.index ? transformContainer<IndexContainer>(data.index) : null;
 </script>
 
 <Head

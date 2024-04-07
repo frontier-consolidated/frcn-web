@@ -1,29 +1,29 @@
-import { browser } from '$app/environment';
-import { isRedirect } from '@sveltejs/kit';
+import { browser } from "$app/environment";
+import { isRedirect } from "@sveltejs/kit";
 
-import { getApollo } from '$lib/graphql';
-import { pushNotification } from '$lib/stores/NotificationStore';
+import { getApollo } from "$lib/graphql";
+import { pushNotification } from "$lib/stores/NotificationStore";
 
-import type { PageLoad } from './$types';
-import { getResources } from './helpers';
+import type { PageLoad } from "./$types";
+import { getResources } from "./helpers";
 
 export const load = (async ({ url, data }) => {
     try {
-        const { couldNotConnect, ...serverData } = data
+        const { couldNotConnect, ...serverData } = data;
         if (!couldNotConnect) {
-            return serverData
+            return serverData;
         }
-        return await getResources(getApollo(), url)
+        return await getResources(getApollo(), url);
     } catch (err) {
         if (isRedirect(err)) {
-            throw err
+            throw err;
         }
 
         if (browser) {
             pushNotification({
                 type: "error",
                 message: "Error connecting to server"
-            })
+            });
         }
 
         return {
@@ -33,6 +33,6 @@ export const load = (async ({ url, data }) => {
             nextPage: null,
             prevPage: null,
             total: 0
-        }
+        };
     }
 }) satisfies PageLoad;

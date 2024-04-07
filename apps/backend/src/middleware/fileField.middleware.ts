@@ -1,7 +1,7 @@
 import { randomUUID } from "crypto";
 import path from "path";
 
-import { Permission, hasPermission } from "@frcn/shared";
+import { Permission, hasAllOfPermissions, hasOneOfPermissions, hasPermission } from "@frcn/shared";
 import type { RequestHandler } from "express";
 import * as mime from "mime-types";
 import multer, { MulterError, type Options } from "multer";
@@ -11,38 +11,40 @@ import { $users } from "../services/users";
 
 const limits: Options["limits"] = {
     fileSize: $files.MAX_FILE_SIZE_MB * 1024 * 1024,
-}
+};
 
 const diskStorage = multer.diskStorage({
     destination: $files.FILE_UPLOAD_DIR,
     filename(req, file, callback) {
         const parsedFileName = path.parse(file.originalname);
-        callback(null, `${randomUUID()}${parsedFileName.ext}`)
+        callback(null, `${randomUUID()}${parsedFileName.ext}`);
     }
-})
+});
 
-const memStorage = multer.memoryStorage()
+const memStorage = multer.memoryStorage();
 
 const diskUpload = multer({
     storage: diskStorage,
     limits
-})
+});
 
 const memUpload = multer({
     storage: memStorage,
     limits
-})
+});
 
 const attachmentConfigs = {
     resource: {
-        permission: Permission.UploadResources,
+        permission: {
+            one: [Permission.CreateResources, Permission.ManageResources]
+        },
         allowedFiles: ["image/*", "pdf"]
     },
     cms_container: {
         permission: Permission.CmsWrite,
         allowedFiles: ["image/*"]
     }
-} as Record<string, { permission: Permission, allowedFiles?: string[] }>
+} as Record<string, { permission: Permission | { one: Permission[] } | { all: Permission[] }, allowedFiles?: string[] }>;
 
 
 export function fileField(
@@ -60,23 +62,34 @@ export function fileField(
         if (!req.user) {
             return res.status(401).send({
                 message: "Must be authenticated to upload files"
-            })
+            });
         }
 
         if (options?.requireAttachment) {
-            const { type } = req.query as { type?: string }
+            const { type } = req.query as { type?: string };
             
-            const config = type && attachmentConfigs[type]
-            if (!config) return res.status(400).send({ message: `Disallowed attachment 'type=${type}'` })
+            const config = type && attachmentConfigs[type];
+            if (!config) return res.status(400).send({ message: `Disallowed attachment 'type=${type}'` });
             
-            const permissions = await $users.getPermissions(req.user)
-            if (!hasPermission(permissions, config.permission)) return res.status(403).send({
+            const permissions = await $users.getPermissions(req.user);
+            let canUpload = true;
+            if (typeof config.permission === "object") {
+                if ("one" in config.permission && !hasOneOfPermissions(permissions, config.permission.one)) {
+                    canUpload = false;
+                } else if ("all" in config.permission && !hasAllOfPermissions(permissions, config.permission.all)) {
+                    canUpload = false;
+                }
+            } else if (!hasPermission(permissions, config.permission)) {
+                canUpload = false;
+            }
+                
+            if (!canUpload) return res.status(403).send({
                 message: "Missing permissions required to upload files"
-            })
+            });
     
             if (config.allowedFiles) {
-                options ??= {}
-                options.allowedFiles ??= config.allowedFiles
+                options ??= {};
+                options.allowedFiles ??= config.allowedFiles;
             }
         }
 
@@ -109,14 +122,14 @@ export function fileField(
             }
             
             if (options?.allowedFiles) {
-                const allowedFiles = options.allowedFiles.map(f => f.toLowerCase())
+                const allowedFiles = options.allowedFiles.map(f => f.toLowerCase());
 
 				const finalFiles: Express.Multer.File[] = [];
 				for (const file of files) {
 					const parsed = path.parse(file.originalname);
                     const ext = parsed.ext.length > 0 ? parsed.ext.substring(1).toLowerCase() : "";
-                    const mimeType = (mime.lookup(file.originalname) || "application/octet-stream").toLowerCase()
-                    const [baseMimeType] = mimeType.split("/")
+                    const mimeType = (mime.lookup(file.originalname) || "application/octet-stream").toLowerCase();
+                    const [baseMimeType] = mimeType.split("/");
                     
 					if (!(allowedFiles.includes(ext) || allowedFiles.includes(mimeType) || allowedFiles.includes(`${baseMimeType}/*`))) {
 						return res.status(415).send({
@@ -138,6 +151,6 @@ export function fileField(
 			}
 
 			next();
-        })
-    }
+        });
+    };
 }

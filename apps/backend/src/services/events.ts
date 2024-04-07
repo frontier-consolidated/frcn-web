@@ -1,15 +1,20 @@
 import { randomUUID } from "crypto";
 
 import type { EventType } from "@frcn/shared";
-import type { Event, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
-import { Client as DiscordClient } from "discord.js";
+import type { Event, EventChannel, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
+import { ChannelType, Client as DiscordClient, TextChannel, type GuildBasedChannel, ThreadAutoArchiveDuration, VideoQualityMode } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { $system } from "./system";
 import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
-import { database, type Transaction } from "../database";
-import { EventAccessType, type EventEditInput } from "../graphql/__generated__/resolvers-types";
+import { postEventEndMessage } from "../bot/messages/eventStartEnd.message";
+import { postEventUpdateMessage } from "../bot/messages/eventUpdate.message";
+import { database } from "../database";
+import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
+import type { EventReminder } from "../graphql/schema/resolvers/Event";
+
+const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000;
 
 async function getEvent(id: string) {
 	const event = await database.event.findUnique({
@@ -21,8 +26,8 @@ async function getEvent(id: string) {
 async function getEventFromMessageId(id: string) {
 	const event = await database.event.findFirst({
 		where: { discordEventMessageId: id },
-	})
-	return event
+	});
+	return event;
 }
 
 type GetEventsFilter = {
@@ -43,7 +48,7 @@ async function getEvents(
 	const { search, eventType, startAt = {}, duration, includeCompleted } = filter;
 
 	if (!includeCompleted) {
-		startAt.min ??= new Date()
+		startAt.min ??= new Date();
 	}
 
 	// If the date range is less than or equal to a calendar range then don't limit items
@@ -54,26 +59,27 @@ async function getEvents(
 		limit = Math.min(100, limit);
 	}
 	
-	const expiredDuration = 24 * 3600 * 1000
-	const expiredDate = new Date(Date.now() - expiredDuration)
-	const startAtOr: Prisma.EventWhereInput[] = [
-		{
+	const expiredDate = new Date(Date.now() - EVENT_EXPIRE_AFTER);
+	const startAtOr: Prisma.EventWhereInput[] = [];
+
+	if (startAt.min || startAt.max) {
+		startAtOr.push({
 			startAt: {
 				gte: startAt.min,
 				lte: startAt.max
 			},
-		}
-	]
+		});
+	}
 
 	// Show live events if they haven't expired and are in our selected date range
-	if (startAt.min && expiredDate >= new Date(startAt.min.getTime() - expiredDuration) && (!startAt.max || startAt.max > new Date())) {
+	if (startAt.min && expiredDate >= new Date(startAt.min.getTime() - EVENT_EXPIRE_AFTER) && (!startAt.max || startAt.max > new Date())) {
 		startAtOr.push({
 			startAt: {
 				lt: startAt.min,
 				gte: new Date(Date.now() - 24 * 3600 * 1000)
 			},
 			endedAt: null,
-		})
+		});
 	}
 
 	const result = await database.event.findMany({
@@ -92,7 +98,7 @@ async function getEvents(
 						lte: duration.max,
 				  }
 				: undefined,
-			OR: startAtOr,
+			OR: startAtOr.length > 0 ? startAtOr : undefined,
 		},
 		orderBy: [
 			{
@@ -127,99 +133,279 @@ async function getEvents(
 	};
 }
 
-async function getAllEventChannels() {
-	return await database.eventChannel.findMany();
+async function getUpcomingEvents(buffer: number = 1, maxTimeInFutureMs?: number) {
+	const now = Date.now();
+	return await database.event.findMany({
+		where: {
+			posted: true,
+			startAt: {
+				gte: new Date(now - buffer),
+				lte: maxTimeInFutureMs ? new Date(now + maxTimeInFutureMs + buffer) : undefined
+			}
+		},
+		include: {
+			channel: {
+				select: {
+					discordId: true
+				}
+			}
+		}
+	});
 }
 
-async function getEventChannel<T extends Prisma.Event$channelArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$channelArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
+async function getEndingEvents(buffer: number = 1) {
+	const now = Date.now();
+	return await database.event.findMany({
+		where: {
+			posted: true,
+			startAt: {
+				gte: new Date(now - EVENT_EXPIRE_AFTER),
+				lt: new Date(now + buffer)
+			},
+			endedAt: null,
+		},
+		include: {
+			channel: {
+				select: {
+					discordId: true
+				}
+			}
+		}
+	});
+}
+
+async function getEventsInChannel(id: number) {
+	return await database.event.findMany({
+		where: {
+			channelId: id
+		}
+	});
+}
+
+async function getEventEventChannel<T extends Prisma.Event$channelArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$channelArgs>) {
+	const result = await database.event.findUnique({
 		where: { id }
-	}).channel<T>(args)
-	return result
+	}).channel<T>(args);
+	return result;
+}
+
+async function getEventDiscordChannel(event: Event, discordClient: DiscordClient) {
+	const eventChannel = await $events.getEventEventChannel(event.id);
+	if (!eventChannel) throw new Error("Event has no event channel");
+
+	const channel = await $discord.getChannel(discordClient, eventChannel.discordId);
+	if (!channel?.isTextBased() || !(channel instanceof TextChannel)) throw new Error("Could not find event channel, or channel is somehow not text based");
+	return channel;
 }
 
 async function getEventThread(event: Event, discordClient: DiscordClient) {
-	if (!event.discordThreadId) throw new Error("Event has no thread!")
+	if (!event.discordThreadId) throw new Error("Event has no thread!");
 
-	const thread = await $discord.getChannel(discordClient, event.discordThreadId)
-	if (!thread?.isThread()) throw new Error("Could not find thread or channel is not a thread")
+	const thread = await $discord.getChannel(discordClient, event.discordThreadId);
+	if (!thread?.isThread()) throw new Error("Could not find thread or channel is not a thread");
 
 	return thread;
 }
 
-async function getEventOwner<T extends Prisma.Event$ownerArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$ownerArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
-		where: { id }
-	}).owner<T>(args)
-	return result
+async function createEventThread(event: Event, discordClient: DiscordClient, channel?: TextChannel) {
+	channel ??= await getEventDiscordChannel(event, discordClient);
+
+	const thread = await channel!.threads.create({
+		name: event.name,
+		type: ChannelType.PrivateThread,
+		reason: "Create thread for event: " + event.name,
+		autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
+		invitable: false,
+	});
+
+	const rsvps = await $events.getEventMembers(event.id, {
+		include: {
+			user: {
+				select: {
+					discordId: true
+				}
+			}
+		}
+	});
+
+	for (const rsvp of rsvps) {
+		if (!rsvp.user) continue;
+		try {
+			await thread.members.add(rsvp.user.discordId, "RSVPed");
+		} catch (err) {
+			console.error("Failed to add user to event thread", err);
+		}
+	}
+
+	return thread;
 }
 
-async function getEventSettings<T extends Prisma.Event$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$settingsArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
-		where: { id }
-	}).settings<T>(args)
-	return result
+async function archiveEventThread(event: Event, discordClient: DiscordClient) {
+	if (!event.posted || !event.discordThreadId) return;
+	
+	try {
+		const thread = await getEventThread(event, discordClient);
+		await thread.setArchived(true);
+	} catch (err) {
+		console.error("Failed to archive event thread", err);
+	}
 }
 
-async function getEventMembers<T extends Prisma.Event$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$membersArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
-		where: { id }
-	}).members<T>(args)
-	return result ?? []
+async function deleteEventThread(event: Event, discordClient: DiscordClient) {
+	if (!event.posted || !event.discordThreadId) return;
+
+	try {
+		const thread = await getEventThread(event, discordClient);
+		await thread.delete();
+	} catch (err) {
+		console.error("Failed to delete event thread", err);
+	}
 }
 
-async function getEventMemberUser<T extends Prisma.UserDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserDefaultArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).eventUser.findUnique({
+async function getEventOwner<T extends Prisma.Event$ownerArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$ownerArgs>) {
+	const result = await database.event.findUnique({
 		where: { id }
-	}).user<T>(args)
-	return result
+	}).owner<T>(args);
+	return result;
 }
 
-async function getEventMemberEvent<T extends Prisma.EventDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventDefaultArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).eventUser.findUnique({
+async function getEventSettings<T extends Prisma.Event$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$settingsArgs>) {
+	const result = await database.event.findUnique({
 		where: { id }
-	}).event<T>(args)
-	return result
+	}).settings<T>(args);
+	return result;
 }
 
-async function getEventMemberRsvp<T extends Prisma.EventUser$rsvpArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventUser$rsvpArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).eventUser.findUnique({
+async function getEventMember(id: string) {
+	return await database.eventUser.findUnique({
 		where: { id }
-	}).rsvp<T>(args)
-	return result
+	});
 }
 
-async function getEventAccessRoles<T extends Prisma.Event$accessRolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$accessRolesArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
-		where: { id }
-	}).accessRoles<T>(args)
-	return result ?? []
+async function getEventMembers<T extends Omit<Prisma.Event$membersArgs, "where">>(id: string, args?: Prisma.Subset<T, Prisma.Event$membersArgs>) {
+	return (await getEventRsvps<T>(id, {
+		...args,
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore not sure how to fix this type
+		where: {
+			rsvpId: {
+				not: null
+			}
+		}
+	}));
 }
 
-async function getRSVPRoles<T extends Prisma.Event$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$rolesArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).event.findUnique({
+async function getEventRsvps<T extends Prisma.Event$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$membersArgs>) {
+	const result = await database.event.findUnique({
 		where: { id }
-	}).roles<T>(args)
-	return result ?? []
+	}).members<T>(args);
+	return result ?? [];
 }
 
-async function getRSVPMembers<T extends Prisma.EventRsvpRole$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventRsvpRole$membersArgs> & { tx?: Transaction }) {
-	const result = await (args?.tx ?? database).eventRsvpRole.findUnique({
+async function getEventMemberUser<T extends Prisma.UserDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserDefaultArgs>) {
+	const result = await database.eventUser.findUnique({
 		where: { id }
-	}).members<T>(args)
-	return result ?? []
+	}).user<T>(args);
+	return result;
+}
+
+async function getEventMemberEvent<T extends Prisma.EventDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventDefaultArgs>) {
+	const result = await database.eventUser.findUnique({
+		where: { id }
+	}).event<T>(args);
+	return result;
+}
+
+async function getEventMemberRsvp<T extends Prisma.EventUser$rsvpArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventUser$rsvpArgs>) {
+	const result = await database.eventUser.findUnique({
+		where: { id }
+	}).rsvp<T>(args);
+	return result;
+}
+
+async function kickEventMember(member: EventUser, discordClient: DiscordClient) {
+	const updatedMember = await database.eventUser.update({
+		where: { id: member.id },
+		data: {
+			rsvp: {
+				disconnect: true
+			}
+		},
+		include: {
+			user: {
+				select: {
+					discordId: true
+				}
+			},
+			event: true
+		}
+	});
+
+	if (!updatedMember.event.posted) return;
+	await updateEventMessage(discordClient, updatedMember.event);
+
+	if (updatedMember.user) {
+		try {
+			const thread = await getEventThread(updatedMember.event, discordClient);
+			await thread.members.remove(updatedMember.user.discordId, "UnRSVPed / Kicked from event");
+		} catch (err) {
+			console.error("Failed to remove user to event thread");
+			console.error(err);
+		}
+	}
+}
+
+async function getEventAccessRoles<T extends Prisma.Event$accessRolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$accessRolesArgs>) {
+	const result = await database.event.findUnique({
+		where: { id }
+	}).accessRoles<T>(args);
+	return result ?? [];
+}
+
+async function getRSVPRoles<T extends Prisma.Event$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$rolesArgs>) {
+	const result = await database.event.findUnique({
+		where: { id }
+	}).roles<T>(args);
+	return result ?? [];
+}
+
+async function getRSVPMembers<T extends Prisma.EventRsvpRole$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventRsvpRole$membersArgs>) {
+	const result = await database.eventRsvpRole.findUnique({
+		where: { id }
+	}).members<T>(args);
+	return result ?? [];
 }
 
 async function getUserRsvp(event: Event, user: User) {
-	const members = await getEventMembers(event.id)
-	return members.find(member => member.userId === user.id) ?? null
+	const rsvps = await getEventRsvps(event.id);
+	return rsvps.find(rsvp => rsvp.userId === user.id) ?? null;
 }
 
-async function createEvent(owner: User, discordClient: DiscordClient) {
+async function setUserReminder(rsvp: EventUser, reminder: EventReminder) {
+	return await database.eventUser.update({
+		where: { id: rsvp.id },
+		data: {
+			reminders: rsvp.reminders.includes(reminder) ? rsvp.reminders.filter(r => r !== reminder) : [...rsvp.reminders, reminder]
+		}
+	});
+}
+
+async function createEvent(owner: User, startAt: Date | undefined, discordClient: DiscordClient) {
 	const { defaultEventChannel } = await $system.getSystemSettings();
-	if (!defaultEventChannel) throw new Error("No default event channel")
+	if (!defaultEventChannel) throw new Error("No default event channel");
+
 	const guild = await $discord.getGuild(discordClient);
-	if (!guild) throw new Error("Could not fetch guild")
+	if (!guild) throw new Error("Could not fetch guild");
+	
+	const discordChannel = await $discord.getChannel(discordClient, defaultEventChannel.discordId);
+	if (!discordChannel) throw new Error("Could not fetch default event discord channel");
+
+	const discordCategory = await $discord.getChannel(discordClient, defaultEventChannel.discordCategoryId);
+	if (!discordCategory) throw new Error("Could not fetch default event channel discord category");
+
+	if (!(await $discord.canPostInChannel(discordChannel))) throw new Error("Cannot post messages in default event channel");
+	if (!(await $discord.canCreateThreadInChannel(discordChannel))) throw new Error("Cannot create threads in default event channel");
+	if (!(await $discord.canManageChannelsInCategory(discordCategory))) throw new Error("Cannot manage channels in default event channel category");
 
 	const event = await database.event.create({
 		data: {
@@ -252,11 +438,11 @@ async function createEvent(owner: User, discordClient: DiscordClient) {
 					hideLocation: false,
 					inviteOnly: false,
 					openToJoinRequests: true,
-					allowTeamSwitching: false,
 				},
 			},
 			accessType: EventAccessType.Channel,
 			posted: false,
+			startAt
 		},
 	});
 
@@ -264,7 +450,7 @@ async function createEvent(owner: User, discordClient: DiscordClient) {
 }
 
 async function editEvent(event: Event, data: EventEditInput, discordClient: DiscordClient) {
-	const roles = await getRSVPRoles(event.id)
+	const roles = await getRSVPRoles(event.id);
 
 	const updatedEvent = await database.event.update({
 		where: { id: event.id },
@@ -272,7 +458,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 			channel: data.channel
 				? {
 						connect: {
-							discordId: data.channel,
+							id: data.channel,
 						},
 				  }
 				: undefined,
@@ -320,7 +506,6 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 							hideLocation: data.settings.hideLocation,
 							inviteOnly: data.settings.inviteOnly,
 							openToJoinRequests: data.settings.openToJoinRequests,
-							allowTeamSwitching: data.settings.allowTeamSwitching,
 						},
 				  }
 				: undefined,
@@ -342,27 +527,79 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 		},
 	});
 
-	await updateEventMessage(discordClient, updatedEvent)
+	await updateEventMessage(discordClient, updatedEvent);
+	await postEventUpdateMessage(discordClient, event, updatedEvent);
+
 	return updatedEvent;
 }
 
 async function postEvent(event: Event, discordClient: DiscordClient) {
-	await postEventMessage(discordClient, event)
-}
+	const { messageId, threadId } = await postEventMessage(discordClient, event);
 
-async function deleteEvent(id: string, discordClient: DiscordClient) {
-	const event = await database.event.findUnique({
-		where: { id },
-		include: {
-			channel: true,
+	await database.event.update({
+		where: { id: event.id },
+		data: {
+			discordEventMessageId: messageId,
+			discordThreadId: threadId,
+			posted: true,
 		},
 	});
-	if (!event) return;
+}
 
-	await deleteEventMessage(discordClient, event)
+async function unpostEvent(event: Event, discordClient: DiscordClient) {
+	await deleteEventThread(event, discordClient);
+	await deleteEventMessage(discordClient, event);
+	await database.event.update({
+		where: { id: event.id },
+		data: {
+			discordEventMessageId: null,
+			discordThreadId: null,
+			posted: false,
+		},
+	});
+}
+
+async function endEvent(event: Event, discordClient: DiscordClient) {
+	await deleteEventMessage(discordClient, event);
+	const endedEvent = await database.event.update({
+		where: { id: event.id },
+		data: {
+			endedAt: new Date()
+		}
+	});
+
+	try {
+		await postEventEndMessage(discordClient, endedEvent);
+	} catch (err) {
+		console.error("Error posting event end message", err);
+	}
+
+	return endedEvent;
+}
+
+async function archiveEvent(event: Event, discordClient: DiscordClient) {
+	if (!event.endedAt) {
+		await endEvent(event, discordClient);
+	}
+
+	await archiveEventThread(event, discordClient);
+	return await database.event.update({
+		where: { id: event.id },
+		data: {
+			archived: true,
+			archivedAt: new Date()
+		}
+	});
+}
+
+async function deleteEvent(event: Event, discordClient: DiscordClient) {
+	if (event.endedAt) return;
+
+	await deleteEventThread(event, discordClient);
+	await deleteEventMessage(discordClient, event);
 	await database.event.delete({
-		where: { id },
-	})
+		where: { id: event.id },
+	});
 }
 
 async function canJoinRsvp(rsvp: EventRsvpRole) {
@@ -370,13 +607,13 @@ async function canJoinRsvp(rsvp: EventRsvpRole) {
 
 	const members = await getRSVPMembers(rsvp.id, {
 		select: { id: true }
-	})
-	return members.length < rsvp.limit 
+	});
+	return members.length < rsvp.limit; 
 }
 
 async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, currentRsvp: EventUser | null, discordClient: DiscordClient) {
-	const canRsvp = await canJoinRsvp(rsvp)
-	if (!canRsvp) throw new Error(`Cannot rsvp to ${rsvp.name}, role is full`)
+	const canRsvp = await canJoinRsvp(rsvp);
+	if (!canRsvp) throw new Error(`Cannot rsvp to ${rsvp.name}, role is full`);
 	
 	const updatedEvent = await database.event.update({
 		where: { id: event.id },
@@ -408,43 +645,25 @@ async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, curre
 				} : undefined
 			}
 		}
-	})
+	});
 
-	await updateEventMessage(discordClient, updatedEvent)
+	if (!event.posted) return;
+
+	await updateEventMessage(discordClient, updatedEvent);
 
 	try {
-		const thread = await getEventThread(updatedEvent, discordClient)
-		await thread.members.add(user.discordId, "RSVPed")
+		const thread = await getEventThread(updatedEvent, discordClient);
+		await thread.members.add(user.discordId, "RSVPed");
 	} catch (err) {
-		console.error("Failed to add user to event thread")
-		console.error(err)
+		console.error("Failed to add user to event thread", err);
 	}
 }
 
 async function unrsvpForEvent(event: Event, user: User, discordClient: DiscordClient) {
-	const currentRsvp = await getUserRsvp(event, user)
-	if (!currentRsvp) return;
+	const currentRsvp = await getUserRsvp(event, user);
+	if (!currentRsvp || !currentRsvp.rsvpId) return;
 
-	const updatedEvent = await database.event.update({
-		where: { id: event.id },
-		data: {
-			members: {
-				delete: {
-					id: currentRsvp.id
-				}
-			}
-		}
-	})
-
-	await updateEventMessage(discordClient, updatedEvent)
-
-	try {
-		const thread = await getEventThread(updatedEvent, discordClient)
-		await thread.members.remove(user.discordId, "UnRSVPed")
-	} catch (err) {
-		console.error("Failed to add user to event thread")
-		console.error(err)
-	}
+	await kickEventMember(currentRsvp, discordClient);
 }
 
 async function canSeeEvent(event: Event, user: User | undefined, discordClient: DiscordClient) {
@@ -480,46 +699,176 @@ async function canSeeEvent(event: Event, user: User | undefined, discordClient: 
 			return await $roles.hasOneOfRoles(accessRoles.map(ar => ar.role), user);
 		}
 		case EventAccessType.Channel: {
-			const channel = await getEventChannel(event.id);
+			const channel = await getEventEventChannel(event.id);
 			if (!channel) return false;
 			return await $discord.canUserViewChannel(discordClient, user, channel.discordId);
 		}
 	}
 }
 
-async function eventChannelExists(id: string) {
+async function eventChannelExists(discordId: string) {
 	const channel = await database.eventChannel.findUnique({
-		where: {
-			discordId: id,
-		},
+		where: { discordId },
 	});
 	return !!channel;
 }
 
+async function getAllEventChannels() {
+	return await database.eventChannel.findMany();
+}
+
+async function getEventChannel(id: number) {
+	return await database.eventChannel.findUnique({
+		where: { id },
+	});
+}
+
+async function getEventChannelReadyRoom(id: number) {
+	return await database.eventVoiceChannel.findFirst({
+		where: { channelId: id, readyRoom: true },
+	});
+}
+
+async function getEventChannelVoiceChannels(id: number) {
+	const result = await database.eventChannel.findUnique({
+		where: { id },
+	}).voiceChannels();
+	return result ?? [];
+}
+
+async function createEventChannel(channel: GuildBasedChannel, category: GuildBasedChannel, readyRoom?: GuildBasedChannel) {
+	if (!(await $discord.canManageChannelsInCategory(category))) throw new Error("Cannot manage channels in event channel category");
+
+	if (!readyRoom) {
+		// Currently inherits permissions of category - this should be ok?
+		readyRoom = await category.guild.channels.create({
+			name: "Event Ready Room",
+			type: ChannelType.GuildVoice,
+			bitrate: 64000,
+			videoQualityMode: VideoQualityMode.Auto,
+			parent: category.id,
+			reason: "Create event ready room for " + channel.name,
+		});
+	}
+
+	const eventChannel = await database.eventChannel.create({
+		data: {
+			discordId: channel.id,
+			discordCategoryId: category.id,
+			voiceChannels: {
+				create: {
+					discordId: readyRoom.id,
+					readyRoom: true,
+				}
+			}
+		}
+	});
+
+	return eventChannel;
+}
+
+async function editEventChannel(channel: EventChannel, data: EventChannelEditInput) {
+	return await database.eventChannel.update({
+		where: { id: channel.id },
+		data: {
+			discordId: data.channelId ?? undefined,
+			discordCategoryId: data.categoryId ?? undefined,
+			readyRoomName: data.readyRoomName ?? undefined
+		}
+	});
+}
+
+async function deleteEventChannel(channel: EventChannel, discordClient: DiscordClient, deleteVoiceChannels = false) {
+	const events = await database.event.findMany({
+		where: {
+			channelId: channel.id,
+			posted: true,
+			endedAt: null,
+			archived: false
+		}
+	});
+	for (const event of events) {
+		await unpostEvent(event, discordClient);
+	}
+
+	if (deleteVoiceChannels) {
+		const vcs = await getEventChannelVoiceChannels(channel.id);
+		for (const vc of vcs) {
+			const discordChannel = await $discord.getChannel(discordClient, vc.discordId);
+			if (discordChannel) {
+				await discordChannel.delete("Deleting voice channels associated to event channel");
+			}
+		}
+	}
+
+	await database.eventChannel.delete({
+		where: { id: channel.id },
+	});
+}
+
+async function $update() {
+	// Update all expired events with an endedAt time
+	await database.event.updateMany({
+		where: {
+			posted: true,
+			endedAt: null,
+			startAt: {
+				lt: new Date(Date.now() - EVENT_EXPIRE_AFTER)
+			},
+			archived: false
+		},
+		data: {
+			endedAt: new Date(),
+			expired: true
+		}
+	});
+}
+
 export const $events = {
+	$update,
 	getEvent,
 	getEventFromMessageId,
 	getEvents,
-	getAllEventChannels,
-	getEventChannel,
+	getUpcomingEvents,
+	getEndingEvents,
+	getEventsInChannel,
+	getEventEventChannel,
+	getEventDiscordChannel,
 	getEventThread,
+	createEventThread,
+	archiveEventThread,
+	deleteEventThread,
 	getEventOwner,
 	getEventSettings,
+	getEventMember,
 	getEventMembers,
+	getEventRsvps,
 	getEventMemberUser,
 	getEventMemberEvent,
 	getEventMemberRsvp,
+	kickEventMember,
 	getEventAccessRoles,
 	getRSVPRoles,
 	getRSVPMembers,
 	getUserRsvp,
+	setUserReminder,
 	createEvent,
 	editEvent,
 	postEvent,
+	unpostEvent,
+	endEvent,
+	archiveEvent,
 	deleteEvent,
 	canSeeEvent,
 	canJoinRsvp,
 	rsvpForEvent,
 	unrsvpForEvent,
 	eventChannelExists,
+	getAllEventChannels,
+	getEventChannel,
+	getEventChannelReadyRoom,
+	getEventChannelVoiceChannels,
+	createEventChannel,
+	editEventChannel,
+	deleteEventChannel
 };

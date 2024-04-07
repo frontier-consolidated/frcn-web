@@ -8,29 +8,29 @@
     const presetOptions = Object.values(CallToActionPreset).filter(val => typeof val !== "string").map(preset => ({
         name: CallToActionPreset[preset as CallToActionPreset],
         value: preset
-    }))
+    }));
     
     function createEditData(container: CtaContainer) {
         return {
             identifier: container.getIdentifier(),
             text: container.getTitle(),
             preset: container.getPreset() ?? CallToActionPreset.None,
-        }
+        };
     }
     
     export let container_: CmsContainer;
     export let validator: FieldValidator;
     export let isChild: boolean = false;
 
-    let container = container_.as<CtaContainer>()
-    $: container = container_.as<CtaContainer>()
+    let container = container_.as<CtaContainer>();
+    $: container = container_.as<CtaContainer>();
 
-    let editData = createEditData(container)
+    let editData = createEditData(container);
     $: {
-        container.setIdentifier(editData.identifier)
-        container.setTitle(editData.text)
-        container.setPreset(editData.preset)
-        getContext<() => void>("containerchange")()
+        container.setIdentifier(editData.identifier);
+        container.setTitle(editData.text);
+        container.setPreset(editData.preset);
+        getContext<() => void>("containerchange")();
     }
 </script>
 

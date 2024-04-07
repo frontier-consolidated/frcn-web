@@ -6,11 +6,11 @@ export class GalleryContainer extends CmsContainer {
         super({
             type: CMSContainerType.Gallery,
             ...init
-        })
+        });
     }
 
     override getAllowedChildren() {
-        return []
+        return [];
     }
 
     clone(): GalleryContainer {
@@ -19,6 +19,6 @@ export class GalleryContainer extends CmsContainer {
             identifier: this.identifier,
             title: this.title,
             content: this.content,
-        })
+        });
     }
 }

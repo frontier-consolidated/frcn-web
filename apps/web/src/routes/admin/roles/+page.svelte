@@ -1,24 +1,25 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
+	import { goto, invalidateAll } from "$app/navigation";
 	import { hasAdmin } from "@frcn/shared";
 	import { Search, Table, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { CloseSolid, EditOutline } from "flowbite-svelte-icons";
-    import Sortable from "sortablejs"
+    import Sortable from "sortablejs";
 	import { queryParam } from "sveltekit-search-params";
 
 	import { Button, Head, SectionHeading } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
+	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
-    import type { PageData } from './$types';
+    import type { PageData } from "./$types";
 	import RoleRow from "./RoleRow.svelte";
 
-	const roleSearch = queryParam("q")
+	const roleSearch = queryParam("q");
     
     export let data: PageData;
-	$: editRoles = data.roles.toReversed()
+	$: editRoles = data.roles.toReversed();
 
 	$: filteredRoles = $roleSearch ? editRoles.filter(r => r.name.toLowerCase().includes($roleSearch!.toLowerCase())) : editRoles;
 
@@ -26,23 +27,29 @@
 		if (!user) return roles.length;
 		if (hasAdmin(user.permissions)) return -1;
 
-		const userRoles = [user.primaryRole, ...user.roles]
+		const userRoles = [user.primaryRole, ...user.roles];
 
 		let highest = roles.length;
 		for (const [i, role] of roles.entries()) {
-			const userRole = userRoles.find(r => r.id === role.id)
+			const userRole = userRoles.find(r => r.id === role.id);
 			if (userRole && i < highest) {
-				highest = i
+				highest = i;
 			}
 		}
-		return highest
+		return highest;
 	}
 
-	$: highestMoveable = getHighestMovableRole(filteredRoles, $user.data)
+	$: highestMoveable = getHighestMovableRole(filteredRoles, $user.data);
+
+	const { canNavigate, initNavigation } = preventNavigation();
 
 	let isDirty = false;
-	$: isDirty = data.roles.toReversed().reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false)
+	$: {
+		isDirty = data.roles.toReversed().reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false);
+		canNavigate.set(!isDirty);
+	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let sortable: Sortable;
     function initSortable(el: HTMLElement) {
 		sortable = new Sortable(el, {
@@ -52,16 +59,16 @@
 			filter: ".cannot-reorder",
 			onMove: function(ev) {
 				if (ev.related.classList.contains("cannot-reorder")) {
-					return false
+					return false;
 				}
 			},
 			onEnd: function (ev) {
-				const updatedRoles = [...editRoles]
-				const movedRole = updatedRoles.splice(ev.oldIndex!, 1)[0]
-				updatedRoles.splice(ev.newIndex!, 0, movedRole)
-				editRoles = updatedRoles
+				const updatedRoles = [...editRoles];
+				const movedRole = updatedRoles.splice(ev.oldIndex!, 1)[0];
+				updatedRoles.splice(ev.newIndex!, 0, movedRole);
+				editRoles = updatedRoles;
 			}
-		})
+		});
     }
 
 	async function save() {
@@ -83,9 +90,12 @@
 		}
 
 		data = {
-			...data, 
+			...data,
 			roles: editRoles.toReversed(),
 		} as PageData;
+		editRoles = data.roles.toReversed();
+		// not sure why just invalidating app:allroles doesn't work here
+		await invalidateAll();
 	}
 </script>
 
@@ -96,7 +106,7 @@
 <SectionHeading>
     User Roles
 </SectionHeading>
-<div class="flex gap-2 px-2 my-4">
+<div class="flex gap-2 px-2 my-4" use:initNavigation>
     <Search size="md" bind:value={$roleSearch} class="rounded" />
     <Button class="shrink-0" on:click={async () => {
 		try {
@@ -113,8 +123,8 @@
 			pushNotification({
 				type: "error",
 				message: "Failed to create role"
-			})
-			console.error(err)
+			});
+			console.error(err);
 		}
 	}}>
         Create Role
@@ -142,7 +152,7 @@
 	</Table>
 	<div class="flex justify-end items-center gap-2">
 		<Button color="alternative" on:click={() => {
-			editRoles = data.roles.toReversed()
+			editRoles = data.roles.toReversed();
 		}}>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>

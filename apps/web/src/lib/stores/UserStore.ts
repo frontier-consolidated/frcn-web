@@ -5,7 +5,9 @@ import type { Subscription } from "zen-observable-ts";
 
 import { Routes, api } from "$lib/api";
 import { Queries, Subscriptions, getApollo } from "$lib/graphql";
-import type { GetCurrentUserQuery, OnRolesUpdatedSubscription } from "$lib/graphql/__generated__/graphql";
+import type { GetCurrentUserQuery, OnCurrentUserRolesUpdatedSubscription } from "$lib/graphql/__generated__/graphql";
+
+type UserData = (NonNullable<GetCurrentUserQuery["user"]> & { __permissions: number }) | null | undefined;
 
 async function getCurrentUser(cache = true) {
 	const { data } = await getApollo().query({
@@ -15,20 +17,28 @@ async function getCurrentUser(cache = true) {
 	return data;
 }
 
-let userPendingLogout: GetCurrentUserQuery["user"] = null;
+let userPendingLogout: UserData = null;
 
-export const user = writable<{ loading: boolean; data: GetCurrentUserQuery["user"] }>(
+export const user = writable<{ loading: boolean; adminMode: boolean; data: UserData }>(
 	{
 		loading: browser,
+		adminMode: true,
 		data: null,
 	},
 	(set) => {
 		if (!browser) return;
 		getCurrentUser()
 			.then((data) => {
+				const adminMode = get(user).adminMode;
+
 				set({
 					loading: false,
-					data: data.user,
+					adminMode,
+					data: data.user ? {
+						...data.user,
+						permissions: adminMode ? data.user.permissions : 0,
+						__permissions: data.user.permissions
+					} : null
 				});
 			})
 			.catch(console.error);
@@ -37,7 +47,7 @@ export const user = writable<{ loading: boolean; data: GetCurrentUserQuery["user
 );
 
 if (browser) {
-	let observer: Observable<FetchResult<OnRolesUpdatedSubscription>> | null = null;
+	let observer: Observable<FetchResult<OnCurrentUserRolesUpdatedSubscription>> | null = null;
 	let subscription: Subscription | null = null;
 	user.subscribe((data) => {
 		if (data.loading || !data.data) {
@@ -49,30 +59,46 @@ if (browser) {
 		if (!data.loading && data.data) {
 			if (!observer) {
 				observer = getApollo().subscribe({
-					query: Subscriptions.USER_ROLES_UPDATED,
+					query: Subscriptions.CURRENT_USER_ROLES_UPDATED,
 					variables: {
 						userId: data.data.id
 					}
-				})
+				});
 			}
 			if (!subscription) {
-				subscription = observer.subscribe(({ data, errors }) => {
+				subscription = observer.subscribe(({ data }) => {
 					if (!data) return;
 					user.update((value) => {
 						return {
-							loading: value.loading,
-							data: {
-								...value.data!,
-								permissions: data.roles.permissions,
+							...value,
+							data: value.data ? {
+								...value.data,
+								permissions: value.adminMode ? data.roles.permissions : 0,
+								__permissions: data.roles.permissions,
 								primaryRole: data.roles.primaryRole,
 								roles: data.roles.roles
-							}
-						}
-					})
-				})
+							} : null
+						};
+					});
+				});
 			}
 		}
-	})
+	});
+}
+
+export function toggleAdminMode(enabled?: boolean) {
+	user.update((value) => {
+		const adminMode = enabled ?? !value.adminMode;
+
+		return {
+			...value,
+			adminMode,
+			data: value.data ? {
+				...value.data,
+				permissions: adminMode ? value.data.__permissions : 0,
+			} : null
+		};
+	});
 }
 
 export async function login() {
@@ -92,10 +118,15 @@ export async function login() {
 		return;
 	}
 
-	user.set({
+	user.update((obj) => ({
+		...obj,
 		loading: false,
-		data: data.user,
-	});
+		data: data.user ? {
+			...data.user,
+			permissions: obj.adminMode ? data.user.permissions : 0,
+			__permissions: data.user?.permissions
+		} : null,
+	}));
 }
 
 export async function logout() {
@@ -103,22 +134,24 @@ export async function logout() {
 	if (!$user || userPendingLogout) return;
 
 	userPendingLogout = $user.data;
-	user.set({
+	user.update((obj) => ({
+		...obj,
 		loading: false,
 		data: null,
-	});
+	}));
 
 	try {
 		await api.get(Routes.logout());
 
 		if (browser) {
-			window.location.reload()
+			window.location.reload();
 		}
 	} catch (err) {
-		user.set({
+		user.update((obj) => ({
+			...obj,
 			loading: false,
 			data: userPendingLogout,
-		});
+		}));
 		throw err;
 	} finally {
 		userPendingLogout = null;

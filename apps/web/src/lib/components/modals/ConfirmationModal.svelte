@@ -4,7 +4,7 @@
 
 	import Button from "../Button.svelte";
 
-    const dispatch = createEventDispatcher()
+    const dispatch = createEventDispatcher();
 
     export let title: string;
     export let open: boolean = false;
@@ -14,7 +14,7 @@
     <slot />
     <svelte:fragment slot="footer">
 		<Button class="w-6/12" on:click={async () => {
-			dispatch("confirm")
+			dispatch("confirm");
 		}}>Confirm</Button>
 		<Button color="alternative" class="w-6/12" on:click={() => open = false}>Cancel</Button>
   	</svelte:fragment>

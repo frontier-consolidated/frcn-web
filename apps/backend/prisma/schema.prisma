@@ -155,11 +155,14 @@ model EventRsvpRole {
 
 model EventUser {
   id        String         @id @default(uuid())
-  pending   Boolean
-  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String         @map("user_id")
+  pending   Boolean        @default(false)
+  reminders String[]
+  user      User?          @relation(fields: [userId], references: [id])
+  userId    String?        @map("user_id")
   rsvp      EventRsvpRole? @relation(fields: [rsvpId], references: [id])
   rsvpId    String?        @map("rsvp_id")
+  team      EventTeam?     @relation(fields: [teamId], references: [id])
+  teamId    String?        @map("team_id")
   event     Event          @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId   String         @map("event_id")
   updatedAt DateTime       @updatedAt @map("updated_at")
@@ -169,12 +172,24 @@ model EventUser {
   @@schema("events")
 }
 
+model EventTeam {
+  id             String            @id @default(uuid())
+  name           String
+  members        EventUser[]
+  event          Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId        String            @map("event_id")
+  voiceChannel   EventVoiceChannel @relation(fields: [voiceChannelId], references: [id], onDelete: Cascade)
+  voiceChannelId Int               @unique @map("voice_channel_id")
+
+  @@map("teams")
+  @@schema("events")
+}
+
 model EventSettings {
   id                 Int      @id @default(autoincrement())
   hideLocation       Boolean  @map("hide_location")
   inviteOnly         Boolean  @map("invite_only")
   openToJoinRequests Boolean  @map("open_to_join_requests")
-  allowTeamSwitching Boolean  @map("allow_team_switching")
   event              Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId            String   @unique @map("event_id")
   updatedAt          DateTime @updatedAt @map("updated_at")
@@ -193,7 +208,6 @@ model Event {
   discordThreadId       String?                       @map("discord_thread_id")
   discordRoleId         String?                       @map("discord_role_id")
   discordEventMessageId String?                       @map("discord_event_message_id")
-  discordStartMessageId String?                       @map("discord_start_message_id")
   discordMentions       String[]                      @map("discord_mentions")
   name                  String
   summary               String
@@ -203,13 +217,17 @@ model Event {
   location              String[]
   roles                 EventRsvpRole[]
   members               EventUser[]
+  teams                 EventTeam[]
   settings              EventSettings?
   accessType            String                        @map("access_type")
   accessRoles           EventsWithUserRoleForAccess[]
   startAt               DateTime?                     @map("start_at")
   endedAt               DateTime?                     @map("ended_at")
   duration              Int?
-  posted                Boolean
+  posted                Boolean                       @default(false)
+  expired               Boolean                       @default(false)
+  archived              Boolean                       @default(false)
+  archivedAt            DateTime?                     @map("archived_at")
   updatedAt             DateTime                      @updatedAt @map("updated_at")
   createdAt             DateTime                      @default(now()) @map("created_at")
 
@@ -230,14 +248,32 @@ model EventsWithUserRoleForAccess {
 }
 
 model EventChannel {
-  id             Int             @id @default(autoincrement())
-  discordId      String          @unique @map("discord_id")
-  events         Event[]
-  systemSettings SystemSettings?
-  updatedAt      DateTime        @updatedAt @map("updated_at")
-  createdAt      DateTime        @default(now()) @map("created_at")
+  id                Int                 @id @default(autoincrement())
+  discordId         String              @unique @map("discord_id")
+  discordCategoryId String              @map("discord_category_id")
+  readyRoomName     String?             @map("ready_room_name")
+  events            Event[]
+  voiceChannels     EventVoiceChannel[]
+  systemSettings    SystemSettings?
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  createdAt         DateTime            @default(now()) @map("created_at")
 
   @@map("channels")
+  @@schema("events")
+}
+
+model EventVoiceChannel {
+  id        Int          @id @default(autoincrement())
+  discordId String       @map("discord_id")
+  channel   EventChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  channelId Int          @map("channel_id")
+  readyRoom Boolean      @default(false) @map("ready_room")
+  team      EventTeam?   @relation()
+  teamId    String?      @map("team_id")
+  updatedAt DateTime     @updatedAt @map("updated_at")
+  createdAt DateTime     @default(now()) @map("created_at")
+
+  @@map("voice_channels")
   @@schema("events")
 }
 

@@ -17,5 +17,5 @@ export const middleware: MiddlewareHandler = function ({ session: config, domain
 			secure: "auto",
 			maxAge: SESSION_MAX_AGE,
 		},
-	})
+	});
 };

@@ -8,12 +8,22 @@
         {
             permission: Permission.CreateEvents,
             name: "Create Events",
-            help: "Allows creating, editing, posting and deleting of events"
+            help: "Allows creating, editing, posting and deleting of their own events"
         },
         {
-            permission: Permission.UploadResources,
+            permission: Permission.ManageEvents,
+            name: "Manage Events",
+            help: "Allows creating, editing, posting and deleting of all events"
+        },
+        {
+            permission: Permission.CreateResources,
             name: "Create Resources",
-            help: "Allows creating, editing and deleting of guides & resources"
+            help: "Allows creating, editing and deleting of their own guides & resources"
+        },
+        {
+            permission: Permission.ManageResources,
+            name: "Manage Resources",
+            help: "Allows creating, editing and deleting of all guides & resources"
         },
         {
             permission: Permission.CmsRead,
@@ -26,26 +36,31 @@
             help: "Allows creating, editing and deleting of CMS content"
         },
         {
+            permission: Permission.ManageRoles,
+            name: "Manage Roles",
+            help: "Allows modifying of roles and ability to add/remove roles from users"
+        },
+        {
             permission: Permission.ManageSystem,
             name: "Manage System",
-            help: "Allows modifying of general system settings and event channels"
+            help: "Allows modifying of any system settings not covered by other permissions"
         },
         {
             permission: Permission.Admin,
             name: "Administrator",
             help: "[DANGEROUS] This permission enables use of all permissions and overrides role hierarchy"
         },
-    ] satisfies { permission: Permission, name: string, help: string }[]
+    ] satisfies { permission: Permission, name: string, help: string }[];
 
     export let permissions: number;
     export let disableToggles: Partial<Record<Permission, boolean>> = {};
 
     function togglePermission(ev: Event, permission: Permission) {
-		const target = (ev.target) as HTMLInputElement
+		const target = (ev.target) as HTMLInputElement;
 		if (target.checked) {
-			permissions |= permission
+			permissions |= permission;
 		} else {
-			permissions ^= permission
+			permissions ^= permission;
 		}
 	}
 </script>

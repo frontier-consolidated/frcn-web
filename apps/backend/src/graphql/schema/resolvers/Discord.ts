@@ -1,8 +1,7 @@
-import type { EventChannel } from "@prisma/client";
-import { ChannelType, GuildChannel, GuildEmoji, Role } from "discord.js";
+import { ChannelType, GuildEmoji, Role, type GuildBasedChannel } from "discord.js";
 
+import type { WithModel } from "./types";
 import { $discord } from "../../../services/discord";
-import { $events } from "../../../services/events";
 import type {
 	DiscordChannel,
 	DiscordEmoji,
@@ -12,36 +11,29 @@ import type {
 import type { GQLContext } from "../../context";
 import { gqlErrorNotFound } from "../gqlError";
 
-export async function resolveDiscordChannel(
-	channel: EventChannel | GuildChannel,
-	context: GQLContext
+export function resolveDiscordChannel(
+	channel: GuildBasedChannel,
 ) {
-	let guildChannel: GuildChannel | null = null;
-
-	if (channel instanceof GuildChannel) {
-		guildChannel = channel;
-	} else {
-		guildChannel = (await $discord.getChannel(
-			context.app.discordClient,
-			channel.discordId
-		)) as GuildChannel;
-		
-		// if (!guildChannel) throw gqlErrorNotFound(`Discord channel not found: ${channel.discordId}`, {
-		// 	channelId: channel.discordId,
-		// });
-
-		if (!guildChannel) return {
-			id: channel.discordId,
-			name: `#ERROR-${channel.discordId}`,
-			type: "Unknown"
-		} satisfies DiscordChannel;
+	let name = channel.name;
+	switch (channel.type) {
+		case ChannelType.GuildCategory:
+			break;
+		case ChannelType.GuildVoice:
+			name = `🔊 ${channel.name}`;
+			break;
+		default:
+			name = `#${channel.name}`;
+			break;
 	}
 
 	return {
-		id: guildChannel.id,
-		name: `#${guildChannel.name}`,
-		type: ChannelType[guildChannel.type],
-	} satisfies DiscordChannel;
+		_model: channel,
+		id: channel.id,
+		name,
+		type: ChannelType[channel.type],
+		parentId: channel.parentId,
+		sendMessages: false, // field-resolved
+	} satisfies WithModel<DiscordChannel, GuildBasedChannel>;
 }
 
 export async function resolveDiscordRole(role: string | Role, context: GQLContext) {
@@ -91,14 +83,26 @@ export async function resolveDiscordEmoji(emoji: string | GuildEmoji, context: G
 }
 
 export const discordResolvers: Resolvers = {
+	DiscordChannel: {
+		async sendMessages(source) {
+			const { _model: channel } = source as WithModel<DiscordChannel, GuildBasedChannel>;
+			if (!channel || channel.type === ChannelType.GuildCategory) return false;
+			return await $discord.canPostInChannel(channel);
+		}
+	},
+
 	Query: {
-		async getAllEventChannels(source, args, context) {
-			const channels = await $events.getAllEventChannels()
-			return channels.map(async (channel) => await resolveDiscordChannel(channel, context));
-		},
-		async getAllDiscordChannels(source, args, context) {
+		async getAllDiscordTextChannels(source, args, context) {
 			const channels = await $discord.getAllTextChannels(context.app.discordClient);
-			return channels.map((channel) => resolveDiscordChannel(channel, context));
+			return channels.map(resolveDiscordChannel);
+		},
+		async getAllDiscordVoiceChannels(source, args, context) {
+			const channels = await $discord.getAllVoiceChannels(context.app.discordClient);
+			return channels.map(resolveDiscordChannel);
+		},
+		async getAllDiscordCategories(source, args, context) {
+			const categories = await $discord.getAllCategories(context.app.discordClient);
+			return categories.map(resolveDiscordChannel);
 		},
 		async getAllDiscordEmojis(source, args, context) {
 			const guild = await $discord.getGuild(context.app.discordClient);
@@ -106,7 +110,7 @@ export const discordResolvers: Resolvers = {
 				serverName: "!UNKNOWN",
 				serverAvatar: null,
 				emojis: []
-			}
+			};
 			
 			const emojis = await $discord.getAllEmojis(context.app.discordClient);
 			return {
@@ -116,7 +120,7 @@ export const discordResolvers: Resolvers = {
 					size: 16
 				}),
 				emojis: await Promise.all(emojis.map((emoji) => resolveDiscordEmoji(emoji, context)))
-			}
+			};
 		},
 		async getAllDiscordRoles(source, args, context) {
 			const roles = await $discord.getAllRoles(context.app.discordClient, args.everyone ?? undefined);

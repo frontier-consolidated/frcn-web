@@ -8,5 +8,5 @@ export function toTitleCase(str: string) {
 }
 
 export function kebabCaseToTitleCase(str: string) {
-	return toTitleCase(str.replace(/-/g, " "))
+	return toTitleCase(str.replace(/-/g, " "));
 }

@@ -8,12 +8,12 @@ export type AccessKeyMiddlewareConfig = {
 
 export function accesskeyMiddleware(config: AccessKeyMiddlewareConfig) {
     return async function (req, res, next) {
-        const accessKeyValue = req.header(config.header)
+        const accessKeyValue = req.header(config.header);
         
         if (accessKeyValue && typeof accessKeyValue === "string") {
-            const accessKey = await $system.getAccessKey(accessKeyValue)
+            const accessKey = await $system.getAccessKey(accessKeyValue);
             if (accessKey) {
-                req.accessKey = accessKey
+                req.accessKey = accessKey;
             }
         }
 

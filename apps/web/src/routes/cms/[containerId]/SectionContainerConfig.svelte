@@ -15,24 +15,24 @@
             identifier: container.getIdentifier(),
             title: container.getTitle(),
             content: container.getContent() ?? "",
-        }
+        };
     }
     
     export let container_: CmsContainer;
     export let validator: FieldValidator;
     export let isChild: boolean = false;
 
-    let container = container_.as<SectionContainer>()
-    $: container = container_.as<SectionContainer>()
+    let container = container_.as<SectionContainer>();
+    $: container = container_.as<SectionContainer>();
 
-    let imageFile: CmsFile | null = container.getFiles()[0]
+    let imageFile: CmsFile | null = container.getFiles()[0];
 
-    let editData = createEditData(container)
+    let editData = createEditData(container);
     $: {
-        container.setIdentifier(editData.identifier)
-        container.setTitle(editData.title)
-        container.setContent(editData.content)
-        getContext<() => void>("containerchange")()
+        container.setIdentifier(editData.identifier);
+        container.setTitle(editData.title);
+        container.setContent(editData.content);
+        getContext<() => void>("containerchange")();
     }
 
     async function uploadFile(file: File, currentFile: CmsFile | null) {
@@ -41,8 +41,8 @@
 			message: "Uploading file...",
 		});
 
-		const formData = new FormData()
-		formData.append("file", file)
+		const formData = new FormData();
+		formData.append("file", file);
         
 		try {
             if (currentFile) {
@@ -51,15 +51,15 @@
                     variables: {
                         id: currentFile.id
                     },
-                })
-                container.removeFile(currentFile)
+                });
+                container.removeFile(currentFile);
             }
 
 			const response = await api.post(Routes.upload("cms_container", container.id), formData, {
 				headers: {
 					"Content-Type": "multipart/form-data"
 				},
-			})
+			});
 
             currentFile = new CmsFile({
                 id: response.data.id,
@@ -67,8 +67,8 @@
                 fileSizeKb: response.data.fileSizeKb,
                 contentType: response.data.contentType,
                 fileSrc: response.data.previewUrl,
-            })
-            container.pushFile(currentFile)
+            });
+            container.pushFile(currentFile);
             
             pushNotification({
                 type: "success",
@@ -91,7 +91,7 @@
                 id: file.id
             },
             errorPolicy: "all"
-        })
+        });
 
         if (errors && errors.length > 0) {
             pushNotification({
@@ -101,7 +101,7 @@
             console.error(errors);
             return false;
         }
-        return true
+        return true;
     }
 </script>
 
@@ -150,12 +150,12 @@
     <Label for="section-image-{container.id}" class="mb-2">Image</Label>
     <ImageInput id="section-image-{container.id}" name="section-image" src={imageFile?.getSrc()} 
         upload={async (file) => {
-            imageFile = await uploadFile(file, imageFile)
+            imageFile = await uploadFile(file, imageFile);
         }}
         remove={async () => {
             if (!imageFile) return;
             if (await removeFile(imageFile)) {
-                imageFile = null
+                imageFile = null;
             }
         }}
     />

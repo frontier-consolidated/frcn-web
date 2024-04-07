@@ -1,17 +1,17 @@
-import { error } from '@sveltejs/kit';
+import { error } from "@sveltejs/kit";
 
-import type { PageServerLoad } from './$types';
-import { getEvents } from './helpers';
+import type { PageServerLoad } from "./$types";
+import { getEvents } from "./helpers";
 
 export const load = (async ({ locals, url, depends }) => {
-    depends("app:events")
+    depends("app:events");
 
     if (!locals.user) error(401, {
         message: "Must be authenticated to view this page"
-    })
+    });
 
     try {
-        return await getEvents(locals.apollo, url)
+        return await getEvents(locals.apollo, url);
     } catch (err) {
         return {
             couldNotConnect: true,
@@ -21,6 +21,6 @@ export const load = (async ({ locals, url, depends }) => {
             nextPage: null,
             prevPage: null,
             total: 0
-        }
+        };
     }
 }) satisfies PageServerLoad;

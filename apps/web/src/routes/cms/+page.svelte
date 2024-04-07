@@ -1,28 +1,28 @@
 <script lang="ts">
-	import { invalidate } from '$app/navigation';
-	import { CMSContainerType, type IndexContainer } from '@frcn/cms';
-	import { Heading, Input, Label, Modal } from 'flowbite-svelte';
+	import { invalidate } from "$app/navigation";
+	import { CMSContainerType, type IndexContainer } from "@frcn/cms";
+	import { Heading, Input, Label, Modal } from "flowbite-svelte";
 
-	import { transformContainer } from '$lib/cms/transformContainer';
-	import { Button, Field, FieldValidator, Head, Hr } from '$lib/components';
-	import { Mutations, getApollo } from '$lib/graphql';
-	import { pushNotification } from '$lib/stores/NotificationStore';
+	import { transformContainer } from "$lib/cms/transformContainer";
+	import { Button, Field, FieldValidator, Head, Hr } from "$lib/components";
+	import { Mutations, getApollo } from "$lib/graphql";
+	import { pushNotification } from "$lib/stores/NotificationStore";
 
-    import type { PageData } from './$types';
+    import type { PageData } from "./$types";
 
-    const validator = new FieldValidator()
+    const validator = new FieldValidator();
     
     export let data: PageData;
-    $: indexes = data.indexes.map(i => transformContainer<IndexContainer>(i))
+    $: indexes = data.indexes.map(i => transformContainer<IndexContainer>(i));
 
     function createModalData() {
         return {
             identifier: ""
-        }
+        };
     }
 
     let openModal = false;
-    let modalData = createModalData()
+    let modalData = createModalData();
 
     async function createIndex() {
         if (!validator.validate()) return;
@@ -46,7 +46,7 @@
 		}
 
 		modalData = createModalData();
-        await invalidate("cms:indexes")
+        await invalidate("cms:indexes");
         openModal = false;
     }
 </script>
@@ -95,13 +95,13 @@
 	</div>
 	<svelte:fragment slot="footer">
         <Button on:click={() => {
-            createIndex().catch(console.error)
+            createIndex().catch(console.error);
         }}>
             Create
         </Button>
         <Button color="alternative" on:click={() => {
             openModal = false;
-            modalData = createModalData()
+            modalData = createModalData();
         }}>
             Cancel
         </Button>

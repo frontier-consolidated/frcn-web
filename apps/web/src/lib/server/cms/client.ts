@@ -9,7 +9,7 @@ export class CmsClient {
     private apollo: TypedApolloClient;
 
     constructor({ apollo }: { apollo: TypedApolloClient }) {
-        this.apollo = apollo
+        this.apollo = apollo;
     }
 
     async getIndexes() {
@@ -20,14 +20,14 @@ export class CmsClient {
             },
             fetchPolicy: "no-cache",
             errorPolicy: "all"
-        })
+        });
 
         if (error) {
-            console.error(error)
+            console.error(error);
             return [];
         }
         
-        return data?.containers ?? []
+        return data?.containers ?? [];
     }
 
     async getIndex(identifier: string) {
@@ -39,10 +39,10 @@ export class CmsClient {
             },
             fetchPolicy: "no-cache",
             errorPolicy: "all"
-        })
+        });
 
         if (error) {
-            console.error(error)
+            console.error(error);
             return null;
         }
 
@@ -56,7 +56,7 @@ export class CmsClient {
                 id
             },
             fetchPolicy: "no-cache"
-        })
+        });
 
         return data?.container ? this.transformContainerWithRecursiveChildren(data.container) : null;
     }
@@ -65,9 +65,9 @@ export class CmsClient {
         if (Object.isFrozen(container)) container = { ...container };
         if (!container.recursiveChildren) return container;
 
-        const children: ContentContainerData[] = []
+        const children: ContentContainerData[] = [];
         for (const child of container.recursiveChildren) {
-            children.push(this.transformContainerWithRecursiveChildren(child as ContentContainerData))
+            children.push(this.transformContainerWithRecursiveChildren(child as ContentContainerData));
         }
         container.children = children;
         delete container.recursiveChildren;
@@ -78,9 +78,9 @@ export class CmsClient {
 export function createCmsClient() {
     const apollo = createApolloClient({
         "x-frcn-access-key": env.CMS_ACCESS_KEY
-    })
+    });
 
     return new CmsClient({
         apollo
-    })
+    });
 }

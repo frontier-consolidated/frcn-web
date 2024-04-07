@@ -18,7 +18,10 @@
 	let editRole = structuredClone(role);
 
 	function updateRole(edit: PageData["rsvpRoles"][number]) {
-		roles = [...roles.filter((r) => r.id != role.id), edit];
+		const index = roles.findIndex(r => r.id === role.id);
+		const updatedRoles = [...roles.filter((r) => r.id != role.id)];
+		updatedRoles.splice(index, 0, edit);
+		roles = updatedRoles;
 		role = edit;
 		return structuredClone(role);
 	}
@@ -73,6 +76,7 @@
 				name="event-role-name"
 				class="!bg-transparent !border-transparent !p-1 text-ellipsis rounded"
 				placeholder="Role name"
+				maxlength="255"
 				bind:value={editRole.name}
 			/>
 		</Field>

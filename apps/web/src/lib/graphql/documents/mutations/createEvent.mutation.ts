@@ -1,7 +1,7 @@
 import { gql } from "../../__generated__";
 
 export const CREATE_EVENT = gql(`
-	mutation CreateEvent {
-		event: createEvent
+	mutation CreateEvent($startAt: Timestamp) {
+		event: createEvent(startAt: $startAt)
 	}
 `);

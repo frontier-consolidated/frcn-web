@@ -14,7 +14,7 @@ type ExportContentContainerFile = {
     key: string;
     identifier?: string;
     fileName: string;
-}
+};
 
 type ExportContentContainer = {
     type: string;
@@ -23,13 +23,13 @@ type ExportContentContainer = {
     content?: string;
     children: ExportContentContainer[]
     files: ExportContentContainerFile[]
-}
+};
 
 type ExportJson = {
     exportedAt: string;
     version: number;
     indexes: ExportContentContainer[]
-}
+};
 
 const CMS_EXPORT_VERSION = 1;
 const CMS_EXPORT_SCHEMA = {
@@ -90,48 +90,48 @@ const CMS_EXPORT_SCHEMA = {
             required: ["type", "title", "children", "files"]
         }
     }
-} satisfies Schema
+} satisfies Schema;
 
 export default function route(context: Context, _config: RouteConfig) {
-    const exportValidator = new Validator()
+    const exportValidator = new Validator();
 
     context.expressApp.get("/cms/export", async (req, res) => {
         if (!req.user) {
             return res.status(401).send({
                 message: "Must be authenticated"
-            })
+            });
         }
 
-        const permissions = await $users.getPermissions(req.user)
+        const permissions = await $users.getPermissions(req.user);
         if (!hasPermission(permissions, Permission.CmsRead)) {
             return res.status(403).send({
                 message: "Missing permissions"
-            })
+            });
         }
 
-        const exportDate = new Date()
+        const exportDate = new Date();
         const exportJson: ExportJson = {
             exportedAt: exportDate.toISOString(),
             version: CMS_EXPORT_VERSION,
             indexes: []
-        }
+        };
 
         const indexes = await database.contentContainer.findMany({
             where: {
                 type: CMSContainerType.Index,
                 parentId: null
             }
-        })
+        });
 
         async function traverseAndExportContainer(container: ContentContainer): Promise<ExportContentContainer> {
-            const children = await $cms.getContainerChildren(container.id)
+            const children = await $cms.getContainerChildren(container.id);
             const fileLinks = await $cms.getContainerFileLinks(container.id, {
                 include: {
                     file: true
                 }
-            })
+            });
 
-            const idToIndex = children.reduce((record, child) => ({ ...record, [child.id]: container.childrenOrder.findIndex(id => id === child.id) }), {} as Record<string, number>)
+            const idToIndex = children.reduce((record, child) => ({ ...record, [child.id]: container.childrenOrder.findIndex(id => id === child.id) }), {} as Record<string, number>);
             const exportChildren = await Promise.all([...children].sort((a, b) => idToIndex[a.id] - idToIndex[b.id]).map(async (child) => await traverseAndExportContainer(child)));
 
             return {
@@ -145,53 +145,53 @@ export default function route(context: Context, _config: RouteConfig) {
                         key: link.file.key,
                         identifier: link.identifier ?? undefined,
                         fileName: link.file.fileName
-                    } as ExportContentContainerFile
+                    } as ExportContentContainerFile;
                 }).filter((f): f is ExportContentContainerFile => !!f)
-            }
+            };
         }
 
         for (const index of indexes) {
-            exportJson.indexes.push(await traverseAndExportContainer(index))
+            exportJson.indexes.push(await traverseAndExportContainer(index));
         }
 
-        const result = exportValidator.validate(exportJson, CMS_EXPORT_SCHEMA)
+        const result = exportValidator.validate(exportJson, CMS_EXPORT_SCHEMA);
         if (!result.valid) {
             return res.status(500).send({
                 message: "Malformed export json created on the server",
                 errors: result.errors
-            })
+            });
         }
 
-        const buffer = Buffer.from(JSON.stringify(exportJson, null, 2))
+        const buffer = Buffer.from(JSON.stringify(exportJson, null, 2));
 
         res.writeHead(200, {
             "Content-Disposition": `attachment; filename="cms-export-${exportDate.getTime()}.json"`,
             "Content-Type": "application/json",
             "Content-Length": buffer.length,
-        })
-        res.end(buffer)
+        });
+        res.end(buffer);
     });
 
     context.expressApp.post(
         "/cms/import",
         fileField("export", { maxFiles: 1, disk: false }),
         async (req, res) => {
-            const file = (req.files as Express.Multer.File[])[0]
+            const file = (req.files as Express.Multer.File[])[0];
             
-            const exportJson = JSON.parse(file.buffer.toString()) as ExportJson
+            const exportJson = JSON.parse(file.buffer.toString()) as ExportJson;
 
-            const result = exportValidator.validate(exportJson, CMS_EXPORT_SCHEMA)
+            const result = exportValidator.validate(exportJson, CMS_EXPORT_SCHEMA);
             if (!result.valid) {
                 return res.status(400).send({
                     message: "Malformed export json",
                     errors: result.errors
-                })
+                });
             }
 
             if (!exportJson.version || exportJson.version !== CMS_EXPORT_VERSION) {
                 return res.status(400).send({
                     message: `CMS export version mismatch, uploaded file version: '${exportJson.version}', currently supported version: '${CMS_EXPORT_VERSION}'`
-                })
+                });
             }
 
             async function createContainerChildrenAndFiles(data: ExportContentContainer, parentId?: string) {
@@ -207,13 +207,13 @@ export default function route(context: Context, _config: RouteConfig) {
                             }
                         } : undefined
                     }
-                })
+                });
 
-                const filesOrder: string[] = []
+                const filesOrder: string[] = [];
                 for (const file of data.files) {
-                    const fileUpload = await $files.copyFile(context.s3Client, context.s3Bucket, file.key, file.fileName)
+                    const fileUpload = await $files.copyFile(context.s3Client, context.s3Bucket, file.key, file.fileName);
                     if (fileUpload) {
-                        filesOrder.push(fileUpload.id)
+                        filesOrder.push(fileUpload.id);
                         await database.contentContainer.update({
                             where: { id: container.id },
                             data: {
@@ -228,14 +228,14 @@ export default function route(context: Context, _config: RouteConfig) {
                                     }
                                 }
                             }
-                        })
+                        });
                     }
                 }
 
-                const childrenOrder: string[] = []
+                const childrenOrder: string[] = [];
                 for (const child of data.children) {
-                    const childContainer = await createContainerChildrenAndFiles(child, container.id)
-                    childrenOrder.push(childContainer.id)
+                    const childContainer = await createContainerChildrenAndFiles(child, container.id);
+                    childrenOrder.push(childContainer.id);
                 }
 
                 await database.contentContainer.update({
@@ -244,9 +244,9 @@ export default function route(context: Context, _config: RouteConfig) {
                         childrenOrder,
                         filesOrder,
                     }
-                })
+                });
 
-                return container
+                return container;
             }
 
             for (const index of exportJson.indexes) {
@@ -255,21 +255,21 @@ export default function route(context: Context, _config: RouteConfig) {
                     select: {
                         id: true
                     }
-                })
-                let filesToDelete: FileUpload[] = []
+                });
+                let filesToDelete: FileUpload[] = [];
                 if (existingIndex) {
-                    const result = await $cms.deleteContainer(context.s3Client, context.s3Bucket, existingIndex.id, false)
-                    filesToDelete = result?.files ?? []
+                    const result = await $cms.deleteContainer(context.s3Client, context.s3Bucket, existingIndex.id, false);
+                    filesToDelete = result?.files ?? [];
                 }
 
-                await createContainerChildrenAndFiles(index)
+                await createContainerChildrenAndFiles(index);
 
-                await $files.deleteManyFiles(context.s3Client, context.s3Bucket, filesToDelete)
+                await $files.deleteManyFiles(context.s3Client, context.s3Bucket, filesToDelete);
             }
 
             res.status(200).send({
                 message: "CMS export successfully imported!"
-            })
+            });
         }
-    )
+    );
 }

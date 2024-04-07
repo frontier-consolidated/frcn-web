@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { invalidateAll } from "$app/navigation";
 	import { page } from "$app/stores";
-	import { Permission, hasAdmin } from "@frcn/shared"
-	import { Avatar, Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
-	import { ArrowLeftSolid, CloseCircleSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
+	import { Permission, hasAdmin } from "@frcn/shared";
+	import { Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
+	import { ArrowLeftSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
 	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button, PermissionToggles, Head } from "$lib/components";
 	import { getApollo, Mutations } from "$lib/graphql";
@@ -12,7 +12,8 @@
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
-    import type { PageData } from './$types';
+    import type { PageData } from "./$types";
+	import UserButton from "./UserButton.svelte";
 
 	function cloneRoleData(data: PageData["role"]) {
 		return {
@@ -20,7 +21,7 @@
 			primary: data.primary,
 			permissions: data.permissions,
 			discordId: data.discordId
-		}
+		};
 	}
 
 	function checkIfDirty(source: PageData["role"], mutable: ReturnType<typeof cloneRoleData>) {
@@ -38,26 +39,27 @@
     export let data: PageData;
 	let editData = cloneRoleData(data.role);
 
-	const { canNavigate, initNavigation } = preventNavigation()
+	const { canNavigate, initNavigation } = preventNavigation();
 
 	let isDirty = false;
 	$: {
-		isDirty = checkIfDirty(data.role, editData)
-		canNavigate.set(!isDirty)
+		isDirty = checkIfDirty(data.role, editData);
+		canNavigate.set(!isDirty);
 	}
 
 	function checkIfCanToggleAdmin(roles: PageData["roles"], role: PageData["role"], user: GetCurrentUserQuery["user"]) {
 		if (!user) return false;
 		if (!hasAdmin(user.permissions)) return false;
+		if (role.default) return false;
 
-		const userRoles = [user.primaryRole, ...user.roles]
-		const adminRoles = roles.filter(r => !!userRoles.find(r2 => r2.id === r.id) && hasAdmin(r.permissions))
-		if (adminRoles.length === 0) return false; // somehow?
-		if (adminRoles.length > 1) return true;
-		return adminRoles[0].id != role.id
+		const userRoles = [user.primaryRole, ...user.roles];
+		const adminRoles = roles.filter(r => !!userRoles.find(r2 => r2.id === r.id) && hasAdmin(r.permissions));
+		if (adminRoles.length === 0) return true; // root admin user
+		if (adminRoles.length > 1) return true; // user has multiple admin roles, let them toggle it
+		return adminRoles[0].id != role.id;
 	}
 
-	$: canToggleAdmin = checkIfCanToggleAdmin(data.roles, data.role, $user.data)
+	$: canToggleAdmin = checkIfCanToggleAdmin(data.roles, data.role, $user.data);
 
 	const validator = new FieldValidator();
 
@@ -87,7 +89,7 @@
 			return;
 		}
 
-		await invalidateAll()
+		await invalidateAll();
 		data = {
 			...data, 
 			role: {
@@ -179,27 +181,25 @@
 			</TabItem>
 			<TabItem title="Permissions" open={$page.url.hash === "#permissions"} on:click={() => window.location.hash = "#permissions"}>
 				<PermissionToggles disableToggles={{ [Permission.Admin]: !canToggleAdmin }} bind:permissions={editData.permissions} let:info let:checked>
-					{#if info.permission === Permission.Admin && checked && !canToggleAdmin}
-						<Tooltip>
-							<ExclamationCircleSolid slot="icon" class="ms-2 text-orange-400" />
-							You cannot remove admin from this role as this is the only role that gives you admin
-						</Tooltip>
+					{#if info.permission === Permission.Admin && !canToggleAdmin}
+						{#if data.role.default}
+							<Tooltip>
+								<ExclamationCircleSolid slot="icon" class="ms-2 text-orange-400" />
+								You cannot give admin permissions to the default primary role
+							</Tooltip>
+						{:else if checked}
+							<Tooltip>
+								<ExclamationCircleSolid slot="icon" class="ms-2 text-orange-400" />
+								You cannot remove admin from this role as this is the only role that gives you admin
+							</Tooltip>
+						{/if}
 					{/if}
 				</PermissionToggles>
 			</TabItem>
 			<TabItem title="Users ({data.role.users.length})" open={$page.url.hash === "#users"} on:click={() => window.location.hash = "#users"}>
 				<div class="flex flex-col gap-1 p-4 max-h-screen overflow-y-auto">
 					{#each data.role.users as user}
-						<div class="flex justify-between items-center p-2 pe-4 rounded cursor-pointer dark:hover:bg-gray-800">
-							<div class="flex items-center gap-2">
-								<Avatar rounded size="sm" src={user.avatarUrl} />
-								<span class="text-md font-semibold dark:text-white">{user.name}</span>
-							</div>
-							<Tooltip>
-								<CloseCircleSolid slot="icon" class="remove-user dark:text-gray-400 dark:hover:text-white" />
-								Remove User
-							</Tooltip>
-						</div>
+						<UserButton role={data.role} {user} />
 					{/each}
 				</div>
 			</TabItem>
@@ -222,3 +222,4 @@
 		</Button>
 	</div>
 </div>
+

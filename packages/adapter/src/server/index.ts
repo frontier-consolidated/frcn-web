@@ -2,14 +2,14 @@ import { env } from "ENV";
 import { handler, on_start } from "HANDLER";
 import polka from "polka";
 
-export const path = env('SOCKET_PATH', false);
-export const host = env('HOST', '0.0.0.0');
-export const port = env('PORT', !path && '3000');
+export const path = env("SOCKET_PATH", false);
+export const host = env("HOST", "0.0.0.0");
+export const port = env("PORT", !path && "3000");
 
-const shutdown_timeout = parseInt(env('SHUTDOWN_TIMEOUT', '30'));
-const idle_timeout = parseInt(env('IDLE_TIMEOUT', '0'));
-const listen_pid = parseInt(env('LISTEN_PID', '0'));
-const listen_fds = parseInt(env('LISTEN_FDS', '0'));
+const shutdown_timeout = parseInt(env("SHUTDOWN_TIMEOUT", "30"));
+const idle_timeout = parseInt(env("IDLE_TIMEOUT", "0"));
+const listen_pid = parseInt(env("LISTEN_PID", "0"));
+const listen_fds = parseInt(env("LISTEN_FDS", "0"));
 // https://www.freedesktop.org/software/systemd/man/latest/sd_listen_fds.html
 const SD_LISTEN_FDS_START = 3;
 
@@ -37,7 +37,7 @@ if (socket_activation) {
 	});
 } else {
 	server.listen({ path, host, port }, async () => {
-		console.log(`Listening on ${path ? path : host + ':' + port}`);
+		console.log(`Listening on ${path ? path : host + ":" + port}`);
 		await on_start();
 	});
 }
@@ -65,7 +65,7 @@ function shutdown() {
 }
 
 server.server.on(
-	'request',
+	"request",
 	/** @param {import('node:http').IncomingMessage} req */
 	(req) => {
 		requests++;
@@ -74,7 +74,7 @@ server.server.on(
 			idle_timeout_id = clearTimeout(idle_timeout_id);
 		}
 
-		req.on('close', () => {
+		req.on("close", () => {
 			requests--;
 
 			if (requests === 0 && shutdown_timeout_id) {
@@ -89,7 +89,7 @@ server.server.on(
 	}
 );
 
-process.on('SIGTERM', shutdown);
-process.on('SIGINT', shutdown);
+process.on("SIGTERM", shutdown);
+process.on("SIGINT", shutdown);
 
 export { server };

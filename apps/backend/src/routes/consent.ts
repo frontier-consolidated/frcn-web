@@ -7,22 +7,22 @@ export default function route(context: Context, config: RouteConfig) {
 			action?: "reject" | "necessary" | "all";
 		};
 
-		action ??= "reject"
+		action ??= "reject";
 		if (action === "reject") {
-			res.clearCookie(config.consent.cookie)
+			res.clearCookie(config.consent.cookie);
 		} else {
-			const trimmedAction = action.toLowerCase().trim()
+			const trimmedAction = action.toLowerCase().trim();
 			if (!["necessary", "all"].includes(trimmedAction)) {
-				return res.sendStatus(400)
+				return res.sendStatus(400);
 			}
 			res.cookie(config.consent.cookie, trimmedAction, {
                 maxAge: 400 * 24 * 3600 * 1000,
-                domain: getDomain(),
+                domain: getDomain(true),
                 sameSite: "lax",
                 httpOnly: true,
                 secure: req.secure
-			})
+			});
 		}
-		res.sendStatus(200)
+		res.sendStatus(200);
 	});
 }

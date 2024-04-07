@@ -4,6 +4,6 @@ const adminPermissions = [
     Permission.Admin,
     Permission.ManageRoles,
     Permission.ManageSystem
-]
+];
 
-export default adminPermissions
+export default adminPermissions;
