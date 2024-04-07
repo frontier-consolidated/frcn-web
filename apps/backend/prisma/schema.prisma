@@ -25,6 +25,7 @@ model SystemSettings {
   updatedAt             DateTime      @updatedAt @map("updated_at")
   createdAt             DateTime      @default(now()) @map("created_at")
 
+  @@index([unique])
   @@map("settings")
   @@schema("system")
 }
@@ -231,6 +232,7 @@ model Event {
   updatedAt             DateTime                      @updatedAt @map("updated_at")
   createdAt             DateTime                      @default(now()) @map("created_at")
 
+  @@index([startAt, posted])
   @@map("events")
   @@schema("events")
 }
@@ -328,6 +330,7 @@ model ContentContainer {
   updatedAt     DateTime               @updatedAt @map("updated_at")
   createdAt     DateTime               @default(now()) @map("created_at")
 
+  @@index([parentId])
   @@map("container")
   @@schema("cms")
 }
