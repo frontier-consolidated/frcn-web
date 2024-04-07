@@ -8,7 +8,7 @@ export const prerender = false;
 
 export const GET: RequestHandler = async ({ locals }) => {
     const headers: HeadersInit = {
-        "Cache-Control": "private, s-maxage=120, max-age=600, must-revalidate"
+        "Cache-Control": "private, must-revalidate, max-age=600"
     };
 
     if (locals.user && hasPermission(locals.user.permissions, Permission.ManageRoles)) {

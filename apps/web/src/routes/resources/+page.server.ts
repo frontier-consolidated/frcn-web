@@ -3,11 +3,11 @@ import { isRedirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types";
 import { getResources } from "./helpers";
 
-export const load = (async ({ locals, url, depends }) => {
+export const load = (async ({ locals, url, depends, setHeaders }) => {
     depends("app:resources");
 
     try {
-        return await getResources(locals.apollo, url);
+        return await getResources(locals.apollo, url, setHeaders);
     } catch (err) {
         if (isRedirect(err)) {
             throw err;
