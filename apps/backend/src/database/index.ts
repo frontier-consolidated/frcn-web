@@ -32,9 +32,9 @@ const database = prisma;
 export type Transaction = Omit<typeof database, ITXClientDenyList>;
 
 export async function seedDatabase() {
-	logger.log("Seeding database...");
+	logger.info("Seeding database...");
 	await seed(database);
-	logger.log("Seeding database completed");
+	logger.info("Seeding database completed");
 }
 
 export { database };
