@@ -13,7 +13,7 @@ export const middleware: MiddlewareHandler = function ({ session: config, domain
 		cookie: {
 			domain,
 			httpOnly: true,
-			sameSite: "strict",
+			sameSite: "lax",
 			secure: "auto",
 			maxAge: SESSION_MAX_AGE,
 		},
