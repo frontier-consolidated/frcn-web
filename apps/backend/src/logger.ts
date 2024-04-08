@@ -76,6 +76,7 @@ function internal_log(stream: NodeJS.WriteStream, ...params: any[]) {
         colors: true,
         depth: 3,
         maxArrayLength: 10,
+        compact: true,
     }, `${message}${args.length > 0 ? "\n" : ""}`, ...args).trimEnd();
 
 
@@ -138,7 +139,7 @@ function audit(actor: User | AccessKey | GQLContext, message: string, data?: any
     msg.push(style(resolvedActor.name, { fg: "white", modifier: "bright" }));
     msg.push(message);
 
-    log(style(msg.join(" "), { fg: "cyan" }), JSON.stringify({ actor: resolvedActor, data }, null, 2).replace(/\s+/g, " "));
+    log(style(msg.join(" "), { fg: "cyan" }), { actor: resolvedActor, data });
 }
 
 function requestDetails(req: Request) {
