@@ -20,7 +20,7 @@ export const prisma = new PrismaClient({
 });
 
 prisma.$on("query", event => {
-	logger.log(`[DATABASE] Query to ${event.target} that took ${event.duration}ms`, { query: event.query, params: event.params });
+	logger.log(`[DATABASE] Query that took ${event.duration}ms`, { query: event.query, params: event.params });
 });
 
 prisma.$on("error", event => {
