@@ -23,7 +23,7 @@ export const middleware: MiddlewareHandler = function ({ consent: config, sessio
             res.cookie(config.cookie, consentValue, {
                 maxAge: 400 * 24 * 3600 * 1000,
                 domain,
-                sameSite: "lax",
+                sameSite: "strict",
                 httpOnly: true,
                 secure: req.secure
 			});
