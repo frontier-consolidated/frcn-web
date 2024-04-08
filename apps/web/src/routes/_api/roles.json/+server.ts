@@ -8,7 +8,7 @@ import type { RequestHandler } from "./$types";
 
 export const prerender = false;
 
-export const GET: RequestHandler = async ({ locals }) => {
+export const GET: RequestHandler = async ({ locals, request }) => {
     let roles: GetAllRolesQuery["roles"] = [];
     if (locals.user && hasPermission(locals.user.permissions, Permission.ManageRoles)) {
         const { data: rolesData, errors } = await locals.apollo.query({
@@ -26,8 +26,14 @@ export const GET: RequestHandler = async ({ locals }) => {
     const data = JSON.stringify({ roles });
     const etag = createETag(data);
 
+    if (request.headers.get("if-none-match") === etag) {
+        return new Response(null, {
+            status: 304
+        });
+    }
+
     const headers: HeadersInit = {
-        "Cache-Control": "private, must-revalidate, max-age=600",
+        "Cache-Control": "private, must-revalidate, max-age=30",
         "ETag": etag
     };
     
