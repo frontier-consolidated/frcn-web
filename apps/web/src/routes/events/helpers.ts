@@ -34,10 +34,9 @@ export async function getEvents(apollo: TypedApolloClient, url: URL) {
     let variables: GetEventsQueryVariables;
 
     const view = url.searchParams.get("view");
-    const monthTimestamp = Number(url.searchParams.get("month"));
 
     if (view === "calendar") {
-        const initDate = new Date(isNaN(monthTimestamp) ? Date.now() : monthTimestamp);
+        const initDate = new Date(url.searchParams.get("month") ?? Date.now());
         const date = new Date(initDate.getFullYear(), initDate.getMonth());
 
         variables = {

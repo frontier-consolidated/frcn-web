@@ -1,7 +1,7 @@
 import { dates, strings } from "@frcn/shared";
 import { getEmojiByName } from "@frcn/shared/emojis";
 import type { Event } from "@prisma/client";
-import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadChannel } from "discord.js";
+import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadChannel, escapeMarkdown } from "discord.js";
 
 import { database } from "../../database";
 import { getWebURL } from "../../env";
@@ -81,17 +81,17 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 						role.emoji === role.emojiId
 							? `:${role.emoji}:`
 							: `<:${role.emoji}:${role.emojiId}>`
-					} ${role.name} (${members.length}${role.limit > 0 ? `/${role.limit}` : ""})`,
+					} ${escapeMarkdown(role.name)} (${members.length}${role.limit > 0 ? `/${role.limit}` : ""})`,
 					value:
 						members.length > 0
-							? `>>> ${members.map((member) => member.user!.discordName).join("\n")}`
+							? `>>> ${escapeMarkdown(members.map((member) => member.user!.discordName).join("\n"))}`
 							: " ",
 					inline: true,
 				};
 			})
 		)
 		.setFooter({
-			text: `Created by ${event.owner?.discordName ?? "[DELETED USER]"}`,
+			text: `Created by ${escapeMarkdown(event.owner?.discordName ?? "[DELETED USER]")}`,
 		});
 
 	if (event.imageUrl) eventEmbed.setImage(event.imageUrl);
