@@ -16,10 +16,13 @@
 	import EventCard from "./EventCard.svelte";
 	import { createEvent } from "./helpers";
 
+    function toMonthString(value: Date) {
+        return `${value.getFullYear()}-${(value.getMonth() + 1).toString().padStart(2, "0")}`;
+    }
 
     function getDefaultViewMonth() {
         const now = new Date();
-        return new Date(now.getFullYear(), now.getMonth());
+        return new Date(toMonthString(now));
     }
 
     function getToday() {
@@ -40,12 +43,10 @@
     const viewMonth = queryParam("month", {
         decode(value) {
             if (!value) return getDefaultViewMonth();
-            const timestamp = Number(value);
-            if (isNaN(timestamp)) return getDefaultViewMonth();
-            return new Date(timestamp);
+            return new Date(value);
         },
         encode(value) {
-            return value.getTime().toString();
+            return toMonthString(value);
         },
         defaultValue: getDefaultViewMonth()
     }) as Writable<Date>;
