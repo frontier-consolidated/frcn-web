@@ -4,7 +4,7 @@
   "type": "module",
   "license": "MPL-2.0",
   "scripts": {
-    "setup": "pnpm --config.dedupe-peer-dependents=false --filter ./packages/adapter install && pnpm --filter ./packages/adapter build && pnpm install ",
+    "setup": "pnpm --config.dedupe-peer-dependents=false --filter ./packages/adapter install && pnpm --filter ./packages/adapter build && pnpm install && pnpm run --filter=./packages/** build",
     "backend:dev": "cd apps/backend && pnpm dev",
     "web:dev": "cd apps/web && pnpm dev",
     "lint": "eslint ."
