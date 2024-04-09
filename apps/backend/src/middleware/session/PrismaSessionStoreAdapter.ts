@@ -118,7 +118,7 @@ export default class PrismaSessionStoreAdapter extends Store {
 
 	destroy(sid: string, callback?: ((err?: any) => void) | undefined): void {
 		this.db.userSession
-			.delete({
+			.deleteMany({
 				where: { sid },
 			})
 			.then(() => callback && callback())
