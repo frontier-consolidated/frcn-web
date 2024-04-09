@@ -86,17 +86,21 @@ export async function createApp(config: CreateAppOptions) {
             }
         }, 1000);
 
-        req.on("end", () => {
+        let ended = false;
+        function end() {
+            if (ended) return;
+            ended = true;
             clearInterval(interval);
-        });
 
-        req.on("error", () => {
-            clearInterval(interval);
-        });
+            // ignore graphql requests as we log those elsewhere
+            if (req.url === getBasePath() + "/graphql") return;
 
-        res.on("finish", () => {
-            clearInterval(interval);
-        });
+            logger.log("HTTP request:", { status: res.statusCode, ...logger.requestDetails(req) });
+        }
+
+        req.once("end", end);
+        req.once("error", end);
+        res.once("finish", end);
 
         next();
     });

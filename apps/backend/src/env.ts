@@ -86,7 +86,7 @@ function expectEnvvar(envvar: keyof NodeJS.ProcessEnv) {
 }
 
 export function validateEnvironment() {
-	logger.log("Validating environment...");
+	logger.info("Validating environment...");
 
 	assert(!isNaN(getPort()), "Environment: Expected 'PORT' to be a number"); // PORT
 	assert(!isNaN(getExternalPort()), "Environment: Expected 'EXTERNAL_PORT' to be a number"); // EXTERNAL_PORT
@@ -121,5 +121,5 @@ export function validateEnvironment() {
 	expectEnvvar("AWS_S3_KEY");
 	expectEnvvar("AWS_S3_SECRET");
 
-	logger.log("No issues with environment found");
+	logger.info("No issues with environment found");
 }
