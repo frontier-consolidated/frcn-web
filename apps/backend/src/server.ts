@@ -87,8 +87,8 @@ const usageThresholds = {
 		severe: 50
 	},
 	memory: {
-		warning: 250_000_000,
-		severe: 300_000_000
+		warning: 400_000_000,
+		severe: 600_000_000
 	},
 };
 
