@@ -1,18 +1,18 @@
-<svg width="461" height="512" viewBox="0 0 461 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M216.752 0L166.878 239.881H114.729L170.481 36.2193L216.752 0Z" fill="white"/>
-<path d="M133.313 113.019L93.1102 255.052H163.464L152.655 308.907H0L92.5413 172.942L68.4578 177.304L133.313 113.019Z" fill="white"/>
-<path d="M5.30975 322.75H157.775L182.049 376.604H98.42L160.999 512L84.0078 447.905L107.902 452.267L5.30975 322.75Z" fill="white"/>
-<path d="M244.248 0L294.122 239.881H346.271L290.519 36.2193L244.248 0Z" fill="white"/>
-<path d="M327.687 113.019L367.89 255.052H297.536L308.345 308.907H461L368.459 172.942L392.542 177.304L327.687 113.019Z" fill="white"/>
-<path d="M455.69 322.75H303.225L278.951 376.604H362.58L300.001 512L376.992 447.905L353.098 452.267L455.69 322.75Z" fill="white"/>
-<path d="M222.441 44.3733V426.856L168.205 309.096L222.441 44.3733Z" fill="url(#paint0_linear_1_7)"/>
-<path d="M238.559 44.3733V426.856L292.795 309.096L238.559 44.3733Z" fill="url(#paint1_linear_1_7)"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M241.752 0L191.878 239.881H139.729L195.481 36.2193L241.752 0Z" fill="white"/>
+<path d="M158.313 113.019L118.11 255.052H188.464L177.655 308.907H25L117.541 172.942L93.4578 177.304L158.313 113.019Z" fill="white"/>
+<path d="M30.3097 322.75H182.775L207.049 376.604H123.42L185.999 512L109.008 447.905L132.902 452.267L30.3097 322.75Z" fill="white"/>
+<path d="M269.248 0L319.122 239.881H371.271L315.519 36.2193L269.248 0Z" fill="white"/>
+<path d="M352.687 113.019L392.89 255.052H322.536L333.345 308.907H486L393.459 172.942L417.542 177.304L352.687 113.019Z" fill="white"/>
+<path d="M480.69 322.75H328.225L303.951 376.604H387.58L325.001 512L401.992 447.905L378.098 452.267L480.69 322.75Z" fill="white"/>
+<path d="M247.441 44.3733V426.856L193.205 309.096L247.441 44.3733Z" fill="url(#paint0_linear_42_2)"/>
+<path d="M263.559 44.3733V426.856L317.795 309.096L263.559 44.3733Z" fill="url(#paint1_linear_42_2)"/>
 <defs>
-<linearGradient id="paint0_linear_1_7" x1="230.5" y1="0" x2="230.5" y2="512" gradientUnits="userSpaceOnUse">
+<linearGradient id="paint0_linear_42_2" x1="255.5" y1="0" x2="255.5" y2="512" gradientUnits="userSpaceOnUse">
 <stop stop-color="#34A0D5"/>
 <stop offset="1" stop-color="#0264F1"/>
 </linearGradient>
-<linearGradient id="paint1_linear_1_7" x1="230.5" y1="0" x2="230.5" y2="512" gradientUnits="userSpaceOnUse">
+<linearGradient id="paint1_linear_42_2" x1="255.5" y1="0" x2="255.5" y2="512" gradientUnits="userSpaceOnUse">
 <stop stop-color="#34A0D5"/>
 <stop offset="1" stop-color="#0264F1"/>
 </linearGradient>
