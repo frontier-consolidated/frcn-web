@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import util from "util";
+
 import type { AccessKey, User } from "@prisma/client";
 import type { Request } from "express";
+
 
 import { isProd } from "./env";
 import type { GQLContext } from "./graphql/context";
@@ -67,35 +70,49 @@ function get_primary_message(...args: any[]) {
     return [message, args];
 }
 
-function debug(...params: any[]) {
-    if (isProd()) return;
+function internal_log(stream: NodeJS.WriteStream, ...params: any[]) {
     const [message, args] = get_primary_message(...params);
+    const log = util.formatWithOptions({
+        colors: true,
+        depth: 3,
+        maxArrayLength: 10,
+        compact: true,
+    }, `${message}${args.length > 0 ? "\n" : ""}`, ...args).trimEnd();
 
-    console.debug(`(${new Date().toISOString()}) ${style(`[DEBUG] ${message}`, { fg: "gray" })}${args.length > 0 ? "\n" : ""}`, ...args);
+
+    // if (log === previousLog) {
+    //     stream.cursorTo(0);
+    //     stream.write(`(${new Date().toISOString()}) ` + log + ` ${style(`x${repeatLogCount}`, { fg: "gray" })} ${stream.rows}\n`);
+    //     return;
+    // }
+
+    stream.write(`(${new Date().toISOString()}) ` + log + "\n");
 }
 
 function log(...params: any[]) {
-    const [message, args] = get_primary_message(...params);
+    internal_log(process.stdout, ...params);
+}
 
-    console.log(`(${new Date().toISOString()}) ${message}${args.length > 0 ? "\n" : ""}`, ...args);
+function debug(...params: any[]) {
+    if (isProd()) return;
+
+    const [message, args] = get_primary_message(...params);
+    internal_log(process.stdout, style(`[DEBUG] ${message}`, { fg: "gray" }), ...args);
 }
 
 function info(...params: any[]) {
     const [message, args] = get_primary_message(...params);
-
-    console.info(`(${new Date().toISOString()}) [INFO] ${message}${args.length > 0 ? "\n" : ""}`, ...args);
+    internal_log(process.stdout, `[INFO] ${message}`, ...args);
 }
 
 function warn(...params: any[]) {
     const [message, args] = get_primary_message(...params);
-
-    console.warn(`(${new Date().toISOString()}) ${style("[WARN]", { fg: "yellow" })} ${message}${args.length > 0 ? "\n" : ""}`, ...args);
+    internal_log(process.stdout, `${style("[WARN]", { fg: "yellow" })} ${message}`, ...args);
 }
 
 function error(...params: any[]) {
     const [message, args] = get_primary_message(...params);
-
-    console.error(`(${new Date().toISOString()}) ${style("[ERROR]", { fg: "red" })} ${message}${args.length > 0 ? "\n" : ""}`, ...args);
+    internal_log(process.stderr, `${style("[ERROR]", { fg: "red" })} ${message}`, ...args);
 }
 
 function audit(actor: User | AccessKey | GQLContext, message: string, data?: any) {
@@ -122,7 +139,7 @@ function audit(actor: User | AccessKey | GQLContext, message: string, data?: any
     msg.push(style(resolvedActor.name, { fg: "white", modifier: "bright" }));
     msg.push(message);
 
-    log(style(msg.join(" "), { fg: "cyan" }), JSON.stringify({ actor: resolvedActor, data }, null, 2).replace(/\s+/g, " "));
+    log(style(msg.join(" "), { fg: "cyan" }), { actor: resolvedActor, data });
 }
 
 function requestDetails(req: Request) {
