@@ -62,6 +62,10 @@
 						}
 
 						await invalidate("app:currentevent");
+						pushNotification({
+							type: "success",
+							message: "Successfully ended the event",
+						});
 					}}
 				/>
 			{/if}

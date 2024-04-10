@@ -75,6 +75,10 @@
 
 				event.rsvp = null;
 				event.members = event.members.filter(m => m.user.id !== $user.data?.id);
+				pushNotification({
+					type: "success",
+					message: "UnRSVPed for event",
+				});
 			}}>
 				<ArrowLeftToBracketOutline class="me-2" tabindex="-1" /> Leave Event
 			</DropdownItem>
@@ -99,6 +103,10 @@
 					}
 
 					event.members = event.members.filter(m => m.id !== member.id);
+					pushNotification({
+						type: "success",
+						message: "Kicked user from event",
+					});
 				}}>
 					<UserRemoveSolid class="me-2" tabindex="-1" /> Kick Member
 				</DropdownItem>

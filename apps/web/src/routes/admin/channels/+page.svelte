@@ -32,7 +32,13 @@
 	}
 
     async function save() {
-        if (!validator.validate()) return;
+        if (!validator.validate()) {
+			pushNotification({
+				type: "error",
+				message: "Check your inputs",
+			});
+			return;
+		}
 
 		const { data: updatedData, errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_SYSTEM_SETTINGS,
@@ -73,7 +79,13 @@
     let modalData = createModalData();
 
     async function createEventChannel() {
-        if (!validator.validate()) return;
+        if (!validator.validate()) {
+			pushNotification({
+				type: "error",
+				message: "Check your inputs",
+			});
+			return;
+		}
 
         const { errors } = await getApollo().mutate({
 			mutation: Mutations.CREATE_EVENT_CHANNEL,

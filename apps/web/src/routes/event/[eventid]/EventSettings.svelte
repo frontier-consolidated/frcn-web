@@ -47,9 +47,21 @@
 	let deleteModalOpen = false;
 	let archiveModalOpen = false;
 
-	async function save() {
-		if (!validator.validate(!data.posted)) return false;
-		if (editData.location.some(loc => !loc)) return false;
+	async function save(notifyOfSuccess = true) {
+		if (!validator.validate(!data.posted)) {
+			pushNotification({
+				type: "error",
+				message: "Check your inputs",
+			});
+			return false;
+		}
+		if (editData.location.some(loc => !loc)) {
+			pushNotification({
+				type: "error",
+				message: "Invalid location",
+			});
+			return false;
+		}
 		
 		const { data: updatedData, errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_EVENT,
@@ -99,14 +111,25 @@
 			: null;
 		data = { ...data, ...updatedData?.event, location } as PageData;
 		editData = cloneEventSettingsData(data);
+
+		if (notifyOfSuccess) {
+			pushNotification({
+				type: "success",
+				message: "Event successfully saved!",
+			});
+		}
 		return true;
 	}
 
 	async function post() {
-		if (!validator.validate()) return false;
-		if (isDirty) {
-			if (!(await save())) return;
+		if (!validator.validate()) {
+			pushNotification({
+				type: "error",
+				message: "Check your inputs",
+			});
+			return false;
 		}
+		if (isDirty && !(await save(false))) return false;
 
 		const { data: postData, errors } = await getApollo().mutate({
 			mutation: Mutations.POST_EVENT,
@@ -126,6 +149,10 @@
 		}
 
 		await invalidate("app:currentevent");
+		pushNotification({
+			type: "success",
+			message: "Event successfully posted!",
+		});
 		return true;
 	}
 </script>
