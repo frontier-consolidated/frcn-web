@@ -2,7 +2,7 @@ import type { Event } from "@prisma/client";
 import { type BaseMessageOptions, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
 import { getWebURL } from "../../env";
-import { EventReminder } from "../../graphql/schema/resolvers/Event";
+import { EventReminder } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
 
 const reminderButtonText = {
