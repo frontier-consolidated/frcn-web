@@ -12,6 +12,12 @@ async function getRole(id: string) {
 	});
 }
 
+async function getRoleByDiscordId(id: string) {
+	return await database.userRole.findUnique({
+		where: { discordId: id }
+	});
+}
+
 async function getAllRoles<T extends Prisma.UserRoleFindManyArgs>(args?: Prisma.SelectSubset<T, Prisma.UserRoleFindManyArgs>) {
 	return await database.userRole.findMany<T>(args);
 }
@@ -271,6 +277,7 @@ function resolvePermissions(roles: UserRole[]) {
 
 export const $roles = {
 	getRole,
+	getRoleByDiscordId,
 	getAllRoles,
 	sort,
 	getDefaultPrimaryRole,

@@ -23,6 +23,18 @@ export function load(client: Client) {
         }
     });
 
+    client.on("guildMemberUpdate", async (oldMember, newMember) => {
+        const user = await $users.getUserByDiscordId(newMember.user.id);
+        if (!user) return;
+
+        // const { added, removed } = $discord.getGuildMemberRoleDiffs(oldMember.roles, newMember.roles)
+
+        // for (const role of added) {
+        //     const userRole 
+        // }
+        // newMember.roles.
+    });
+
     client.on("guildMemberRemove", async (member) => {
         const user = await $users.getUserByDiscordId(member.user.id);
         if (!user) return;
