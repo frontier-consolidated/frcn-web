@@ -2,13 +2,16 @@
 	import { browser } from "$app/environment";
 	import { indentWithTab } from "@codemirror/commands";
 	import { markdown } from "@codemirror/lang-markdown";
-	import { indentUnit, syntaxHighlighting, defaultHighlightStyle } from "@codemirror/language";
+	import { indentUnit } from "@codemirror/language";
 	import { EditorState, StateEffect, type Extension } from "@codemirror/state";
 	import { EditorView, keymap, placeholder as placeholderExt, type KeyBinding } from "@codemirror/view";
-	import { githubDarkInit } from "@uiw/codemirror-theme-github";
+	import { Autolink, Strikethrough, Emoji } from "@lezer/markdown";
 	import { Spinner } from "flowbite-svelte";
 	import { createEventDispatcher, getContext, onDestroy, onMount } from "svelte";
 	import { twMerge } from "tailwind-merge";
+
+	import { Underline } from "./extensions";
+	import { darkTheme } from "./theme/dark";
 
 	export let value = "";
 	
@@ -40,15 +43,14 @@
 		markdown({
 			completeHTMLTags: true,
 			addKeymap: true,
+			extensions: [
+				Strikethrough,
+				Underline,
+				Autolink,
+				Emoji
+			]
 		}),
-		githubDarkInit({
-			settings: {
-				background: "transparent",
-				foreground: "#ffffff",
-				fontFamily: "inherit",
-			},
-		}),
-		syntaxHighlighting(defaultHighlightStyle),
+		darkTheme,
 	].filter((e): e is Extension => !!e);
 	$: view && update(value);
 	$: view && state_extensions && reconfigure();
@@ -110,7 +112,10 @@
 	  });
 	}
 
-	let divClass = twMerge("w-full rounded border border-gray-200 dark:border-gray-600 text-sm focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 overflow-hidden overflow-y-auto resize-y bg-gray-50 text-gray-900 dark:text-white [&_.cm-placeholder]:text-gray-400 [&_.cm-editor]:p-2.5 [&_.cm-editor]:h-full [&_.cm-content]:p-0 [&_.cm-line]:pl-0", background ? "dark:bg-gray-600" : "dark:bg-gray-700", clazz);
+	let paddingClass = "[&_.cm-editor]:p-2.5 [&_.cm-editor]:h-full [&_.cm-content]:p-0 [&_.cm-line]:pl-0";
+	let placeholderClass = "[&_.cm-placeholder]:text-gray-400";
+	let urlClass = "[&_.ͼurl]:text-primary-600 dark:[&_.ͼurl]:text-primary-500";
+	let divClass = twMerge("w-full rounded border border-gray-200 dark:border-gray-600 text-sm focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 overflow-hidden overflow-y-auto resize-y bg-gray-50 text-gray-900 dark:text-white", background ? "dark:bg-gray-600" : "dark:bg-gray-700", paddingClass, placeholderClass, urlClass, clazz);
 </script>
 
 {#if browser}
