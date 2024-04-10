@@ -118,7 +118,13 @@
 
 	async function save() {
 		if (!data) return;
-		if (!validator.validate()) return;
+		if (!validator.validate()) {
+			pushNotification({
+				type: "error",
+				message: "Check your inputs",
+			});
+			return;
+		}
 
 		const { errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_RESOURCE,
