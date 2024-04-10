@@ -232,6 +232,8 @@
 				</Field>
 			</div>
 		</section>
+	</div>
+	<div>
 		<section>
 			<SectionHeading>
 				Event Time
@@ -258,8 +260,6 @@
 				</Field>
 			</div>
 		</section>
-	</div>
-	<div>
 		<section>
 			<SectionHeading>
 				Event Location
