@@ -111,9 +111,32 @@ async function handleEventRsvp(interaction: ButtonInteraction | AnySelectMenuInt
         });
         return;
     }
+    
+    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client);
+    const currentRsvp = await $events.getUserRsvp(event, user);
+
+    if (interaction.customId === "unrsvp") {
+        await $events.unrsvpForEvent(event, user, interaction.client);
+
+        const payload = buildUnrsvpMessage();
+        await interaction.editReply({
+            ...payload,
+        });
+
+        return;
+    }
+
+    if (interaction.customId !== "select-rsvp" || !interaction.isStringSelectMenu()) {
+        await interaction.editReply({ 
+            ...buildErrorMessage("Action failed! Unknown event interaction"),
+        });
+        return;
+    }
+
+    const roleId = interaction.values[0];
 
     const roles = await $events.getRSVPRoles(event.id);
-    const role = roles.find(r => r.id === interaction.customId);
+    const role = roles.find(r => r.id === roleId);
     if (!role) {
         await interaction.editReply({
             ...buildErrorMessage("Action failed! Could not find rsvp role in event"),
@@ -121,17 +144,7 @@ async function handleEventRsvp(interaction: ButtonInteraction | AnySelectMenuInt
         return;
     }
     
-    const user = await $users.getOrCreateUser($discord.convertDJSUserToAPIUser(interaction.user), interaction.client);
-    const currentRsvp = await $events.getUserRsvp(event, user);
-
-    if (currentRsvp && currentRsvp.rsvpId && role.id === currentRsvp.rsvpId && !currentRsvp.pending) {
-        await $events.unrsvpForEvent(event, user, interaction.client);
-
-        const payload = buildUnrsvpMessage();
-        await interaction.editReply({
-            ...payload,
-        });
-    } else if (!(await $events.canJoinRsvp(role))) {
+    if (!(await $events.canJoinRsvp(role))) {
         await interaction.editReply({
             ...buildErrorMessage(`RSVP __${role.emoji === role.emojiId ? `:${role.emoji}:` : `<:${role.emoji}:${role.emojiId}>`} ${role.name}__ is full`),
         });
