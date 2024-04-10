@@ -1,7 +1,7 @@
 import { dates, strings } from "@frcn/shared";
 import { getEmojiByName } from "@frcn/shared/emojis";
 import type { Event } from "@prisma/client";
-import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadChannel, escapeMarkdown } from "discord.js";
+import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadChannel, escapeMarkdown, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 
 import { database } from "../../database";
 import { getWebURL } from "../../env";
@@ -96,42 +96,54 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 
 	if (event.imageUrl) eventEmbed.setImage(event.imageUrl);
 
-	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
+	const rsvpSelect = new StringSelectMenuBuilder()
+		.setCustomId("select-rsvp")
+		.setPlaceholder("Select RSVP");
+	
 	for (const role of event.roles) {
-		const button = new ButtonBuilder()
-			.setCustomId(role.id)
+		const option = new StringSelectMenuOptionBuilder()
+			.setLabel(role.name)
+			.setValue(role.id)
 			.setEmoji(role.emoji === role.emojiId ? getEmojiByName(role.emoji).surrogate : {
 				id: role.emojiId,
 				name: role.emoji,
-			})
-			.setStyle(ButtonStyle.Secondary);
-		
-		const needsLabel = !!event.roles.find(r => r.emojiId === role.emojiId);
-		if (needsLabel) {
-			button.setLabel(role.name);
-		}
+			});
 
-		buttonsRow.addComponents(button);
+		rsvpSelect.addOptions(option);
 	}
+
+	const unrsvpButton = new ButtonBuilder()
+		.setCustomId("unrsvp")
+		.setLabel("UnRSVP")
+		.setStyle(ButtonStyle.Danger);
 
 	const weblinkButton = new ButtonBuilder()
 		.setLabel("View")
 		.setURL(getWebURL(`/event/${event.id}`).href)
 		.setStyle(ButtonStyle.Link);
-	buttonsRow.addComponents(weblinkButton);
+	
+	const selectRow = new ActionRowBuilder<StringSelectMenuBuilder>();
+	selectRow.addComponents(rsvpSelect);
+	
+	const buttonRow = new ActionRowBuilder<ButtonBuilder>();
+	buttonRow.addComponents(unrsvpButton, weblinkButton);
 
 	return {
 		content: event.discordMentions.map(mention => mention === guild.roles.everyone.id ? "@everyone" : `<@&${mention}>`).join(" "),
 		embeds: [eventEmbed],
-		components: [buttonsRow],
+		components: [selectRow, buttonRow],
 	} satisfies BaseMessageOptions;
 }
 
 export async function getEventMessage(client: Client, event: Event) {
 	if (!event.discordEventMessageId) return null;
 
-	const channel = await $events.getEventDiscordChannel(event, client);
-	return await channel.messages.fetch(event.discordEventMessageId);
+	try {
+		const channel = await $events.getEventDiscordChannel(event, client);
+		return await channel.messages.fetch(event.discordEventMessageId);
+	} catch (err) {
+		return null;
+	}
 }
 
 export async function postEventMessage(client: Client, event: Event) {

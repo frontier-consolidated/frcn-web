@@ -10,10 +10,10 @@
 		FlagOutline,
 		ExclamationCircleSolid,
 	} from "flowbite-svelte-icons";
+	import type { ComponentType, SvelteComponent } from "svelte";
 
 	export let category: string;
-	// eslint-disable-next-line no-undef
-	export let categoryIcons: Record<string, string | ConstructorOfATypedSvelteComponent> = {};
+	export let categoryIcons: Record<string, string | ComponentType<SvelteComponent>> = {};
 
 	let icon: any;
 	let imageSrc: string | null = null;

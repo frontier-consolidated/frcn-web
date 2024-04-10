@@ -103,7 +103,13 @@
 	}
 
     async function save() {
-        if (!validator.validate()) return;
+        if (!validator.validate()) {
+			pushNotification({
+				type: "error",
+				message: "Check your inputs",
+			});
+			return;
+		}
 
         let promises: Promise<any>[] = [];
         function makeContainerEditPromise(container: CmsContainer) {

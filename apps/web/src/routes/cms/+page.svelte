@@ -25,7 +25,13 @@
     let modalData = createModalData();
 
     async function createIndex() {
-        if (!validator.validate()) return;
+        if (!validator.validate()) {
+			pushNotification({
+				type: "error",
+				message: "Check your inputs",
+			});
+			return;
+		}
 
         const { errors } = await getApollo().mutate({
 			mutation: Mutations.CREATE_CONTENT_CONTAINER,
