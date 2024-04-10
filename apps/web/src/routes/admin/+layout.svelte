@@ -2,6 +2,7 @@
     import { page } from "$app/stores";
     import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from "flowbite-svelte";
 	import { GearSolid, TagSolid, UserGroupSolid, UserHeadsetSolid } from "flowbite-svelte-icons";
+	import type { ComponentType, SvelteComponent } from "svelte";
 
 	import NavigationSelect from "$lib/components/select/NavigationSelect.svelte";
 
@@ -41,8 +42,7 @@
                 }
             ]
         }
-    // eslint-disable-next-line no-undef
-    ] satisfies { name: string, pages: { name: string, href: string, icon?: ConstructorOfATypedSvelteComponent }[] }[];
+    ] satisfies { name: string, pages: { name: string, href: string, icon?: ComponentType<SvelteComponent> }[] }[];
 
     $: activeUrl = $page.url.pathname;
 </script>

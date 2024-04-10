@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { data as defaultEmojis } from "@frcn/shared/emojis";
 	import { Button, Dropdown, Search } from "flowbite-svelte";
+	import type { ComponentType, SvelteComponent } from "svelte";
 	import { twMerge } from "tailwind-merge";
 
 	import EmojiCategoryIcon from "./EmojiCategoryIcon.svelte";
@@ -12,8 +13,7 @@
 
 	export let init: string | undefined = undefined;
 	export let additionalEmojis: Emoji[] = [];
-	// eslint-disable-next-line no-undef
-	export let categoryIcons: Record<string, string | ConstructorOfATypedSvelteComponent> = {};
+	export let categoryIcons: Record<string, string | ComponentType<SvelteComponent>> = {};
 	let emojis = [...additionalEmojis, ...(defaultEmojis.emojis as Emoji[])];
 	$: emojis = [...additionalEmojis, ...(defaultEmojis.emojis as Emoji[])];
 

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Button } from "flowbite-svelte";
+	import type { ComponentType, SvelteComponent } from "svelte";
 	import { twMerge } from "tailwind-merge";
 
 	import EmojiImage from "./EmojiImage.svelte";
@@ -8,8 +9,7 @@
 
 	export let init: string = "white_check_mark";
 	export let additionalEmojis: Emoji[] = [];
-	// eslint-disable-next-line no-undef
-	export let categoryIcons: Record<string, string | ConstructorOfATypedSvelteComponent> = {};
+	export let categoryIcons: Record<string, string | ComponentType<SvelteComponent>> = {};
 	export let value: Emoji | null = null;
 
 	let clazz: string | undefined = undefined;
