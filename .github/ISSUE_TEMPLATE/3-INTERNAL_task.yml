@@ -2,6 +2,7 @@
 name: "[INTERNAL] Task"
 description: Issue template for a Task item
 title: "[Task]: "
+labels: ["feature"]
 projects: ["frontier-consolidated/1"]
 body:
     - type: textarea
