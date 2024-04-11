@@ -9,6 +9,8 @@ on:
             - .gitignore
             - README.md
             - LICENSE
+            - .github/CODEOWNERS
+            - .github/ISSUE_TEMPLATE/**
 
 jobs:
     call-deploy:
