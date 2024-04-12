@@ -104,6 +104,8 @@ export default function route(context: Context, config: RouteConfig) {
 			}
 
 			const user = await $users.getOrCreateUser(discordUser, context.discordClient);
+			await $users.syncRoles(context.discordClient, user);
+			
 			await req.login(user);
 		} catch (err) {
 			if (!redirect_uri) {
