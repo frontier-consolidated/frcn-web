@@ -1,5 +1,5 @@
 import type { User } from "@prisma/client";
-import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuildBasedChannel, type GuildBasedChannel, CategoryChannel, VoiceChannel } from "discord.js";
+import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuildBasedChannel, type GuildBasedChannel, CategoryChannel, VoiceChannel, GuildMemberRoleManager, Role } from "discord.js";
 
 import { $system } from "./system";
 
@@ -199,6 +199,24 @@ async function getEmoji(client: Client, id: string) {
 	}
 }
 
+function getGuildMemberRoleDiffs(oldRoles: GuildMemberRoleManager, newRoles: GuildMemberRoleManager) {
+	const removed: Role[] = [];
+	for (const role of oldRoles.cache.values()) {
+		if (newRoles.cache.has(role.id)) continue;
+		
+		removed.push(role);
+	}
+	
+	const added: Role[] = [];
+	for (const role of newRoles.cache.values()) {
+		if (oldRoles.cache.has(role.id)) continue;
+
+		removed.push(role);
+	}
+
+	return { added, removed };
+}
+
 function convertDJSUserToAPIUser(user: DJSUser) {
 	return {
 		id: user.id,
@@ -225,5 +243,6 @@ export const $discord = {
 	getRole,
 	getAllEmojis,
 	getEmoji,
+	getGuildMemberRoleDiffs,
 	convertDJSUserToAPIUser
 };
