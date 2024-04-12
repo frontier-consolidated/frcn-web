@@ -12,10 +12,17 @@ import { postEventEndMessage } from "../bot/messages/eventStartEnd.message";
 import { postEventUpdateMessage } from "../bot/messages/eventUpdate.message";
 import { database } from "../database";
 import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
-import type { EventReminder } from "../graphql/schema/resolvers/Event";
 import { logger } from "../logger";
 
 const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000;
+
+export enum EventReminder {
+	OnStart = "ON_START",
+	TenMinutesBefore = "TEN_MINUTES",
+	OneHourBefore = "ONE_HOUR",
+	OneDayBefore = "ONE_DAY",
+	OneWeekBefore = "ONE_WEEK"
+}
 
 async function getEvent(id: string) {
 	const event = await database.event.findUnique({

@@ -1,8 +1,7 @@
 import type { AnySelectMenuInteraction, ButtonInteraction } from "discord.js";
 
-import type { EventReminder } from "../../graphql/schema/resolvers/Event";
 import { $discord } from "../../services/discord";
-import { $events } from "../../services/events";
+import { $events, EventReminder } from "../../services/events";
 import { $users } from "../../services/users";
 import { buildErrorMessage } from "../messages/error.message";
 import { buildRemindersMessage } from "../messages/reminders.message";

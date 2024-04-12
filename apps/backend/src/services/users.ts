@@ -211,6 +211,30 @@ async function getSettings<T extends Prisma.User$settingsArgs>(id: string, args?
 	return result;
 }
 
+async function syncRoles(discordClient: DiscordClient, user: User) {
+	const member = await $discord.getMember(discordClient, user.discordId);
+	if (!member) return;
+
+	const currentUserRoles = await getAllRoles(user);
+	const currentConnectedDiscordRoles = currentUserRoles.filter(role => !!role.discordId);
+
+	const allMemberRoles = Array.from(member.roles.cache.values());
+	const connectedDiscordRoles = await $roles.getAllRoles({
+		where: {
+			discordId: {
+				in: allMemberRoles.map(role => role.id)
+			}
+		}
+	});
+
+	for (const role of connectedDiscordRoles) {
+		const hasRole = !!currentConnectedDiscordRoles.find(r => r.id === role.id);
+		if (hasRole) continue;
+
+		
+	}
+}
+
 async function unauthenticateSessions(user: User) {
 	const sessions = await $users.getSessions(user.id);
 	for (const session of sessions) {
@@ -256,6 +280,7 @@ export const $users = {
 	getEvents,
 	getStatus,
 	getSettings,
+	syncRoles,
 	unauthenticateSessions,
 	deleteUser
 };
