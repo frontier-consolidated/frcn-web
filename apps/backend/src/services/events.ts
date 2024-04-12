@@ -141,15 +141,16 @@ async function getEvents(
 	};
 }
 
-async function getUpcomingEvents(buffer: number = 1, maxTimeInFutureMs?: number) {
+async function getUpcomingEvents(maxTimeInFutureMs?: number) {
 	const now = Date.now();
 	return await database.event.findMany({
 		where: {
 			posted: true,
-			startAt: {
-				gte: new Date(now - buffer),
-				lte: maxTimeInFutureMs ? new Date(now + maxTimeInFutureMs + buffer) : undefined
-			}
+			archived: false,
+			endedAt: null,
+			startAt: maxTimeInFutureMs ? {
+				lte: new Date(now + maxTimeInFutureMs)
+			} : undefined
 		},
 		include: {
 			channel: {
@@ -161,14 +162,14 @@ async function getUpcomingEvents(buffer: number = 1, maxTimeInFutureMs?: number)
 	});
 }
 
-async function getEndingEvents(buffer: number = 1) {
+async function getEndingEvents() {
 	const now = Date.now();
 	return await database.event.findMany({
 		where: {
 			posted: true,
+			archived: false,
 			startAt: {
-				gte: new Date(now - EVENT_EXPIRE_AFTER),
-				lt: new Date(now + buffer)
+				lt: new Date(now)
 			},
 			endedAt: null,
 		},

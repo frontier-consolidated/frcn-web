@@ -8,14 +8,13 @@ import { buildEventStartMessage, buildEventScheduledEndMessage } from "../messag
 import { reminderTimes, buildReminderDmMessage } from "../messages/reminders.message";
 
 const EVENT_UPDATE_INTERVAL = 60 * 1000;
-const eventUpdateBufferTime = EVENT_UPDATE_INTERVAL / 2;
 
 async function updateEvents(client: Client) {
     const guild = await $discord.getGuild(client);
     if (!guild) return;
 
     let now = Date.now();
-    const events = await $events.getUpcomingEvents(eventUpdateBufferTime, 7 * 24 * 60 * 60 * 1000);
+    const events = await $events.getUpcomingEvents(7 * 24 * 60 * 60 * 1000);
 
     for (const [reminder, time] of Object.entries(reminderTimes) as [EventReminder, number][]) {
         for (const event of events) {
@@ -75,7 +74,7 @@ async function updateEvents(client: Client) {
     }
 
     now = Date.now();
-    const endingEvents = await $events.getEndingEvents(eventUpdateBufferTime);
+    const endingEvents = await $events.getEndingEvents();
     for (const event of endingEvents) {
         if (!event.startAt || !event.duration || event.endedAt || event.endReminderSent || event.startAt.getTime() + event.duration > now) continue;
         
