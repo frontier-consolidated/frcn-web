@@ -279,6 +279,7 @@ export const $roles = {
 	getRole,
 	getRoleByDiscordId,
 	getAllRoles,
+	getRoleOrder,
 	sort,
 	getDefaultPrimaryRole,
 	getRoleUsers,

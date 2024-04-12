@@ -1,11 +1,13 @@
 import { Permission } from "@frcn/shared";
-import type { Prisma, User } from "@prisma/client";
+import type { Prisma, User, UserRole } from "@prisma/client";
 import { type APIUser, CDNRoutes, ImageFormat, Client as DiscordClient } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
+import { $system } from "./system";
 import { database } from "../database";
 import { getAdminIds } from "../env";
+import { publishUserRolesUpdated } from "../graphql/events";
 import { logger } from "../logger";
 
 async function getAllUsers() {
@@ -227,11 +229,76 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 		}
 	});
 
+	const { roleOrder } = await $system.getSystemSettings();
+
+	const currentPrimaryRole = currentUserRoles.find(role => role.primary);
+	const currentPrimaryRoleRank = currentPrimaryRole ? $roles.getRoleOrder(currentPrimaryRole.id, roleOrder) : -1;
+
+	let fallbackPrimaryRole: UserRole | null = null;
+	let fallbackPrimaryRoleRank = -1;
+
+	let newPrimaryRole: UserRole | null = null;
+	let newPrimaryRoleRank = -1;
+
+	const rolesToGive: UserRole[] = [];
+
 	for (const role of connectedDiscordRoles) {
 		const hasRole = !!currentConnectedDiscordRoles.find(r => r.id === role.id);
 		if (hasRole) continue;
 
-		
+		if (role.primary) {
+			const rank = $roles.getRoleOrder(role.id, roleOrder);
+
+			if (rank > currentPrimaryRoleRank && (!newPrimaryRole || rank > newPrimaryRoleRank)) {
+				newPrimaryRole = role;
+				newPrimaryRoleRank = rank;
+			} else if (rank < currentPrimaryRoleRank && rank > fallbackPrimaryRoleRank) {
+				fallbackPrimaryRole = role;
+				fallbackPrimaryRoleRank = rank;
+			}
+		} else {
+			rolesToGive.push(role);
+		}
+	}
+
+	const rolesToRemove: UserRole[] = [];
+
+	for (const role of currentConnectedDiscordRoles) {
+		const hasRole = !!connectedDiscordRoles.find(r => r.id === role.id);
+		if (hasRole) continue;
+
+		if (role.primary) {
+			if (!newPrimaryRole && role.id === currentPrimaryRole?.id) {
+				newPrimaryRole = fallbackPrimaryRole ?? await $roles.getDefaultPrimaryRole();
+			}
+		} else {
+			rolesToRemove.push(role);
+		}
+	}
+
+	if (newPrimaryRole || rolesToGive.length > 0 || rolesToRemove.length > 0) {
+		await database.user.update({
+			where: { id: user.id },
+			data: {
+				primaryRole: newPrimaryRole ? {
+					connect: {
+						id: newPrimaryRole.id
+					}
+				} : undefined,
+				roles: rolesToGive.length > 0 || rolesToRemove.length > 0 ? {
+					create: rolesToGive.length > 0 ? rolesToGive.map(role => ({
+						roleId: role.id
+					})) : undefined,
+					deleteMany: rolesToRemove.length > 0 ? {
+						roleId: {
+							in: rolesToRemove.map(role => role.id)
+						}
+					} : undefined
+				} : undefined
+			}
+		});
+	
+		publishUserRolesUpdated([user]);
 	}
 }
 
