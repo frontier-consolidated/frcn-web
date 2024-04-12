@@ -52,6 +52,10 @@
             }
 
             await invalidate(dependency);
+			pushNotification({
+				type: "success",
+				message: "RSVPed for event",
+			});
             open = false;
 		}}>RSVP</Button>
 		<Button color="alternative" on:click={() => open = false}>Cancel</Button>

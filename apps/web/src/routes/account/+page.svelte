@@ -45,10 +45,11 @@
     }
 
     deleteModalOpen = false;
-    user.set({
+    user.update(value => ({
+        ...value,
 		loading: false,
 		data: null,
-	});
+	}));
 	goto("/");
 }}>
     <span>Are you sure you want to delete your account?</span>

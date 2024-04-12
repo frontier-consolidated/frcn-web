@@ -31,7 +31,7 @@ export function pushNotification(notification: Omit<Notification, "id" | "exitAt
 			{
 				...notification,
 				id: uuidv4(),
-				exitAt: Date.now() + (notification.timeout ?? 30000),
+				exitAt: Date.now() + (notification.timeout ?? 10000),
 			},
 		];
 	});

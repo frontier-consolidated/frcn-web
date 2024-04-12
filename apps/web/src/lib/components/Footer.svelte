@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Footer, FooterBrand, FooterCopyright, FooterIcon, FooterLink, FooterLinkGroup } from "flowbite-svelte";
 	import { DiscordSolid, GithubSolid, MoonSolid, SunSolid, YoutubeSolid } from "flowbite-svelte-icons";
+	import type { ComponentType, SvelteComponent } from "svelte";
 
 	import { DISCORD_URL, GITHUB_URL, YOUTUBE_URL } from "$lib/constants";
     import logo from "$lib/images/logo.png";
@@ -10,6 +11,11 @@
 	import Hr from "./Hr.svelte";
 	import ScreenQuery from "./utils/ScreenQuery.svelte";
 
+    const socials = [
+        { href: YOUTUBE_URL, name: "Youtube", icon: YoutubeSolid },
+        { href: DISCORD_URL, name: "Discord", icon: DiscordSolid },
+        { href: GITHUB_URL, name: "GitHub", icon: GithubSolid }
+    ] satisfies { href: string, name: string, icon: ComponentType<SvelteComponent> }[];
 </script>
 
 <Footer footerType="socialmedia" class="relative flex flex-col items-center bg-zinc-200 dark:bg-gray-900 mt-12">
@@ -35,9 +41,9 @@
             <div>
                 <h2 class="mb-6 text-sm font-semibold uppercase text-gray-900 dark:text-white">Social</h2>
                 <FooterLinkGroup>
-                    <FooterLink liClass="mb-4" href={YOUTUBE_URL}>Youtube</FooterLink>
-                    <FooterLink liClass="mb-4" href={DISCORD_URL}>Discord</FooterLink>
-                    <FooterLink liClass="mb-4" href={GITHUB_URL}>GitHub</FooterLink>
+                    {#each socials as social}
+                        <FooterLink liClass="mb-4" href={social.href} target="_blank">{social.name}</FooterLink>
+                    {/each}
                 </FooterLinkGroup>
             </div>
             <div>
@@ -62,15 +68,11 @@
             <span class="block text-xs text-gray-500 dark:text-gray-400">This is an unofficial Star Citizen site, not affiliated with the Cloud Imperium group of companies. All content on this site not authored by its host or users are property of their respective owners.</span>
         </div>
         <div class="relative flex space-x-6 rtl:space-x-reverse md:justify-center md:ml-auto pr-16">
-            <FooterIcon href={YOUTUBE_URL}>
-                <YoutubeSolid class="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white" tabindex="-1" />
-            </FooterIcon>
-            <FooterIcon href={DISCORD_URL}>
-                <DiscordSolid class="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white" tabindex="-1" />
-            </FooterIcon>
-            <FooterIcon href={GITHUB_URL}>
-                <GithubSolid class="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white" tabindex="-1" />
-            </FooterIcon>
+            {#each socials as social}
+                <FooterIcon href={social.href} target="_blank">
+                    <svelte:component this={social.icon} class="w-4 h-4 text-gray-500 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white outline-none" tabindex="-1" ariaLabel={social.name} />
+                </FooterIcon>
+            {/each}
             <button class="absolute rounded top-0 bottom-0 right-0 h-[180%] my-auto z-40 p-1 hover:bg-gray-400/30" on:click={() => {
                 if (document.documentElement.classList.contains("dark")) {
                     document.documentElement.classList.remove("dark");

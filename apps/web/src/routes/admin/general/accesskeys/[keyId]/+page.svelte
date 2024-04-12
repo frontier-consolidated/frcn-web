@@ -34,7 +34,13 @@
     });
 
     async function save() {
-        if (!validator.validate()) return;
+        if (!validator.validate()) {
+			pushNotification({
+				type: "error",
+				message: "Check your inputs",
+			});
+			return;
+		}
 
 		const { data: updatedData, errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_ACCESS_KEY,

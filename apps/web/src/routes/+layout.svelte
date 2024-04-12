@@ -1,5 +1,6 @@
 <script lang="ts">
 	import "../app.css";
+	import { browser } from "$app/environment";
 	import { navigating } from "$app/stores";
 	import { Spinner } from "flowbite-svelte";
 
@@ -10,7 +11,7 @@
 	// eslint-disable-next-line no-undef
 	let spinnerTimeout: NodeJS.Timeout | null = null; 
 	$: {
-		if (!showSpinner && !spinnerTimeout && $navigating) {
+		if (browser && !showSpinner && !spinnerTimeout && $navigating) {
 			spinnerTimeout = setTimeout(() => {
 				if ($navigating) showSpinner = true;
 				spinnerTimeout = null;
