@@ -1,5 +1,6 @@
 import type { Client } from "discord.js";
 
+import { database } from "../../database";
 import { logger } from "../../logger";
 import { $discord } from "../../services/discord";
 import { $events, EventReminder } from "../../services/events";
@@ -9,10 +10,6 @@ import { reminderTimes, buildReminderDmMessage } from "../messages/reminders.mes
 const EVENT_UPDATE_INTERVAL = 60 * 1000;
 const eventUpdateBufferTime = EVENT_UPDATE_INTERVAL / 2;
 
-function isTime(target: Date, now: number) {
-    return target >= new Date(now - eventUpdateBufferTime) && target < new Date(now + eventUpdateBufferTime);
-}
-
 async function updateEvents(client: Client) {
     const guild = await $discord.getGuild(client);
     if (!guild) return;
@@ -20,11 +17,9 @@ async function updateEvents(client: Client) {
     let now = Date.now();
     const events = await $events.getUpcomingEvents(eventUpdateBufferTime, 7 * 24 * 60 * 60 * 1000);
 
-    for (const event of events) {
-        if (!event.startAt) continue;
-
-        for (const [reminder, time] of Object.entries(reminderTimes) as [EventReminder, number][]) {
-            if (!isTime(event.startAt, now + time)) return;
+    for (const [reminder, time] of Object.entries(reminderTimes) as [EventReminder, number][]) {
+        for (const event of events) {
+            if (!event.startAt || event.startAt > new Date(now + time) || event.remindersSent.includes(reminder)) continue;
 
             const eventMessageLink = `https://discord.com/channels/${guild.id}/${event.channel?.discordId}/${event.discordEventMessageId}`;
 
@@ -66,23 +61,37 @@ async function updateEvents(client: Client) {
                     logger.error("Failed to dm user", rsvp.userId, err);
                 }
             }
-            break;
+            
+            const remindersSent = [...event.remindersSent, reminder];
+            event.remindersSent = remindersSent;
+
+            await database.event.update({
+                where: { id: event.id },
+                data: {
+                    remindersSent
+                }
+            });
         }
     }
 
     now = Date.now();
     const endingEvents = await $events.getEndingEvents(eventUpdateBufferTime);
     for (const event of endingEvents) {
-        if (!event.startAt || !event.duration || event.endedAt) return;
+        if (!event.startAt || !event.duration || event.endedAt || event.endReminderSent || event.startAt.getTime() + event.duration > now) continue;
         
-        if (isTime(new Date(event.startAt.getTime() + event.duration), now)) {
-            try {
-                const thread = await $events.getEventThread(event, client);
-                const payload = buildEventScheduledEndMessage(event);
-                await thread.send(payload);
-            } catch (err) {
-                logger.error("Error while posting event scheduled end message", err);
-            }
+        try {
+            const thread = await $events.getEventThread(event, client);
+            const payload = buildEventScheduledEndMessage(event);
+            await thread.send(payload);
+
+            await database.event.update({
+                where: { id: event.id },
+                data: {
+                    endReminderSent: true
+                }
+            });
+        } catch (err) {
+            logger.error("Error while posting event scheduled end message", err);
         }
     }
 }

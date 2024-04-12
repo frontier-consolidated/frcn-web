@@ -211,6 +211,7 @@ model Event {
   discordEventMessageId String?                       @map("discord_event_message_id")
   discordMentions       String[]                      @map("discord_mentions")
   remindersSent         String[]                      @map("reminders_sent")
+  endReminderSent       Boolean                       @default(false) @map("end_reminder_sent")
   name                  String
   summary               String
   description           String                        @db.VarChar(2048)
