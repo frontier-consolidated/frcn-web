@@ -2,6 +2,7 @@ import type { User } from "@prisma/client";
 import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuildBasedChannel, type GuildBasedChannel, CategoryChannel, VoiceChannel, GuildMemberRoleManager, Role } from "discord.js";
 
 import { $system } from "./system";
+import { logger } from "../logger";
 
 const cacheTimestamps = {
 	channels: -1,
@@ -248,11 +249,15 @@ function convertDJSUserToAPIUser(user: DJSUser) {
 }
 
 async function $init(client: Client) {
+	logger.info("Saturating discord client caches...");
+
 	// Saturate caches
 	await fetchAllChannels(client);
 	await getAllMembers(client);
 	await getAllRoles(client);
 	await getAllEmojis(client);
+
+	logger.info("Discord client initiated");
 }
 
 export const $discord = {
