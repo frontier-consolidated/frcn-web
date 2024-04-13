@@ -5,7 +5,7 @@ import { eventInteraction } from "./handlers/event.interaction";
 import { eventDmInteraction } from "./handlers/eventDm.interaction";
 import { startEventsUpdate } from "./handlers/updateEvents.interval";
 import { database } from "../database";
-import { publishUserRolesUpdated } from "../graphql/events";
+import { publishRolesUpdated, publishUserRolesUpdated } from "../graphql/events";
 import { logger } from "../logger";
 import { $discord } from "../services/discord";
 import { $roles } from "../services/roles";
@@ -134,6 +134,7 @@ export function load(client: Client) {
             });
         
             publishUserRolesUpdated([user]);
+            await publishRolesUpdated();
         }
     });
 

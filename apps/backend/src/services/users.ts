@@ -7,7 +7,7 @@ import { $roles } from "./roles";
 import { $system } from "./system";
 import { database } from "../database";
 import { getAdminIds } from "../env";
-import { publishUserRolesUpdated } from "../graphql/events";
+import { publishRolesUpdated, publishUserRolesUpdated } from "../graphql/events";
 import { logger } from "../logger";
 
 async function getAllUsers() {
@@ -299,6 +299,7 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 		});
 	
 		publishUserRolesUpdated([user]);
+		await publishRolesUpdated();
 	}
 }
 

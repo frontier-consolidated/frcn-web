@@ -226,6 +226,7 @@ async function changePrimaryRole(role: UserRole, user: User) {
 	});
 
 	publishUserRolesUpdated([user]);
+	await publishRolesUpdated();
 }
 
 async function giveRole(role: UserRole, user: User) {
@@ -247,6 +248,7 @@ async function giveRole(role: UserRole, user: User) {
 	});
 
 	publishUserRolesUpdated([user]);
+	await publishRolesUpdated();
 }
 
 async function removeRole(role: UserRole, user: User) {
@@ -267,6 +269,7 @@ async function removeRole(role: UserRole, user: User) {
 	});
 
 	publishUserRolesUpdated([user]);
+	await publishRolesUpdated();
 }
 
 function resolvePermissions(roles: UserRole[]) {
