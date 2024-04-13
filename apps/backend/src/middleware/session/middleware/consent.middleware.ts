@@ -1,9 +1,19 @@
+import * as cookieParser from "cookie";
 import type { Request } from "express";
 
 import type { MiddlewareHandler } from "../types";
 
 export function getConsent(req: Request, cookie: string): "reject" | "necessary" | "all" {
-    const consentValue = req.cookies[cookie] as string | undefined;
+    const cookies = req.header("cookie");
+    let consentValue: string | undefined = undefined;
+
+    if (req.cookies) {
+        consentValue = req.cookies[cookie] as string | undefined;
+    } else if (cookies) {
+        const parsedCookies = cookieParser.parse(cookies);
+        consentValue = parsedCookies[cookie];
+    }
+
     const consentRejected = !consentValue || consentValue === "reject";
     
     if (consentRejected) return "reject";
