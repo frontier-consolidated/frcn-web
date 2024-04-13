@@ -161,6 +161,8 @@ async function reorderRoles(order: string[]) {
 			roleOrder: order
 		}
 	});
+
+	await publishRolesUpdated();
 }
 
 async function deleteRole(id: string) {
