@@ -7,6 +7,7 @@ const cacheTimestamps = {
 	channels: -1,
 	roles: -1,
 	emojis: -1,
+	members: -1,
 };
 
 async function getGuild(client: Client) {
@@ -94,6 +95,25 @@ async function canManageChannelsInCategory(category: GuildBasedChannel) {
 	const me = category.guild.members.me ?? await category.guild.members.fetchMe();
 	const permissions = me.permissionsIn(category.id);
 	return permissions.has("ManageChannels") && permissions.has("ViewChannel") && permissions.has("Connect") && permissions.has("MoveMembers");
+}
+
+async function getAllMembers(client: Client) {
+	try {
+		const guild = await getGuild(client);
+		if (!guild) return [];
+
+		let members;
+		if ((Date.now() - cacheTimestamps.members) > 30 * 60 * 1000) {
+			members = await guild.members.fetch();
+			cacheTimestamps.members = Date.now();
+		} else {
+			members = guild.members.cache;
+		}
+
+		return Array.from(members.values());
+	} catch (err) {
+		return [];
+	}
 }
 
 async function getMember(client: Client, user: string) {
@@ -211,7 +231,7 @@ function getGuildMemberRoleDiffs(oldRoles: GuildMemberRoleManager, newRoles: Gui
 	for (const role of newRoles.cache.values()) {
 		if (oldRoles.cache.has(role.id)) continue;
 
-		removed.push(role);
+		added.push(role);
 	}
 
 	return { added, removed };
@@ -227,7 +247,16 @@ function convertDJSUserToAPIUser(user: DJSUser) {
 	} satisfies APIUser;
 }
 
+async function $init(client: Client) {
+	// Saturate caches
+	await fetchAllChannels(client);
+	await getAllMembers(client);
+	await getAllRoles(client);
+	await getAllEmojis(client);
+}
+
 export const $discord = {
+	$init,
 	getGuild,
 	isInGuild,
 	getAllTextChannels,
@@ -237,6 +266,7 @@ export const $discord = {
 	canPostInChannel,
 	canCreateThreadInChannel,
 	canManageChannelsInCategory,
+	getAllMembers,
 	getMember,
 	canUserViewChannel,
 	getAllRoles,

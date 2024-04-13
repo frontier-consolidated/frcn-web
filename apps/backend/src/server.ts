@@ -4,6 +4,7 @@ import { createApp } from "./app";
 import { seedDatabase } from "./database";
 import { getDomain, getOrigin, getOrigins, getPort, validateEnvironment } from "./env";
 import { logger } from "./logger";
+import { $discord } from "./services/discord";
 import { $events } from "./services/events";
 
 process.env.NODE_ENV ??= "development";
@@ -62,6 +63,7 @@ const { context: { server, discordClient }, onStart } = await createApp({
 });
 
 discordClient.login(process.env.DISCORD_TOKEN);
+await $discord.$init(discordClient);
 
 const apiPort = getPort();
 
