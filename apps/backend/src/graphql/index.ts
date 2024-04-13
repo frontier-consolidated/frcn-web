@@ -3,12 +3,9 @@ import { Server as HttpServer } from "http";
 import { ApolloServer, type ApolloServerOptionsWithSchema } from "@apollo/server";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { createApollo4QueryValidationPlugin } from "graphql-constraint-directive/apollo4";
-import { useServer } from "graphql-ws/lib/use/ws";
 import isUrl from "validator/lib/isURL";
-import { WebSocketServer } from "ws";
 
 import type { GQLContext } from "./context";
-import { PluginDrainWebSocketServer } from "./plugins/drainWebSocketServer";
 import { PluginLogging } from "./plugins/logging";
 import schema from "./schema";
 import { logger } from "../logger";
@@ -16,13 +13,6 @@ import { logger } from "../logger";
 type CreateApolloServerOptions = Partial<Omit<ApolloServerOptionsWithSchema<GQLContext>, "schema">>;
 
 export function createApolloServer(server: HttpServer, config: CreateApolloServerOptions = {}) {
-	const wsServer = new WebSocketServer({
-		server,
-		path: "/subscriptions",
-	});
-
-	const wsCleanup = useServer({ schema }, wsServer);
-
 	return new ApolloServer<GQLContext>({
 		schema,
 		logger,
@@ -34,7 +24,6 @@ export function createApolloServer(server: HttpServer, config: CreateApolloServe
 		plugins: [
 			PluginLogging(),
 			ApolloServerPluginDrainHttpServer({ httpServer: server }),
-			PluginDrainWebSocketServer(wsCleanup),
 			createApollo4QueryValidationPlugin({
 				formats: {
 					url: (value) => {
