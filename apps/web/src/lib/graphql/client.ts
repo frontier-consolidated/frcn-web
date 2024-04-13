@@ -5,7 +5,7 @@ import { setContext } from "@apollo/client/link/context";
 import { HttpLink } from "@apollo/client/link/http";
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { getMainDefinition } from "@apollo/client/utilities";
-import type { ResultOf } from "@graphql-typed-document-node/core";
+import type { ResultOf, VariablesOf } from "@graphql-typed-document-node/core";
 import { Kind, OperationTypeNode } from "graphql";
 import { createClient } from "graphql-ws";
 import { onMount } from "svelte";
@@ -50,6 +50,9 @@ export function createApolloClient(headers?: Record<string, string>) {
 				},
 				UserStatus: {
 					merge: true
+				},
+				UpdatedUserRoles: {
+					merge: true
 				}
 			}
 		})
@@ -64,14 +67,29 @@ export function getApollo() {
 	return browserApollo!;
 }
 
-export function subscribe<T extends TypedDocumentNode<any, any>>(document: T, callback: (data: NonNullable<ResultOf<T>>) => void) {
+type SubscribeOptions<T extends TypedDocumentNode<any, any>> = {
+	variables?: VariablesOf<T>;
+	onNext: (data: NonNullable<ResultOf<T>>) => void;
+	onError?: ((error: any) => void);
+	onComplete?: (() => void);
+};
+
+export function subscribe<T extends TypedDocumentNode<any, any>>(document: T, options: SubscribeOptions<T>) {
 	const observer = getApollo().subscribe({
 		query: document,
+		variables: options.variables,
+		errorPolicy: "all"
 	});
-	const subscription = observer.subscribe(({ data }) => {
+
+	const subscription = observer.subscribe(({ data, errors }) => {
+		if (errors && errors.length > 0) {
+			console.error("Error on subscription", { query: document, variables: options.variables }, errors);
+			return;
+		}
 		if (!data) return;
-		callback(data as NonNullable<ResultOf<T>>);
-	});
+
+		options.onNext(data as NonNullable<ResultOf<T>>);
+	}, options.onError, options.onComplete);
 
 	return () => {
 		if (subscription.closed) return;
@@ -79,8 +97,8 @@ export function subscribe<T extends TypedDocumentNode<any, any>>(document: T, ca
 	};
 }
 
-export function subscribeOnMount<T extends TypedDocumentNode<any, any>>(document: T, callback: (data: NonNullable<ResultOf<T>>) => void) {
+export function subscribeOnMount<T extends TypedDocumentNode<any, any>>(document: T, options: SubscribeOptions<T>) {
 	onMount(() => {
-		return subscribe(document, callback);
+		return subscribe(document, options);
 	});
 }
