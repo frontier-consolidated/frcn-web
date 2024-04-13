@@ -14,10 +14,9 @@ import { Routes, apiUri } from "$lib/api";
 
 import { fragments } from "./documents/fragments";
 
-
 export function createApolloClient(headers?: Record<string, string>) {
 	const httpLink = new HttpLink({
-		uri: apiUri(Routes.graphql()),
+		uri: apiUri(Routes.graphqlServer()),
 		credentials: "include",
 		headers
 	});
