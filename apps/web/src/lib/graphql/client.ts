@@ -65,17 +65,22 @@ export function getApollo() {
 }
 
 export function subscribe<T extends TypedDocumentNode<any, any>>(document: T, callback: (data: NonNullable<ResultOf<T>>) => void) {
-	onMount(() => {
-		const observer = getApollo().subscribe({
-			query: document,
-		});
-		const subscription = observer.subscribe(({ data }) => {
-			if (!data) return;
-			callback(data as NonNullable<ResultOf<T>>);
-		});
+	const observer = getApollo().subscribe({
+		query: document,
+	});
+	const subscription = observer.subscribe(({ data }) => {
+		if (!data) return;
+		callback(data as NonNullable<ResultOf<T>>);
+	});
 
-		return () => {
-			subscription.unsubscribe();
-		};
+	return () => {
+		if (subscription.closed) return;
+		subscription.unsubscribe();
+	};
+}
+
+export function subscribeOnMount<T extends TypedDocumentNode<any, any>>(document: T, callback: (data: NonNullable<ResultOf<T>>) => void) {
+	onMount(() => {
+		return subscribe(document, callback);
 	});
 }
