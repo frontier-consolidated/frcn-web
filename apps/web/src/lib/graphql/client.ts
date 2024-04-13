@@ -24,7 +24,7 @@ export function createApolloClient(headers?: Record<string, string>) {
 	const wsLink = browser
 		? new GraphQLWsLink(
 				createClient({
-					url: apiUri(Routes.graphqlSubscriptions(), location.protocol === "https:" ? "wss" : "ws"),
+					url: apiUri(Routes.graphqlServer(), location.protocol === "https:" ? "wss" : "ws"),
 				})
 		  )
 		: null;

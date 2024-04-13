@@ -1,7 +1,3 @@
-function graphqlSubscriptions(): "/subscriptions" {
-	return "/subscriptions";
-}
-
 function graphqlServer(): "/graphql" {
 	return "/graphql";
 }
@@ -27,6 +23,5 @@ export const Routes = {
 	logout,
 	consent,
 	graphqlServer,
-	graphqlSubscriptions,
 	upload
 };
