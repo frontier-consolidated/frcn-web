@@ -35,7 +35,7 @@ export default async function route(context: Context, _: unknown, appConfig: Cre
 
 	const wsCleanup = useServer<Record<string, unknown> | undefined, WsContextExtra>({
 		schema,
-		context: async (ctx, msg, args) => {
+		context: async (ctx, _msg, _args) => {
 			if (!ctx.extra.request) throw new Error("HTTP request required to authenticate subscription");
 			
 			const req = ctx.extra.request;
