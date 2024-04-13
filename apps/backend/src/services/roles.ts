@@ -161,6 +161,8 @@ async function reorderRoles(order: string[]) {
 			roleOrder: order
 		}
 	});
+
+	await publishRolesUpdated();
 }
 
 async function deleteRole(id: string) {
@@ -279,6 +281,7 @@ export const $roles = {
 	getRole,
 	getRoleByDiscordId,
 	getAllRoles,
+	getRoleOrder,
 	sort,
 	getDefaultPrimaryRole,
 	getRoleUsers,

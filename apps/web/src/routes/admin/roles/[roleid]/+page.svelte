@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidateAll } from "$app/navigation";
+	import { invalidate } from "$app/navigation";
 	import { page } from "$app/stores";
 	import { Permission, hasAdmin } from "@frcn/shared";
 	import { Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
@@ -10,6 +10,7 @@
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { rolesCache } from "$lib/stores/RolesCacheStore";
 	import { user } from "$lib/stores/UserStore";
 
     import type { PageData } from "./$types";
@@ -47,7 +48,7 @@
 		canNavigate.set(!isDirty);
 	}
 
-	function checkIfCanToggleAdmin(roles: PageData["roles"], role: PageData["role"], user: GetCurrentUserQuery["user"]) {
+	function checkIfCanToggleAdmin(roles: typeof $rolesCache, role: PageData["role"], user: GetCurrentUserQuery["user"]) {
 		if (!user) return false;
 		if (!hasAdmin(user.permissions)) return false;
 		if (role.default) return false;
@@ -59,7 +60,7 @@
 		return adminRoles[0].id != role.id;
 	}
 
-	$: canToggleAdmin = checkIfCanToggleAdmin(data.roles, data.role, $user.data);
+	$: canToggleAdmin = checkIfCanToggleAdmin($rolesCache, data.role, $user.data);
 
 	const validator = new FieldValidator();
 
@@ -72,7 +73,7 @@
 			return;
 		}
 
-		const { data: updatedData, errors } = await getApollo().mutate({
+		const { errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_ROLE,
 			variables: {
 				roleId: data.role.id,
@@ -95,15 +96,7 @@
 			return;
 		}
 
-		await invalidateAll();
-		data = {
-			...data, 
-			role: {
-				...data.role,
-				...updatedData?.role
-			},
-		} as PageData;
-		editData = cloneRoleData(data.role);
+		await invalidate("app:currentrole");
 	}
 </script>
 

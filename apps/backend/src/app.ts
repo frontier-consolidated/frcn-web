@@ -20,7 +20,7 @@ import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/s
 import { createS3Client } from "./s3Client";
 import { $users } from "./services/users";
 
-interface CreateAppOptions {
+export interface CreateAppOptions {
     origins: string[];
     routeConfig: RouteConfig;
     sessionConfig: SessionMiddlewareConfig;
@@ -159,9 +159,9 @@ export async function createApp(config: CreateAppOptions) {
         if (!file.isFile()) continue;
 
         const module = (await import(path.join(file.path, file.name))) as {
-            default: (context: Context, config: RouteConfig) => void;
+            default: (context: Context, config: RouteConfig, appConfig: CreateAppOptions) => void;
         };
-        module.default(context, config.routeConfig);
+        module.default(context, config.routeConfig, config);
     }
 
     let webOnStart: (() => Promise<void>) | null = null;

@@ -8,6 +8,7 @@
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { rolesCache } from "$lib/stores/RolesCacheStore";
 	import { userProfileView } from "$lib/stores/UserProfileViewStore";
 	import { user } from "$lib/stores/UserStore";
 
@@ -27,8 +28,8 @@
 
     let primaryRoleSearch = "";
     let nonPrimaryRoleSearch = "";
-    $: giveableNonPrimaryRoles = $page.data.roles?.filter(role => !role.primary && !$userProfileView.data?.roles.find(r => r.id === role.id)) ?? [];
-    $: availablePrimaryRoles = $page.data.roles?.filter(role => role.primary && $userProfileView.data?.primaryRole.id !== role.id) ?? [];
+    $: giveableNonPrimaryRoles = $rolesCache.filter(role => !role.primary && !$userProfileView.data?.roles.find(r => r.id === role.id)) ?? [];
+    $: availablePrimaryRoles = $rolesCache.filter(role => role.primary && $userProfileView.data?.primaryRole.id !== role.id) ?? [];
 </script>
 
 <Modal size="sm" bodyClass="space-y-0" open={$userProfileView.open} dismissable outsideclose on:close={() => {

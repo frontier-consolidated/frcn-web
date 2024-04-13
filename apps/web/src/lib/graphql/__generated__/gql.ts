@@ -79,7 +79,7 @@ const documents = {
     "\n\tquery GetUser($id: ID!) {\n\t\tuser: getUser(id: $id) {\n\t\t\t...UserFragment\n\t\t}\n\t}\n": types.GetUserDocument,
     "\n\tsubscription OnCurrentUserRolesUpdated($userId: ID!) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tpermissions\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n": types.OnCurrentUserRolesUpdatedDocument,
     "\n\tsubscription OnRolesUpdated {\n\t\troles: rolesUpdated {\n\t\t\t...RoleFragment\n\t\t\tusers {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n": types.OnRolesUpdatedDocument,
-    "\n\tsubscription OnUserRolesUpdated {\n\t\troles: userRolesUpdated {\n\t\t\tuserId\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n": types.OnUserRolesUpdatedDocument,
+    "\n\tsubscription OnUserRolesUpdated($userId: ID) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tuserId\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n": types.OnUserRolesUpdatedDocument,
 };
 
 /**
@@ -363,7 +363,7 @@ export function gql(source: "\n\tsubscription OnRolesUpdated {\n\t\troles: roles
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n\tsubscription OnUserRolesUpdated {\n\t\troles: userRolesUpdated {\n\t\t\tuserId\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tsubscription OnUserRolesUpdated {\n\t\troles: userRolesUpdated {\n\t\t\tuserId\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"];
+export function gql(source: "\n\tsubscription OnUserRolesUpdated($userId: ID) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tuserId\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"): (typeof documents)["\n\tsubscription OnUserRolesUpdated($userId: ID) {\n\t\troles: userRolesUpdated(userId: $userId) {\n\t\t\tuserId\n\t\t\tprimaryRole {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t\troles {\n\t\t\t\tid\n\t\t\t\tname\n\t\t\t}\n\t\t}\n\t}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

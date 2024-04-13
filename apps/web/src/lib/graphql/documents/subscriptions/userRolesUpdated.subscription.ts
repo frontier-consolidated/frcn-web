@@ -1,8 +1,8 @@
 import { gql } from "../../__generated__";
 
 export const USER_ROLES_UPDATED = gql(`
-	subscription OnUserRolesUpdated {
-		roles: userRolesUpdated {
+	subscription OnUserRolesUpdated($userId: ID) {
+		roles: userRolesUpdated(userId: $userId) {
 			userId
 			primaryRole {
 				id

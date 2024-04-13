@@ -2,7 +2,6 @@ Sitemap: https://frontierconsolidated.com/sitemap.xml
 
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
-Disallow: /_api/
 Disallow: /admin/
 Disallow: /cms/
 Disallow: /metrics
