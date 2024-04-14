@@ -104,6 +104,7 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 	const avatarUrl = discordUser.avatar ? "https://cdn.discordapp.com" +
 		CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP) : "";
 
+	const now = new Date();
 	const user = await database.user.upsert({
 		where: {
 			discordId: discordUser.id,
@@ -133,6 +134,11 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 			},
 		},
 	});
+
+	// New user created, sync their discord roles
+	if (user.createdAt > now) {
+		syncRoles(discordClient, user);
+	}
 
 	return user;
 }
