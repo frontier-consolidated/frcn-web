@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { strings } from "@frcn/shared";
-	import { Badge, Breadcrumb, BreadcrumbItem, Indicator } from "flowbite-svelte";
+	import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
 	import { CalendarMonthSolid } from "flowbite-svelte-icons";
 
 	import { CreatedByButton, TimeBadge, LocationBreadcrumbItem, Markdown, ViewMore } from "$lib/components";
-	import { EventState } from "$lib/graphql/__generated__/graphql";
 
 	import type { PageData } from "./$types";
+	import EventStateBadge from "../../events/EventStateBadge.svelte";
 
     export let data: PageData;
 
@@ -17,26 +17,7 @@
 <div class="flex flex-col gap-4">
     <div>
         <h1 class="flex items-center gap-4 text-2xl font-semibold dark:text-white">
-            {#if data.state === EventState.Started}
-                <Badge large color="green" class="px-2.5 py-0.5">
-                    <Indicator color="green" size="xs" class="me-2 relative">
-                        <Indicator color="green" size="xs" class="absolute top-0 left-0 animate-ping" />
-                    </Indicator>
-                    Started
-                </Badge>
-            {:else if data.state === EventState.Ended}
-                <Badge large color="red" class="px-2.5 py-0.5">
-                    Ended
-                </Badge>
-            {:else if data.state === EventState.Archived}
-                <Badge large color="dark" class="px-2.5 py-0.5">
-                    Archived
-                </Badge>
-            {:else if !data.posted}
-                <Badge large color="dark" class="px-2.5 py-0.5">
-                    Draft
-                </Badge>
-            {/if}
+            <EventStateBadge event={data} />
             {data.name ? data.name : "New Event"}
         </h1>
         <CreatedByButton class="mt-1" user={data.owner} />
