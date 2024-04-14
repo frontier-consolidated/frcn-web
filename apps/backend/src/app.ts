@@ -16,6 +16,7 @@ import { getBasePath, isProd } from "./env";
 import { createApolloServer } from "./graphql";
 import { logger } from "./logger";
 import { accesskeyMiddleware, type AccessKeyMiddlewareConfig } from "./middleware/accesskey.middleware";
+import { rateLimitMiddleware } from "./middleware/rateLimit.middleware";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/session";
 import { createS3Client } from "./s3Client";
 import { $users } from "./services/users";
@@ -71,6 +72,16 @@ export async function createApp(config: CreateAppOptions) {
         }),
     );
 
+    app.use(cookieParser());
+
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+
+    app.use(sessionMiddlewares(config.sessionConfig));
+    app.use(accesskeyMiddleware(config.accesskeyConfig));
+
+    app.use(rateLimitMiddleware());
+
     app.use((req, res, next) => {
         const timestamp = new Date();
         req.timestamp = timestamp;
@@ -104,14 +115,6 @@ export async function createApp(config: CreateAppOptions) {
 
         next();
     });
-
-    app.use(cookieParser());
-
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-
-    app.use(sessionMiddlewares(config.sessionConfig));
-    app.use(accesskeyMiddleware(config.accesskeyConfig));
 
     app.get("/metrics", async (req, res, next) => {
         if (!req.user) {
