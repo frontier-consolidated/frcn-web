@@ -445,6 +445,7 @@ type Mutation {
 	deleteRole(id: ID!): Boolean! @permission(has: ManageRoles)
 	syncRole(id: ID!): UserRole @permission(has: ManageRoles)
 	reorderRoles(order: [ID!]!): [ID!]! @permission(has: ManageRoles)
+	syncRoles: Boolean! @permission(has: ManageRoles)
 
 	changeUserPrimaryRole(userId: ID!, roleId: ID!): UserRole @permission(has: ManageRoles)
 	giveUserRole(userId: ID!, roleId: ID!): UserRole @permission(has: ManageRoles)

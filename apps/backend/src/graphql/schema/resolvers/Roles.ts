@@ -147,6 +147,11 @@ export const roleResolvers: Resolvers = {
 			await $roles.reorderRoles(args.order);
 			return args.order;
 		},
+		async syncRoles(source, args, context) {
+			const users = await $users.getAllUsers();
+			await Promise.all(users.map(async (user) => await $users.syncRoles(context.app.discordClient, user)));
+			return true;
+		},
 		async changeUserPrimaryRole(source, args, context) {
 			const role = await $roles.getRole(args.roleId);
 			if (!role) throw gqlErrorBadInput(`Could not find role with id: ${args.roleId}`);
