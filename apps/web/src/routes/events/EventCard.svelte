@@ -1,16 +1,15 @@
 <script lang="ts">
-    import { strings } from "@frcn/shared";
 	import type { AnyLocation } from "@frcn/shared/locations";
-	import { Avatar, Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
-	import { CalendarMonthSolid } from "flowbite-svelte-icons";
+	import { Avatar } from "flowbite-svelte";
     
-	import { Button, CreatedByButton, LocationBreadcrumbItem, RsvpModal } from "$lib/components";
+	import { Button, CreatedByButton, RsvpModal } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { type EventFragmentFragment } from "$lib/graphql/__generated__/graphql";
     import placeholder from "$lib/images/stock/placeholder.jpg";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
+	import EventBreadcrumb from "./EventBreadcrumb.svelte";
 	import EventStateBadge from "./EventStateBadge.svelte";
 
     export let event: Omit<EventFragmentFragment, "location"> & { location: AnyLocation[] | null };
@@ -31,30 +30,7 @@
         </span>
         <CreatedByButton class="mt-1" user={event.owner} />
         <div class="mt-2">
-            <Breadcrumb
-                ariaLabel="Event Type and Location"
-                classOl="flex-wrap"
-            >
-                {#if event.eventType}
-                    <BreadcrumbItem home>
-                        <svelte:fragment slot="icon">
-                            <CalendarMonthSolid class="w-4 h-4 me-2" tabindex="-1" />
-                        </svelte:fragment>
-                        {strings.toTitleCase(event.eventType)} Event
-                    </BreadcrumbItem>
-                {/if}
-                {#if event.location}
-                    {#if event.location.length > 0}
-                        {#each event.location as item}
-                            <LocationBreadcrumbItem location={item} />
-                        {/each}
-                    {:else}
-                        <BreadcrumbItem>Anywhere</BreadcrumbItem>
-                    {/if}
-                {:else}
-                    <BreadcrumbItem>???</BreadcrumbItem>
-                {/if}
-            </Breadcrumb>
+            <EventBreadcrumb {event} />
         </div>
         {#if event.summary}
             <div class="mt-2">

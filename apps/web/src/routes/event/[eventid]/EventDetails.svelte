@@ -1,17 +1,13 @@
 <script lang="ts">
-	import { strings } from "@frcn/shared";
-	import { Breadcrumb, BreadcrumbItem } from "flowbite-svelte";
-	import { CalendarMonthSolid } from "flowbite-svelte-icons";
-
-	import { CreatedByButton, TimeBadge, LocationBreadcrumbItem, Markdown, ViewMore } from "$lib/components";
+	import { CreatedByButton, TimeBadge, Markdown, ViewMore } from "$lib/components";
 
 	import type { PageData } from "./$types";
+	import EventBreadcrumb from "../../events/EventBreadcrumb.svelte";
 	import EventStateBadge from "../../events/EventStateBadge.svelte";
 
     export let data: PageData;
 
     let isFutureEvent = data.startAt ? new Date(data.startAt) >= new Date() : true;
-	$: eventType = data.eventType ? strings.toTitleCase(data.eventType) : null;
 </script>
 
 <div class="flex flex-col gap-4">
@@ -22,30 +18,7 @@
         </h1>
         <CreatedByButton class="mt-1" user={data.owner} />
     </div>
-    <Breadcrumb
-        ariaLabel="Event Type and Location"
-        olClass="inline-flex flex-wrap items-center space-x-1 md:space-x-3 rtl:space-x-reverse"
-    >
-        {#if eventType}
-            <BreadcrumbItem home>
-                <svelte:fragment slot="icon">
-                    <CalendarMonthSolid class="w-4 h-4 me-2" tabindex="-1" />
-                </svelte:fragment>
-                {eventType} Event
-            </BreadcrumbItem>
-        {/if}
-        {#if data.location}
-            {#if data.location.length > 0}
-                {#each data.location as item}
-                    <LocationBreadcrumbItem location={item} />
-                {/each}
-            {:else}
-                <BreadcrumbItem>Anywhere</BreadcrumbItem>
-            {/if}
-        {:else}
-            <BreadcrumbItem>???</BreadcrumbItem>
-        {/if}
-    </Breadcrumb>
+    <EventBreadcrumb event={data} />
     <div class="flex flex-wrap gap-4">
         <span class="text-sm font-semibold dark:text-gray-400">
             {#if data.startAt}
