@@ -1,16 +1,15 @@
 <script lang="ts">
-	import { goto, invalidate } from "$app/navigation";
-	import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
+	import { goto } from "$app/navigation";
+	import { Badge, TableBodyCell, TableBodyRow } from "flowbite-svelte";
 	import { DiscordSolid, DotsVerticalOutline, EditOutline, LockSolid, StarSolid, TrashBinSolid, UsersSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
 	import { ConfirmationModal, Tooltip } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { rolesCache } from "$lib/stores/RolesCacheStore";
 
-	import type { PageData } from "./$types";
-
-    export let role: PageData["roles"][number];
+    export let role: (typeof $rolesCache)[number];
     export let canMove: boolean = false;
     export let locked: boolean = false;
 
@@ -39,11 +38,17 @@
                     Primary role
                 </Tooltip>
             {/if}
-            {role.name}
             {#if role.discordId}
                 <Tooltip>
-                    <DiscordSolid slot="icon" size="xs" class="ms-2" />
+                    <DiscordSolid slot="icon" size="xs" class="me-2" />
                     Linked to a discord role
+                </Tooltip>
+            {/if}
+            {role.name}
+            {#if $rolesCache.find(r => r.primary)?.id === role.id}
+                <Tooltip>
+                    <Badge slot="icon" color="dark" class="ms-2">Default</Badge>
+                    Default primary role
                 </Tooltip>
             {/if}
         </div>
@@ -99,7 +104,6 @@
         return;
     }
 
-    await invalidate("app:allroles");
     modalOpen = false;
 }}>
     <span>Are you sure you want to delete the <strong>{role.name}</strong> role? Once deleted it cannot be undone.</span>

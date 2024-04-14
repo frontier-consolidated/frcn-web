@@ -3,7 +3,6 @@ import type { UserRole } from "@prisma/client";
 
 import { getAdminIds } from "../env";
 import { logger } from "../logger";
-import { $roles } from "../services/roles";
 
 import type { database as Database } from ".";
 
@@ -18,10 +17,9 @@ export async function seed(database: typeof Database) {
 	});
 
 	const roles = await database.userRole.findMany();
-	const sortedRoles = await $roles.sort(roles);
 
 	let adminRole: UserRole | null = null;
-	for (const role of sortedRoles) {
+	for (const role of roles) {
 		if (hasPermission(role.permissions, Permission.Admin)) {
 			adminRole = role;
 			break;
@@ -29,37 +27,43 @@ export async function seed(database: typeof Database) {
 	}
 
 	let defaultRole: UserRole | null = null;
-	for (const role of sortedRoles) {
+	for (const role of roles) {
 		if (role.primary && role.id !== adminRole?.id) {
 			defaultRole = role;
 			break;
 		}
 	}
 
-	let updateRoleOrder = false;
-
 	if (!adminRole) {
-		adminRole = await database.userRole.create({
-			data: {
-				name: "Admin",
-				permissions: permissions([Permission.Admin]),
-			},
+		adminRole = await database.$transaction(async (tx) => {
+			await tx.$executeRaw`UPDATE "user"."roles" SET "order" = "order" + 1 WHERE "order" >= 1`;
+			
+			return await tx.userRole.create({
+				data: {
+					name: "Admin",
+					permissions: permissions([Permission.Admin]),
+					order: 1
+				},
+			});
 		});
-		sortedRoles.push(adminRole);
-		updateRoleOrder = true;
+
 		logger.log("Created Admin role");
 	}
 
 	if (!defaultRole) {
-		defaultRole = await database.userRole.create({
-			data: {
-				name: "default",
-				primary: true,
-				permissions: 0,
-			},
+		defaultRole = await database.$transaction(async (tx) => {
+			await tx.$executeRaw`UPDATE "user"."roles" SET "order" = "order" + 1 WHERE "order" >= 0`;
+			
+			return await tx.userRole.create({
+				data: {
+					name: "default",
+					primary: true,
+					permissions: 0,
+					order: 0
+				},
+			});
 		});
-		sortedRoles.unshift(defaultRole);
-		updateRoleOrder = true;
+
 		logger.log("Created Default role");
 	}
 
@@ -94,14 +98,5 @@ export async function seed(database: typeof Database) {
 			},
 		});
 		logger.log(`Upsert Admin user '${id}'`);
-	}
-
-	if (updateRoleOrder) {
-		await database.systemSettings.update({
-			where: { unique: true },
-			data: {
-				roleOrder: sortedRoles.map((role) => role.id),
-			}
-		});
 	}
 }

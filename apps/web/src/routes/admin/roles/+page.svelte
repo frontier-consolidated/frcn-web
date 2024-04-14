@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { goto, invalidateAll } from "$app/navigation";
+	import { goto } from "$app/navigation";
 	import { hasAdmin } from "@frcn/shared";
 	import { Search, Table, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { CloseSolid, EditOutline } from "flowbite-svelte-icons";
@@ -11,19 +11,18 @@
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { rolesCache } from "$lib/stores/RolesCacheStore";
 	import { user } from "$lib/stores/UserStore";
 
-    import type { PageData } from "./$types";
 	import RoleRow from "./RoleRow.svelte";
 
 	const roleSearch = queryParam("q");
     
-    export let data: PageData;
-	$: editRoles = data.roles.toReversed();
+	$: editRoles = $rolesCache.toReversed();
 
 	$: filteredRoles = $roleSearch ? editRoles.filter(r => r.name.toLowerCase().includes($roleSearch!.toLowerCase())) : editRoles;
 
-	function getHighestMovableRole(roles: PageData["roles"], user: GetCurrentUserQuery["user"]) {
+	function getHighestMovableRole(roles: typeof $rolesCache, user: GetCurrentUserQuery["user"]) {
 		if (!user) return roles.length;
 		if (hasAdmin(user.permissions)) return -1;
 
@@ -45,7 +44,7 @@
 
 	let isDirty = false;
 	$: {
-		isDirty = data.roles.toReversed().reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false);
+		isDirty = $rolesCache.toReversed().reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false);
 		canNavigate.set(!isDirty);
 	}
 
@@ -89,13 +88,7 @@
 			return;
 		}
 
-		data = {
-			...data,
-			roles: editRoles.toReversed(),
-		} as PageData;
-		editRoles = data.roles.toReversed();
-		// not sure why just invalidating app:allroles doesn't work here
-		await invalidateAll();
+		editRoles = $rolesCache.toReversed();
 	}
 </script>
 
@@ -115,9 +108,7 @@
 			});
 
 			if (createData && createData.role) {
-				await goto(`/admin/roles/${createData.role}`, {
-					invalidateAll: true
-				});
+				await goto(`/admin/roles/${createData.role}`);
 			}
 		} catch (err) {
 			pushNotification({
@@ -152,7 +143,7 @@
 	</Table>
 	<div class="flex justify-end items-center gap-2">
 		<Button color="alternative" on:click={() => {
-			editRoles = data.roles.toReversed();
+			editRoles = $rolesCache.toReversed();
 		}}>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>

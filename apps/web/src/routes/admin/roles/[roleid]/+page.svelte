@@ -1,15 +1,16 @@
 <script lang="ts">
-	import { invalidateAll } from "$app/navigation";
+	import { invalidate } from "$app/navigation";
 	import { page } from "$app/stores";
 	import { Permission, hasAdmin } from "@frcn/shared";
 	import { Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
 	import { ArrowLeftSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
-	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button, PermissionToggles, Head } from "$lib/components";
+	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button, PermissionToggles, Head, ConfirmationModal } from "$lib/components";
 	import { getApollo, Mutations } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { rolesCache } from "$lib/stores/RolesCacheStore";
 	import { user } from "$lib/stores/UserStore";
 
     import type { PageData } from "./$types";
@@ -47,7 +48,7 @@
 		canNavigate.set(!isDirty);
 	}
 
-	function checkIfCanToggleAdmin(roles: PageData["roles"], role: PageData["role"], user: GetCurrentUserQuery["user"]) {
+	function checkIfCanToggleAdmin(roles: typeof $rolesCache, role: PageData["role"], user: GetCurrentUserQuery["user"]) {
 		if (!user) return false;
 		if (!hasAdmin(user.permissions)) return false;
 		if (role.default) return false;
@@ -59,11 +60,12 @@
 		return adminRoles[0].id != role.id;
 	}
 
-	$: canToggleAdmin = checkIfCanToggleAdmin(data.roles, data.role, $user.data);
+	$: canToggleAdmin = checkIfCanToggleAdmin($rolesCache, data.role, $user.data);
 
 	const validator = new FieldValidator();
+	let makeDefaultPrimaryModal = false;
 
-	async function save() {
+	async function save(confirm = false) {
 		if (!validator.validate()) {
 			pushNotification({
 				type: "error",
@@ -72,7 +74,13 @@
 			return;
 		}
 
-		const { data: updatedData, errors } = await getApollo().mutate({
+		// If setting this to a primary role will make it the default, display a confirmation
+		if (!confirm && editData.primary && data.role.primary === false && $rolesCache.findIndex(r => r.id === data.role.id) < $rolesCache.findIndex(r => r.primary)) {
+			makeDefaultPrimaryModal = true;
+			return;
+		}
+
+		const { errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_ROLE,
 			variables: {
 				roleId: data.role.id,
@@ -95,15 +103,7 @@
 			return;
 		}
 
-		await invalidateAll();
-		data = {
-			...data, 
-			role: {
-				...data.role,
-				...updatedData?.role
-			},
-		} as PageData;
-		editData = cloneRoleData(data.role);
+		await invalidate("app:currentrole");
 	}
 </script>
 
@@ -221,7 +221,7 @@
 			disabled={!isDirty}
 			on:click={() => {
 				if (!isDirty) return;
-				save();
+				save().catch(console.error);
 			}}
 		>
 			<EditOutline class="me-2" tabindex="-1" /> Save
@@ -229,3 +229,8 @@
 	</div>
 </div>
 
+<ConfirmationModal title="Make default primary role" bind:open={makeDefaultPrimaryModal} on:confirm={async () => {
+	save(true).then(() => (makeDefaultPrimaryModal = false)).catch(console.error);
+}}>
+    <span>WARNING! Making this a primary role will make it the default primary role. Place this role above the default before making it primary to prevent this.</span>
+</ConfirmationModal>

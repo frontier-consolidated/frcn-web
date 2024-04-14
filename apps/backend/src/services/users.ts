@@ -1,11 +1,12 @@
 import { Permission } from "@frcn/shared";
-import type { Prisma, User } from "@prisma/client";
+import type { Prisma, User, UserRole } from "@prisma/client";
 import { type APIUser, CDNRoutes, ImageFormat, Client as DiscordClient } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { database } from "../database";
 import { getAdminIds } from "../env";
+import { publishRolesUpdated, publishUserRolesUpdated } from "../graphql/events";
 import { logger } from "../logger";
 
 async function getAllUsers() {
@@ -157,22 +158,21 @@ async function getPrimaryRole<T extends Prisma.UserRoleDefaultArgs>(id: string, 
 	return result;
 }
 
-async function getAllRolesUnordered(user: User) {
+async function getAllRoles(user: User) {
 	const primaryRole = await getPrimaryRole(user.id);
 	const roles = await getRoles(user.id, {
 		include: {
 			role: true
 		}
 	});
-	return [...(primaryRole ? [primaryRole] : []), ...roles.map(r => r.role)];
-}
 
-async function getAllRoles(user: User) {
-	return $roles.sort(await getAllRolesUnordered(user));
+	const combinedRoles = [...(primaryRole ? [primaryRole] : []), ...roles.map(r => r.role)];
+	combinedRoles.sort((a, b) => a.order - b.order);
+	return combinedRoles;
 }
 
 async function getPermissions(user: User) {
-	const roles = await getAllRolesUnordered(user);
+	const roles = await getAllRoles(user);
 	let permissions = $roles.resolvePermissions(roles);
 
 	const adminIds = getAdminIds();
@@ -227,11 +227,67 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 		}
 	});
 
+	const currentPrimaryRole = currentUserRoles.find(role => role.primary);
+
+	let fallbackPrimaryRole: UserRole | null = null;
+	let newPrimaryRole: UserRole | null = null;
+
+	const rolesToGive: UserRole[] = [];
+
 	for (const role of connectedDiscordRoles) {
 		const hasRole = !!currentConnectedDiscordRoles.find(r => r.id === role.id);
 		if (hasRole) continue;
 
-		
+		if (role.primary) {
+			if (role.order > (currentPrimaryRole?.order ?? -1) && (!newPrimaryRole || role.order > newPrimaryRole.order)) {
+				newPrimaryRole = role;
+			} else if (role.order < (currentPrimaryRole?.order ?? -1) && role.order > (fallbackPrimaryRole?.order ?? -1)) {
+				fallbackPrimaryRole = role;
+			}
+		} else {
+			rolesToGive.push(role);
+		}
+	}
+
+	const rolesToRemove: UserRole[] = [];
+
+	for (const role of currentConnectedDiscordRoles) {
+		const hasRole = !!connectedDiscordRoles.find(r => r.id === role.id);
+		if (hasRole) continue;
+
+		if (role.primary) {
+			if (!newPrimaryRole && role.id === currentPrimaryRole?.id) {
+				newPrimaryRole = fallbackPrimaryRole ?? await $roles.getDefaultPrimaryRole();
+			}
+		} else {
+			rolesToRemove.push(role);
+		}
+	}
+
+	if (newPrimaryRole || rolesToGive.length > 0 || rolesToRemove.length > 0) {
+		await database.user.update({
+			where: { id: user.id },
+			data: {
+				primaryRole: newPrimaryRole ? {
+					connect: {
+						id: newPrimaryRole.id
+					}
+				} : undefined,
+				roles: rolesToGive.length > 0 || rolesToRemove.length > 0 ? {
+					create: rolesToGive.length > 0 ? rolesToGive.map(role => ({
+						roleId: role.id
+					})) : undefined,
+					deleteMany: rolesToRemove.length > 0 ? {
+						roleId: {
+							in: rolesToRemove.map(role => role.id)
+						}
+					} : undefined
+				} : undefined
+			}
+		});
+	
+		publishUserRolesUpdated([user]);
+		await publishRolesUpdated();
 	}
 }
 

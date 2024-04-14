@@ -1,15 +1,16 @@
 import pidusage from "pidusage";
 
 import { createApp } from "./app";
-import { seedDatabase } from "./database";
+import { initDatabase } from "./database";
 import { getDomain, getOrigin, getOrigins, getPort, validateEnvironment } from "./env";
 import { logger } from "./logger";
+import { $discord } from "./services/discord";
 import { $events } from "./services/events";
 
 process.env.NODE_ENV ??= "development";
 validateEnvironment();
 
-await seedDatabase();
+await initDatabase();
 
 process.env.CMS_BUS_DATABASE_URL = process.env.CMS_BUS_DATABASE_URL ? process.env.CMS_BUS_DATABASE_URL : (() => {
 	const url = new URL(process.env.DATABASE_URL);
@@ -62,6 +63,7 @@ const { context: { server, discordClient }, onStart } = await createApp({
 });
 
 discordClient.login(process.env.DISCORD_TOKEN);
+await $discord.$init(discordClient);
 
 const apiPort = getPort();
 

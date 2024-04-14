@@ -1,11 +1,9 @@
 import { browser } from "$app/environment";
-import type { FetchResult, Observable } from "@apollo/client";
 import { writable, get } from "svelte/store";
-import type { Subscription } from "zen-observable-ts";
 
 import { Routes, api } from "$lib/api";
-import { Queries, Subscriptions, getApollo } from "$lib/graphql";
-import type { GetCurrentUserQuery, OnCurrentUserRolesUpdatedSubscription } from "$lib/graphql/__generated__/graphql";
+import { Queries, Subscriptions, getApollo, subscribe } from "$lib/graphql";
+import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 
 type UserData = (NonNullable<GetCurrentUserQuery["user"]> & { __permissions: number }) | null | undefined;
 
@@ -25,8 +23,36 @@ export const user = writable<{ loading: boolean; adminMode: boolean; data: UserD
 		adminMode: true,
 		data: null,
 	},
-	(set) => {
+	(set, update) => {
 		if (!browser) return;
+
+		let unsubscriber: () => void = () => { };
+
+		user.subscribe((data) => {
+			if (data.loading || !data.data) {
+				unsubscriber();
+				return;
+			}
+	
+			unsubscriber = subscribe(Subscriptions.CURRENT_USER_ROLES_UPDATED, {
+				variables: {
+					userId: data.data.id
+				},
+				onNext(data) {
+					update((value) => ({
+						...value,
+						data: value.data ? {
+							...value.data,
+							permissions: value.adminMode ? data.roles.permissions : 0,
+							__permissions: data.roles.permissions,
+							primaryRole: data.roles.primaryRole,
+							roles: data.roles.roles
+						} : null
+					}));
+				},
+			});
+		});
+
 		getCurrentUser()
 			.then((data) => {
 				const adminMode = get(user).adminMode;
@@ -42,49 +68,8 @@ export const user = writable<{ loading: boolean; adminMode: boolean; data: UserD
 				});
 			})
 			.catch(console.error);
-		
 	}
 );
-
-if (browser) {
-	let observer: Observable<FetchResult<OnCurrentUserRolesUpdatedSubscription>> | null = null;
-	let subscription: Subscription | null = null;
-	user.subscribe((data) => {
-		if (data.loading || !data.data) {
-			observer = null;
-			if (subscription) subscription.unsubscribe();
-			return;
-		}
-
-		if (!data.loading && data.data) {
-			if (!observer) {
-				observer = getApollo().subscribe({
-					query: Subscriptions.CURRENT_USER_ROLES_UPDATED,
-					variables: {
-						userId: data.data.id
-					}
-				});
-			}
-			if (!subscription) {
-				subscription = observer.subscribe(({ data }) => {
-					if (!data) return;
-					user.update((value) => {
-						return {
-							...value,
-							data: value.data ? {
-								...value.data,
-								permissions: value.adminMode ? data.roles.permissions : 0,
-								__permissions: data.roles.permissions,
-								primaryRole: data.roles.primaryRole,
-								roles: data.roles.roles
-							} : null
-						};
-					});
-				});
-			}
-		}
-	});
-}
 
 export function toggleAdminMode(enabled?: boolean) {
 	user.update((value) => {
