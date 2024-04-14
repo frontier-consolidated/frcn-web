@@ -5,7 +5,6 @@ import type { WithModel } from "./types";
 import { resolveUser } from "./User";
 import { logger } from "../../../logger";
 import { $roles } from "../../../services/roles";
-import { $system } from "../../../services/system";
 import { $users } from "../../../services/users";
 import type { UserRole as GQLUserRole, Resolvers } from "../../__generated__/resolvers-types";
 import { pubsub } from "../../pubsub";
@@ -45,8 +44,7 @@ export const roleResolvers: Resolvers = {
 	Query: {
 		async getRoles() {
 			const roles = await $roles.getAllRoles();
-			const sortedRoles = await $roles.sort(roles);
-			return sortedRoles.map(resolveUserRole);
+			return roles.map(resolveUserRole);
 		},
 		async getRole(source, args) {
 			const role = await $roles.getRole(args.id);
@@ -96,16 +94,20 @@ export const roleResolvers: Resolvers = {
 			return updatedRole && resolveUserRole(updatedRole);
 		},
 		async deleteRole(source, args, context) {
+			const role = await $roles.getRole(args.id);
+			if (!role) return false;
+
 			// TODO: Add validation
 			logger.audit(context, "deleted a Role", args);
-			await $roles.deleteRole(args.id);
+			await $roles.deleteRole(role);
 			return true;
 		},
 		async reorderRoles(source, args, context) {
-			const { roleOrder } = await $system.getSystemSettings();
+			const roles = await $roles.getAllRoles();
+			roles.sort((a, b) => a.order - b.order);
 
-			if (args.order.length !== roleOrder.length) {
-				throw gqlErrorBadInput("Given role order is not the same length as server role order");
+			if (args.order.length !== roles.length) {
+				throw gqlErrorBadInput("Given role order is not the same length as server roles");
 			}
 
 			const seen: string[] = [];
@@ -113,8 +115,8 @@ export const roleResolvers: Resolvers = {
 				if (seen.includes(roleId)) {
 					throw gqlErrorBadInput(`Duplicate role id in given role order: ${roleId}`);
 				}
-				if (!roleOrder.includes(roleId)) {
-					throw gqlErrorBadInput(`Role id in given role order not in server role order: ${roleId}`);
+				if (!roles.find(r => r.id === roleId)) {
+					throw gqlErrorBadInput(`Role id in given role order not in server roles: ${roleId}`);
 				}
 
 				seen.push(roleId);
@@ -123,19 +125,19 @@ export const roleResolvers: Resolvers = {
 			const permissions = await calculatePermissions(context);
 			
 			if (!hasAdmin(permissions) && context.user) {
-				const roles = await $users.getAllRoles(context.user);
+				const userRoles = await $users.getAllRoles(context.user);
 	
 				let highest = 0;
-				for (const [i, role] of roleOrder.entries()) {
-					const userRole = roles.find(r => r.id === role);
-					if (userRole && i > highest) {
-						highest = i;
+				for (const role of roles) {
+					const userRole = userRoles.find(r => r.id === role.id);
+					if (userRole && role.order > highest) {
+						highest = role.order;
 					}
 				}
 
-				const unmoveableRoles = roleOrder.slice(highest);
+				const unmoveableRoles = roles.slice(highest);
 				for (const [i, roleId] of args.order.slice(highest).entries()) {
-					if (unmoveableRoles[i] !== roleId) {
+					if (unmoveableRoles[i].id !== roleId) {
 						throw gqlErrorBadInput("Found unexpected role in unmoveable role region");
 					}
 				}

@@ -22,6 +22,7 @@ model SystemSettings {
   defaultEventChannel   EventChannel? @relation(fields: [defaultEventChannelId], references: [id])
   defaultEventChannelId Int?          @unique @map("default_event_channel_id")
   roleOrder             String[]      @map("role_order")
+  roleOrderMigrated     Boolean       @default(false) @map("role_order_migrated")
   updatedAt             DateTime      @updatedAt @map("updated_at")
   createdAt             DateTime      @default(now()) @map("created_at")
 
@@ -85,6 +86,7 @@ model UserStatus {
 model UserRole {
   id                       String                        @id @default(uuid())
   name                     String
+  order                    Int
   discordId                String?                       @unique @map("discord_id")
   primary                  Boolean                       @default(false)
   permissions              Int

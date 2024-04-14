@@ -4,7 +4,6 @@ import { type APIUser, CDNRoutes, ImageFormat, Client as DiscordClient } from "d
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
-import { $system } from "./system";
 import { database } from "../database";
 import { getAdminIds } from "../env";
 import { publishRolesUpdated, publishUserRolesUpdated } from "../graphql/events";
@@ -159,22 +158,21 @@ async function getPrimaryRole<T extends Prisma.UserRoleDefaultArgs>(id: string, 
 	return result;
 }
 
-async function getAllRolesUnordered(user: User) {
+async function getAllRoles(user: User) {
 	const primaryRole = await getPrimaryRole(user.id);
 	const roles = await getRoles(user.id, {
 		include: {
 			role: true
 		}
 	});
-	return [...(primaryRole ? [primaryRole] : []), ...roles.map(r => r.role)];
-}
 
-async function getAllRoles(user: User) {
-	return $roles.sort(await getAllRolesUnordered(user));
+	const combinedRoles = [...(primaryRole ? [primaryRole] : []), ...roles.map(r => r.role)];
+	combinedRoles.sort((a, b) => a.order - b.order);
+	return combinedRoles;
 }
 
 async function getPermissions(user: User) {
-	const roles = await getAllRolesUnordered(user);
+	const roles = await getAllRoles(user);
 	let permissions = $roles.resolvePermissions(roles);
 
 	const adminIds = getAdminIds();
@@ -229,16 +227,10 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 		}
 	});
 
-	const { roleOrder } = await $system.getSystemSettings();
-
 	const currentPrimaryRole = currentUserRoles.find(role => role.primary);
-	const currentPrimaryRoleRank = currentPrimaryRole ? $roles.getRoleOrder(currentPrimaryRole.id, roleOrder) : -1;
 
 	let fallbackPrimaryRole: UserRole | null = null;
-	let fallbackPrimaryRoleRank = -1;
-
 	let newPrimaryRole: UserRole | null = null;
-	let newPrimaryRoleRank = -1;
 
 	const rolesToGive: UserRole[] = [];
 
@@ -247,14 +239,10 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 		if (hasRole) continue;
 
 		if (role.primary) {
-			const rank = $roles.getRoleOrder(role.id, roleOrder);
-
-			if (rank > currentPrimaryRoleRank && (!newPrimaryRole || rank > newPrimaryRoleRank)) {
+			if (role.order > (currentPrimaryRole?.order ?? -1) && (!newPrimaryRole || role.order > newPrimaryRole.order)) {
 				newPrimaryRole = role;
-				newPrimaryRoleRank = rank;
-			} else if (rank < currentPrimaryRoleRank && rank > fallbackPrimaryRoleRank) {
+			} else if (role.order < (currentPrimaryRole?.order ?? -1) && role.order > (fallbackPrimaryRole?.order ?? -1)) {
 				fallbackPrimaryRole = role;
-				fallbackPrimaryRoleRank = rank;
 			}
 		} else {
 			rolesToGive.push(role);
