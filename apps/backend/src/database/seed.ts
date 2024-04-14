@@ -12,7 +12,6 @@ export async function seed(database: typeof Database) {
 		update: {},
 		create: {
 			discordGuildId: "",
-			roleOrder: [],
 		},
 	});
 
