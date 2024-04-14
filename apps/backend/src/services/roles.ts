@@ -98,35 +98,31 @@ async function createRole(data?: Partial<Prisma.UserRoleCreateInput>) {
 	return role;
 }
 
-async function editRole(id: string, data: RoleEditInput) {
-	const role = await database.userRole.findUnique({
-		where: { id },
-		include: {
-			primaryUsers: true,
-		}
-	});
-
-	if (!role) return null;
+async function editRole(role: UserRole, data: RoleEditInput) {
 	if (role.primary && data.primary === false) {
-		const newRole = data.newPrimaryRole && await database.userRole.findUnique({
-			where: { id: data.newPrimaryRole }
-		});
-		if (!newRole || !newRole.primary) return null;
+		const users = await getRoleUsers(role);
 
-		await database.user.updateMany({
-			where: {
-				id: {
-					in: role.primaryUsers.map(u => u.id)
+		if (users.length > 0) {
+			const newRole = data.newPrimaryRole && await database.userRole.findUnique({
+				where: { id: data.newPrimaryRole }
+			});
+			if (!newRole || !newRole.primary) return null;
+	
+			await database.user.updateMany({
+				where: {
+					id: {
+						in: users.map(u => u.id)
+					}
+				},
+				data: {
+					primaryRoleId: newRole.id
 				}
-			},
-			data: {
-				primaryRoleId: newRole.id
-			}
-		});
+			});
+		}
 	}
 
 	const updatedRole = await database.userRole.update({
-		where: { id },
+		where: { id: role.id },
 		data: {
 			name: data.name ?? undefined,
 			discordId: data.discordId,

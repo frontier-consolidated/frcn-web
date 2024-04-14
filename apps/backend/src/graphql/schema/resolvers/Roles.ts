@@ -90,7 +90,7 @@ export const roleResolvers: Resolvers = {
 			}
 
 			logger.audit(context, "updated a Role", args);
-			const updatedRole = await $roles.editRole(args.id, data);
+			const updatedRole = await $roles.editRole(role, data);
 			return updatedRole && resolveUserRole(updatedRole);
 		},
 		async deleteRole(source, args, context) {
