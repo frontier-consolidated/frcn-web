@@ -223,7 +223,7 @@ async function createEventThread(event: Event, discordClient: DiscordClient, cha
 		name: event.name,
 		type: ChannelType.PrivateThread,
 		reason: "Create thread for event: " + event.name,
-		autoArchiveDuration: ThreadAutoArchiveDuration.ThreeDays,
+		autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
 		invitable: false,
 	});
 
