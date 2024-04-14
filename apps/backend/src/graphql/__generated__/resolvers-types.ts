@@ -304,6 +304,7 @@ export type Mutation = {
   setEventMemberTeam: Scalars['Boolean']['output'];
   setUserScName: User;
   syncRole?: Maybe<UserRole>;
+  syncRoles: Scalars['Boolean']['output'];
   unpostEvent: Scalars['Boolean']['output'];
   unrsvpForEvent: Scalars['Boolean']['output'];
   verifyUserScName: User;
@@ -1222,6 +1223,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   setEventMemberTeam?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationSetEventMemberTeamArgs, 'member'>>;
   setUserScName?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationSetUserScNameArgs, 'name'>>;
   syncRole?: Resolver<Maybe<ResolversTypes['UserRole']>, ParentType, ContextType, RequireFields<MutationSyncRoleArgs, 'id'>>;
+  syncRoles?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   unpostEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUnpostEventArgs, 'id'>>;
   unrsvpForEvent?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationUnrsvpForEventArgs, 'id'>>;
   verifyUserScName?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationVerifyUserScNameArgs, 'code'>>;
