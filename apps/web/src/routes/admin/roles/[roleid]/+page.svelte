@@ -5,7 +5,7 @@
 	import { Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
 	import { ArrowLeftSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
-	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button, PermissionToggles, Head } from "$lib/components";
+	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button, PermissionToggles, Head, ConfirmationModal } from "$lib/components";
 	import { getApollo, Mutations } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
@@ -63,13 +63,20 @@
 	$: canToggleAdmin = checkIfCanToggleAdmin($rolesCache, data.role, $user.data);
 
 	const validator = new FieldValidator();
+	let makeDefaultPrimaryModal = false;
 
-	async function save() {
+	async function save(confirm = false) {
 		if (!validator.validate()) {
 			pushNotification({
 				type: "error",
 				message: "Check your inputs",
 			});
+			return;
+		}
+
+		// If setting this to a primary role will make it the default, display a confirmation
+		if (!confirm && editData.primary && data.role.primary === false && $rolesCache.findIndex(r => r.id === data.role.id) < $rolesCache.findIndex(r => r.primary)) {
+			makeDefaultPrimaryModal = true;
 			return;
 		}
 
@@ -214,7 +221,7 @@
 			disabled={!isDirty}
 			on:click={() => {
 				if (!isDirty) return;
-				save();
+				save().catch(console.error);
 			}}
 		>
 			<EditOutline class="me-2" tabindex="-1" /> Save
@@ -222,3 +229,8 @@
 	</div>
 </div>
 
+<ConfirmationModal title="Make default primary role" bind:open={makeDefaultPrimaryModal} on:confirm={async () => {
+	save(true).then(() => (makeDefaultPrimaryModal = false)).catch(console.error);
+}}>
+    <span>WARNING! Making this a primary role will make it the default primary role. Place this role above the default before making it primary to prevent this.</span>
+</ConfirmationModal>

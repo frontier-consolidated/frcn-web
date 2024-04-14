@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
+	import { Badge, TableBodyCell, TableBodyRow } from "flowbite-svelte";
 	import { DiscordSolid, DotsVerticalOutline, EditOutline, LockSolid, StarSolid, TrashBinSolid, UsersSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
 	import { ConfirmationModal, Tooltip } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
-	import type { rolesCache } from "$lib/stores/RolesCacheStore";
+	import { rolesCache } from "$lib/stores/RolesCacheStore";
 
     export let role: (typeof $rolesCache)[number];
     export let canMove: boolean = false;
@@ -38,11 +38,17 @@
                     Primary role
                 </Tooltip>
             {/if}
-            {role.name}
             {#if role.discordId}
                 <Tooltip>
-                    <DiscordSolid slot="icon" size="xs" class="ms-2" />
+                    <DiscordSolid slot="icon" size="xs" class="me-2" />
                     Linked to a discord role
+                </Tooltip>
+            {/if}
+            {role.name}
+            {#if $rolesCache.find(r => r.primary)?.id === role.id}
+                <Tooltip>
+                    <Badge slot="icon" color="dark" class="ms-2">Default</Badge>
+                    Default primary role
                 </Tooltip>
             {/if}
         </div>

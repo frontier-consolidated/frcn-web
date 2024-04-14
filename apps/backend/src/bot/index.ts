@@ -5,11 +5,10 @@ import { eventInteraction } from "./handlers/event.interaction";
 import { eventDmInteraction } from "./handlers/eventDm.interaction";
 import { startEventsUpdate } from "./handlers/updateEvents.interval";
 import { database } from "../database";
-import { publishUserRolesUpdated } from "../graphql/events";
+import { publishRolesUpdated, publishUserRolesUpdated } from "../graphql/events";
 import { logger } from "../logger";
 import { $discord } from "../services/discord";
 import { $roles } from "../services/roles";
-import { $system } from "../services/system";
 import { $users } from "../services/users";
 
 export function load(client: Client) {
@@ -49,23 +48,15 @@ export function load(client: Client) {
                 }
             }
         });
-        
-        const { roleOrder } = await $system.getSystemSettings();
 
         const currentPrimaryRole = currentUserRoles.find(role => role.primary);
-        const currentPrimaryRoleRank = currentPrimaryRole ? $roles.getRoleOrder(currentPrimaryRole.id, roleOrder) : -1;
 
         let fallbackPrimaryRole: UserRole | null = null;
-        let fallbackPrimaryRoleRank = -1;
-
         let newPrimaryRole: UserRole | null = null;
-        let newPrimaryRoleRank = -1;
         
         for (const role of connectedPrimaryDiscordRoles) {
-            const rank = $roles.getRoleOrder(role.id, roleOrder);
-            if (rank < currentPrimaryRoleRank && rank > fallbackPrimaryRoleRank) {
+            if (role.order < (currentPrimaryRole?.order ?? -1) && role.order > (fallbackPrimaryRole?.order ?? -1)) {
                 fallbackPrimaryRole = role;
-                fallbackPrimaryRoleRank = rank;
             }
         }
 
@@ -79,14 +70,10 @@ export function load(client: Client) {
             if (hasRole) continue;
 
             if (role.primary) {
-                const rank = $roles.getRoleOrder(role.id, roleOrder);
-    
-                if (rank > currentPrimaryRoleRank && (!newPrimaryRole || rank > newPrimaryRoleRank)) {
+                if (role.order > (currentPrimaryRole?.order ?? -1) && (!newPrimaryRole || role.order > newPrimaryRole.order)) {
                     newPrimaryRole = role;
-                    newPrimaryRoleRank = rank;
-                } else if (rank < currentPrimaryRoleRank && rank > fallbackPrimaryRoleRank) {
+                } else if (role.order < (currentPrimaryRole?.order ?? -1) && role.order > (fallbackPrimaryRole?.order ?? -1)) {
                     fallbackPrimaryRole = role;
-                    fallbackPrimaryRoleRank = rank;
                 }
             } else {
                 rolesToGive.push(role);
@@ -134,6 +121,7 @@ export function load(client: Client) {
             });
         
             publishUserRolesUpdated([user]);
+            await publishRolesUpdated();
         }
     });
 

@@ -1,6 +1,5 @@
 import type { Prisma, User, UserRole } from "@prisma/client";
 
-import { $system } from "./system";
 import { $users } from "./users";
 import { database } from "../database";
 import type { RoleEditInput } from "../graphql/__generated__/resolvers-types";
@@ -19,9 +18,14 @@ async function getRoleByDiscordId(id: string) {
 }
 
 async function getAllRoles<T extends Prisma.UserRoleFindManyArgs>(args?: Prisma.SelectSubset<T, Prisma.UserRoleFindManyArgs>) {
-	return await database.userRole.findMany<T>(args);
+	const roles = await database.userRole.findMany<T>(args);
+	if (roles.length > 0 && "order" in roles[0]) {
+		roles.sort((a, b) => (a as { order: number }).order - (b as { order: number }).order);
+	}
+	return roles;
 }
 
+// TODO: Delete getRoleOrder after data migration
 // NOTE: Low order means lower ranked role
 
 function getRoleOrder(id: string, order: string[]): number;
@@ -31,25 +35,23 @@ function getRoleOrder(roleOrId: UserRole | string, order: string[]): number {
 	return order.findIndex((id) => roleId == id);
 }
 
-async function sort(roles: UserRole[]) {
-	const { roleOrder } = await $system.getSystemSettings();
-	const rolesWithOrder = roles.map((role) => ({
-		role,
-		order: getRoleOrder(role, roleOrder),
-	}));
-	rolesWithOrder.sort((a, b) => a.order - b.order);
-	return rolesWithOrder.map((r) => r.role);
-}
-
 async function getDefaultPrimaryRole() {
-	const primaryRoles = await database.userRole.findMany({
+	let defaultPrimaryRole = await database.userRole.findFirst({
 		where: {
 			primary: true,
 		},
+		orderBy: {
+			order: "asc"
+		}
 	});
 
-	const sortedPrimaryRoles = await sort(primaryRoles);
-	return sortedPrimaryRoles[0];
+	if (defaultPrimaryRole) return defaultPrimaryRole;
+
+	defaultPrimaryRole = await createRole({
+		name: "default",
+		primary: true
+	});
+	return defaultPrimaryRole;
 }
 
 async function getRoleUsers<T extends Prisma.UserFindManyArgs>(role: UserRole, args?: Prisma.Subset<T, Prisma.UserFindManyArgs>) {
@@ -78,60 +80,49 @@ async function getRoleUsers<T extends Prisma.UserFindManyArgs>(role: UserRole, a
 	return userLinks ? userLinks.map(ul => ul.user) : [];
 }
 
-async function createRole() {
-	const role = await database.userRole.create({
-		data: {
-			name: "new role",
-			permissions: 0,
-		}
-	});
-
-	const { roleOrder } = await $system.getSystemSettings();
-
-	await database.systemSettings.update({
-		where: { unique: true },
-		data: {
-			roleOrder: [
-				role.id,
-				...roleOrder
-			]
-		}
+async function createRole(data?: Partial<Prisma.UserRoleCreateInput>) {
+	const role = await database.$transaction(async (tx) => {
+		await tx.$executeRaw`UPDATE "user"."roles" SET "order" = "order" + 1`;
+		
+		return await tx.userRole.create({
+			data: {
+				name: "new role",
+				permissions: 0,
+				order: 0,
+				...data
+			}
+		});
 	});
 
 	await publishRolesUpdated();
-
 	return role;
 }
 
-async function editRole(id: string, data: RoleEditInput) {
-	const role = await database.userRole.findUnique({
-		where: { id },
-		include: {
-			primaryUsers: true,
-		}
-	});
-
-	if (!role) return null;
+async function editRole(role: UserRole, data: RoleEditInput) {
 	if (role.primary && data.primary === false) {
-		const newRole = data.newPrimaryRole && await database.userRole.findUnique({
-			where: { id: data.newPrimaryRole }
-		});
-		if (!newRole || !newRole.primary) return null;
+		const users = await getRoleUsers(role);
 
-		await database.user.updateMany({
-			where: {
-				id: {
-					in: role.primaryUsers.map(u => u.id)
+		if (users.length > 0) {
+			const newRole = data.newPrimaryRole && await database.userRole.findUnique({
+				where: { id: data.newPrimaryRole }
+			});
+			if (!newRole || !newRole.primary) return null;
+	
+			await database.user.updateMany({
+				where: {
+					id: {
+						in: users.map(u => u.id)
+					}
+				},
+				data: {
+					primaryRoleId: newRole.id
 				}
-			},
-			data: {
-				primaryRoleId: newRole.id
-			}
-		});
+			});
+		}
 	}
 
 	const updatedRole = await database.userRole.update({
-		where: { id },
+		where: { id: role.id },
 		data: {
 			name: data.name ?? undefined,
 			discordId: data.discordId,
@@ -155,30 +146,21 @@ async function editRole(id: string, data: RoleEditInput) {
 }
 
 async function reorderRoles(order: string[]) {
-	await database.systemSettings.update({
-		where: { unique: true },
-		data: {
-			roleOrder: order
-		}
-	});
+	await Promise.all(order.map(async (id, order) => await database.userRole.update({
+		where: { id },
+		data: { order }
+	})));
 
 	await publishRolesUpdated();
 }
 
-async function deleteRole(id: string) {
-	const { roleOrder } = await $system.getSystemSettings();
-
+async function deleteRole(role: UserRole) {
 	await database.$transaction(async (tx) => {
-		await tx.systemSettings.update({
-			where: { unique: true },
-			data: {
-				roleOrder: roleOrder.filter(rId => rId !== id)
-			}
+		await tx.userRole.delete({
+			where: { id: role.id }
 		});
 
-		await tx.userRole.delete({
-			where: { id }
-		});
+		await tx.$executeRaw`UPDATE "user"."roles" SET "order" = "order" - 1 WHERE "order" > ${role.order}`;
 	});
 
 	await publishRolesUpdated();
@@ -188,10 +170,10 @@ async function hasPrimaryRolePrivileges(role: UserRole, user: User) {
 	if (!role.primary)
 		throw new Error(`Checking hasPrimaryRolePrivileges() with non-primary role ${role.name}`);
 
-	if (user.primaryRoleId == role.id) return true;
+	if (user.primaryRoleId === role.id) return true;
 
-	const { roleOrder } = await $system.getSystemSettings();
-	return getRoleOrder(user.primaryRoleId, roleOrder) >= getRoleOrder(role, roleOrder);
+	const primaryRole = await getRole(user.primaryRoleId);
+	return (primaryRole?.order ?? -1) >= role.order;
 }
 
 async function hasRole(role: UserRole, user: User) {
@@ -226,6 +208,7 @@ async function changePrimaryRole(role: UserRole, user: User) {
 	});
 
 	publishUserRolesUpdated([user]);
+	await publishRolesUpdated();
 }
 
 async function giveRole(role: UserRole, user: User) {
@@ -247,6 +230,7 @@ async function giveRole(role: UserRole, user: User) {
 	});
 
 	publishUserRolesUpdated([user]);
+	await publishRolesUpdated();
 }
 
 async function removeRole(role: UserRole, user: User) {
@@ -267,6 +251,7 @@ async function removeRole(role: UserRole, user: User) {
 	});
 
 	publishUserRolesUpdated([user]);
+	await publishRolesUpdated();
 }
 
 function resolvePermissions(roles: UserRole[]) {
@@ -282,7 +267,6 @@ export const $roles = {
 	getRoleByDiscordId,
 	getAllRoles,
 	getRoleOrder,
-	sort,
 	getDefaultPrimaryRole,
 	getRoleUsers,
 	createRole,

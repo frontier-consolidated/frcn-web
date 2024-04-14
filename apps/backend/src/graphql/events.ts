@@ -22,9 +22,8 @@ export function publishUserRolesUpdated(users: User[]) {
 
 export async function publishRolesUpdated() {
     const roles = await $roles.getAllRoles();
-    const sortedRoles = await $roles.sort(roles);
 
     pubsub.publish("ROLES_UPDATED", {
-        rolesUpdated: sortedRoles.map(resolveUserRole)
+        rolesUpdated: roles.map(resolveUserRole)
     });
 }
