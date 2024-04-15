@@ -25,16 +25,6 @@ async function getAllRoles<T extends Prisma.UserRoleFindManyArgs>(args?: Prisma.
 	return roles;
 }
 
-// TODO: Delete getRoleOrder after data migration
-// NOTE: Low order means lower ranked role
-
-function getRoleOrder(id: string, order: string[]): number;
-function getRoleOrder(role: UserRole, order: string[]): number;
-function getRoleOrder(roleOrId: UserRole | string, order: string[]): number {
-	const roleId = typeof roleOrId === "string" ? roleOrId : roleOrId.id;
-	return order.findIndex((id) => roleId == id);
-}
-
 async function getDefaultPrimaryRole() {
 	let defaultPrimaryRole = await database.userRole.findFirst({
 		where: {
@@ -266,7 +256,6 @@ export const $roles = {
 	getRole,
 	getRoleByDiscordId,
 	getAllRoles,
-	getRoleOrder,
 	getDefaultPrimaryRole,
 	getRoleUsers,
 	createRole,
