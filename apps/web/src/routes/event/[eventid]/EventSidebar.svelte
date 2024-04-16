@@ -93,7 +93,7 @@
 							}
 
 							data.rsvp = null;
-							data.members = data.members.filter(member => member.user.id !== $user.data?.id);
+							data.members = data.members.filter(member => member.user?.id !== $user.data?.id);
 						}}
 					>
 						<svelte:fragment slot="icon">

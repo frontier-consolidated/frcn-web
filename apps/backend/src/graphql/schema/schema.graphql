@@ -114,7 +114,7 @@ type EventRsvp {
 type EventMember {
 	id: ID!
 	pending: Boolean!
-	user: User!
+	user: User
 	team: EventTeam
 	rsvp: ID
 	rsvpAt: Timestamp!
