@@ -1,4 +1,5 @@
-import type { Handle } from "@sveltejs/kit";
+import { ApolloError } from "@apollo/client/core";
+import { error, type Handle, type NumericRange } from "@sveltejs/kit";
 import { locale } from "svelte-i18n";
 
 import { Queries, createApolloClient } from "$lib/graphql";
@@ -25,6 +26,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 			if (data.user) event.locals.user = { ...data.user, cookie };
 		} catch (err) {
+			if (err instanceof ApolloError) {
+				if (err.networkError && "statusCode" in err.networkError) {
+					if (err.networkError.statusCode >= 400) {
+						error(err.networkError.statusCode as NumericRange<400, 599>, err.networkError.message);
+					}
+				}
+			}
 			console.error(err);
 		}
 	}
