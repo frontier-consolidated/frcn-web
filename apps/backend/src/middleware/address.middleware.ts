@@ -7,7 +7,7 @@ function isLocalRequest(server: Server, req: Request) {
 
     if (!address) return false;
     if (typeof address === "string") return address === req.remoteIp;
-    return (address.address === "::" ? "::1" : address.address) === req.remoteIp;
+    return (address.address === "::" ? "::1" : address.address) === req.remoteIp || req.remoteIp === "127.0.0.1" || req.remoteIp === "::ffff:127.0.0.1" || req.remoteIp === "::1";
 }
 
 export function addressMiddleware(server: Server) {

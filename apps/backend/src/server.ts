@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto";
+
 import pidusage from "pidusage";
 
 import { createApp } from "./app";
@@ -8,6 +10,9 @@ import { $discord } from "./services/discord";
 import { $events } from "./services/events";
 
 process.env.NODE_ENV ??= "development";
+if (!process.env.LOCAL_ACCESS_TOKEN) {
+	process.env.LOCAL_ACCESS_TOKEN = randomUUID();
+}
 validateEnvironment();
 
 await initDatabase();
