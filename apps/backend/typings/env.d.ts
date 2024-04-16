@@ -21,7 +21,10 @@ declare global {
 
 			CMS_BUS_DATABASE_URL?: string;
 			CMS_BUS_SCHEMA: string;
+			/** @deprecated */
 			CMS_ACCESS_KEY?: string;
+
+			LOCAL_ACCESS_TOKEN?: string;
 
 			ACCESS_KEY_HEADER: string;
 			CONSENT_COOKIE: string;

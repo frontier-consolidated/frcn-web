@@ -77,7 +77,7 @@ export class CmsClient {
 
 export function createCmsClient() {
     const apollo = createApolloClient({
-        "x-frcn-access-key": env.CMS_ACCESS_KEY
+        "x-frcn-access-key": env.LOCAL_ACCESS_TOKEN ?? env.CMS_ACCESS_KEY
     });
 
     return new CmsClient({
