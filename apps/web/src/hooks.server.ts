@@ -1,9 +1,10 @@
 import { ApolloError } from "@apollo/client/core";
-import { error, type Handle, type NumericRange } from "@sveltejs/kit";
+import { error, type Handle, type HandleServerError, type NumericRange } from "@sveltejs/kit";
 import { locale } from "svelte-i18n";
 
 import { Queries, createApolloClient } from "$lib/graphql";
 
+import { env } from "$env/dynamic/private";
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const lang = event.request.headers.get("accept-language")?.split(",")[0];
@@ -19,8 +20,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.apollo = apollo;
 
 	if (cookie) {
+		const userFetchApollo = createApolloClient({
+			cookie,
+			"x-frcn-access-key": env.LOCAL_ACCESS_TOKEN ?? ""
+		});
+
 		try {
-			const { data } = await apollo.query({
+			const { data } = await userFetchApollo.query({
 				query: Queries.CURRENT_USER_SERVER,
 			});
 
@@ -38,4 +44,20 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	return resolve(event);
+};
+
+export const handleError: HandleServerError = ({ error, status }) => {
+	if (error instanceof ApolloError) {
+		if (error.networkError && "statusCode" in error.networkError) {
+			return {
+				message: error.message,
+				status: error.networkError.statusCode
+			};
+		}
+	}
+
+	return {
+		message: "Internal Error",
+		status: 500
+	};
 };
