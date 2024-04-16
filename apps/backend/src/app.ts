@@ -16,7 +16,11 @@ import { getBasePath, isProd } from "./env";
 import { createApolloServer } from "./graphql";
 import { logger } from "./logger";
 import { accesskeyMiddleware, type AccessKeyMiddlewareConfig } from "./middleware/accesskey.middleware";
+import { addressMiddleware } from "./middleware/address.middleware";
+import { idMiddleware } from "./middleware/id.middleware";
+import { rateLimitMiddleware } from "./middleware/rateLimit.middleware";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/session";
+import { timestampMiddleware } from "./middleware/timestamp.middleware";
 import { createS3Client } from "./s3Client";
 import { $users } from "./services/users";
 
@@ -71,29 +75,25 @@ export async function createApp(config: CreateAppOptions) {
         }),
     );
 
+    app.use(cookieParser());
+
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+
+    app.use(idMiddleware());
+    app.use(timestampMiddleware());
+    app.use(addressMiddleware(server));
+
+    app.use(sessionMiddlewares(config.sessionConfig));
+    app.use(accesskeyMiddleware(config.accesskeyConfig));
+
+    app.use(rateLimitMiddleware());
+
     app.use((req, res, next) => {
-        const timestamp = new Date();
-        req.timestamp = timestamp;
-
-        const interval = setInterval(() => {
-            if (req.closed || req.complete) {
-                clearInterval(interval);
-                return;
-            }
-            const elapsed = Date.now() - timestamp.getTime();
-            if (elapsed > 5000) {
-                logger.warn(`HTTP Request taking a long time! Elapsed: ${elapsed}ms`, logger.requestDetails(req));
-            }
-        }, 1000);
-
         let ended = false;
         function end() {
             if (ended) return;
             ended = true;
-            clearInterval(interval);
-
-            // ignore graphql requests as we log those elsewhere
-            if (req.url === getBasePath() + "/graphql") return;
 
             logger.log("HTTP request:", { status: res.statusCode, ...logger.requestDetails(req) });
         }
@@ -104,14 +104,6 @@ export async function createApp(config: CreateAppOptions) {
 
         next();
     });
-
-    app.use(cookieParser());
-
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-
-    app.use(sessionMiddlewares(config.sessionConfig));
-    app.use(accesskeyMiddleware(config.accesskeyConfig));
 
     app.get("/metrics", async (req, res, next) => {
         if (!req.user) {
