@@ -6,7 +6,10 @@ import type { CreateAccessKeyMutation, GetAllRolesQuery, GetCurrentUserOnServerQ
 // for information about these interfaces
 declare global {
 	namespace App {
-		// interface Error {}
+		interface Error {
+			message?: string;
+			status?: number;
+		}
 		interface Locals {
 			apollo: TypedApolloClient;
 			user?: GetCurrentUserOnServerQuery["user"] & {

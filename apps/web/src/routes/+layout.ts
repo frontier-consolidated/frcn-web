@@ -13,7 +13,7 @@ function base64URLdecode(str: string) {
 
 export const prerender = false;
 
-export const load = async ({ url, depends, fetch }) => {
+export const load = async ({ url }) => {
 	if (browser) {
 		locale.set(window.navigator.language);
 

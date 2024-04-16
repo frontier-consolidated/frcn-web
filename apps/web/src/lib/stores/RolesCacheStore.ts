@@ -4,6 +4,7 @@ import { readable } from "svelte/store";
 
 import { Queries, Subscriptions, getApollo, subscribe } from "$lib/graphql";
 import type { GetAllRolesQuery } from "$lib/graphql/__generated__/graphql";
+import { handleApiError } from "$lib/handleApiError";
 
 import { user } from "./UserStore";
 
@@ -36,6 +37,7 @@ export const rolesCache = readable<GetAllRolesQuery["roles"]>([], (set) => {
                 .catch(err => {
                     console.error("Error fetching all roles", err);
                     updateRoles = false;
+                    handleApiError(err);
                 });
             
             return;

@@ -3,6 +3,7 @@ import { get, writable } from "svelte/store";
 
 import { Queries, Subscriptions, getApollo, subscribe } from "$lib/graphql";
 import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";
+import { handleApiError } from "$lib/handleApiError";
 
 import { pushNotification } from "./NotificationStore";
 
@@ -73,6 +74,8 @@ export function viewUserProfile(user: string | UserFragmentFragment) {
             }
         }).catch(err => {
             console.error(err);
+            handleApiError(err);
+
             if (get(userProfileView).open) {
                 pushNotification({
                     type: "error",
