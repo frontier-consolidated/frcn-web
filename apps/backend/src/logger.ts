@@ -77,6 +77,7 @@ function internal_log(stream: NodeJS.WriteStream, ...params: any[]) {
         depth: 3,
         maxArrayLength: 10,
         compact: true,
+        breakLength: 512
     }, `${message}${args.length > 0 ? "\n" : ""}`, ...args).trimEnd();
 
 
@@ -143,7 +144,7 @@ function audit(actor: User | AccessKey | GQLContext, message: string, data?: any
 }
 
 function requestDetails(req: Request) {
-    return { url: req.url, elapsed: `${Math.round((Date.now() - req.timestamp.getTime()) / 100) / 10}s`, method: req.method, query: req.query, params: req.params };
+    return { url: req.originalUrl, id: req.id, elapsed: `${Math.round((Date.now() - req.timestamp.getTime()) / 100) / 10}s`, method: req.method, query: req.query, params: req.params, ip: req.ip, agent: req.header("user-agent"), local: req.isLocal, rateLimit: req.rateLimit };
 }
 
 export const logger = {
