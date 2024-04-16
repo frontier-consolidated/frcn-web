@@ -175,7 +175,7 @@ export const eventResolvers: Resolvers = {
 		async members(source) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
 			const members = await $events.getEventMembers(_model.id);
-			return members.map(resolveEventMember);
+			return members.filter(member => !!member.userId).map(resolveEventMember);
 		},
 		async settings(source) {
 			const { _model } = source as WithModel<GQLEvent, Event>;
@@ -205,7 +205,8 @@ export const eventResolvers: Resolvers = {
 		async user(source) {
 			const { _model } = source as WithModel<GQLEventMember, EventUser>;
 			const user = await $events.getEventMemberUser(_model.id);
-			return resolveUser(user!);
+			if (!user) return null;
+			return resolveUser(user);
 		},
 	},
 

@@ -12,6 +12,16 @@ declare global {
 			accessKey?: AccessKey;
 			timestamp: Date;
 
+			id: string;
+			remoteIp: string;
+			isLocal: boolean;
+			rateLimit: {
+				limit: number;
+				used: number;
+				remaining: number;
+				resetTime: Date;
+			}
+
 			login(user: User): Promise<void>;
 			logout(): Promise<void>;
 		}

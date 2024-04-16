@@ -200,7 +200,7 @@ export type EventMember = {
   rsvp?: Maybe<Scalars['ID']['output']>;
   rsvpAt: Scalars['Timestamp']['output'];
   team?: Maybe<EventTeam>;
-  user: User;
+  user?: Maybe<User>;
 };
 
 export type EventRoleInput = {
@@ -1144,7 +1144,7 @@ export type EventMemberResolvers<ContextType = GQLContext, ParentType extends Re
   rsvp?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>;
   rsvpAt?: Resolver<ResolversTypes['Timestamp'], ParentType, ContextType>;
   team?: Resolver<Maybe<ResolversTypes['EventTeam']>, ParentType, ContextType>;
-  user?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
+  user?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 }>;
 

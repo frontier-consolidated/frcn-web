@@ -4,6 +4,7 @@ import { writable, get } from "svelte/store";
 import { Routes, api } from "$lib/api";
 import { Queries, Subscriptions, getApollo, subscribe } from "$lib/graphql";
 import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
+import { handleApiError } from "$lib/handleApiError";
 
 type UserData = (NonNullable<GetCurrentUserQuery["user"]> & { __permissions: number }) | null | undefined;
 
@@ -67,7 +68,10 @@ export const user = writable<{ loading: boolean; adminMode: boolean; data: UserD
 					} : null
 				});
 			})
-			.catch(console.error);
+			.catch(err => {
+				console.error("Error fetching user", err);
+				handleApiError(err);
+			});
 	}
 );
 
@@ -87,7 +91,15 @@ export function toggleAdminMode(enabled?: boolean) {
 }
 
 export async function login() {
-	const data = await getCurrentUser(false);
+	let data: GetCurrentUserQuery;
+	try {
+		data = await getCurrentUser(false);
+	} catch (err) {
+		console.error("Error fetching user", err);
+		handleApiError(err as any);
+		return;
+	}
+
 	if (!data.user) {
 		if (!browser) return;
 

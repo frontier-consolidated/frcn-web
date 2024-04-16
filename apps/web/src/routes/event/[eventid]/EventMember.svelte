@@ -17,17 +17,18 @@
 </script>
 
 <button class="rounded flex items-center gap-2 px-1 w-full dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700" on:click={() => {
+	if (!member.user) return;
 	viewUserProfile(member.user.id);
 }}>
-	<Avatar rounded size="sm" src={member.user.avatarUrl} />
+	<Avatar rounded size="sm" src={member.user?.avatarUrl} />
 	<div class="flex flex-col items-start">
-		<span class="text-md font-semibold text-ellipsis line-clamp-1 text-gray-800 dark:text-white">{member.user.name}</span>
+		<span class="text-md font-semibold text-ellipsis line-clamp-1 text-gray-800 dark:text-white">{member.user?.name ?? "[DELETED USER]"}</span>
 		<div class="text-left text-sm font-semibold text-ellipsis line-clamp-1">
 			{#if role}
 				<span class="text-violet-400">
 					{role.name}
 				</span>
-			{:else if event.owner?.id === member.user.id}
+			{:else if event.owner && event.owner.id === member.user?.id}
 				<span class="text-blue-400">
 					Event Organiser
 				</span>
@@ -48,13 +49,14 @@
 
 <Dropdown containerClass="rounded divide-y z-50" triggeredBy="#{optionsId}">
 	<DropdownItem on:click={() => {
+		if (!member.user) return;
 		viewUserProfile(member.user.id);
 	}}>
 		View Profile
 	</DropdownItem>
 	{#if !event.endedAt}
 		<DropdownDivider />
-		{#if $user.data?.id === member.user.id}
+		{#if $user.data && $user.data.id === member.user?.id}
 			<DropdownItem class="flex dark:hover:bg-red-500" on:click={async () => {
 				const { data: unrsvpData, errors } = await getApollo().mutate({
 					mutation: Mutations.UNRSVP_FOR_EVENT,
@@ -74,7 +76,7 @@
 				}
 
 				event.rsvp = null;
-				event.members = event.members.filter(m => m.user.id !== $user.data?.id);
+				event.members = event.members.filter(m => m.user?.id !== $user.data?.id);
 				pushNotification({
 					type: "success",
 					message: "UnRSVPed for event",

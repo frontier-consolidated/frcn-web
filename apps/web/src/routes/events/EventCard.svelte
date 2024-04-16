@@ -15,7 +15,7 @@
     export let event: Omit<EventFragmentFragment, "location"> & { location: AnyLocation[] | null };
     export let dependency: string | undefined = undefined;
 
-    $: rsvped = event.members.find(member => member.user.id === $user.data?.id);
+    $: rsvped = event.members.find(member => member.user?.id === $user.data?.id);
     let rsvpModalOpen = false;
 </script>
 
@@ -47,7 +47,7 @@
         <div class="flex flex-col flex-1 md:flex-none">
             <div class="flex justify-center ml-4">
                 {#each event.members.slice(0, 3) as member}
-                    <Avatar src={member.user.avatarUrl} stacked />
+                    <Avatar src={member.user?.avatarUrl} stacked />
                 {/each}
                 
                 {#if event.members.length > 3}
@@ -78,7 +78,7 @@
                         return;
                     }
 
-                    event.members = event.members.filter(member => member.user.id !== $user.data?.id);
+                    event.members = event.members.filter(member => member.user?.id !== $user.data?.id);
                 }}>
                     UnRSVP
                 </Button>
