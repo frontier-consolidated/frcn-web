@@ -7,6 +7,7 @@
 	import type { PageData } from "./$types";
 	import CreateEventButton from "../CreateEventButton.svelte";
 	import EventCard from "../EventCard.svelte";
+	import ExportCalenderButton from "../ExportCalenderButton.svelte";
 
 	export let data: PageData;
 
@@ -35,6 +36,7 @@
 					}} 
 				/>
 				<div class="shrink-0 flex flex-col justify-end min-[480px]:flex-row gap-2">
+					<ExportCalenderButton />
 					<Button color="alternative" class="md:flex-1 sm:shrink-0" href="/events">
 						All Events
 					</Button>

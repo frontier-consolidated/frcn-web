@@ -18,10 +18,25 @@ function upload(type: "resource" | "cms_container", attachTo: string): `/media/u
 	return `/media/upload?type=${type}&attach_to=${attachTo}`;
 }
 
+function createIcsExport(): "/events_export" {
+	return "/events_export";
+}
+
+function modifyIcsExport(exportId: number): `/events_export/${string}` {
+	return `/events_export/${exportId}`;
+}
+
+function getIcsExport(exportId: number, accessKey: string): `/events_export/${string}` {
+	return `/events_export/${exportId}?access_key=${accessKey}`;
+}
+
 export const Routes = {
 	oauth,
 	logout,
 	consent,
 	graphqlServer,
-	upload
+	upload,
+	createIcsExport,
+	modifyIcsExport,
+	getIcsExport
 };

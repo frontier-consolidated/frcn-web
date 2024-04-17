@@ -11,6 +11,7 @@ import Header from "./Header.svelte";
 import Hr from "./Hr.svelte";
 import ImageInput from "./ImageInput.svelte";
 import JoinDiscordButton from "./JoinDiscordButton.svelte";
+import ClipboardButton from "./ClipboardButton.svelte";
 import LocationBreadcrumbItem from "./location/LocationBreadcrumbItem.svelte";
 import LocationIcon from "./location/LocationIcon.svelte";
 import LocationOption from "./location/LocationOption.svelte";
@@ -23,6 +24,7 @@ import Marquee from "./Marquee.svelte";
 import ConfirmationModal from "./modals/ConfirmationModal.svelte";
 import CookieConsentModal from "./modals/CookieConsentModal.svelte";
 import RsvpModal from "./modals/RSVPModal.svelte";
+import CalenderIcsExportModal from "./modals/CalenderIcsExportModal.svelte";
 import UserProfileModal from "./modals/UserProfileModal.svelte";
 import NavUser from "./NavUser.svelte";
 import Notifications from "./Notifications.svelte";
@@ -54,6 +56,7 @@ export {
     ConfirmationModal,
     CookieConsentModal,
     RsvpModal,
+    CalenderIcsExportModal,
     UserProfileModal,
     NavigationSelect,
     Select,
@@ -69,6 +72,7 @@ export {
     Hr,
     ImageInput,
     JoinDiscordButton,
+    ClipboardButton,
     LoginButton,
     Marquee,
     NavUser,
