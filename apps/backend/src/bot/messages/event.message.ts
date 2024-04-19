@@ -12,12 +12,14 @@ import { PRIMARY_COLOR } from "../constants";
 import { getLocationBreadcrumbs } from "../helpers";
 
 export async function buildEventMessage(id: string, client: Client, threadId?: string) {
-	const guild = await $discord.getSystemGuild(client);
-	if (!guild) return null;
-
 	const event = await database.event.findUnique({
 		where: { id },
 		include: {
+			channel: {
+				select: {
+					discordGuildId: true
+				}
+			},
 			owner: {
 				select: {
 					discordName: true,
@@ -43,8 +45,10 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 			},
 		},
 	});
-
 	if (!event) throw new Error(`Could not create event message, since an event with id '${id}' could not be found`);
+
+	const guild = event.channel?.discordGuildId ? await $discord.getGuild(client, event.channel.discordGuildId) : await $discord.getSystemGuild(client);
+	if (!guild) return null;
 
 	const startAtSeconds = Math.floor(event.startAt!.getTime() / 1000);
 	const eventEmbed = new EmbedBuilder()

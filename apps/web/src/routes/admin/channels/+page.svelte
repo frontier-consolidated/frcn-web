@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
-	import { Helper, Label, Modal, Table, TableHead, TableHeadCell, Toggle } from "flowbite-svelte";
+	import { Helper, Label, Modal, Spinner, Table, TableHead, TableHeadCell, Toggle } from "flowbite-svelte";
 	import { CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
 	import { Button, Field, FieldValidator, Head, SectionHeading, Select } from "$lib/components";
 	import Tooltip from "$lib/components/Tooltip.svelte";
-	import { Mutations, getApollo } from "$lib/graphql";
+	import { Mutations, Queries, getApollo } from "$lib/graphql";
 	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
 
@@ -68,6 +68,7 @@
 
     function createModalData() {
         return {
+            guild: data.defaultGuild.id,
             channel: null as string | null,
             category: null as string | null,
             existingReadyRoom: null as string | null,
@@ -90,7 +91,8 @@
         const { errors } = await getApollo().mutate({
 			mutation: Mutations.CREATE_EVENT_CHANNEL,
 			variables: {
-				linkTo: modalData.channel!,
+                guildId: modalData.guild!,
+				channelId: modalData.channel!,
                 categoryId: modalData.category!,
                 existingReadyRoomId: modalData.showExistingReadyRoom ? modalData.existingReadyRoom : undefined
 			},
@@ -110,6 +112,51 @@
         await invalidate("app:eventchannels");
         openModal = false;
     }
+
+    let modalOptions = data.options;
+
+    let fetchingGuildData = false;
+    let previousGuildId = modalData.guild;
+    $: {
+        if (modalData.guild !== previousGuildId) {
+            previousGuildId = modalData.guild;
+            fetchingGuildData = true;
+
+            modalData.category = null;
+            modalData.channel = null;
+            modalData.existingReadyRoom = null;
+
+            if (modalData.guild === data.defaultGuild.id) {
+                modalOptions = data.options;
+                fetchingGuildData = false;
+            } else {
+                getApollo().query({
+                    query: Queries.GET_EVENT_CHANNEL_OPTIONS,
+                    variables: {
+                        guildId: modalData.guild
+                    }
+                })
+                .then((options) => {
+                    modalOptions = {
+                        guilds: data.options.guilds,
+                        channels: options.data.discordChannels,
+                        categories: options.data.discordCategories,
+                        voiceChannels: options.data.discordVoiceChannels
+                    };
+                })
+                .catch((err) => {
+                    pushNotification({
+                        type: "error",
+                        message: "Failed to fetch data for selected guild"
+                    });
+                    console.error(err);
+                })
+                .finally(() => {
+                    fetchingGuildData = false;
+                });
+            }
+        }
+    }
 </script>
 
 <Head
@@ -127,7 +174,7 @@
                 <Select
                     id="system-channels-default-channel"
                     name="system-channels-default-channel"
-                    options={data.channels.map((channel) => ({
+                    options={data.channels.filter(channel => channel.discordGuild.id === data.defaultGuild.id).map((channel) => ({
                         value: channel.id,
                         name: channel.discord.name,
                     })) ?? [{ value: editData.defaultChannel.id, name: editData.defaultChannel.discord?.name }]}
@@ -147,7 +194,7 @@
                 {/if}
             </div>
             <Helper class="mt-1">
-                The default channel where events will be posted
+                The default channel where events will be posted, only event channels in the system guild can be set as the default
             </Helper>
         </Field>
     </div>
@@ -201,78 +248,105 @@
 
 <Modal title="Create Event Channel" bind:open={openModal} dismissable bodyClass="overflow-y-visible">
 	<div class="flex flex-col gap-4 p-4">
-		<Field
-			{validator}
-			for="system-channels-new-link-channel"
-			value={modalData.channel}
-			required
-		>
-			<Label for="system-channels-new-link-channel" class="mb-2">Discord Channel</Label>
-			<Select
-                id="system-channels-new-link-channel"
-                name="system-channels-new-link-channel"
-                options={data.options.channels.filter(channel => channel.sendMessages).map((channel) => ({
-                    value: channel.id,
-                    name: channel.name,
-                }))}
-                search
-                required
-                bind:value={modalData.channel}
-            />
-            <Helper class="mt-1">
-                Only channels the bot can send messages in will appear in this list, if a channel is not appearing the bot is probably missing permissions
-            </Helper>
-		</Field>
         <Field
 			{validator}
-			for="system-channels-new-link-category"
-			value={modalData.category}
+			for="system-channels-new-link-guild"
+			value={modalData.guild}
 			required
 		>
-			<Label for="system-channels-new-link-category" class="mb-2">Discord Category</Label>
+			<Label for="system-channels-new-link-guild" class="mb-2">Discord Guild</Label>
 			<Select
-                id="system-channels-new-link-category"
-                name="system-channels-new-link-category"
-                options={data.options.categories.map((category) => ({
-                    value: category.id,
-                    name: category.name,
+                id="system-channels-new-link-guild"
+                name="system-channels-new-link-guild"
+                options={data.options.guilds.map((guild) => ({
+                    value: guild.id,
+                    name: guild.name,
                 }))}
                 search
                 required
-                bind:value={modalData.category}
+                bind:value={modalData.guild}
+                on:change
             />
-            <Helper class="mt-1">
-                The category that event voice channels will be created under
-            </Helper>
 		</Field>
-        <div class="flex flex-col gap-2">
-            <Toggle bind:checked={modalData.showExistingReadyRoom} on:change={() => {
-                if (!modalData.showExistingReadyRoom) modalData.existingReadyRoom = null;
-            }}>
-                Use existing ready room
-            </Toggle>
-            {#if modalData.showExistingReadyRoom}
-                <Field
-                    {validator}
-                    for="system-channels-new-link-ready-room"
-                    value={modalData.existingReadyRoom}
+        {#if fetchingGuildData}
+            <div class="flex flex-col items-center gap-2 p-4">
+                <span>Fetching data for selected guild...</span>
+                <Spinner />
+            </div>
+        {:else}
+            <Field
+                {validator}
+                for="system-channels-new-link-channel"
+                value={modalData.channel}
+                required
+            >
+                <Label for="system-channels-new-link-channel" class="mb-2">Discord Channel</Label>
+                <Select
+                    id="system-channels-new-link-channel"
+                    name="system-channels-new-link-channel"
+                    options={modalOptions.channels.filter(channel => channel.sendMessages).map((channel) => ({
+                        value: channel.id,
+                        name: channel.name,
+                    }))}
+                    search
                     required
-                >
-                    <Label for="system-channels-new-link-ready-room" class="mb-2">Ready Room Channel</Label>
-                    <Select
-                        id="system-channels-new-link-ready-room"
-                        name="system-channels-new-link-ready-room"
-                        options={data.options.voiceChannels.filter(vc => vc.parentId === modalData.category).map((vc) => ({
-                            value: vc.id,
-                            name: vc.name,
-                        }))}
-                        search
+                    bind:value={modalData.channel}
+                />
+                <Helper class="mt-1">
+                    Only channels the bot can send messages in will appear in this list, if a channel is not appearing the bot is probably missing permissions
+                </Helper>
+            </Field>
+            <Field
+                {validator}
+                for="system-channels-new-link-category"
+                value={modalData.category}
+                required
+            >
+                <Label for="system-channels-new-link-category" class="mb-2">Discord Category</Label>
+                <Select
+                    id="system-channels-new-link-category"
+                    name="system-channels-new-link-category"
+                    options={modalOptions.categories.map((category) => ({
+                        value: category.id,
+                        name: category.name,
+                    }))}
+                    search
+                    required
+                    bind:value={modalData.category}
+                />
+                <Helper class="mt-1">
+                    The category that event voice channels will be created under
+                </Helper>
+            </Field>
+            <div class="flex flex-col gap-2">
+                <Toggle bind:checked={modalData.showExistingReadyRoom} on:change={() => {
+                    if (!modalData.showExistingReadyRoom) modalData.existingReadyRoom = null;
+                }}>
+                    Use existing ready room
+                </Toggle>
+                {#if modalData.showExistingReadyRoom}
+                    <Field
+                        {validator}
+                        for="system-channels-new-link-ready-room"
+                        value={modalData.existingReadyRoom}
                         required
-                        bind:value={modalData.existingReadyRoom}
-                    />
-                </Field>
-            {/if}
-        </div>
+                    >
+                        <Label for="system-channels-new-link-ready-room" class="mb-2">Ready Room Channel</Label>
+                        <Select
+                            id="system-channels-new-link-ready-room"
+                            name="system-channels-new-link-ready-room"
+                            options={modalOptions.voiceChannels.filter(vc => vc.parentId === modalData.category).map((vc) => ({
+                                value: vc.id,
+                                name: vc.name,
+                            }))}
+                            search
+                            required
+                            bind:value={modalData.existingReadyRoom}
+                        />
+                    </Field>
+                {/if}
+            </div>
+        {/if}
 	</div>
 	<svelte:fragment slot="footer">
         <Button on:click={() => {

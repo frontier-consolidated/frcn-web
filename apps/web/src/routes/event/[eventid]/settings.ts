@@ -4,7 +4,7 @@ export type MutableData = ReturnType<typeof cloneEventSettingsData>;
 
 export function cloneEventSettingsData(data: PageData) {
 	return {
-		channel: data.channel ? structuredClone(data.channel) : { id: null, discord: { name: "!ERROR" } },
+		channel: data.channel ? structuredClone(data.channel) : { id: null, discord: { name: "!ERROR" }, discordGuild: { name: "!ERROR" } },
 		name: data.name,
 		summary: data.summary,
 		description: data.description,

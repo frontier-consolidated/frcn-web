@@ -155,6 +155,7 @@ export type EventChannel = {
   __typename?: 'EventChannel';
   discord: DiscordChannel;
   discordCategory?: Maybe<DiscordChannel>;
+  discordGuild: DiscordGuild;
   events: Array<Event>;
   id: Scalars['Int']['output'];
   readyRoomName?: Maybe<Scalars['String']['output']>;
@@ -163,6 +164,7 @@ export type EventChannel = {
 export type EventChannelEditInput = {
   categoryId?: InputMaybe<Scalars['ID']['input']>;
   channelId?: InputMaybe<Scalars['ID']['input']>;
+  guildId?: InputMaybe<Scalars['ID']['input']>;
   readyRoomName?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -336,8 +338,9 @@ export type MutationCreateEventArgs = {
 
 export type MutationCreateEventChannelArgs = {
   categoryId: Scalars['ID']['input'];
+  channelId: Scalars['ID']['input'];
   existingReadyRoomId?: InputMaybe<Scalars['ID']['input']>;
-  linkTo: Scalars['ID']['input'];
+  guildId: Scalars['ID']['input'];
 };
 
 
@@ -1149,6 +1152,7 @@ export type EventResolvers<ContextType = GQLContext, ParentType extends Resolver
 export type EventChannelResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventChannel'] = ResolversParentTypes['EventChannel']> = ResolversObject<{
   discord?: Resolver<ResolversTypes['DiscordChannel'], ParentType, ContextType>;
   discordCategory?: Resolver<Maybe<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
+  discordGuild?: Resolver<ResolversTypes['DiscordGuild'], ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   readyRoomName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1203,7 +1207,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   createAccessKey?: Resolver<ResolversTypes['AccessKey'], ParentType, ContextType>;
   createContentContainer?: Resolver<ResolversTypes['ContentContainer'], ParentType, ContextType, RequireFields<MutationCreateContentContainerArgs, 'type'>>;
   createEvent?: Resolver<ResolversTypes['ID'], ParentType, ContextType, Partial<MutationCreateEventArgs>>;
-  createEventChannel?: Resolver<ResolversTypes['EventChannel'], ParentType, ContextType, RequireFields<MutationCreateEventChannelArgs, 'categoryId' | 'linkTo'>>;
+  createEventChannel?: Resolver<ResolversTypes['EventChannel'], ParentType, ContextType, RequireFields<MutationCreateEventChannelArgs, 'categoryId' | 'channelId' | 'guildId'>>;
   createEventTeam?: Resolver<ResolversTypes['EventTeam'], ParentType, ContextType, RequireFields<MutationCreateEventTeamArgs, 'eventId' | 'name'>>;
   createResource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType, RequireFields<MutationCreateResourceArgs, 'data'>>;
   createRole?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;

@@ -20,7 +20,7 @@ async function updateEvents(client: Client) {
         for (const event of events) {
             if (!event.startAt || event.startAt > new Date(now + time) || event.remindersSent.includes(reminder)) continue;
 
-            const eventMessageLink = `https://discord.com/channels/${guild.id}/${event.channel?.discordId}/${event.discordEventMessageId}`;
+            const eventMessageLink = `https://discord.com/channels/${event.channel?.discordGuildId ?? guild.id}/${event.channel?.discordId}/${event.discordEventMessageId}`;
 
             if (reminder === EventReminder.OnStart) {
                 try {

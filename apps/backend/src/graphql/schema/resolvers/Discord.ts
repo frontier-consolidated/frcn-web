@@ -20,15 +20,17 @@ export async function resolveDiscordGuild(guild: string | Guild, context: GQLCon
 	} else {
 		guildObj = await $discord.getGuild(context.app.discordClient, guild);
 
-		return {
-			id: guild,
-			name: "!UNKNOWN"
-		} satisfies DiscordGuild;
+		if (!guildObj) {
+			return {
+				id: guild,
+				name: "!UNKNOWN"
+			} satisfies DiscordGuild;
+		}
 	}
 
 	return {
-		id: guild.id,
-		name: guild.name,
+		id: guildObj.id,
+		name: guildObj.name,
 	} satisfies DiscordGuild;
 }
 
@@ -118,15 +120,15 @@ export const discordResolvers: Resolvers = {
 			return guilds.map((guild) => resolveDiscordGuild(guild, context));
 		},
 		async getAllDiscordTextChannels(source, args, context) {
-			const channels = await $discord.getAllTextChannels(context.app.discordClient);
+			const channels = await $discord.getAllTextChannels(context.app.discordClient, args.guildId ?? undefined);
 			return channels.map(resolveDiscordChannel);
 		},
 		async getAllDiscordVoiceChannels(source, args, context) {
-			const channels = await $discord.getAllVoiceChannels(context.app.discordClient);
+			const channels = await $discord.getAllVoiceChannels(context.app.discordClient, args.guildId ?? undefined);
 			return channels.map(resolveDiscordChannel);
 		},
 		async getAllDiscordCategories(source, args, context) {
-			const categories = await $discord.getAllCategories(context.app.discordClient);
+			const categories = await $discord.getAllCategories(context.app.discordClient, args.guildId ?? undefined);
 			return categories.map(resolveDiscordChannel);
 		},
 		async getAllDiscordEmojis(source, args, context) {

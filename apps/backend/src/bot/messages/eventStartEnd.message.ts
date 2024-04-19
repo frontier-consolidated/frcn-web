@@ -25,7 +25,7 @@ export async function buildEventStartMessage(client: Client, event: Event, event
 	let vcLink = "";
 	if (event.channelId) {
 		const readyRoom = await $events.getEventChannelReadyRoom(event.channelId);
-		const readyRoomChannel = readyRoom && await $discord.getChannel(client, readyRoom.discordId);
+		const readyRoomChannel = readyRoom && await $discord.getChannel(client, readyRoom.discordId, readyRoom.channel.discordGuildId ?? undefined);
 
 		if (readyRoomChannel) vcLink = readyRoomChannel.url;
 	}

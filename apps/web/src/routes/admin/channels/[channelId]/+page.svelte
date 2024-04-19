@@ -99,6 +99,26 @@
                 bind:value={editData.readyRoomName}
             />
         </Field>
+		<Field
+			{validator}
+			for="event-channel-guild"
+			value={editData.channelId}
+			required
+		>
+			<Label for="event-channel-guild" class="mb-2">Discord Guild</Label>
+			<Select
+                id="event-channel-guild"
+                name="event-channel-guild"
+                options={data.options.guilds.map((guild) => ({
+                    value: guild.id,
+                    name: guild.name,
+                }))}
+                search
+                required
+				disabled
+                bind:value={data.channel.discordGuild.id}
+            />
+		</Field>
         <Field
 			{validator}
 			for="event-channel-channel"

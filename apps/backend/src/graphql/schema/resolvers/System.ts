@@ -116,16 +116,21 @@ export const systemResolvers: Resolvers = {
 			return resolveSystemSettings(updatedSettings);
 		},
 		async createEventChannel(source, args, context) {
-			const discordChannel = await $discord.getChannel(context.app.discordClient, args.linkTo);
+			const discordGuild = await $discord.getGuild(context.app.discordClient, args.guildId);
+			if (!discordGuild) {
+				throw gqlErrorBadInput(`Discord guild not found: ${args.guildId}`);
+			}
+
+			const discordChannel = await $discord.getChannel(context.app.discordClient, args.channelId, args.guildId);
 			if (!discordChannel) {
-				throw gqlErrorBadInput(`Discord channel not found: ${args.linkTo}`);
+				throw gqlErrorBadInput(`Discord channel not found: ${args.channelId}`);
 			}
 
 			if (!discordChannel.isTextBased()) {
 				throw gqlErrorBadInput("Event channels can only be text-based channels");
 			}
 
-			const discordCategory = await $discord.getChannel(context.app.discordClient, args.categoryId);
+			const discordCategory = await $discord.getChannel(context.app.discordClient, args.categoryId, args.guildId);
 			if (!discordCategory) {
 				throw gqlErrorBadInput(`Discord category not found: ${args.categoryId}`);
 			}
@@ -140,9 +145,9 @@ export const systemResolvers: Resolvers = {
 
 			let existingReadyRoom: GuildBasedChannel | null = null;
 			if (args.existingReadyRoomId) {
-				existingReadyRoom = await $discord.getChannel(context.app.discordClient, args.existingReadyRoomId);
+				existingReadyRoom = await $discord.getChannel(context.app.discordClient, args.existingReadyRoomId, args.guildId);
 				if (!existingReadyRoom) {
-					throw gqlErrorBadInput(`Discord channel not found: ${args.existingReadyRoomId}`);
+					throw gqlErrorBadInput(`Discord voice channel not found: ${args.existingReadyRoomId}`);
 				}
 	
 				if (existingReadyRoom.type !== ChannelType.GuildVoice) {
@@ -151,15 +156,23 @@ export const systemResolvers: Resolvers = {
 			}
 
 			logger.audit(context, "created an EventChannel", args);
-			const channel = await $events.createEventChannel(discordChannel, discordCategory, existingReadyRoom ?? undefined);
+			const channel = await $events.createEventChannel(discordGuild, discordChannel, discordCategory, existingReadyRoom ?? undefined);
 			return resolveEventChannel(channel);
 		},
 		async editEventChannel(source, args, context) {
 			const channel = await $events.getEventChannel(args.id);
 			if (!channel) return null;
 
+			const guildId = (args.data.guildId ?? channel.discordGuildId) ?? undefined;
+			if (args.data.guildId) {
+				const discordGuild = await $discord.getGuild(context.app.discordClient, args.data.guildId);
+				if (!discordGuild) {
+					throw gqlErrorBadInput(`Discord guild not found: ${args.data.guildId}`);
+				}
+			}
+
 			if (args.data.channelId) {
-				const discordChannel = await $discord.getChannel(context.app.discordClient, args.data.channelId);
+				const discordChannel = await $discord.getChannel(context.app.discordClient, args.data.channelId, guildId);
 				if (!discordChannel) {
 					throw gqlErrorBadInput(`Discord channel not found: ${args.data.channelId}`);
 				}
@@ -170,7 +183,7 @@ export const systemResolvers: Resolvers = {
 			}
 
 			if (args.data.categoryId) {
-				const discordCategory = await $discord.getChannel(context.app.discordClient, args.data.categoryId);
+				const discordCategory = await $discord.getChannel(context.app.discordClient, args.data.categoryId, guildId);
 				if (!discordCategory) {
 					throw gqlErrorBadInput(`Discord category not found: ${args.data.categoryId}`);
 				}

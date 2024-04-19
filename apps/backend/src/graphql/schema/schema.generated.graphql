@@ -165,6 +165,7 @@ type Event {
 
 type EventChannel {
 	id: Int!
+	discordGuild: DiscordGuild!
 	discord: DiscordChannel!
 	discordCategory: DiscordChannel
 	readyRoomName: String
@@ -303,6 +304,7 @@ input AccessKeyEditInput {
 }
 
 input EventChannelEditInput {
+	guildId: ID
 	channelId: ID
 	categoryId: ID
 	readyRoomName: String @constraint(maxLength: 255)
@@ -455,8 +457,12 @@ type Mutation {
 	# System
 	editSystemSettings(data: SystemEditInput!): SystemSettings! @permission(has: ManageSystem)
 
-	createEventChannel(linkTo: ID!, categoryId: ID!, existingReadyRoomId: ID): EventChannel!
-		@permission(has: ManageSystem)
+	createEventChannel(
+		guildId: ID!
+		channelId: ID!
+		categoryId: ID!
+		existingReadyRoomId: ID
+	): EventChannel! @permission(has: ManageSystem)
 	editEventChannel(id: Int!, data: EventChannelEditInput!): EventChannel
 		@permission(has: ManageSystem)
 	deleteEventChannel(id: Int!, deleteVoiceChannels: Boolean): Boolean!
