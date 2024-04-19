@@ -62,6 +62,7 @@ export function resolveEvent(event: Event) {
 
 function resolveEventSettings(settings: EventSettings) {
 	return {
+		createEventThread: settings.createEventThread,
 		hideLocation: settings.hideLocation,
 		inviteOnly: settings.inviteOnly,
 		openToJoinRequests: settings.openToJoinRequests,

@@ -48,7 +48,7 @@ export async function buildEventUpdateMessage(client: Client, oldEvent: Event, n
 }
 
 export async function postEventUpdateMessage(client: Client, oldEvent: Event, newEvent: Event) {
-	if (!oldEvent.posted || !newEvent.posted) return;
+	if (!oldEvent.posted || !newEvent.posted || !newEvent.discordThreadId) return;
 
 	try {
 		const { hasChanges, embeds } = await buildEventUpdateMessage(client, oldEvent, newEvent);

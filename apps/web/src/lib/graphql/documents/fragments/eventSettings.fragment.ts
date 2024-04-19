@@ -4,6 +4,7 @@ export const EVENT_SETTINGS_FRAGMENT = gql(`
     fragment EventSettingsFragment on Event {
         mentions
         settings {
+            createEventThread
             hideLocation
             inviteOnly
             openToJoinRequests

@@ -232,15 +232,17 @@ export type EventRsvpRole = {
 
 export type EventSettings = {
   __typename?: 'EventSettings';
+  createEventThread: Scalars['Boolean']['output'];
   hideLocation: Scalars['Boolean']['output'];
   inviteOnly: Scalars['Boolean']['output'];
   openToJoinRequests: Scalars['Boolean']['output'];
 };
 
 export type EventSettingsInput = {
-  hideLocation: Scalars['Boolean']['input'];
-  inviteOnly: Scalars['Boolean']['input'];
-  openToJoinRequests: Scalars['Boolean']['input'];
+  createEventThread?: InputMaybe<Scalars['Boolean']['input']>;
+  hideLocation?: InputMaybe<Scalars['Boolean']['input']>;
+  inviteOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  openToJoinRequests?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export enum EventState {
@@ -1187,6 +1189,7 @@ export type EventRsvpRoleResolvers<ContextType = GQLContext, ParentType extends 
 }>;
 
 export type EventSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventSettings'] = ResolversParentTypes['EventSettings']> = ResolversObject<{
+  createEventThread?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hideLocation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   inviteOnly?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   openToJoinRequests?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;

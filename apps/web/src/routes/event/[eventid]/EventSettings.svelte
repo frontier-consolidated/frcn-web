@@ -2,7 +2,7 @@
 	import { goto, invalidate } from "$app/navigation";
 	import { strings, EventTypeOptions } from "@frcn/shared";
 	import { getLocations } from "@frcn/shared/locations";
-	import { Checkbox, Helper, Input, Label } from "flowbite-svelte";
+	import { Checkbox, Helper, Input, Label, Toggle } from "flowbite-svelte";
 	import {
 		EditOutline,
 		CaretRightSolid,
@@ -86,6 +86,7 @@
 					})),
 					mentions: editData.mentions,
 					settings: {
+						createEventThread: editData.settings.createEventThread,
 						hideLocation: editData.settings.hideLocation,
 						inviteOnly: editData.settings.inviteOnly,
 						openToJoinRequests: editData.settings.openToJoinRequests,
@@ -437,6 +438,14 @@
 							<span>{option.name}</span>
 						</div>
 					</Select>
+				</Field>
+				<Field {validator} for="event-create-thread" value={editData.settings.createEventThread}>
+					<Toggle id="event-create-thread" disabled={!canEdit || data.posted} bind:checked={editData.settings.createEventThread}>
+						Create Event Thread
+					</Toggle>
+					<Helper class="mt-1">
+						No discord thread will be created if disabled
+					</Helper>
 				</Field>
 			</div>
 		</section>

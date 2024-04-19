@@ -94,7 +94,7 @@ export function buildEventEndedMessage(event: Event) {
 }
 
 export async function postEventEndMessage(client: Client, event: Event) {
-	if (!event.posted) return;
+	if (!event.posted || !event.discordThreadId) return;
 	
 	const thread = await $events.getEventThread(event, client);
 

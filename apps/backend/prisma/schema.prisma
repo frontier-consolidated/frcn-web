@@ -188,6 +188,7 @@ model EventTeam {
 
 model EventSettings {
   id                 Int      @id @default(autoincrement())
+  createEventThread  Boolean  @default(true) @map("create_event_thread")
   hideLocation       Boolean  @map("hide_location")
   inviteOnly         Boolean  @map("invite_only")
   openToJoinRequests Boolean  @map("open_to_join_requests")

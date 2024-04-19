@@ -221,6 +221,8 @@ async function getEventThread(event: Event, discordClient: DiscordClient) {
 
 async function createEventThread(event: Event, discordClient: DiscordClient, channel?: TextChannel) {
 	channel ??= await getEventDiscordChannel(event, discordClient);
+	const settings = await getEventSettings(event.id);
+	if (!settings?.createEventThread) return null;
 
 	const thread = await channel!.threads.create({
 		name: event.name,
@@ -356,7 +358,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 	if (!updatedMember.event.posted) return;
 	await updateEventMessage(discordClient, updatedMember.event);
 
-	if (updatedMember.user) {
+	if (updatedMember.user && updatedMember.event.discordThreadId) {
 		try {
 			const thread = await getEventThread(updatedMember.event, discordClient);
 			await thread.members.remove(updatedMember.user.discordId, "UnRSVPed / Kicked from event");
@@ -514,9 +516,10 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 			settings: data.settings
 				? {
 						update: {
-							hideLocation: data.settings.hideLocation,
-							inviteOnly: data.settings.inviteOnly,
-							openToJoinRequests: data.settings.openToJoinRequests,
+							createEventThread: data.settings.createEventThread ?? undefined,
+							hideLocation: data.settings.hideLocation ?? undefined,
+							inviteOnly: data.settings.inviteOnly ?? undefined,
+							openToJoinRequests: data.settings.openToJoinRequests ?? undefined,
 						},
 				  }
 				: undefined,
@@ -662,11 +665,13 @@ async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, curre
 
 	await updateEventMessage(discordClient, updatedEvent);
 
-	try {
-		const thread = await getEventThread(updatedEvent, discordClient);
-		await thread.members.add(user.discordId, "RSVPed");
-	} catch (err) {
-		logger.error("Failed to add user to event thread", err);
+	if (updatedEvent.discordThreadId) {
+		try {
+			const thread = await getEventThread(updatedEvent, discordClient);
+			await thread.members.add(user.discordId, "RSVPed");
+		} catch (err) {
+			logger.error("Failed to add user to event thread", err);
+		}
 	}
 }
 

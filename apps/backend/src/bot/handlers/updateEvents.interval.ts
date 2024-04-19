@@ -22,7 +22,7 @@ async function updateEvents(client: Client) {
 
             const eventMessageLink = `https://discord.com/channels/${event.channel?.discordGuildId ?? guild.id}/${event.channel?.discordId}/${event.discordEventMessageId}`;
 
-            if (reminder === EventReminder.OnStart) {
+            if (reminder === EventReminder.OnStart && event.discordThreadId) {
                 try {
                     const thread = await $events.getEventThread(event, client);
                     const payload = await buildEventStartMessage(client, event, eventMessageLink);
@@ -76,7 +76,7 @@ async function updateEvents(client: Client) {
     now = Date.now();
     const endingEvents = await $events.getEndingEvents();
     for (const event of endingEvents) {
-        if (!event.startAt || !event.duration || event.endedAt || event.endReminderSent || event.startAt.getTime() + event.duration > now) continue;
+        if (!event.startAt || !event.duration || event.endedAt || event.endReminderSent || event.startAt.getTime() + event.duration > now || !event.discordThreadId) continue;
         
         try {
             const thread = await $events.getEventThread(event, client);
