@@ -50,11 +50,14 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 	const guild = event.channel?.discordGuildId ? await $discord.getGuild(client, event.channel.discordGuildId) : await $discord.getSystemGuild(client);
 	if (!guild) return null;
 
+	const title = `:calendar_spiral: ${event.name}`;
+	const description = event.description ? event.description : "*No Description*";
+
 	const startAtSeconds = Math.floor(event.startAt!.getTime() / 1000);
 	const eventEmbed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
-		.setTitle(`:calendar_spiral: ${event.name}`)
-		.setDescription(event.description ? event.description : "*No Description*")
+		.setTitle(title)
+		.setDescription(description)
 		.addFields({
 			name: "Event Type",
 			value: strings.toTitleCase(event.eventType!)
@@ -70,6 +73,10 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 
 	event.roles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 	
+	const totalMembers = event.roles.reduce((total, role) => total + role.members.filter(m => !!m.user).length, 0);
+	// This will go negative eventually if the event has a lot of RSVP roles, but let's just hope that never happens :)
+	const remainingCharacterLimit = 5500 - title.length - description.length - 120 * event.roles.length;
+
 	threadId ??= event.discordThreadId ?? undefined;
 	eventEmbed
 		.addFields(
@@ -81,16 +88,27 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 			...(threadId ? [{ name: "Thread", value: `<#${threadId}>` }] : []),
 			...event.roles.map((role) => {
 				const members = role.members.filter(m => !!m.user);
+				const roleEmoji = role.emoji === role.emojiId ? `:${role.emoji}:` : `<:${role.emoji}:${role.emojiId}>`;
+
+				const valueLimit = 120 + Math.min(880, Math.floor((members.length / totalMembers) * remainingCharacterLimit));
+				let value = " ";
+				if (members.length > 0) {
+					for (const [i, member] of members.entries()) {
+						const prefix = i === 0 ? ">>> " : "\n";
+						const memberName = escapeMarkdown(member.user!.discordName);
+
+						if (value.length + memberName.length > valueLimit) {
+							value += `${prefix}**+${members.length - i} more**`;
+							break;
+						}
+
+						value += `${prefix}${memberName}`;
+					}
+				}
+
 				return {
-					name: `${
-						role.emoji === role.emojiId
-							? `:${role.emoji}:`
-							: `<:${role.emoji}:${role.emojiId}>`
-					} ${escapeMarkdown(role.name)} (${members.length}${role.limit > 0 ? `/${role.limit}` : ""})`,
-					value:
-						members.length > 0
-							? `>>> ${escapeMarkdown(members.map((member) => member.user!.discordName).join("\n"))}`
-							: " ",
+					name: `${roleEmoji} ${escapeMarkdown(role.name)} (${members.length}${role.limit > 0 ? `/${role.limit}` : ""})`,
+					value,
 					inline: true,
 				};
 			})
