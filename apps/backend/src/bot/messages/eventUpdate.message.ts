@@ -22,7 +22,7 @@ async function addEventChangeFields(embed: EmbedBuilder, oldEvent: Event, newEve
 	if (oldEvent.duration !== newEvent.duration) {
 		hasChanges = true;
 		embed.addFields({
-			name: "Start Time",
+			name: "Duration",
 			value: `**Old:** ${oldEvent.duration ? dates.toDuration(oldEvent.duration) : "null"}\n**New:** ${newEvent.duration ? dates.toDuration(newEvent.duration) : "null"}`
 		});
 	}
