@@ -39,10 +39,9 @@ async function addEventChangeFields(embed: EmbedBuilder, oldEvent: Event, newEve
 
 	if (oldEvent.description !== newEvent.description) {
 		hasChanges = true;
-		embed.addFields({
-			name: "Description",
-			value: `**Old:** ${oldEvent.description}\n**New:** ${newEvent.description}`
-		});
+
+		const json = embed.toJSON();
+		embed.setDescription(`${json.description ?? ""}\n### Description\n**Old:**\n${oldEvent.description.length > 1600 ? oldEvent.description.slice(0, 2000) + "..." : oldEvent.description}\n**New:**\n${newEvent.description}`);
 	}
 
 	return hasChanges;
@@ -70,7 +69,7 @@ export async function buildEventUpdateDmMessage(client: Client, oldEvent: Event,
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
 		.setTitle("Event Updated")
-		.setDescription(`Details for the **[${newEvent.name}](${eventMessageLink})** have changed, see changed below:`);
+		.setDescription(`Details for the **[${newEvent.name}](${eventMessageLink})** have changed, see changes below:`);
 
 	const hasChanges = await addEventChangeFields(embed, oldEvent, newEvent);
 	
