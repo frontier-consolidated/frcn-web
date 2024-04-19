@@ -74,7 +74,7 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 	event.roles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 	
 	const totalMembers = event.roles.reduce((total, role) => total + role.members.filter(m => !!m.user).length, 0);
-	const remainingCharacterLimit = 5500 - title.length - description.length;
+	const remainingCharacterLimit = 5500 - title.length - description.length - 120 * event.roles.length;
 
 	threadId ??= event.discordThreadId ?? undefined;
 	eventEmbed
@@ -89,7 +89,7 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 				const members = role.members.filter(m => !!m.user);
 				const roleEmoji = role.emoji === role.emojiId ? `:${role.emoji}:` : `<:${role.emoji}:${role.emojiId}>`;
 
-				const valueLimit = Math.min(1000, Math.floor((members.length / totalMembers) * remainingCharacterLimit));
+				const valueLimit = 120 + Math.min(880, Math.floor((members.length / totalMembers) * remainingCharacterLimit));
 				let value = " ";
 				if (members.length > 0) {
 					for (const [i, member] of members.entries()) {
