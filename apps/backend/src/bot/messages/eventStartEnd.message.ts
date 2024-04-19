@@ -25,7 +25,7 @@ export async function buildEventStartMessage(client: Client, event: Event, event
 	let vcLink = "";
 	if (event.channelId) {
 		const readyRoom = await $events.getEventChannelReadyRoom(event.channelId);
-		const readyRoomChannel = readyRoom && await $discord.getChannel(client, readyRoom.discordId);
+		const readyRoomChannel = readyRoom && await $discord.getChannel(client, readyRoom.discordId, readyRoom.channel.discordGuildId ?? undefined);
 
 		if (readyRoomChannel) vcLink = readyRoomChannel.url;
 	}
@@ -94,7 +94,7 @@ export function buildEventEndedMessage(event: Event) {
 }
 
 export async function postEventEndMessage(client: Client, event: Event) {
-	if (!event.posted) return;
+	if (!event.posted || !event.discordThreadId) return;
 	
 	const thread = await $events.getEventThread(event, client);
 

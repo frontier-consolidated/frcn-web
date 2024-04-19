@@ -1,7 +1,7 @@
 import { gql } from "../../__generated__";
 
 export const GET_EVENT_SETTINGS = gql(`
-	query GetEventSettings($eventId: ID!) {
+	query GetEventSettings($eventId: ID!, $guildId: ID) {
 		event: getEvent(id: $eventId) {
 			...EventSettingsFragment
 		}
@@ -17,7 +17,7 @@ export const GET_EVENT_SETTINGS = gql(`
 				image
 			}
 		}
-		discordRoles: getAllDiscordRoles {
+		discordRoles: getAllDiscordRoles(guildId: $guildId) {
 			id
 			name
 			color

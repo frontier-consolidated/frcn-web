@@ -3,6 +3,10 @@ import { gql } from "../../__generated__";
 export const GET_ALL_EVENT_CHANNELS = gql(`
 	query GetAllEventChannels {
 		settings: getSystemSettings {
+			discordGuild {
+				id
+				name
+			}
 			defaultEventChannel {
 				...EventChannelFragment
 			}
@@ -13,6 +17,10 @@ export const GET_ALL_EVENT_CHANNELS = gql(`
 				id
 				state
 			}
+		}
+		discordGuilds: getAllDiscordGuilds {
+			id
+			name
 		}
 		discordChannels: getAllDiscordTextChannels {
 			...ChannelFragment

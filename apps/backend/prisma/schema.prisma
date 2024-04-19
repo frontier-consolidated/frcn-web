@@ -188,6 +188,7 @@ model EventTeam {
 
 model EventSettings {
   id                 Int      @id @default(autoincrement())
+  createEventThread  Boolean  @default(true) @map("create_event_thread")
   hideLocation       Boolean  @map("hide_location")
   inviteOnly         Boolean  @map("invite_only")
   openToJoinRequests Boolean  @map("open_to_join_requests")
@@ -253,6 +254,7 @@ model EventsWithUserRoleForAccess {
 
 model EventChannel {
   id                Int                 @id @default(autoincrement())
+  discordGuildId    String?             @map("discord_guild_id")
   discordId         String              @unique @map("discord_id")
   discordCategoryId String              @map("discord_category_id")
   readyRoomName     String?             @map("ready_room_name")

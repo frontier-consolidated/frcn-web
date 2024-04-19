@@ -2,7 +2,7 @@ import { EventType, Permission, hasOwnedObjectPermission } from "@frcn/shared";
 import type { EventRsvpRole, EventSettings, EventUser, Event, User, EventChannel } from "@prisma/client";
 import type { CategoryChannel } from "discord.js";
 
-import { resolveDiscordChannel, resolveDiscordEmoji } from "./Discord";
+import { resolveDiscordChannel, resolveDiscordEmoji, resolveDiscordGuild } from "./Discord";
 import { resolveUserRole } from "./Roles";
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
@@ -10,6 +10,7 @@ import { logger } from "../../../logger";
 import { $discord } from "../../../services/discord";
 import { $events } from "../../../services/events";
 import { $roles } from "../../../services/roles";
+import { $system } from "../../../services/system";
 import type {
 	User as GQLUser,
 	Event as GQLEvent,
@@ -19,7 +20,8 @@ import type {
 	EventSettings as GQLEventSettings,
 	EventChannel as GQLEventChannel,
 	Resolvers,
-	DiscordChannel
+	DiscordChannel,
+	DiscordGuild
 } from "../../__generated__/resolvers-types";
 import { EventAccessType, EventState } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
@@ -60,6 +62,7 @@ export function resolveEvent(event: Event) {
 
 function resolveEventSettings(settings: EventSettings) {
 	return {
+		createEventThread: settings.createEventThread,
 		hideLocation: settings.hideLocation,
 		inviteOnly: settings.inviteOnly,
 		openToJoinRequests: settings.openToJoinRequests,
@@ -109,6 +112,7 @@ export function resolveEventChannel(channel: EventChannel) {
 		_model: channel,
 		id: channel.id,
 		readyRoomName: channel.readyRoomName,
+		discordGuild: {} as unknown as DiscordGuild, // field-resolved
 		discord: {} as unknown as DiscordChannel, // field-resolved
 		discordCategory: null, // field-resolved
 		events: [] // field-resolved
@@ -225,12 +229,27 @@ export const eventResolvers: Resolvers = {
 	},
 
 	EventChannel: {
+		async discordGuild(source, args, context) {
+			const { _model } = source as WithModel<GQLEventChannel, EventChannel>;
+			
+			const guild = _model.discordGuildId ? await $discord.getGuild(context.app.discordClient, _model.discordGuildId) : await $discord.getSystemGuild(context.app.discordClient);
+
+			if (!guild) {
+				return {
+					id: _model.discordGuildId ?? (await $system.getSystemSettings()).discordGuildId,
+					name: "!UNKNOWN"
+				};
+			}
+
+			return await resolveDiscordGuild(guild, context);
+		},
 		async discord(source, args, context) {
 			const { _model } = source as WithModel<GQLEventChannel, EventChannel>;
 
 			const guildChannel = (await $discord.getChannel(
 				context.app.discordClient,
-				_model.discordId
+				_model.discordId,
+				_model.discordGuildId ?? undefined
 			));
 
 			if (!guildChannel) return {
@@ -247,7 +266,8 @@ export const eventResolvers: Resolvers = {
 
 			const category = (await $discord.getChannel(
 				context.app.discordClient,
-				_model.discordCategoryId
+				_model.discordCategoryId,
+				_model.discordGuildId ?? undefined
 			));
 
 			if (!category) return {
@@ -356,7 +376,8 @@ export const eventResolvers: Resolvers = {
 
 			const data = args.data;
 
-			if (data.channel && !(await $events.getEventChannel(data.channel))) {
+			const eventChannel = data.channel ? await $events.getEventChannel(data.channel) : event.channelId ? await $events.getEventChannel(event.channelId) : null;
+			if (data.channel && !eventChannel) {
 				throw gqlErrorBadInput(`Event channel not found: ${data.channel}`);
 			}
 
@@ -379,7 +400,7 @@ export const eventResolvers: Resolvers = {
 			}
 
 			if (data.mentions) {
-				const discordRoles = await $discord.getAllRoles(context.app.discordClient);
+				const discordRoles = await $discord.getAllRoles(context.app.discordClient, eventChannel?.discordGuildId);
 				for (const roleId of data.mentions) {
 					const role = discordRoles.find((r) => r.id === roleId);
 					if (!role) {
@@ -460,10 +481,10 @@ export const eventResolvers: Resolvers = {
 			const eventChannel = await $events.getEventEventChannel(event.id);
 			if (!eventChannel) throw gqlErrorBadState("Event is missing channel");
 
-			const discordChannel = await $discord.getChannel(context.app.discordClient, eventChannel.discordId);
+			const discordChannel = await $discord.getChannel(context.app.discordClient, eventChannel.discordId, eventChannel.discordGuildId ?? undefined);
 			if (!discordChannel) throw gqlErrorBadState("Cannot find discord channel");
 
-			const discordCategory = await $discord.getChannel(context.app.discordClient, eventChannel.discordCategoryId);
+			const discordCategory = await $discord.getChannel(context.app.discordClient, eventChannel.discordCategoryId, eventChannel.discordGuildId ?? undefined);
 			if (!discordCategory) throw gqlErrorBadState("Cannot find discord category");
 
 			if (!(await $discord.canPostInChannel(discordChannel))) {

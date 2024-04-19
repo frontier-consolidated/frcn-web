@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto, invalidate } from "$app/navigation";
-	import { Indicator, TableBodyCell, TableBodyRow, Toggle } from "flowbite-svelte";
+	import { Breadcrumb, BreadcrumbItem, Indicator, TableBodyCell, TableBodyRow, Toggle } from "flowbite-svelte";
 	import { EditOutline, ExclamationCircleSolid, TrashBinSolid } from "flowbite-svelte-icons";
 
 	import { ConfirmationModal, Tooltip } from "$lib/components";
@@ -27,7 +27,15 @@
                     Missing permissions to post messages in this channel
                 </Tooltip>
             {/if}
-            {channel.discord.name}
+            <Breadcrumb olClass="inline-flex items-center">
+                <BreadcrumbItem spanClass="text-sm font-medium">
+                    <div slot="icon"></div>
+                    {channel.discordGuild.name}
+                </BreadcrumbItem>
+                <BreadcrumbItem spanClass="text-sm">
+                    {channel.discord.name}
+                </BreadcrumbItem>
+            </Breadcrumb>
         </div>
     </TableBodyCell>
     <TableBodyCell>

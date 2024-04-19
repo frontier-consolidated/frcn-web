@@ -19,7 +19,9 @@ export const load = (async ({ locals, depends }) => {
     return {
         ...data.settings,
         channels: data.eventChannels,
+        defaultGuild: data.settings.discordGuild,
         options: {
+            guilds: data.discordGuilds,
             channels: data.discordChannels,
             voiceChannels: data.discordVoiceChannels,
             categories: data.discordCategories

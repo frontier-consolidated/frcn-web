@@ -3,18 +3,14 @@ import type { Event } from "@prisma/client";
 import { EmbedBuilder, Client } from "discord.js";
 
 import { logger } from "../../logger";
+import { $discord } from "../../services/discord";
 import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
 import { getLocationBreadcrumbs } from "../helpers";
 
-export async function buildEventUpdateMessage(client: Client, oldEvent: Event, newEvent: Event) {
-	const embed = new EmbedBuilder()
-		.setColor(PRIMARY_COLOR)
-		.setTitle("Event Updated")
-		.setDescription("Event details have changed, see changes below:");
-
+async function addEventChangeFields(embed: EmbedBuilder, oldEvent: Event, newEvent: Event) {
 	let hasChanges = false;
-	
+
 	if (oldEvent.startAt?.getTime() !== newEvent.startAt?.getTime()) {
 		hasChanges = true;
 		embed.addFields({
@@ -26,7 +22,7 @@ export async function buildEventUpdateMessage(client: Client, oldEvent: Event, n
 	if (oldEvent.duration !== newEvent.duration) {
 		hasChanges = true;
 		embed.addFields({
-			name: "Start Time",
+			name: "Duration",
 			value: `**Old:** ${oldEvent.duration ? dates.toDuration(oldEvent.duration) : "null"}\n**New:** ${newEvent.duration ? dates.toDuration(newEvent.duration) : "null"}`
 		});
 	}
@@ -40,6 +36,42 @@ export async function buildEventUpdateMessage(client: Client, oldEvent: Event, n
 			value: `**Old:** ${getLocationBreadcrumbs(oldEvent.location)}\n**New:** ${getLocationBreadcrumbs(newEvent.location)}`
 		});
 	}
+
+	if (oldEvent.description !== newEvent.description) {
+		hasChanges = true;
+
+		const json = embed.toJSON();
+		embed.setDescription(`${json.description ?? ""}\n### Description\n**Old:**\n${oldEvent.description.length > 1600 ? oldEvent.description.slice(0, 2000) + "..." : oldEvent.description}\n**New:**\n${newEvent.description}`);
+	}
+
+	return hasChanges;
+}
+
+export async function buildEventUpdateMessage(oldEvent: Event, newEvent: Event) {
+	const embed = new EmbedBuilder()
+		.setColor(PRIMARY_COLOR)
+		.setTitle("Event Updated")
+		.setDescription("Event details have changed, see changes below:");
+
+	const hasChanges = await addEventChangeFields(embed, oldEvent, newEvent);
+	
+	return {
+		hasChanges,
+		embeds: [embed],
+	};
+}
+
+export async function buildEventUpdateDmMessage(client: Client, oldEvent: Event, newEvent: Event) {
+	const guild = await $discord.getSystemGuild(client);
+	const channel = newEvent.channelId ? await $events.getEventChannel(newEvent.channelId) : null;
+	const eventMessageLink = `https://discord.com/channels/${channel?.discordGuildId ?? guild?.id}/${channel?.discordId}/${newEvent.discordEventMessageId}`;
+
+	const embed = new EmbedBuilder()
+		.setColor(PRIMARY_COLOR)
+		.setTitle("Event Updated")
+		.setDescription(`Details for the **[${newEvent.name}](${eventMessageLink})** have changed, see changes below:`);
+
+	const hasChanges = await addEventChangeFields(embed, oldEvent, newEvent);
 	
 	return {
 		hasChanges,
@@ -50,12 +82,44 @@ export async function buildEventUpdateMessage(client: Client, oldEvent: Event, n
 export async function postEventUpdateMessage(client: Client, oldEvent: Event, newEvent: Event) {
 	if (!oldEvent.posted || !newEvent.posted) return;
 
-	try {
-		const { hasChanges, embeds } = await buildEventUpdateMessage(client, oldEvent, newEvent);
+	if (newEvent.discordThreadId) {
+		try {
+			const { hasChanges, embeds } = await buildEventUpdateMessage(oldEvent, newEvent);
+			if (!hasChanges) return;
+			const thread = await $events.getEventThread(newEvent, client);
+			await thread.send({ embeds });
+		} catch (err) {
+			logger.error("Failed to post event update message", err);
+		}
+	} else {
+		const { hasChanges, embeds } = await buildEventUpdateDmMessage(client, oldEvent, newEvent);
 		if (!hasChanges) return;
-		const thread = await $events.getEventThread(newEvent, client);
-		await thread.send({ embeds });
-	} catch (err) {
-		logger.error("Failed to post event update message", err);
+
+		const eventUsers = await $events.getEventMembers(newEvent.id, {
+			include: {
+				user: {
+					select: {
+						discordId: true
+					}
+				}
+			}
+		});
+
+		for (const rsvp of eventUsers) {
+			if (!rsvp.user || !rsvp.rsvpId) continue;
+
+			try {
+				const discordUser = await client.users.fetch(rsvp.user.discordId);
+	
+				let dmChannel = discordUser.dmChannel;
+				if (!dmChannel) {
+					dmChannel = await discordUser.createDM();
+				}
+				await dmChannel.send({ embeds });
+			} catch (err) {
+				// failed to dm
+				logger.error("Failed to dm user", rsvp.userId, err);
+			}
+		}
 	}
 }
