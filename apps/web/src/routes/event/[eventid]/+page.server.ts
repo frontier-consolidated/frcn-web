@@ -31,6 +31,7 @@ export const load = (async ({ params, locals, depends }) => {
             query: Queries.GET_EVENT_SETTINGS,
             variables: {
                 eventId: eventData.event.id,
+                guildId: eventData.event.channel?.discordGuild.id
             },
             errorPolicy: "all",
         });

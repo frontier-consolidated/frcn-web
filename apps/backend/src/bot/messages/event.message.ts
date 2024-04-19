@@ -12,12 +12,14 @@ import { PRIMARY_COLOR } from "../constants";
 import { getLocationBreadcrumbs } from "../helpers";
 
 export async function buildEventMessage(id: string, client: Client, threadId?: string) {
-	const guild = await $discord.getGuild(client);
-	if (!guild) return null;
-
 	const event = await database.event.findUnique({
 		where: { id },
 		include: {
+			channel: {
+				select: {
+					discordGuildId: true
+				}
+			},
 			owner: {
 				select: {
 					discordName: true,
@@ -43,8 +45,10 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 			},
 		},
 	});
-
 	if (!event) throw new Error(`Could not create event message, since an event with id '${id}' could not be found`);
+
+	const guild = event.channel?.discordGuildId ? await $discord.getGuild(client, event.channel.discordGuildId) : await $discord.getSystemGuild(client);
+	if (!guild) return null;
 
 	const startAtSeconds = Math.floor(event.startAt!.getTime() / 1000);
 	const eventEmbed = new EmbedBuilder()
@@ -66,6 +70,7 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 
 	event.roles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 	
+	threadId ??= event.discordThreadId ?? undefined;
 	eventEmbed
 		.addFields(
 			{
@@ -73,7 +78,7 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`,
 			},
 			{ name: "Duration", value: dates.toDuration(event.duration!) },
-			{ name: "Thread", value: `<#${threadId ?? event.discordThreadId}>` },
+			...(threadId ? [{ name: "Thread", value: `<#${threadId}>` }] : []),
 			...event.roles.map((role) => {
 				const members = role.members.filter(m => !!m.user);
 				return {
@@ -148,9 +153,10 @@ export async function getEventMessage(client: Client, event: Event) {
 
 export async function postEventMessage(client: Client, event: Event) {
 	const channel = await $events.getEventDiscordChannel(event, client);
+	const settings = await $events.getEventSettings(event.id);
 
-	let createThread = !event.discordThreadId;
-	if (!createThread) {
+	let createThread = !event.discordThreadId && settings?.createEventThread;
+	if (!createThread && settings?.createEventThread) {
 		try {
 			await $events.getEventThread(event, client);
 		} catch (err) {
@@ -162,7 +168,7 @@ export async function postEventMessage(client: Client, event: Event) {
 	let thread: ThreadChannel | null = null;
 	if (createThread) {
 		thread = await $events.createEventThread(event, client, channel);
-		threadId = thread.id;
+		threadId = thread?.id ?? null;
 	}
 
 	const payload = await buildEventMessage(event.id, client, threadId ?? undefined);

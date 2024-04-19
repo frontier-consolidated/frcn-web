@@ -10,7 +10,7 @@ import { reminderTimes, buildReminderDmMessage } from "../messages/reminders.mes
 const EVENT_UPDATE_INTERVAL = 60 * 1000;
 
 async function updateEvents(client: Client) {
-    const guild = await $discord.getGuild(client);
+    const guild = await $discord.getSystemGuild(client);
     if (!guild) return;
 
     let now = Date.now();
@@ -20,9 +20,9 @@ async function updateEvents(client: Client) {
         for (const event of events) {
             if (!event.startAt || event.startAt > new Date(now + time) || event.remindersSent.includes(reminder)) continue;
 
-            const eventMessageLink = `https://discord.com/channels/${guild.id}/${event.channel?.discordId}/${event.discordEventMessageId}`;
+            const eventMessageLink = `https://discord.com/channels/${event.channel?.discordGuildId ?? guild.id}/${event.channel?.discordId}/${event.discordEventMessageId}`;
 
-            if (reminder === EventReminder.OnStart) {
+            if (reminder === EventReminder.OnStart && event.discordThreadId) {
                 try {
                     const thread = await $events.getEventThread(event, client);
                     const payload = await buildEventStartMessage(client, event, eventMessageLink);
@@ -42,13 +42,13 @@ async function updateEvents(client: Client) {
                 }
             });
 
+            const dmPayload = buildReminderDmMessage(event, reminder, eventMessageLink);
             for (const rsvp of eventUsers) {
-                if (!rsvp.user || rsvp.reminders.length === 0) continue;
+                if (!rsvp.user || rsvp.reminders.length === 0 || !rsvp.rsvpId) continue;
                 if (!rsvp.reminders.includes(reminder)) continue;
 
                 try {
                     const discordUser = await client.users.fetch(rsvp.user.discordId);
-                    const dmPayload = buildReminderDmMessage(event, reminder, eventMessageLink);
         
                     let dmChannel = discordUser.dmChannel;
                     if (!dmChannel) {
@@ -76,7 +76,7 @@ async function updateEvents(client: Client) {
     now = Date.now();
     const endingEvents = await $events.getEndingEvents();
     for (const event of endingEvents) {
-        if (!event.startAt || !event.duration || event.endedAt || event.endReminderSent || event.startAt.getTime() + event.duration > now) continue;
+        if (!event.startAt || !event.duration || event.endedAt || event.endReminderSent || event.startAt.getTime() + event.duration > now || !event.discordThreadId) continue;
         
         try {
             const thread = await $events.getEventThread(event, client);

@@ -13,7 +13,7 @@
 	import isURL from "validator/lib/isURL";
 
 	import { DatetimePicker, DurationPicker, LocationSelectInput, MarkdownEditor, ConfirmationModal, SectionHeading, Select, Field, FieldValidator, Button } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
+	import { Mutations, Queries, getApollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -63,7 +63,7 @@
 			return false;
 		}
 		
-		const { data: updatedData, errors } = await getApollo().mutate({
+		const { errors } = await getApollo().mutate({
 			mutation: Mutations.EDIT_EVENT,
 			variables: {
 				eventId: data.id,
@@ -86,6 +86,7 @@
 					})),
 					mentions: editData.mentions,
 					settings: {
+						createEventThread: editData.settings.createEventThread,
 						hideLocation: editData.settings.hideLocation,
 						inviteOnly: editData.settings.inviteOnly,
 						openToJoinRequests: editData.settings.openToJoinRequests,
@@ -106,11 +107,7 @@
 			return false;
 		}
 
-		const location = updatedData?.event?.location
-			? getLocations(updatedData?.event?.location)
-			: null;
-		data = { ...data, ...updatedData?.event, location } as PageData;
-		editData = cloneEventSettingsData(data);
+		await invalidate("app:currentevent");
 
 		if (notifyOfSuccess) {
 			pushNotification({
@@ -154,6 +151,57 @@
 			message: "Event successfully posted!",
 		});
 		return true;
+	}
+
+	let guildOptions = data.options;
+
+	let previousEventChannelId = editData.channel.id;
+	let fetchingGuildData = false;
+	$: {
+		if (data.options && editData.channel.id !== previousEventChannelId) {
+			previousEventChannelId = editData.channel.id;
+			fetchingGuildData = true;
+
+			editData.mentions = [];
+
+			editData.channel = data.options.channels.find(channel => channel.id === editData.channel.id) ?? editData.channel;
+			
+			if (editData.channel.id === data.channel?.id) {
+				guildOptions = data.options;
+				fetchingGuildData = false;
+			} else if ("id" in editData.channel.discordGuild) {
+				getApollo().query({
+                    query: Queries.GET_EVENT_SETTINGS_CHANNEL_OPTIONS,
+                    variables: {
+                        guildId: editData.channel.discordGuild.id
+                    }
+                })
+                .then((options) => {
+					guildOptions = {
+						channels: data.options!.channels,
+						emojis: data.options!.emojis,
+						discordRoles: options.data.discordRoles
+					};
+                })
+                .catch((err) => {
+                    pushNotification({
+                        type: "error",
+                        message: "Failed to fetch data for selected event channel"
+                    });
+                    console.error(err);
+                })
+                .finally(() => {
+                    fetchingGuildData = false;
+                });
+			} else {
+				guildOptions = {
+					channels: data.options.channels,
+					emojis: data.options.emojis,
+					discordRoles: []
+				};
+				fetchingGuildData = false;
+			}
+		}
 	}
 </script>
 
@@ -358,8 +406,8 @@
 						name="event-channel"
 						options={data.options?.channels.map((channel) => ({
 							value: channel.id,
-							name: channel.discord.name,
-						})) ?? [{ value: editData.channel.id, name: editData.channel.discord.name }]}
+							name: `${channel.discordGuild.name} > ${channel.discord.name}`,
+						})) ?? [{ value: editData.channel.id, name: `${editData.channel.discordGuild.name} > ${editData.channel.discord.name}` }]}
 						required
 						disabled={!canEdit}
 						bind:value={editData.channel.id}
@@ -370,7 +418,7 @@
 					<Select
 						id="event-mentions"
 						name="event-mentions"
-						options={data.options?.discordRoles.map(role => ({
+						options={guildOptions?.discordRoles.map(role => ({
 							value: role.id,
 							name: role.name,
 							style: {
@@ -381,7 +429,7 @@
 						multi
 						search
 						max={10}
-						disabled={!canEdit}
+						disabled={!canEdit || fetchingGuildData}
 						bind:value={editData.mentions}
 						let:option
 					>
@@ -390,6 +438,14 @@
 							<span>{option.name}</span>
 						</div>
 					</Select>
+				</Field>
+				<Field {validator} for="event-create-thread" value={editData.settings.createEventThread}>
+					<Toggle id="event-create-thread" disabled={!canEdit || data.posted} bind:checked={editData.settings.createEventThread}>
+						Create Event Thread
+					</Toggle>
+					<Helper class="mt-1">
+						No discord thread will be created if disabled
+					</Helper>
 				</Field>
 			</div>
 		</section>

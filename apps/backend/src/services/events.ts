@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 
 import type { EventType } from "@frcn/shared";
 import type { Event, EventChannel, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
-import { ChannelType, Client as DiscordClient, TextChannel, type GuildBasedChannel, ThreadAutoArchiveDuration, VideoQualityMode } from "discord.js";
+import { ChannelType, Client as DiscordClient, TextChannel, type GuildBasedChannel, ThreadAutoArchiveDuration, VideoQualityMode, Guild } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
@@ -155,6 +155,7 @@ async function getUpcomingEvents(maxTimeInFutureMs?: number) {
 		include: {
 			channel: {
 				select: {
+					discordGuildId: true,
 					discordId: true
 				}
 			}
@@ -202,7 +203,7 @@ async function getEventDiscordChannel(event: Event, discordClient: DiscordClient
 	const eventChannel = await $events.getEventEventChannel(event.id);
 	if (!eventChannel) throw new Error("Event has no event channel");
 
-	const channel = await $discord.getChannel(discordClient, eventChannel.discordId);
+	const channel = await $discord.getChannel(discordClient, eventChannel.discordId, eventChannel.discordGuildId ?? undefined);
 	if (!channel?.isTextBased() || !(channel instanceof TextChannel)) throw new Error("Could not find event channel, or channel is somehow not text based");
 	return channel;
 }
@@ -210,7 +211,9 @@ async function getEventDiscordChannel(event: Event, discordClient: DiscordClient
 async function getEventThread(event: Event, discordClient: DiscordClient) {
 	if (!event.discordThreadId) throw new Error("Event has no thread!");
 
-	const thread = await $discord.getChannel(discordClient, event.discordThreadId);
+	const eventChannel = event.channelId ? await getEventChannel(event.channelId) : null;
+
+	const thread = await $discord.getChannel(discordClient, event.discordThreadId, eventChannel?.discordGuildId ?? undefined);
 	if (!thread?.isThread()) throw new Error("Could not find thread or channel is not a thread");
 
 	return thread;
@@ -218,6 +221,8 @@ async function getEventThread(event: Event, discordClient: DiscordClient) {
 
 async function createEventThread(event: Event, discordClient: DiscordClient, channel?: TextChannel) {
 	channel ??= await getEventDiscordChannel(event, discordClient);
+	const settings = await getEventSettings(event.id);
+	if (!settings?.createEventThread) return null;
 
 	const thread = await channel!.threads.create({
 		name: event.name,
@@ -353,7 +358,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 	if (!updatedMember.event.posted) return;
 	await updateEventMessage(discordClient, updatedMember.event);
 
-	if (updatedMember.user) {
+	if (updatedMember.user && updatedMember.event.discordThreadId) {
 		try {
 			const thread = await getEventThread(updatedMember.event, discordClient);
 			await thread.members.remove(updatedMember.user.discordId, "UnRSVPed / Kicked from event");
@@ -402,7 +407,7 @@ async function createEvent(owner: User, startAt: Date | undefined, discordClient
 	const { defaultEventChannel } = await $system.getSystemSettings();
 	if (!defaultEventChannel) throw new Error("No default event channel");
 
-	const guild = await $discord.getGuild(discordClient);
+	const guild = await $discord.getSystemGuild(discordClient);
 	if (!guild) throw new Error("Could not fetch guild");
 	
 	const discordChannel = await $discord.getChannel(discordClient, defaultEventChannel.discordId);
@@ -511,9 +516,10 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 			settings: data.settings
 				? {
 						update: {
-							hideLocation: data.settings.hideLocation,
-							inviteOnly: data.settings.inviteOnly,
-							openToJoinRequests: data.settings.openToJoinRequests,
+							createEventThread: data.settings.createEventThread ?? undefined,
+							hideLocation: data.settings.hideLocation ?? undefined,
+							inviteOnly: data.settings.inviteOnly ?? undefined,
+							openToJoinRequests: data.settings.openToJoinRequests ?? undefined,
 						},
 				  }
 				: undefined,
@@ -659,11 +665,13 @@ async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, curre
 
 	await updateEventMessage(discordClient, updatedEvent);
 
-	try {
-		const thread = await getEventThread(updatedEvent, discordClient);
-		await thread.members.add(user.discordId, "RSVPed");
-	} catch (err) {
-		logger.error("Failed to add user to event thread", err);
+	if (updatedEvent.discordThreadId) {
+		try {
+			const thread = await getEventThread(updatedEvent, discordClient);
+			await thread.members.add(user.discordId, "RSVPed");
+		} catch (err) {
+			logger.error("Failed to add user to event thread", err);
+		}
 	}
 }
 
@@ -709,7 +717,7 @@ async function canSeeEvent(event: Event, user: User | undefined, discordClient: 
 		case EventAccessType.Channel: {
 			const channel = await getEventEventChannel(event.id);
 			if (!channel) return false;
-			return await $discord.canUserViewChannel(discordClient, user, channel.discordId);
+			return await $discord.canUserViewChannel(discordClient, user, channel.discordId, channel.discordGuildId ?? undefined);
 		}
 	}
 }
@@ -734,6 +742,13 @@ async function getEventChannel(id: number) {
 async function getEventChannelReadyRoom(id: number) {
 	return await database.eventVoiceChannel.findFirst({
 		where: { channelId: id, readyRoom: true },
+		include: {
+			channel: {
+				select: {
+					discordGuildId: true
+				}
+			}
+		}
 	});
 }
 
@@ -744,7 +759,7 @@ async function getEventChannelVoiceChannels(id: number) {
 	return result ?? [];
 }
 
-async function createEventChannel(channel: GuildBasedChannel, category: GuildBasedChannel, readyRoom?: GuildBasedChannel) {
+async function createEventChannel(guild: Guild, channel: GuildBasedChannel, category: GuildBasedChannel, readyRoom?: GuildBasedChannel) {
 	if (!(await $discord.canManageChannelsInCategory(category))) throw new Error("Cannot manage channels in event channel category");
 
 	if (!readyRoom) {
@@ -761,6 +776,7 @@ async function createEventChannel(channel: GuildBasedChannel, category: GuildBas
 
 	const eventChannel = await database.eventChannel.create({
 		data: {
+			discordGuildId: guild.id,
 			discordId: channel.id,
 			discordCategoryId: category.id,
 			voiceChannels: {
@@ -802,7 +818,7 @@ async function deleteEventChannel(channel: EventChannel, discordClient: DiscordC
 	if (deleteVoiceChannels) {
 		const vcs = await getEventChannelVoiceChannels(channel.id);
 		for (const vc of vcs) {
-			const discordChannel = await $discord.getChannel(discordClient, vc.discordId);
+			const discordChannel = await $discord.getChannel(discordClient, vc.discordId, channel.discordGuildId ?? undefined);
 			if (discordChannel) {
 				await discordChannel.delete("Deleting voice channels associated to event channel");
 			}

@@ -155,6 +155,7 @@ export type EventChannel = {
   __typename?: 'EventChannel';
   discord: DiscordChannel;
   discordCategory?: Maybe<DiscordChannel>;
+  discordGuild: DiscordGuild;
   events: Array<Event>;
   id: Scalars['Int']['output'];
   readyRoomName?: Maybe<Scalars['String']['output']>;
@@ -163,6 +164,7 @@ export type EventChannel = {
 export type EventChannelEditInput = {
   categoryId?: InputMaybe<Scalars['ID']['input']>;
   channelId?: InputMaybe<Scalars['ID']['input']>;
+  guildId?: InputMaybe<Scalars['ID']['input']>;
   readyRoomName?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -230,15 +232,17 @@ export type EventRsvpRole = {
 
 export type EventSettings = {
   __typename?: 'EventSettings';
+  createEventThread: Scalars['Boolean']['output'];
   hideLocation: Scalars['Boolean']['output'];
   inviteOnly: Scalars['Boolean']['output'];
   openToJoinRequests: Scalars['Boolean']['output'];
 };
 
 export type EventSettingsInput = {
-  hideLocation: Scalars['Boolean']['input'];
-  inviteOnly: Scalars['Boolean']['input'];
-  openToJoinRequests: Scalars['Boolean']['input'];
+  createEventThread?: InputMaybe<Scalars['Boolean']['input']>;
+  hideLocation?: InputMaybe<Scalars['Boolean']['input']>;
+  inviteOnly?: InputMaybe<Scalars['Boolean']['input']>;
+  openToJoinRequests?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export enum EventState {
@@ -336,8 +340,9 @@ export type MutationCreateEventArgs = {
 
 export type MutationCreateEventChannelArgs = {
   categoryId: Scalars['ID']['input'];
+  channelId: Scalars['ID']['input'];
   existingReadyRoomId?: InputMaybe<Scalars['ID']['input']>;
-  linkTo: Scalars['ID']['input'];
+  guildId: Scalars['ID']['input'];
 };
 
 
@@ -612,6 +617,7 @@ export type Query = {
   getAllAccessKeys: Array<AccessKey>;
   getAllDiscordCategories: Array<DiscordChannel>;
   getAllDiscordEmojis: DiscordEmojis;
+  getAllDiscordGuilds: Array<DiscordGuild>;
   getAllDiscordRoles: Array<DiscordRole>;
   getAllDiscordTextChannels: Array<DiscordChannel>;
   getAllDiscordVoiceChannels: Array<DiscordChannel>;
@@ -640,8 +646,24 @@ export type QueryGetAccessKeyArgs = {
 };
 
 
+export type QueryGetAllDiscordCategoriesArgs = {
+  guildId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
 export type QueryGetAllDiscordRolesArgs = {
   everyone?: InputMaybe<Scalars['Boolean']['input']>;
+  guildId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryGetAllDiscordTextChannelsArgs = {
+  guildId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryGetAllDiscordVoiceChannelsArgs = {
+  guildId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1132,6 +1154,7 @@ export type EventResolvers<ContextType = GQLContext, ParentType extends Resolver
 export type EventChannelResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventChannel'] = ResolversParentTypes['EventChannel']> = ResolversObject<{
   discord?: Resolver<ResolversTypes['DiscordChannel'], ParentType, ContextType>;
   discordCategory?: Resolver<Maybe<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
+  discordGuild?: Resolver<ResolversTypes['DiscordGuild'], ParentType, ContextType>;
   events?: Resolver<Array<ResolversTypes['Event']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   readyRoomName?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
@@ -1166,6 +1189,7 @@ export type EventRsvpRoleResolvers<ContextType = GQLContext, ParentType extends 
 }>;
 
 export type EventSettingsResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['EventSettings'] = ResolversParentTypes['EventSettings']> = ResolversObject<{
+  createEventThread?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   hideLocation?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   inviteOnly?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   openToJoinRequests?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
@@ -1186,7 +1210,7 @@ export type MutationResolvers<ContextType = GQLContext, ParentType extends Resol
   createAccessKey?: Resolver<ResolversTypes['AccessKey'], ParentType, ContextType>;
   createContentContainer?: Resolver<ResolversTypes['ContentContainer'], ParentType, ContextType, RequireFields<MutationCreateContentContainerArgs, 'type'>>;
   createEvent?: Resolver<ResolversTypes['ID'], ParentType, ContextType, Partial<MutationCreateEventArgs>>;
-  createEventChannel?: Resolver<ResolversTypes['EventChannel'], ParentType, ContextType, RequireFields<MutationCreateEventChannelArgs, 'categoryId' | 'linkTo'>>;
+  createEventChannel?: Resolver<ResolversTypes['EventChannel'], ParentType, ContextType, RequireFields<MutationCreateEventChannelArgs, 'categoryId' | 'channelId' | 'guildId'>>;
   createEventTeam?: Resolver<ResolversTypes['EventTeam'], ParentType, ContextType, RequireFields<MutationCreateEventTeamArgs, 'eventId' | 'name'>>;
   createResource?: Resolver<ResolversTypes['Resource'], ParentType, ContextType, RequireFields<MutationCreateResourceArgs, 'data'>>;
   createRole?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
@@ -1266,11 +1290,12 @@ export type PagedUserResolvers<ContextType = GQLContext, ParentType extends Reso
 export type QueryResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   getAccessKey?: Resolver<Maybe<ResolversTypes['AccessKey']>, ParentType, ContextType, RequireFields<QueryGetAccessKeyArgs, 'id'>>;
   getAllAccessKeys?: Resolver<Array<ResolversTypes['AccessKey']>, ParentType, ContextType>;
-  getAllDiscordCategories?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
+  getAllDiscordCategories?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType, Partial<QueryGetAllDiscordCategoriesArgs>>;
   getAllDiscordEmojis?: Resolver<ResolversTypes['DiscordEmojis'], ParentType, ContextType>;
+  getAllDiscordGuilds?: Resolver<Array<ResolversTypes['DiscordGuild']>, ParentType, ContextType>;
   getAllDiscordRoles?: Resolver<Array<ResolversTypes['DiscordRole']>, ParentType, ContextType, Partial<QueryGetAllDiscordRolesArgs>>;
-  getAllDiscordTextChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
-  getAllDiscordVoiceChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
+  getAllDiscordTextChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType, Partial<QueryGetAllDiscordTextChannelsArgs>>;
+  getAllDiscordVoiceChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType, Partial<QueryGetAllDiscordVoiceChannelsArgs>>;
   getAllEventChannels?: Resolver<Array<ResolversTypes['EventChannel']>, ParentType, ContextType>;
   getAllUsers?: Resolver<ResolversTypes['PagedUser'], ParentType, ContextType, Partial<QueryGetAllUsersArgs>>;
   getContentContainer?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainerArgs, 'identifier' | 'type'>>;

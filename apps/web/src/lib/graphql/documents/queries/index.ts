@@ -11,8 +11,10 @@ import { GET_CONTENT_CONTAINERS_OF_TYPE } from "./getContentContainersOfType.que
 import { GET_CONTENT_CONTAINER_WITH_DESCENDANTS } from "./getContentContainerWithDescendants.query";
 import { GET_EVENT } from "./getEvent.query";
 import { GET_EVENT_CHANNEL } from "./getEventChannel.query";
+import { GET_EVENT_CHANNEL_OPTIONS } from "./getEventChannelOptions.query";
 import { GET_EVENTS } from "./getEvents.query";
 import { GET_EVENT_SETTINGS } from "./getEventSettings.query";
+import { GET_EVENT_SETTINGS_CHANNEL_OPTIONS } from "./getEventSettingsChannelOptions.query";
 import { GET_OWNED_EVENTS } from "./getOwnedEvents.query";
 import { GET_RESOURCE } from "./getResource.query";
 import { GET_RESOURCES } from "./getResources.query";
@@ -29,6 +31,7 @@ export const Queries = {
 	GET_ALL_USERS,
 	GET_EVENT,
 	GET_EVENT_SETTINGS,
+	GET_EVENT_SETTINGS_CHANNEL_OPTIONS,
 	GET_EVENTS,
 	GET_ALL_ROLES,
 	GET_ROLE,
@@ -37,6 +40,7 @@ export const Queries = {
 	GET_SYSTEM_SETTINGS,
 	GET_EVENT_CHANNEL,
 	GET_ALL_EVENT_CHANNELS,
+	GET_EVENT_CHANNEL_OPTIONS,
 	GET_CONTENT_CONTAINER,
 	GET_CONTENT_CONTAINER_BY_ID,
 	GET_CONTENT_CONTAINERS_OF_TYPE,
