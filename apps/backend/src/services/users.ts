@@ -98,7 +98,7 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 		const member = await guild.members.fetch(discordUser.id);
 		discordName = member.nickname ?? member.displayName;
 	} catch (err) {
-		logger.error("Failed to fetch user's guild member object", err);
+		logger.warn("Failed to fetch user's guild member object", discordUser, err);
 	}
 	
 	const avatarUrl = discordUser.avatar ? "https://cdn.discordapp.com" +
