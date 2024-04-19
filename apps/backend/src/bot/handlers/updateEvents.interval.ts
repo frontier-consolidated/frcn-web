@@ -10,7 +10,7 @@ import { reminderTimes, buildReminderDmMessage } from "../messages/reminders.mes
 const EVENT_UPDATE_INTERVAL = 60 * 1000;
 
 async function updateEvents(client: Client) {
-    const guild = await $discord.getGuild(client);
+    const guild = await $discord.getSystemGuild(client);
     if (!guild) return;
 
     let now = Date.now();

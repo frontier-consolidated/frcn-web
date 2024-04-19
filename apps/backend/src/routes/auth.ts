@@ -92,7 +92,7 @@ export default function route(context: Context, config: RouteConfig) {
 			})) as APIUser;
 
 			const adminIds = getAdminIds();
-			if (!adminIds.includes(discordUser.id) && !(await $discord.isInGuild(context.discordClient, discordUser.id))) {
+			if (!adminIds.includes(discordUser.id) && !(await $discord.isInSystemGuild(context.discordClient, discordUser.id))) {
 				if (!redirect_uri) {
 					return res.status(400).send({
 						message: "Not in guild"

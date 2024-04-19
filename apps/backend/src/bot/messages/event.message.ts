@@ -12,7 +12,7 @@ import { PRIMARY_COLOR } from "../constants";
 import { getLocationBreadcrumbs } from "../helpers";
 
 export async function buildEventMessage(id: string, client: Client, threadId?: string) {
-	const guild = await $discord.getGuild(client);
+	const guild = await $discord.getSystemGuild(client);
 	if (!guild) return null;
 
 	const event = await database.event.findUnique({

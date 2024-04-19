@@ -612,6 +612,7 @@ export type Query = {
   getAllAccessKeys: Array<AccessKey>;
   getAllDiscordCategories: Array<DiscordChannel>;
   getAllDiscordEmojis: DiscordEmojis;
+  getAllDiscordGuilds: Array<DiscordGuild>;
   getAllDiscordRoles: Array<DiscordRole>;
   getAllDiscordTextChannels: Array<DiscordChannel>;
   getAllDiscordVoiceChannels: Array<DiscordChannel>;
@@ -640,8 +641,24 @@ export type QueryGetAccessKeyArgs = {
 };
 
 
+export type QueryGetAllDiscordCategoriesArgs = {
+  guildId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
 export type QueryGetAllDiscordRolesArgs = {
   everyone?: InputMaybe<Scalars['Boolean']['input']>;
+  guildId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryGetAllDiscordTextChannelsArgs = {
+  guildId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryGetAllDiscordVoiceChannelsArgs = {
+  guildId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1266,11 +1283,12 @@ export type PagedUserResolvers<ContextType = GQLContext, ParentType extends Reso
 export type QueryResolvers<ContextType = GQLContext, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = ResolversObject<{
   getAccessKey?: Resolver<Maybe<ResolversTypes['AccessKey']>, ParentType, ContextType, RequireFields<QueryGetAccessKeyArgs, 'id'>>;
   getAllAccessKeys?: Resolver<Array<ResolversTypes['AccessKey']>, ParentType, ContextType>;
-  getAllDiscordCategories?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
+  getAllDiscordCategories?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType, Partial<QueryGetAllDiscordCategoriesArgs>>;
   getAllDiscordEmojis?: Resolver<ResolversTypes['DiscordEmojis'], ParentType, ContextType>;
+  getAllDiscordGuilds?: Resolver<Array<ResolversTypes['DiscordGuild']>, ParentType, ContextType>;
   getAllDiscordRoles?: Resolver<Array<ResolversTypes['DiscordRole']>, ParentType, ContextType, Partial<QueryGetAllDiscordRolesArgs>>;
-  getAllDiscordTextChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
-  getAllDiscordVoiceChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType>;
+  getAllDiscordTextChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType, Partial<QueryGetAllDiscordTextChannelsArgs>>;
+  getAllDiscordVoiceChannels?: Resolver<Array<ResolversTypes['DiscordChannel']>, ParentType, ContextType, Partial<QueryGetAllDiscordVoiceChannelsArgs>>;
   getAllEventChannels?: Resolver<Array<ResolversTypes['EventChannel']>, ParentType, ContextType>;
   getAllUsers?: Resolver<ResolversTypes['PagedUser'], ParentType, ContextType, Partial<QueryGetAllUsersArgs>>;
   getContentContainer?: Resolver<Maybe<ResolversTypes['ContentContainer']>, ParentType, ContextType, RequireFields<QueryGetContentContainerArgs, 'identifier' | 'type'>>;

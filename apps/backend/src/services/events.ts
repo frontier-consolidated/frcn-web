@@ -402,7 +402,7 @@ async function createEvent(owner: User, startAt: Date | undefined, discordClient
 	const { defaultEventChannel } = await $system.getSystemSettings();
 	if (!defaultEventChannel) throw new Error("No default event channel");
 
-	const guild = await $discord.getGuild(discordClient);
+	const guild = await $discord.getSystemGuild(discordClient);
 	if (!guild) throw new Error("Could not fetch guild");
 	
 	const discordChannel = await $discord.getChannel(discordClient, defaultEventChannel.discordId);

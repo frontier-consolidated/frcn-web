@@ -1,15 +1,36 @@
-import { ChannelType, GuildEmoji, Role, type GuildBasedChannel } from "discord.js";
+import { ChannelType, Guild, GuildEmoji, Role, type GuildBasedChannel } from "discord.js";
 
 import type { WithModel } from "./types";
 import { $discord } from "../../../services/discord";
 import type {
 	DiscordChannel,
 	DiscordEmoji,
+	DiscordGuild,
 	DiscordRole,
 	Resolvers,
 } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
 import { gqlErrorNotFound } from "../gqlError";
+
+export async function resolveDiscordGuild(guild: string | Guild, context: GQLContext) {
+	let guildObj: Guild | null;
+
+	if (guild instanceof Guild) {
+		guildObj = guild;
+	} else {
+		guildObj = await $discord.getGuild(context.app.discordClient, guild);
+
+		return {
+			id: guild,
+			name: "!UNKNOWN"
+		} satisfies DiscordGuild;
+	}
+
+	return {
+		id: guild.id,
+		name: guild.name,
+	} satisfies DiscordGuild;
+}
 
 export function resolveDiscordChannel(
 	channel: GuildBasedChannel,
@@ -92,6 +113,10 @@ export const discordResolvers: Resolvers = {
 	},
 
 	Query: {
+		getAllDiscordGuilds(source, args, context) {
+			const guilds = $discord.getAllGuilds(context.app.discordClient);
+			return guilds.map((guild) => resolveDiscordGuild(guild, context));
+		},
 		async getAllDiscordTextChannels(source, args, context) {
 			const channels = await $discord.getAllTextChannels(context.app.discordClient);
 			return channels.map(resolveDiscordChannel);
@@ -105,7 +130,7 @@ export const discordResolvers: Resolvers = {
 			return categories.map(resolveDiscordChannel);
 		},
 		async getAllDiscordEmojis(source, args, context) {
-			const guild = await $discord.getGuild(context.app.discordClient);
+			const guild = await $discord.getSystemGuild(context.app.discordClient);
 			if (!guild) return {
 				serverName: "!UNKNOWN",
 				serverAvatar: null,
@@ -123,7 +148,7 @@ export const discordResolvers: Resolvers = {
 			};
 		},
 		async getAllDiscordRoles(source, args, context) {
-			const roles = await $discord.getAllRoles(context.app.discordClient, args.everyone ?? undefined);
+			const roles = await $discord.getAllRoles(context.app.discordClient, args.guildId, args.everyone ?? undefined);
 			return roles.map((role) => resolveDiscordRole(role, context));
 		},
 	},

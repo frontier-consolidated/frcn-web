@@ -383,11 +383,12 @@ type Query {
 		@permission(one: [CreateEvents, ManageEvents, ManageSystem])
 	getEventChannel(id: Int!): EventChannel @permission(has: ManageSystem)
 
-	getAllDiscordTextChannels: [DiscordChannel!]! @permission(has: ManageSystem)
-	getAllDiscordVoiceChannels: [DiscordChannel!]! @permission(has: ManageSystem)
-	getAllDiscordCategories: [DiscordChannel!]! @permission(has: ManageSystem)
+	getAllDiscordGuilds: [DiscordGuild!]! @permission(has: ManageSystem)
+	getAllDiscordTextChannels(guildId: ID): [DiscordChannel!]! @permission(has: ManageSystem)
+	getAllDiscordVoiceChannels(guildId: ID): [DiscordChannel!]! @permission(has: ManageSystem)
+	getAllDiscordCategories(guildId: ID): [DiscordChannel!]! @permission(has: ManageSystem)
 	getAllDiscordEmojis: DiscordEmojis! @permission(one: [CreateEvents, ManageEvents])
-	getAllDiscordRoles(everyone: Boolean): [DiscordRole!]!
+	getAllDiscordRoles(guildId: ID, everyone: Boolean): [DiscordRole!]!
 		@permission(one: [CreateEvents, ManageEvents, ManageRoles])
 	getSystemSettings: SystemSettings! @permission(has: ManageSystem)
 

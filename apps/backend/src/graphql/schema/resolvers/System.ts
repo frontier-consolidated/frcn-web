@@ -2,6 +2,7 @@ import { hasAdmin } from "@frcn/shared";
 import type { AccessKey } from "@prisma/client";
 import { ChannelType, type GuildBasedChannel } from "discord.js";
 
+import { resolveDiscordGuild } from "./Discord";
 import { resolveEventChannel } from "./Event";
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
@@ -44,22 +45,7 @@ export const systemResolvers: Resolvers = {
 	SystemSettings: {
 		async discordGuild(source, args, context) {
 			const { _model } = source as WithModel<GQLSystemSettings, SystemSettings>;
-			if (_model.discordGuildId) {
-				try {
-					const guild = await context.app.discordClient.guilds.fetch(_model.discordGuildId);
-					return {
-						id: guild.id,
-						name: guild.name,
-					};
-				} catch (err) {
-					//	
-				}
-			}
-
-			return {
-				id: _model.discordGuildId,
-				name: "!UNKNOWN"
-			};
+			return await resolveDiscordGuild(_model.discordGuildId, context);
 		},
 		defaultEventChannel(source) {
 			const { _model } = source as WithModel<GQLSystemSettings, SystemSettings>;
