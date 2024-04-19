@@ -74,6 +74,7 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 	event.roles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 	
 	const totalMembers = event.roles.reduce((total, role) => total + role.members.filter(m => !!m.user).length, 0);
+	// This will go negative eventually if the event has a lot of RSVP roles, but let's just hope that never happens :)
 	const remainingCharacterLimit = 5500 - title.length - description.length - 120 * event.roles.length;
 
 	threadId ??= event.discordThreadId ?? undefined;
