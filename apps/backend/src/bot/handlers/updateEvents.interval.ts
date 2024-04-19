@@ -42,13 +42,13 @@ async function updateEvents(client: Client) {
                 }
             });
 
+            const dmPayload = buildReminderDmMessage(event, reminder, eventMessageLink);
             for (const rsvp of eventUsers) {
                 if (!rsvp.user || rsvp.reminders.length === 0 || !rsvp.rsvpId) continue;
                 if (!rsvp.reminders.includes(reminder)) continue;
 
                 try {
                     const discordUser = await client.users.fetch(rsvp.user.discordId);
-                    const dmPayload = buildReminderDmMessage(event, reminder, eventMessageLink);
         
                     let dmChannel = discordUser.dmChannel;
                     if (!dmChannel) {
