@@ -1,7 +1,8 @@
 import type { User } from "@prisma/client";
-import { type APIUser, ChannelType, Client, User as DJSUser, type NonThreadGuildBasedChannel, type GuildBasedChannel, CategoryChannel, VoiceChannel, GuildMemberRoleManager, Role } from "discord.js";
+import { type APIUser, ChannelType, User as DJSUser, type NonThreadGuildBasedChannel, type GuildBasedChannel, CategoryChannel, VoiceChannel, GuildMemberRoleManager, Role } from "discord.js";
 
 import { $system } from "./system";
+import type { DiscordClient } from "../bot";
 import { logger } from "../logger";
 
 const cacheTimestamps = {
@@ -11,7 +12,7 @@ const cacheTimestamps = {
 	members: -1,
 };
 
-async function getSystemGuild(client: Client) {
+async function getSystemGuild(client: DiscordClient) {
 	try {
 		const { discordGuildId } = await $system.getSystemSettings();
 	
@@ -21,7 +22,7 @@ async function getSystemGuild(client: Client) {
 	}
 }
 
-async function isInSystemGuild(client: Client, userId: string) {
+async function isInSystemGuild(client: DiscordClient, userId: string) {
 	try {
 		const guild = await getSystemGuild(client);
 		if (!guild) return false;
@@ -34,7 +35,7 @@ async function isInSystemGuild(client: Client, userId: string) {
 	}
 }
 
-function getAllGuilds(client: Client) {
+function getAllGuilds(client: DiscordClient) {
 	try {
 		return Array.from(client.guilds.cache.values());
 	} catch (err) {
@@ -42,7 +43,7 @@ function getAllGuilds(client: Client) {
 	}
 }
 
-async function getGuild(client: Client, id: string) {
+async function getGuild(client: DiscordClient, id: string) {
 	try {
 		const guild = client.guilds.cache.get(id) ?? await client.guilds.fetch(id);
 		return guild;
@@ -51,7 +52,7 @@ async function getGuild(client: Client, id: string) {
 	}
 }
 
-async function fetchAllChannels(client: Client, guildId?: string) {
+async function fetchAllChannels(client: DiscordClient, guildId?: string) {
 	try {
 		const guild = guildId ? await getGuild(client, guildId) : await getSystemGuild(client);
 		if (!guild) return [];
@@ -71,19 +72,19 @@ async function fetchAllChannels(client: Client, guildId?: string) {
 }
 
 const textChannelTypes: ChannelType[] = [ChannelType.GuildAnnouncement, ChannelType.GuildText];
-async function getAllTextChannels(client: Client, guildId?: string) {
+async function getAllTextChannels(client: DiscordClient, guildId?: string) {
 	return (await fetchAllChannels(client, guildId)).filter((channel) => textChannelTypes.includes(channel.type)) as NonThreadGuildBasedChannel[];
 }
 
-async function getAllVoiceChannels(client: Client, guildId?: string) {
+async function getAllVoiceChannels(client: DiscordClient, guildId?: string) {
 	return (await fetchAllChannels(client, guildId)).filter((channel) => channel.type === ChannelType.GuildVoice) as VoiceChannel[];
 }
 
-async function getAllCategories(client: Client, guildId?: string) {
+async function getAllCategories(client: DiscordClient, guildId?: string) {
 	return (await fetchAllChannels(client, guildId)).filter((channel) => !!channel && channel.type === ChannelType.GuildCategory) as CategoryChannel[];
 }
 
-async function getChannel(client: Client, id: string, guildId?: string) {
+async function getChannel(client: DiscordClient, id: string, guildId?: string) {
 	try {
 		const guild = guildId ? await getGuild(client, guildId) : await getSystemGuild(client);
 		if (!guild) return null;
@@ -115,7 +116,7 @@ async function canManageChannelsInCategory(category: GuildBasedChannel) {
 	return permissions.has("ManageChannels") && permissions.has("ViewChannel") && permissions.has("Connect") && permissions.has("MoveMembers");
 }
 
-async function getAllMembers(client: Client, guildId?: string) {
+async function getAllMembers(client: DiscordClient, guildId?: string) {
 	try {
 		const guild = guildId ? await getGuild(client, guildId) : await getSystemGuild(client);
 		if (!guild) return [];
@@ -134,7 +135,7 @@ async function getAllMembers(client: Client, guildId?: string) {
 	}
 }
 
-async function getMember(client: Client, user: string, guildId?: string) {
+async function getMember(client: DiscordClient, user: string, guildId?: string) {
 	try {
 		const guild = guildId ? await getGuild(client, guildId) : await getSystemGuild(client);
 		if (!guild) return null;
@@ -149,7 +150,7 @@ async function getMember(client: Client, user: string, guildId?: string) {
 	}
 }
 
-async function canUserViewChannel(client: Client, user: User | undefined, channelId: string, guildId?: string) {
+async function canUserViewChannel(client: DiscordClient, user: User | undefined, channelId: string, guildId?: string) {
 	try {
 		const guild = guildId ? await getGuild(client, guildId) : await getSystemGuild(client);
 		if (!guild) return false;
@@ -170,7 +171,7 @@ async function canUserViewChannel(client: Client, user: User | undefined, channe
 	}
 }
 
-async function getAllRoles(client: Client, guildId?: string | null, includeEveryone?: boolean) {
+async function getAllRoles(client: DiscordClient, guildId?: string | null, includeEveryone?: boolean) {
 	try {
 		const guild = guildId ? await getGuild(client, guildId) : await getSystemGuild(client);
 		if (!guild) return [];
@@ -194,7 +195,7 @@ async function getAllRoles(client: Client, guildId?: string | null, includeEvery
 	}
 }
 
-async function getRole(client: Client, id: string, guildId?: string) {
+async function getRole(client: DiscordClient, id: string, guildId?: string) {
 	try {
 		const guild = guildId ? await getGuild(client, guildId) : await getSystemGuild(client);
 		if (!guild) return null;
@@ -206,7 +207,7 @@ async function getRole(client: Client, id: string, guildId?: string) {
 	}
 }
 
-async function getAllEmojis(client: Client) {
+async function getAllEmojis(client: DiscordClient) {
 	try {
 		const guild = await getSystemGuild(client);
 		if (!guild) return [];
@@ -225,7 +226,7 @@ async function getAllEmojis(client: Client) {
 	}
 }
 
-async function getEmoji(client: Client, id: string) {
+async function getEmoji(client: DiscordClient, id: string) {
 	try {
 		const guild = await getSystemGuild(client);
 		if (!guild) return null;
@@ -265,7 +266,7 @@ function convertDJSUserToAPIUser(user: DJSUser) {
 	} satisfies APIUser;
 }
 
-async function $init(client: Client) {
+async function $init(client: DiscordClient) {
 	logger.info("Saturating discord client caches...");
 
 	// Saturate caches

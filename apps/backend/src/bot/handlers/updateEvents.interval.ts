@@ -1,5 +1,4 @@
-import type { Client } from "discord.js";
-
+import type { DiscordClient } from "..";
 import { database } from "../../database";
 import { logger } from "../../logger";
 import { $discord } from "../../services/discord";
@@ -9,7 +8,7 @@ import { reminderTimes, buildReminderDmMessage } from "../messages/reminders.mes
 
 const EVENT_UPDATE_INTERVAL = 60 * 1000;
 
-async function updateEvents(client: Client) {
+async function updateEvents(client: DiscordClient) {
     const guild = await $discord.getSystemGuild(client);
     if (!guild) return;
 
@@ -95,6 +94,6 @@ async function updateEvents(client: Client) {
     }
 }
 
-export function startEventsUpdate(client: Client) {
+export function startEventsUpdate(client: DiscordClient) {
     setInterval(() => updateEvents(client), EVENT_UPDATE_INTERVAL);
 }

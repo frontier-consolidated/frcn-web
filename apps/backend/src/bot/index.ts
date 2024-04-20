@@ -1,5 +1,8 @@
+import fs from "fs";
+import path from "path";
+
 import type { UserRole } from "@prisma/client";
-import { type Client, InteractionType } from "discord.js";
+import { type Client, Collection, SlashCommandBuilder, REST, ChatInputCommandInteraction, Routes } from "discord.js";
 
 import { eventInteraction } from "./handlers/event.interaction";
 import { eventDmInteraction } from "./handlers/eventDm.interaction";
@@ -11,17 +14,60 @@ import { $discord } from "../services/discord";
 import { $roles } from "../services/roles";
 import { $users } from "../services/users";
 
-export function load(client: Client) {
+type Command = {
+    command: SlashCommandBuilder;
+    execute: (interaction: ChatInputCommandInteraction) => void | Promise<void>
+};
+
+export type DiscordClient = Client & {
+    commands: Collection<string, Command>;
+};
+
+async function registerCommands(client: DiscordClient, api: REST) {
+    const commands = new Collection<string, Command>();
+    client.commands = commands;
+
+    const __dirname = path.dirname(import.meta.url);
+    const commandsFolder = path.join(__dirname, "commands");
+    const commandsFiles = fs.readdirSync(commandsFolder).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
+
+    for (const commandFile of commandsFiles) {
+        const filePath = path.join(commandsFolder, commandFile);
+        const module = (await import(filePath)) as Command;
+        
+        if ("command" in module && "execute" in module) {
+            commands.set(module.command.name, module);
+        } else {
+            logger.warn(`Command file at ${filePath} is missing required command properties: "data", "execute"`);
+        }
+    }
+
+    const commandJSONs = Array.from(commands.values()).map(command => command.command.toJSON());
+    await api.put(Routes.applicationCommands(process.env.DISCORD_CLIENTID), {
+        body: commandJSONs
+    });
+}
+
+async function commandInteraction(interaction: ChatInputCommandInteraction) {
+    const command = (interaction.client as DiscordClient).commands.get(interaction.commandName);
+    
+}
+
+export async function load(client: DiscordClient, api: REST) {
+    await registerCommands(client, api);
+
     client.on("interactionCreate", async (interaction) => {
         if (interaction.user.bot) return;
 
         try {
-            if (interaction.type === InteractionType.MessageComponent) {
+            if (interaction.isMessageComponent()) {
                 if (!interaction.channel || interaction.channel.isDMBased()) {
                     await eventDmInteraction(interaction);
                 } else {
                     await eventInteraction(interaction);
                 }
+            } else if (interaction.isChatInputCommand()) {
+                await commandInteraction(interaction);
             }
         } catch (err) {
             logger.error("Error during interaction:", err);
@@ -122,6 +168,18 @@ export function load(client: Client) {
         
             publishUserRolesUpdated([user]);
             await publishRolesUpdated();
+        }
+    });
+
+    client.on("guildMemberAdd", async (member) => {
+        const defaultRole = await $roles.getDefaultPrimaryRole();
+        if (!defaultRole.discordId) return;
+
+        if (member.roles.cache.has(defaultRole.discordId)) return;
+        try {
+            await member.roles.add(defaultRole.discordId);
+        } catch (err) {
+            console.error(`Failed to add default discord role (${defaultRole.discordId}) to user ${member.nickname ?? member.displayName} (${member.user.id})`);
         }
     });
 

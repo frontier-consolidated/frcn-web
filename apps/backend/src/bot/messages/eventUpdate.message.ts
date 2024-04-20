@@ -1,7 +1,8 @@
 import { dates } from "@frcn/shared";
 import type { Event } from "@prisma/client";
-import { EmbedBuilder, Client } from "discord.js";
+import { EmbedBuilder } from "discord.js";
 
+import type { DiscordClient } from "..";
 import { logger } from "../../logger";
 import { $discord } from "../../services/discord";
 import { $events } from "../../services/events";
@@ -61,7 +62,7 @@ export async function buildEventUpdateMessage(oldEvent: Event, newEvent: Event) 
 	};
 }
 
-export async function buildEventUpdateDmMessage(client: Client, oldEvent: Event, newEvent: Event) {
+export async function buildEventUpdateDmMessage(client: DiscordClient, oldEvent: Event, newEvent: Event) {
 	const guild = await $discord.getSystemGuild(client);
 	const channel = newEvent.channelId ? await $events.getEventChannel(newEvent.channelId) : null;
 	const eventMessageLink = `https://discord.com/channels/${channel?.discordGuildId ?? guild?.id}/${channel?.discordId}/${newEvent.discordEventMessageId}`;
@@ -79,7 +80,7 @@ export async function buildEventUpdateDmMessage(client: Client, oldEvent: Event,
 	};
 }
 
-export async function postEventUpdateMessage(client: Client, oldEvent: Event, newEvent: Event) {
+export async function postEventUpdateMessage(client: DiscordClient, oldEvent: Event, newEvent: Event) {
 	if (!oldEvent.posted || !newEvent.posted) return;
 
 	if (newEvent.discordThreadId) {

@@ -1,9 +1,10 @@
 import { Permission } from "@frcn/shared";
 import type { Prisma, User, UserRole } from "@prisma/client";
-import { type APIUser, CDNRoutes, ImageFormat, Client as DiscordClient } from "discord.js";
+import { type APIUser, CDNRoutes, ImageFormat } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
+import type { DiscordClient } from "../bot";
 import { database } from "../database";
 import { getAdminIds } from "../env";
 import { publishRolesUpdated, publishUserRolesUpdated } from "../graphql/events";

@@ -1,8 +1,9 @@
 import { dates, strings } from "@frcn/shared";
 import { getEmojiByName } from "@frcn/shared/emojis";
 import type { Event } from "@prisma/client";
-import { type BaseMessageOptions, ButtonStyle, Client, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadChannel, escapeMarkdown, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
+import { type BaseMessageOptions, ButtonStyle, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadChannel, escapeMarkdown, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
 
+import type { DiscordClient } from "..";
 import { database } from "../../database";
 import { getWebURL } from "../../env";
 import { logger } from "../../logger";
@@ -11,7 +12,7 @@ import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
 import { getLocationBreadcrumbs } from "../helpers";
 
-export async function buildEventMessage(id: string, client: Client, threadId?: string) {
+export async function buildEventMessage(id: string, client: DiscordClient, threadId?: string) {
 	const event = await database.event.findUnique({
 		where: { id },
 		include: {
@@ -158,7 +159,7 @@ export async function buildEventMessage(id: string, client: Client, threadId?: s
 	} satisfies BaseMessageOptions;
 }
 
-export async function getEventMessage(client: Client, event: Event) {
+export async function getEventMessage(client: DiscordClient, event: Event) {
 	if (!event.discordEventMessageId) return null;
 
 	try {
@@ -169,7 +170,7 @@ export async function getEventMessage(client: Client, event: Event) {
 	}
 }
 
-export async function postEventMessage(client: Client, event: Event) {
+export async function postEventMessage(client: DiscordClient, event: Event) {
 	const channel = await $events.getEventDiscordChannel(event, client);
 	const settings = await $events.getEventSettings(event.id);
 
@@ -224,7 +225,7 @@ export async function postEventMessage(client: Client, event: Event) {
 	};
 }
 
-export async function updateEventMessage(client: Client, event: Event) {
+export async function updateEventMessage(client: DiscordClient, event: Event) {
 	if (!event.posted || event.endedAt) return;
 
 	try {
@@ -242,7 +243,7 @@ export async function updateEventMessage(client: Client, event: Event) {
 	}
 }
 
-export async function deleteEventMessage(client: Client, event: Event) {
+export async function deleteEventMessage(client: DiscordClient, event: Event) {
 	if (!event.posted) return;
 
 	try {
