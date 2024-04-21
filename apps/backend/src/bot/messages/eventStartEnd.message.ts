@@ -46,6 +46,27 @@ export async function buildEventStartMessage(client: DiscordClient, event: Event
 	} satisfies BaseMessageOptions;
 }
 
+export async function buildEventStartSoonMessage(client: DiscordClient, event: Event) {
+	const embed = new EmbedBuilder()
+		.setColor(PRIMARY_COLOR)
+		.setTitle(`${event.name} - Event starting soon!`)
+		.setDescription(`The event is starting soon! Starting <t:${event.startAt!.getTime()}:R>`);
+
+	
+	let vcLink = "";
+	if (event.channelId) {
+		const readyRoom = await $events.getEventChannelReadyRoom(event.channelId);
+		const readyRoomChannel = readyRoom && await $discord.getChannel(client, readyRoom.discordId, readyRoom.channel.discordGuildId ?? undefined);
+
+		if (readyRoomChannel) vcLink = readyRoomChannel.url;
+	}
+	
+	return {
+		content: `${vcLink}`,
+		embeds: [embed],
+	} satisfies BaseMessageOptions;
+}
+
 export function buildEventScheduledEndMessage(event: Event) {
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)

@@ -3,7 +3,7 @@ import { database } from "../../database";
 import { logger } from "../../logger";
 import { $discord } from "../../services/discord";
 import { $events, EventReminder } from "../../services/events";
-import { buildEventStartMessage, buildEventScheduledEndMessage } from "../messages/eventStartEnd.message";
+import { buildEventStartMessage, buildEventScheduledEndMessage, buildEventStartSoonMessage } from "../messages/eventStartEnd.message";
 import { reminderTimes, buildReminderDmMessage } from "../messages/reminders.message";
 
 const EVENT_UPDATE_INTERVAL = 60 * 1000;
@@ -31,32 +31,44 @@ async function updateEvents(client: DiscordClient) {
                 }
             }
 
-            const eventUsers = await $events.getEventMembers(event.id, {
-                include: {
-                    user: {
-                        select: {
-                            discordId: true
-                        }
+            if (reminder === EventReminder.StartSoon) {
+                if (event.discordThreadId) {
+                    try {
+                        const thread = await $events.getEventThread(event, client);
+                        const payload = await buildEventStartSoonMessage(client, event);
+                        await thread.send(payload);
+                    } catch (err) {
+                        logger.error("Error while posting event starting soon message", err);
                     }
                 }
-            });
-
-            const dmPayload = buildReminderDmMessage(event, reminder, eventMessageLink);
-            for (const rsvp of eventUsers) {
-                if (!rsvp.user || rsvp.reminders.length === 0 || !rsvp.rsvpId) continue;
-                if (!rsvp.reminders.includes(reminder)) continue;
-
-                try {
-                    const discordUser = await client.users.fetch(rsvp.user.discordId);
-        
-                    let dmChannel = discordUser.dmChannel;
-                    if (!dmChannel) {
-                        dmChannel = await discordUser.createDM();
+            } else {
+                const eventUsers = await $events.getEventMembers(event.id, {
+                    include: {
+                        user: {
+                            select: {
+                                discordId: true
+                            }
+                        }
                     }
-                    await dmChannel.send(dmPayload);
-                } catch (err) {
-                    // failed to dm
-                    logger.error("Failed to dm user", rsvp.userId, err);
+                });
+    
+                const dmPayload = buildReminderDmMessage(event, reminder, eventMessageLink);
+                for (const rsvp of eventUsers) {
+                    if (!rsvp.user || rsvp.reminders.length === 0 || !rsvp.rsvpId) continue;
+                    if (!rsvp.reminders.includes(reminder)) continue;
+    
+                    try {
+                        const discordUser = await client.users.fetch(rsvp.user.discordId);
+            
+                        let dmChannel = discordUser.dmChannel;
+                        if (!dmChannel) {
+                            dmChannel = await discordUser.createDM();
+                        }
+                        await dmChannel.send(dmPayload);
+                    } catch (err) {
+                        // failed to dm
+                        logger.error("Failed to dm user", rsvp.userId, err);
+                    }
                 }
             }
             
