@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
 import { type Client, type ClientEvents, Collection, SlashCommandBuilder, REST, ChatInputCommandInteraction, Routes } from "discord.js";
 
@@ -34,7 +35,7 @@ async function registerCommands(client: DiscordClient, api: REST) {
     const commands = new Collection<string, Command>();
     client.commands = commands;
 
-    const __dirname = path.dirname(import.meta.url);
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
     const commandsFolder = path.join(__dirname, "commands");
     const commandsFiles = fs.readdirSync(commandsFolder).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
 
@@ -44,6 +45,7 @@ async function registerCommands(client: DiscordClient, api: REST) {
         
         if ("command" in module && "execute" in module) {
             commands.set(module.command.name, module);
+            logger.log(`Registered command '${module.command.name}' (${filePath})`);
         } else {
             logger.warn(`Command file at ${filePath} is missing required command properties: "data", "execute"`);
         }
@@ -56,10 +58,7 @@ async function registerCommands(client: DiscordClient, api: REST) {
 }
 
 async function registerEvents(client: DiscordClient) {
-    const commands = new Collection<string, Command>();
-    client.commands = commands;
-
-    const __dirname = path.dirname(import.meta.url);
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
     const eventsFolder = path.join(__dirname, "events");
     const eventFiles = fs.readdirSync(eventsFolder).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
 
@@ -69,8 +68,10 @@ async function registerEvents(client: DiscordClient) {
         
         if (module.once) {
             client.once(module.event, module.listener);
+            logger.log(`Registered event listener ${filePath} to once:${module.event}`);
         } else {
             client.on(module.event, module.listener);
+            logger.log(`Registered event listener ${filePath} to on:${module.event}`);
         }
     }
 }
