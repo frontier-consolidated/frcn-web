@@ -19,6 +19,7 @@ const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000;
 
 export enum EventReminder {
 	OnStart = "ON_START",
+	StartSoon = "START_SOON",
 	TenMinutesBefore = "TEN_MINUTES",
 	OneHourBefore = "ONE_HOUR",
 	OneDayBefore = "ONE_DAY",

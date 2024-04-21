@@ -5,13 +5,23 @@ import { getWebURL } from "../../env";
 import { EventReminder } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
 
+const selectableReminders = [
+	EventReminder.OnStart,
+	EventReminder.TenMinutesBefore,
+	EventReminder.OneHourBefore,
+	EventReminder.OneDayBefore,
+	EventReminder.OneWeekBefore
+] as const;
+
+type SelectableEventReminder = (typeof selectableReminders)[number];
+
 const reminderButtonText = {
 	[EventReminder.OnStart]: "On event start",
 	[EventReminder.TenMinutesBefore]: "10 minutes before",
 	[EventReminder.OneHourBefore]: "1 hour before",
 	[EventReminder.OneDayBefore]: "1 day before",
 	[EventReminder.OneWeekBefore]: "1 week before"
-} satisfies Record<EventReminder, string>;
+} satisfies Record<SelectableEventReminder, string>;
 
 const reminderText = {
 	[EventReminder.OnStart]: "",
@@ -19,10 +29,11 @@ const reminderText = {
 	[EventReminder.OneHourBefore]: "1 hour",
 	[EventReminder.OneDayBefore]: "1 day",
 	[EventReminder.OneWeekBefore]: "1 week"
-} satisfies Record<EventReminder, string>;
+} satisfies Record<SelectableEventReminder, string>;
 
 export const reminderTimes = {
-    [EventReminder.OnStart]: 0,
+	[EventReminder.OnStart]: 0,
+	[EventReminder.StartSoon]: 15 * 60 * 1000,
     [EventReminder.TenMinutesBefore]: 10 * 60 * 1000,
     [EventReminder.OneHourBefore]: 60 * 60 * 1000,
     [EventReminder.OneDayBefore]: 24 * 60 * 60 * 1000,
@@ -36,7 +47,7 @@ export function buildRemindersMessage(event: Event, reminders: EventReminder[]) 
 		.setDescription("Choose when you would like to receive reminders about this event");
 
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
-	buttonsRow.addComponents(Object.values(EventReminder).map(reminder => {
+	buttonsRow.addComponents(selectableReminders.map(reminder => {
 		const button = new ButtonBuilder()
 			.setCustomId(`set-reminder-${event.id}:${reminder}`)
 			.setLabel(reminderButtonText[reminder]);
@@ -69,7 +80,7 @@ export function buildReminderDmMessage(event: Event, reminder: EventReminder, ev
 	if (reminder === EventReminder.OnStart) {
 		embed.setDescription(`This is your reminder that the **[${event.name}](${eventMessageLink})** event is starting now!`);
 	} else {
-		embed.setDescription(`This is your ${reminderText[reminder]} reminder for the **[${event.name}](${eventMessageLink})** event`);
+		embed.setDescription(`This is your ${reminderText[reminder as SelectableEventReminder]} reminder for the **[${event.name}](${eventMessageLink})** event`);
 	}
 	
 	const remindersButton = new ButtonBuilder()
