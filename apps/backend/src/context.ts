@@ -2,9 +2,10 @@ import type { Server } from "http";
 
 import type { ApolloServer } from "@apollo/server";
 import type { S3Client } from "@aws-sdk/client-s3";
-import type { Client as DiscordClient, REST as DiscordREST } from "discord.js";
+import type { REST as DiscordREST } from "discord.js";
 import type { Express } from "express";
 
+import type { DiscordClient } from "./bot";
 import type { GQLContext } from "./graphql/context";
 
 export type Context = {

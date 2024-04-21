@@ -125,7 +125,7 @@ export async function createApp(config: CreateAppOptions) {
         introspection: true,
     });
 
-    const { client: discordClient, rest: discordRest } = createDiscordClient(config.discordConfig.token);
+    const { client: discordClient, rest: discordRest } = await createDiscordClient(config.discordConfig.token);
 
     const s3Client = createS3Client(config.s3Config.region, config.s3Config.clientKey, config.s3Config.clientSecret);
 
