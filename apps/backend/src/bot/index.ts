@@ -1,23 +1,20 @@
 import fs from "fs";
 import path from "path";
 
-import type { UserRole } from "@prisma/client";
-import { type Client, Collection, SlashCommandBuilder, REST, ChatInputCommandInteraction, Routes } from "discord.js";
+import { type Client, type ClientEvents, Collection, SlashCommandBuilder, REST, ChatInputCommandInteraction, Routes } from "discord.js";
 
-import { eventInteraction } from "./handlers/event.interaction";
-import { eventDmInteraction } from "./handlers/eventDm.interaction";
 import { startEventsUpdate } from "./handlers/updateEvents.interval";
-import { buildErrorMessage } from "./messages/error.message";
-import { database } from "../database";
-import { publishRolesUpdated, publishUserRolesUpdated } from "../graphql/events";
 import { logger } from "../logger";
-import { $discord } from "../services/discord";
-import { $roles } from "../services/roles";
-import { $users } from "../services/users";
 
 type Command = {
     command: SlashCommandBuilder;
     execute: (interaction: ChatInputCommandInteraction) => void | Promise<void>
+};
+
+type EventModule = {
+    event: keyof ClientEvents;
+    once?: boolean;
+    listener: EventListener<keyof ClientEvents>
 };
 
 declare module "discord.js" {
@@ -30,6 +27,8 @@ declare module "discord.js" {
 export type DiscordClient<Ready extends boolean = boolean> = Client<Ready> & {
     commands: Collection<string, Command>;
 };
+
+export type EventListener<Event extends keyof ClientEvents> = (...args: ClientEvents[Event]) => void | Promise<void>;
 
 async function registerCommands(client: DiscordClient, api: REST) {
     const commands = new Collection<string, Command>();
@@ -56,172 +55,29 @@ async function registerCommands(client: DiscordClient, api: REST) {
     });
 }
 
-async function commandInteraction(interaction: ChatInputCommandInteraction) {
-    const command = (interaction.client as DiscordClient).commands.get(interaction.commandName);
+async function registerEvents(client: DiscordClient) {
+    const commands = new Collection<string, Command>();
+    client.commands = commands;
 
-    if (!command) {
-        logger.error(`Received command '${interaction.commandName}' but no command was found`);
-        await interaction.reply({
-            ...buildErrorMessage("Command not found"),
-            ephemeral: true
-        });
-        return;
-    }
+    const __dirname = path.dirname(import.meta.url);
+    const eventsFolder = path.join(__dirname, "events");
+    const eventFiles = fs.readdirSync(eventsFolder).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
 
-    try {
-        await command.execute(interaction);
-    } catch (err) {
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({
-                ...buildErrorMessage("Action failed! Error while executing command"),
-                ephemeral: true
-            });
+    for (const eventFile of eventFiles) {
+        const filePath = path.join(eventsFolder, eventFile);
+        const module = (await import(filePath)) as EventModule;
+        
+        if (module.once) {
+            client.once(module.event, module.listener);
         } else {
-            await interaction.reply({
-                ...buildErrorMessage("Action failed! Error while executing command"),
-                ephemeral: true
-            });
+            client.on(module.event, module.listener);
         }
-        logger.error(`Error while executing command '${interaction.commandName}'`, err);
     }
 }
 
 export async function load(client: DiscordClient, api: REST) {
     await registerCommands(client, api);
-
-    client.on("interactionCreate", async (interaction) => {
-        if (interaction.user.bot) return;
-
-        try {
-            if (interaction.isMessageComponent()) {
-                if (!interaction.channel || interaction.channel.isDMBased()) {
-                    await eventDmInteraction(interaction);
-                } else {
-                    await eventInteraction(interaction);
-                }
-            } else if (interaction.isChatInputCommand()) {
-                await commandInteraction(interaction);
-            }
-        } catch (err) {
-            logger.error("Error during interaction:", err);
-        }
-    });
-
-    client.on("guildMemberUpdate", async (oldMember, newMember) => {
-        const user = await $users.getUserByDiscordId(newMember.user.id);
-        if (!user) return;
-
-        const { added, removed } = $discord.getGuildMemberRoleDiffs(oldMember.roles, newMember.roles);
-
-        if (added.length + removed.length === 0) return;
-
-        const currentUserRoles = await $users.getAllRoles(user);
-        const currentConnectedDiscordRoles = currentUserRoles.filter(role => !!role.discordId);
-
-        const allMemberRoles = Array.from(newMember.roles.cache.values());
-        const connectedPrimaryDiscordRoles = await $roles.getAllRoles({
-            where: {
-                primary: true,
-                discordId: {
-                    in: allMemberRoles.map(role => role.id)
-                }
-            }
-        });
-
-        const currentPrimaryRole = currentUserRoles.find(role => role.primary);
-
-        let fallbackPrimaryRole: UserRole | null = null;
-        let newPrimaryRole: UserRole | null = null;
-        
-        for (const role of connectedPrimaryDiscordRoles) {
-            if (role.order < (currentPrimaryRole?.order ?? -1) && role.order > (fallbackPrimaryRole?.order ?? -1)) {
-                fallbackPrimaryRole = role;
-            }
-        }
-
-        const rolesToGive: UserRole[] = [];
-
-        for (const discordRole of added) {
-            const role = await $roles.getRoleByDiscordId(discordRole.id);
-            if (!role) continue;
-
-            const hasRole = !!currentConnectedDiscordRoles.find(r => r.id === role.id);
-            if (hasRole) continue;
-
-            if (role.primary) {
-                if (role.order > (currentPrimaryRole?.order ?? -1) && (!newPrimaryRole || role.order > newPrimaryRole.order)) {
-                    newPrimaryRole = role;
-                } else if (role.order < (currentPrimaryRole?.order ?? -1) && role.order > (fallbackPrimaryRole?.order ?? -1)) {
-                    fallbackPrimaryRole = role;
-                }
-            } else {
-                rolesToGive.push(role);
-            }
-        }
-        
-        const rolesToRemove: UserRole[] = [];
-
-        for (const discordRole of removed) {
-            const role = await $roles.getRoleByDiscordId(discordRole.id);
-            if (!role) continue;
-
-            const hasRole = !!currentConnectedDiscordRoles.find(r => r.id === role.id);
-            if (!hasRole) continue;
-
-            if (role.primary) {
-                if (!newPrimaryRole && role.id === currentPrimaryRole?.id) {
-                    newPrimaryRole = fallbackPrimaryRole ?? await $roles.getDefaultPrimaryRole();
-                }
-            } else {
-                rolesToRemove.push(role);
-            }
-        }
-
-        if (newPrimaryRole || rolesToGive.length > 0 || rolesToRemove.length > 0) {
-            await database.user.update({
-                where: { id: user.id },
-                data: {
-                    primaryRole: newPrimaryRole ? {
-                        connect: {
-                            id: newPrimaryRole.id
-                        }
-                    } : undefined,
-                    roles: rolesToGive.length > 0 || rolesToRemove.length > 0 ? {
-                        create: rolesToGive.length > 0 ? rolesToGive.map(role => ({
-                            roleId: role.id
-                        })) : undefined,
-                        deleteMany: rolesToRemove.length > 0 ? {
-                            roleId: {
-                                in: rolesToRemove.map(role => role.id)
-                            }
-                        } : undefined
-                    } : undefined
-                }
-            });
-        
-            publishUserRolesUpdated([user]);
-            await publishRolesUpdated();
-        }
-    });
-
-    client.on("guildMemberAdd", async (member) => {
-        const defaultRole = await $roles.getDefaultPrimaryRole();
-        if (!defaultRole.discordId) return;
-
-        if (member.roles.cache.has(defaultRole.discordId)) return;
-        try {
-            await member.roles.add(defaultRole.discordId);
-        } catch (err) {
-            console.error(`Failed to add default discord role (${defaultRole.discordId}) to user ${member.nickname ?? member.displayName} (${member.user.id})`);
-        }
-    });
-
-    client.on("guildMemberRemove", async (member) => {
-        const user = await $users.getUserByDiscordId(member.user.id);
-        if (!user) return;
-
-        await $users.unauthenticateSessions(user);
-    });
+    await registerEvents(client);
 
     startEventsUpdate(client);
 }
