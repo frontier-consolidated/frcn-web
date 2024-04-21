@@ -1,13 +1,14 @@
 import { dates } from "@frcn/shared";
 import type { Event } from "@prisma/client";
-import { type BaseMessageOptions, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, Client } from "discord.js";
+import { type BaseMessageOptions, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 
+import type { DiscordClient } from "..";
 import { $discord } from "../../services/discord";
 import { $events } from "../../services/events";
 import { PRIMARY_COLOR } from "../constants";
 import { getLocationBreadcrumbs } from "../helpers";
 
-export async function buildEventStartMessage(client: Client, event: Event, eventMessageLink: string) {
+export async function buildEventStartMessage(client: DiscordClient, event: Event, eventMessageLink: string) {
 	const scheduledEndTime = Math.floor((event.startAt!.getTime() + event.duration!) / 1000);
 
 	const embed = new EmbedBuilder()
@@ -42,6 +43,27 @@ export async function buildEventStartMessage(client: Client, event: Event, event
 		content: `@everyone ${vcLink}`,
 		embeds: [embed],
 		components: [buttonsRow]
+	} satisfies BaseMessageOptions;
+}
+
+export async function buildEventStartSoonMessage(client: DiscordClient, event: Event) {
+	const embed = new EmbedBuilder()
+		.setColor(PRIMARY_COLOR)
+		.setTitle(`${event.name} - Event starting soon!`)
+		.setDescription(`The event is starting soon! Starting <t:${event.startAt!.getTime()}:R>`);
+
+	
+	let vcLink = "";
+	if (event.channelId) {
+		const readyRoom = await $events.getEventChannelReadyRoom(event.channelId);
+		const readyRoomChannel = readyRoom && await $discord.getChannel(client, readyRoom.discordId, readyRoom.channel.discordGuildId ?? undefined);
+
+		if (readyRoomChannel) vcLink = readyRoomChannel.url;
+	}
+	
+	return {
+		content: `${vcLink}`,
+		embeds: [embed],
 	} satisfies BaseMessageOptions;
 }
 
@@ -93,7 +115,7 @@ export function buildEventEndedMessage(event: Event) {
 	} satisfies BaseMessageOptions;
 }
 
-export async function postEventEndMessage(client: Client, event: Event) {
+export async function postEventEndMessage(client: DiscordClient, event: Event) {
 	if (!event.posted || !event.discordThreadId) return;
 	
 	const thread = await $events.getEventThread(event, client);

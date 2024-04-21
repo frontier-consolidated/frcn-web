@@ -2,11 +2,12 @@ import { randomUUID } from "crypto";
 
 import type { EventType } from "@frcn/shared";
 import type { Event, EventChannel, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
-import { ChannelType, Client as DiscordClient, TextChannel, type GuildBasedChannel, ThreadAutoArchiveDuration, VideoQualityMode, Guild } from "discord.js";
+import { ChannelType, TextChannel, type GuildBasedChannel, ThreadAutoArchiveDuration, VideoQualityMode, Guild } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { $system } from "./system";
+import type { DiscordClient } from "../bot";
 import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
 import { postEventEndMessage } from "../bot/messages/eventStartEnd.message";
 import { postEventUpdateMessage } from "../bot/messages/eventUpdate.message";
@@ -18,6 +19,7 @@ const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000;
 
 export enum EventReminder {
 	OnStart = "ON_START",
+	StartSoon = "START_SOON",
 	TenMinutesBefore = "TEN_MINUTES",
 	OneHourBefore = "ONE_HOUR",
 	OneDayBefore = "ONE_DAY",

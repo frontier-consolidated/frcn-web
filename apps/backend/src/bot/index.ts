@@ -1,136 +1,84 @@
-import type { UserRole } from "@prisma/client";
-import { type Client, InteractionType } from "discord.js";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-import { eventInteraction } from "./handlers/event.interaction";
-import { eventDmInteraction } from "./handlers/eventDm.interaction";
+import { type Client, type ClientEvents, Collection, SlashCommandBuilder, REST, ChatInputCommandInteraction, Routes } from "discord.js";
+
 import { startEventsUpdate } from "./handlers/updateEvents.interval";
-import { database } from "../database";
-import { publishRolesUpdated, publishUserRolesUpdated } from "../graphql/events";
 import { logger } from "../logger";
-import { $discord } from "../services/discord";
-import { $roles } from "../services/roles";
-import { $users } from "../services/users";
 
-export function load(client: Client) {
-    client.on("interactionCreate", async (interaction) => {
-        if (interaction.user.bot) return;
+type Command = {
+    command: SlashCommandBuilder;
+    execute: (interaction: ChatInputCommandInteraction) => void | Promise<void>
+};
 
-        try {
-            if (interaction.type === InteractionType.MessageComponent) {
-                if (!interaction.channel || interaction.channel.isDMBased()) {
-                    await eventDmInteraction(interaction);
-                } else {
-                    await eventInteraction(interaction);
-                }
-            }
-        } catch (err) {
-            logger.error("Error during interaction:", err);
-        }
-    });
+type EventModule = {
+    event: keyof ClientEvents;
+    once?: boolean;
+    listener: EventListener<keyof ClientEvents>
+};
 
-    client.on("guildMemberUpdate", async (oldMember, newMember) => {
-        const user = await $users.getUserByDiscordId(newMember.user.id);
-        if (!user) return;
+declare module "discord.js" {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    interface Client<Ready extends boolean = boolean> {
+        commands: Collection<string, Command>;
+    }
+}
 
-        const { added, removed } = $discord.getGuildMemberRoleDiffs(oldMember.roles, newMember.roles);
+export type DiscordClient<Ready extends boolean = boolean> = Client<Ready> & {
+    commands: Collection<string, Command>;
+};
 
-        if (added.length + removed.length === 0) return;
+export type EventListener<Event extends keyof ClientEvents> = (...args: ClientEvents[Event]) => void | Promise<void>;
 
-        const currentUserRoles = await $users.getAllRoles(user);
-        const currentConnectedDiscordRoles = currentUserRoles.filter(role => !!role.discordId);
+async function registerCommands(client: DiscordClient, api: REST) {
+    const commands = new Collection<string, Command>();
+    client.commands = commands;
 
-        const allMemberRoles = Array.from(newMember.roles.cache.values());
-        const connectedPrimaryDiscordRoles = await $roles.getAllRoles({
-            where: {
-                primary: true,
-                discordId: {
-                    in: allMemberRoles.map(role => role.id)
-                }
-            }
-        });
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const commandsFolder = path.join(__dirname, "commands");
+    const commandsFiles = fs.readdirSync(commandsFolder).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
 
-        const currentPrimaryRole = currentUserRoles.find(role => role.primary);
-
-        let fallbackPrimaryRole: UserRole | null = null;
-        let newPrimaryRole: UserRole | null = null;
+    for (const commandFile of commandsFiles) {
+        const filePath = path.join(commandsFolder, commandFile);
+        const module = (await import(filePath)) as Command;
         
-        for (const role of connectedPrimaryDiscordRoles) {
-            if (role.order < (currentPrimaryRole?.order ?? -1) && role.order > (fallbackPrimaryRole?.order ?? -1)) {
-                fallbackPrimaryRole = role;
-            }
+        if ("command" in module && "execute" in module) {
+            commands.set(module.command.name, module);
+            logger.log(`Registered command '${module.command.name}' (${filePath})`);
+        } else {
+            logger.warn(`Command file at ${filePath} is missing required command properties: "data", "execute"`);
         }
+    }
 
-        const rolesToGive: UserRole[] = [];
-
-        for (const discordRole of added) {
-            const role = await $roles.getRoleByDiscordId(discordRole.id);
-            if (!role) continue;
-
-            const hasRole = !!currentConnectedDiscordRoles.find(r => r.id === role.id);
-            if (hasRole) continue;
-
-            if (role.primary) {
-                if (role.order > (currentPrimaryRole?.order ?? -1) && (!newPrimaryRole || role.order > newPrimaryRole.order)) {
-                    newPrimaryRole = role;
-                } else if (role.order < (currentPrimaryRole?.order ?? -1) && role.order > (fallbackPrimaryRole?.order ?? -1)) {
-                    fallbackPrimaryRole = role;
-                }
-            } else {
-                rolesToGive.push(role);
-            }
-        }
-        
-        const rolesToRemove: UserRole[] = [];
-
-        for (const discordRole of removed) {
-            const role = await $roles.getRoleByDiscordId(discordRole.id);
-            if (!role) continue;
-
-            const hasRole = !!currentConnectedDiscordRoles.find(r => r.id === role.id);
-            if (!hasRole) continue;
-
-            if (role.primary) {
-                if (!newPrimaryRole && role.id === currentPrimaryRole?.id) {
-                    newPrimaryRole = fallbackPrimaryRole ?? await $roles.getDefaultPrimaryRole();
-                }
-            } else {
-                rolesToRemove.push(role);
-            }
-        }
-
-        if (newPrimaryRole || rolesToGive.length > 0 || rolesToRemove.length > 0) {
-            await database.user.update({
-                where: { id: user.id },
-                data: {
-                    primaryRole: newPrimaryRole ? {
-                        connect: {
-                            id: newPrimaryRole.id
-                        }
-                    } : undefined,
-                    roles: rolesToGive.length > 0 || rolesToRemove.length > 0 ? {
-                        create: rolesToGive.length > 0 ? rolesToGive.map(role => ({
-                            roleId: role.id
-                        })) : undefined,
-                        deleteMany: rolesToRemove.length > 0 ? {
-                            roleId: {
-                                in: rolesToRemove.map(role => role.id)
-                            }
-                        } : undefined
-                    } : undefined
-                }
-            });
-        
-            publishUserRolesUpdated([user]);
-            await publishRolesUpdated();
-        }
+    const commandJSONs = Array.from(commands.values()).map(command => command.command.toJSON());
+    await api.put(Routes.applicationCommands(process.env.DISCORD_CLIENTID), {
+        body: commandJSONs
     });
+}
 
-    client.on("guildMemberRemove", async (member) => {
-        const user = await $users.getUserByDiscordId(member.user.id);
-        if (!user) return;
+async function registerEvents(client: DiscordClient) {
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const eventsFolder = path.join(__dirname, "events");
+    const eventFiles = fs.readdirSync(eventsFolder).filter(file => file.endsWith(".ts") || file.endsWith(".js"));
 
-        await $users.unauthenticateSessions(user);
-    });
+    for (const eventFile of eventFiles) {
+        const filePath = path.join(eventsFolder, eventFile);
+        const module = (await import(filePath)) as EventModule;
+        
+        if (module.once) {
+            client.once(module.event, module.listener);
+            logger.log(`Registered event listener ${filePath} to once:${module.event}`);
+        } else {
+            client.on(module.event, module.listener);
+            logger.log(`Registered event listener ${filePath} to on:${module.event}`);
+        }
+    }
+}
+
+export async function load(client: DiscordClient, api: REST) {
+    await registerCommands(client, api);
+    await registerEvents(client);
 
     startEventsUpdate(client);
 }
