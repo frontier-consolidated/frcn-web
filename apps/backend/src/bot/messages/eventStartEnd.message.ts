@@ -47,10 +47,12 @@ export async function buildEventStartMessage(client: DiscordClient, event: Event
 }
 
 export async function buildEventStartSoonMessage(client: DiscordClient, event: Event) {
+	const scheduledStartTime = Math.floor(event.startAt!.getTime() / 1000);
+
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
 		.setTitle(`${event.name} - Event starting soon!`)
-		.setDescription(`The event is starting soon! Starting <t:${event.startAt!.getTime()}:R>`);
+		.setDescription(`The event is starting soon! Starting <t:${scheduledStartTime}:R>`);
 
 	
 	let vcLink = "";
