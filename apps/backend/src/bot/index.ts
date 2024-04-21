@@ -7,6 +7,7 @@ import { type Client, Collection, SlashCommandBuilder, REST, ChatInputCommandInt
 import { eventInteraction } from "./handlers/event.interaction";
 import { eventDmInteraction } from "./handlers/eventDm.interaction";
 import { startEventsUpdate } from "./handlers/updateEvents.interval";
+import { buildErrorMessage } from "./messages/error.message";
 import { database } from "../database";
 import { publishRolesUpdated, publishUserRolesUpdated } from "../graphql/events";
 import { logger } from "../logger";
@@ -19,7 +20,14 @@ type Command = {
     execute: (interaction: ChatInputCommandInteraction) => void | Promise<void>
 };
 
-export type DiscordClient = Client & {
+declare module "discord.js" {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    interface Client<Ready extends boolean = boolean> {
+        commands: Collection<string, Command>;
+    }
+}
+
+export type DiscordClient<Ready extends boolean = boolean> = Client<Ready> & {
     commands: Collection<string, Command>;
 };
 
@@ -50,7 +58,32 @@ async function registerCommands(client: DiscordClient, api: REST) {
 
 async function commandInteraction(interaction: ChatInputCommandInteraction) {
     const command = (interaction.client as DiscordClient).commands.get(interaction.commandName);
-    
+
+    if (!command) {
+        logger.error(`Received command '${interaction.commandName}' but no command was found`);
+        await interaction.reply({
+            ...buildErrorMessage("Command not found"),
+            ephemeral: true
+        });
+        return;
+    }
+
+    try {
+        await command.execute(interaction);
+    } catch (err) {
+        if (interaction.replied || interaction.deferred) {
+            await interaction.followUp({
+                ...buildErrorMessage("Action failed! Error while executing command"),
+                ephemeral: true
+            });
+        } else {
+            await interaction.reply({
+                ...buildErrorMessage("Action failed! Error while executing command"),
+                ephemeral: true
+            });
+        }
+        logger.error(`Error while executing command '${interaction.commandName}'`, err);
+    }
 }
 
 export async function load(client: DiscordClient, api: REST) {
