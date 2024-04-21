@@ -14,6 +14,6 @@ export const listener: EventListener<"guildMemberAdd"> = async function (member)
     try {
         await member.roles.add(defaultRole.discordId);
     } catch (err) {
-        logger.error(`Failed to add default discord role (${defaultRole.discordId}) to user ${member.nickname ?? member.displayName} (${member.user.id})`);
+        logger.error(`Failed to add default discord role (${defaultRole.discordId}) to user ${member.nickname ?? member.displayName} (${member.user.id})`, err);
     }
 };
