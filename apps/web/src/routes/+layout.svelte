@@ -24,6 +24,7 @@
 
 <svelte:head>
 	<meta name="theme-color" content="#1784F2">
+	<script defer data-domain="frontierconsolidated.com" src="https://plausible.io/js/script.js"></script>
 </svelte:head>
 
 <div class="bg-triangle-pattern bg-cover font-fractul relative flex flex-col min-h-screen bg-white dark:bg-gray-950">
