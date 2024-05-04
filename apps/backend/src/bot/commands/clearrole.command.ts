@@ -55,22 +55,19 @@ export async function execute(interaction: ChatInputCommandInteraction) {
         total = membersOfRole.length;
 
         for (const member of membersOfRole.values()) {
-            console.log("Removing Community role for", member.user.tag);
             await member.roles.remove(
                 role.id,
                 `Clearing role via /clearrole command, ran by <@${interaction.user.id}>`
             );
             removed += 1;
         }
-        await interaction.reply({
+        await interaction.editReply({
             ...buildSuccessMessage(`Successfully removed <@&${role.id}> from ${removed} member(s)`),
-            ephemeral: true
         });
     } catch (err) {
         logger.error("Running `/clearrole` command, failed to clear role", role, err);
-        return await interaction.reply({
+        return await interaction.editReply({
             ...buildErrorMessage(`Failed while removing <@&${role.id}> from members: removed from ${removed} member(s), ${total - removed} remaining`),
-            ephemeral: true
         });
     }
 }
