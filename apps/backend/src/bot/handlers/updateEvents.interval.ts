@@ -19,7 +19,7 @@ async function updateEvents(client: DiscordClient) {
     // Send selectable reminders + event start message in thread
     for (const [reminder, time] of Object.entries(reminderTimes) as [EventReminder, number][]) {
         for (const event of events) {
-            if (!event.startAt || event.startAt > new Date(now + time) || event.remindersSent.includes(reminder)) continue;
+            if (!event.startAt || event.endedAt || event.startAt > new Date(now + time) || event.remindersSent.includes(reminder)) continue;
 
             const eventMessageLink = `https://discord.com/channels/${event.channel?.discordGuildId ?? guild.id}/${event.channel?.discordId}/${event.discordEventMessageId}`;
 
@@ -68,7 +68,7 @@ async function updateEvents(client: DiscordClient) {
     
     // Send event start soon message in thread
     for (const event of events) {
-        if (!event.startAt || event.startAt > new Date(now + EVENT_START_SOON_TIME) || event.remindersSent.includes(EventReminder.StartSoon)) continue;
+        if (!event.startAt || event.endedAt || event.startAt > new Date(now + EVENT_START_SOON_TIME) || event.remindersSent.includes(EventReminder.StartSoon)) continue;
 
         if (event.discordThreadId) {
             try {
