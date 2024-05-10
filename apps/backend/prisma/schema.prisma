@@ -212,7 +212,6 @@ model Event {
   discordEventMessageId String?                       @map("discord_event_message_id")
   discordMentions       String[]                      @map("discord_mentions")
   remindersSent         String[]                      @map("reminders_sent")
-  endReminderSent       Boolean                       @default(false) @map("end_reminder_sent")
   name                  String
   summary               String
   description           String                        @db.VarChar(2048)
@@ -253,16 +252,17 @@ model EventsWithUserRoleForAccess {
 }
 
 model EventChannel {
-  id                Int                 @id @default(autoincrement())
-  discordGuildId    String?             @map("discord_guild_id")
-  discordId         String              @unique @map("discord_id")
-  discordCategoryId String              @map("discord_category_id")
-  readyRoomName     String?             @map("ready_room_name")
-  events            Event[]
-  voiceChannels     EventVoiceChannel[]
-  systemSettings    SystemSettings?
-  updatedAt         DateTime            @updatedAt @map("updated_at")
-  createdAt         DateTime            @default(now()) @map("created_at")
+  id                       Int                 @id @default(autoincrement())
+  discordGuildId           String?             @map("discord_guild_id")
+  discordId                String              @unique @map("discord_id")
+  discordCategoryId        String              @map("discord_category_id")
+  discordCalendarMessageId String?             @map("discord_calendar_message_id")
+  readyRoomName            String?             @map("ready_room_name")
+  events                   Event[]
+  voiceChannels            EventVoiceChannel[]
+  systemSettings           SystemSettings?
+  updatedAt                DateTime            @updatedAt @map("updated_at")
+  createdAt                DateTime            @default(now()) @map("created_at")
 
   @@map("channels")
   @@schema("events")

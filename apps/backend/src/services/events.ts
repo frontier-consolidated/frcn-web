@@ -9,8 +9,10 @@ import { $roles } from "./roles";
 import { $system } from "./system";
 import type { DiscordClient } from "../bot";
 import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
+import { updateEventChannelCalendarMessage } from "../bot/messages/eventChannelCalendar.message";
 import { postEventEndMessage } from "../bot/messages/eventStartEnd.message";
 import { postEventUpdateMessage } from "../bot/messages/eventUpdate.message";
+import type { Context } from "../context";
 import { database } from "../database";
 import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
 import { logger } from "../logger";
@@ -19,6 +21,7 @@ const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000;
 
 export enum EventReminder {
 	OnStart = "ON_START",
+	OnEnd = "ON_END",
 	StartSoon = "START_SOON",
 	TenMinutesBefore = "TEN_MINUTES",
 	OneHourBefore = "ONE_HOUR",
@@ -69,7 +72,6 @@ async function getEvents(
 		limit = Math.min(100, limit);
 	}
 	
-	const expiredDate = new Date(Date.now() - EVENT_EXPIRE_AFTER);
 	const startAtOr: Prisma.EventWhereInput[] = [];
 
 	if (startAt.min || startAt.max) {
@@ -82,11 +84,11 @@ async function getEvents(
 	}
 
 	// Show live events if they haven't expired and are in our selected date range
-	if (startAt.min && expiredDate >= new Date(startAt.min.getTime() - EVENT_EXPIRE_AFTER) && (!startAt.max || startAt.max > new Date())) {
+	if (startAt.min && (!startAt.max || startAt.max > new Date())) {
 		startAtOr.push({
 			startAt: {
 				lt: startAt.min,
-				gte: new Date(Date.now() - 24 * 3600 * 1000)
+				gte: new Date(Date.now() - EVENT_EXPIRE_AFTER)
 			},
 			endedAt: null,
 		});
@@ -155,12 +157,7 @@ async function getUpcomingEvents(maxTimeInFutureMs?: number) {
 			} : undefined
 		},
 		include: {
-			channel: {
-				select: {
-					discordGuildId: true,
-					discordId: true
-				}
-			}
+			channel: true
 		}
 	});
 }
@@ -405,6 +402,20 @@ async function setUserReminder(rsvp: EventUser, reminder: EventReminder) {
 	});
 }
 
+async function setEventReminder(event: Event, reminder: EventReminder) {
+	if (event.remindersSent.includes(reminder)) return event;
+
+	const remindersSent = [...event.remindersSent, reminder];
+	event.remindersSent = remindersSent;
+
+	return await database.event.update({
+		where: { id: event.id },
+		data: {
+			remindersSent
+		}
+	});
+}
+
 async function createEvent(owner: User, startAt: Date | undefined, discordClient: DiscordClient) {
 	const { defaultEventChannel } = await $system.getSystemSettings();
 	if (!defaultEventChannel) throw new Error("No default event channel");
@@ -545,6 +556,9 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 
 	await updateEventMessage(discordClient, updatedEvent);
 	await postEventUpdateMessage(discordClient, event, updatedEvent);
+	if (updatedEvent.channel) {
+		await updateEventChannelCalendarMessage(discordClient, updatedEvent.channel);
+	}
 
 	return updatedEvent;
 }
@@ -552,14 +566,21 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 async function postEvent(event: Event, discordClient: DiscordClient) {
 	const { messageId, threadId } = await postEventMessage(discordClient, event);
 
-	await database.event.update({
+	const updatedEvent = await database.event.update({
 		where: { id: event.id },
 		data: {
 			discordEventMessageId: messageId,
 			discordThreadId: threadId,
 			posted: true,
 		},
+		include: {
+			channel: true
+		}
 	});
+
+	if (updatedEvent.channel) {
+		await updateEventChannelCalendarMessage(discordClient, updatedEvent.channel);
+	}
 }
 
 async function unpostEvent(event: Event, discordClient: DiscordClient) {
@@ -575,7 +596,7 @@ async function unpostEvent(event: Event, discordClient: DiscordClient) {
 	});
 }
 
-async function endEvent(event: Event, discordClient: DiscordClient) {
+async function endEvent(event: Event, discordClient: DiscordClient, postMessage = true) {
 	await deleteEventMessage(discordClient, event);
 	const endedEvent = await database.event.update({
 		where: { id: event.id },
@@ -584,18 +605,33 @@ async function endEvent(event: Event, discordClient: DiscordClient) {
 		}
 	});
 
-	try {
-		await postEventEndMessage(discordClient, endedEvent);
-	} catch (err) {
-		logger.error("Error posting event end message", err);
+	if (postMessage) {
+		try {
+			await postEventEndMessage(discordClient, endedEvent);
+		} catch (err) {
+			logger.error("Error posting event end message", err);
+		}
 	}
 
 	return endedEvent;
 }
 
+async function expireEvent(event: Event, discordClient: DiscordClient) {
+	if (!event.endedAt) {
+		await endEvent(event, discordClient, false);
+	}
+
+	return await database.event.update({
+		where: { id: event.id },
+		data: {
+			expired: true
+		}
+	});
+}
+
 async function archiveEvent(event: Event, discordClient: DiscordClient) {
 	if (!event.endedAt) {
-		await endEvent(event, discordClient);
+		await endEvent(event, discordClient, false);
 	}
 
 	await archiveEventThread(event, discordClient);
@@ -832,25 +868,39 @@ async function deleteEventChannel(channel: EventChannel, discordClient: DiscordC
 	});
 }
 
-async function $update() {
+async function $init(context: Context) {
+	const channels = await database.eventChannel.findMany();
+
+	for (const channel of channels) {
+		await updateEventChannelCalendarMessage(context.discordClient, channel);
+	}
+}
+
+async function $update(context: Context) {
 	// Update all expired events with an endedAt time
-	await database.event.updateMany({
+	const now = Date.now();
+	const expiredEvents = await database.event.findMany({
 		where: {
 			posted: true,
+			archived: false,
 			endedAt: null,
 			startAt: {
-				lt: new Date(Date.now() - EVENT_EXPIRE_AFTER)
-			},
-			archived: false
-		},
-		data: {
-			endedAt: new Date(),
-			expired: true
+				lt: new Date(now - EVENT_EXPIRE_AFTER)
+			}
 		}
 	});
+
+	for (const event of expiredEvents) {
+		if (!event.startAt || event.startAt.getTime() + (event.duration ?? 0) > now) continue;
+
+		await expireEvent(event, context.discordClient);
+	}
 }
 
 export const $events = {
+	EVENT_EXPIRE_AFTER,
+	$UPDATE_INTERVAL: 120 * 1000,
+	$init,
 	$update,
 	getEvent,
 	getEventFromMessageId,
@@ -878,6 +928,7 @@ export const $events = {
 	getRSVPMembers,
 	getUserRsvp,
 	setUserReminder,
+	setEventReminder,
 	createEvent,
 	editEvent,
 	postEvent,
