@@ -3,6 +3,7 @@ import { type APIUser, ChannelType, User as DJSUser, type NonThreadGuildBasedCha
 
 import { $system } from "./system";
 import type { DiscordClient } from "../bot";
+import type { Context } from "../context";
 import { logger } from "../logger";
 
 const cacheTimestamps = {
@@ -266,14 +267,14 @@ function convertDJSUserToAPIUser(user: DJSUser) {
 	} satisfies APIUser;
 }
 
-async function $init(client: DiscordClient) {
+async function $init({ discordClient }: Context) {
 	logger.info("Saturating discord client caches...");
 
 	// Saturate caches
-	await fetchAllChannels(client);
-	await getAllMembers(client);
-	await getAllRoles(client);
-	await getAllEmojis(client);
+	await fetchAllChannels(discordClient);
+	await getAllMembers(discordClient);
+	await getAllRoles(discordClient);
+	await getAllEmojis(discordClient);
 
 	logger.info("Discord client initiated");
 }
