@@ -35,7 +35,10 @@ export async function buildEventChannelCalendarMessage(id: number, client: Disco
 	const calendarEmbed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
 		.setTitle(":page_with_curl: Upcoming Events")
-		.setDescription("Times are shown in your timezone");
+		.setDescription("Times are shown in your timezone" + (channel.events.length === 0 ? "\n\n*No scheduled events*" : ""))
+		.setFooter({
+			text: "Only events posted in this channel will be listed"
+		});
 	
 	const now = new Date();
 
