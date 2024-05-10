@@ -110,20 +110,35 @@ export async function buildEventChannelCalendarMessage(id: number, client: Disco
 	} satisfies BaseMessageOptions;
 }
 
+async function getDiscordChannel(client: DiscordClient, channel: EventChannel) {
+	const discordChannel = await $discord.getChannel(client, channel.discordId, channel.discordGuildId ?? undefined);
+	if (!discordChannel?.isTextBased() || !(discordChannel instanceof TextChannel)) throw new Error("Could not find event channel, or channel is somehow not text based");
+
+	return discordChannel;
+}
+
+async function getEventChannelCalendarMessage(client: DiscordClient, channel: EventChannel) {
+	try {
+		const discordChannel = await getDiscordChannel(client, channel);
+		return channel.discordCalendarMessageId ? await discordChannel.messages.fetch(channel.discordCalendarMessageId) : null;
+	} catch (err) {
+		return null;
+	}
+}
+
 export async function updateEventChannelCalendarMessage(client: DiscordClient, channel: EventChannel) {
 	try {
-		const discordChannel = await $discord.getChannel(client, channel.discordId, channel.discordGuildId ?? undefined);
-		if (!discordChannel?.isTextBased() || !(discordChannel instanceof TextChannel)) throw new Error("Could not find event channel, or channel is somehow not text based");
-
+		
 		const payload = await buildEventChannelCalendarMessage(channel.id, client);
 		if (!payload) throw new Error("Failed to build event message");
-
-		let message = channel.discordCalendarMessageId ? await discordChannel.messages.fetch(channel.discordCalendarMessageId) : null;
+		
+		const discordChannel = await getDiscordChannel(client, channel);
+		let message = await getEventChannelCalendarMessage(client, channel);
 		if (message && discordChannel.lastMessageId !== message.id) {
 			await message.delete();
 			message = null;
 		}
-
+		
 		if (!message) {
 			message = await discordChannel.send(payload);
 
