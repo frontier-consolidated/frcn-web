@@ -22,7 +22,7 @@ process.env.CMS_BUS_DATABASE_URL = process.env.CMS_BUS_DATABASE_URL ? process.en
 	return `${url.protocol}//${url.username}:${url.password}@${url.host}${url.pathname}`;
 })();
 
-const { context: { server, discordClient }, onStart } = await createApp({
+const { context, onStart } = await createApp({
 	origins: getOrigins(),
 	routeConfig: {
 		auth: {
@@ -67,13 +67,13 @@ const { context: { server, discordClient }, onStart } = await createApp({
 	}
 });
 
-discordClient.login(process.env.DISCORD_TOKEN);
-await $discord.$init(discordClient);
+context.discordClient.login(process.env.DISCORD_TOKEN);
+await $discord.$init(context.discordClient);
 
 const apiPort = getPort();
 
 await new Promise<void>(resolve => {
-	server.listen(apiPort, () => resolve());
+	context.server.listen(apiPort, () => resolve());
 });
 
 console.log(
@@ -86,7 +86,7 @@ console.log(
 
 await onStart();
 
-setInterval(() => $events.$update().catch(console.error), 120 * 1000);
+setInterval(() => $events.$update(context).catch(console.error), $events.$UPDATE_INTERVAL);
 
 const usageThresholds = {
 	cpu: {
