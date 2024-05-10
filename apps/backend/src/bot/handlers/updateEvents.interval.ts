@@ -32,10 +32,10 @@ async function updateEvents(client: DiscordClient) {
                 } catch (err) {
                     logger.error("Error while posting event start message", err);
                 }
+            }
 
-                if (event.channel) {
-                    await updateEventChannelCalendarMessage(client, event.channel);
-                }
+            if (event.channel) {
+                await updateEventChannelCalendarMessage(client, event.channel);
             }
 
             const eventUsers = await $events.getEventMembers(event.id, {
