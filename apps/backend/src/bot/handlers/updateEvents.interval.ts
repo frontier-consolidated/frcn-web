@@ -2,6 +2,7 @@ import type { DiscordClient } from "..";
 import { logger } from "../../logger";
 import { $discord } from "../../services/discord";
 import { $events, EventReminder } from "../../services/events";
+import { updateEventChannelCalendarMessage } from "../messages/eventChannelCalendar.message";
 import { buildEventStartMessage, buildEventScheduledEndMessage, buildEventStartSoonMessage } from "../messages/eventStartEnd.message";
 import { reminderTimes, buildReminderDmMessage } from "../messages/reminders.message";
 
@@ -30,6 +31,10 @@ async function updateEvents(client: DiscordClient) {
                     await thread.send(payload);
                 } catch (err) {
                     logger.error("Error while posting event start message", err);
+                }
+
+                if (event.channel) {
+                    await updateEventChannelCalendarMessage(client, event.channel);
                 }
             }
 

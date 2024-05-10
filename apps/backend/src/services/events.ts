@@ -9,6 +9,7 @@ import { $roles } from "./roles";
 import { $system } from "./system";
 import type { DiscordClient } from "../bot";
 import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
+import { updateEventChannelCalendarMessage } from "../bot/messages/eventChannelCalendar.message";
 import { postEventEndMessage } from "../bot/messages/eventStartEnd.message";
 import { postEventUpdateMessage } from "../bot/messages/eventUpdate.message";
 import type { Context } from "../context";
@@ -156,12 +157,7 @@ async function getUpcomingEvents(maxTimeInFutureMs?: number) {
 			} : undefined
 		},
 		include: {
-			channel: {
-				select: {
-					discordGuildId: true,
-					discordId: true
-				}
-			}
+			channel: true
 		}
 	});
 }
@@ -560,6 +556,9 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 
 	await updateEventMessage(discordClient, updatedEvent);
 	await postEventUpdateMessage(discordClient, event, updatedEvent);
+	if (updatedEvent.channel) {
+		await updateEventChannelCalendarMessage(discordClient, updatedEvent.channel);
+	}
 
 	return updatedEvent;
 }
@@ -567,14 +566,21 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 async function postEvent(event: Event, discordClient: DiscordClient) {
 	const { messageId, threadId } = await postEventMessage(discordClient, event);
 
-	await database.event.update({
+	const updatedEvent = await database.event.update({
 		where: { id: event.id },
 		data: {
 			discordEventMessageId: messageId,
 			discordThreadId: threadId,
 			posted: true,
 		},
+		include: {
+			channel: true
+		}
 	});
+
+	if (updatedEvent.channel) {
+		await updateEventChannelCalendarMessage(discordClient, updatedEvent.channel);
+	}
 }
 
 async function unpostEvent(event: Event, discordClient: DiscordClient) {
@@ -862,6 +868,14 @@ async function deleteEventChannel(channel: EventChannel, discordClient: DiscordC
 	});
 }
 
+async function $init(context: Context) {
+	const channels = await database.eventChannel.findMany();
+
+	for (const channel of channels) {
+		await updateEventChannelCalendarMessage(context.discordClient, channel);
+	}
+}
+
 async function $update(context: Context) {
 	// Update all expired events with an endedAt time
 	const now = Date.now();
@@ -886,6 +900,7 @@ async function $update(context: Context) {
 export const $events = {
 	EVENT_EXPIRE_AFTER,
 	$UPDATE_INTERVAL: 120 * 1000,
+	$init,
 	$update,
 	getEvent,
 	getEventFromMessageId,
