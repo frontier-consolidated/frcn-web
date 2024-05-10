@@ -126,7 +126,7 @@ async function getEventChannelCalendarMessage(client: DiscordClient, channel: Ev
 	}
 }
 
-export async function updateEventChannelCalendarMessage(client: DiscordClient, channel: EventChannel) {
+export async function updateEventChannelCalendarMessage(client: DiscordClient, channel: EventChannel, repost = false) {
 	try {
 		
 		const payload = await buildEventChannelCalendarMessage(channel.id, client);
@@ -134,18 +134,22 @@ export async function updateEventChannelCalendarMessage(client: DiscordClient, c
 		
 		const discordChannel = await getDiscordChannel(client, channel);
 		let message = await getEventChannelCalendarMessage(client, channel);
-		if (message) {
+		if (repost && message) {
 			await message.delete();
 		}
 		
-		message = await discordChannel.send(payload);
-
-		await database.eventChannel.update({
-			where: { id: channel.id },
-			data: {
-				discordCalendarMessageId: message.id
-			}
-		});
+		if (repost || !message) {
+			message = await discordChannel.send(payload);
+	
+			await database.eventChannel.update({
+				where: { id: channel.id },
+				data: {
+					discordCalendarMessageId: message.id
+				}
+			});
+		} else {
+			await message.edit(payload);
+		}
 	} catch (err) {
 		logger.error("Failed to update event channel calendar message", { channel: channel.id }, err);
 	}
