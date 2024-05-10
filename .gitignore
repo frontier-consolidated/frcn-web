@@ -13,6 +13,9 @@ yarn-debug.log*
 yarn-error.log*
 
 /files
+data/
+.idea/
+.vscode/
 
 scripts/local
 scripts/deploy/*

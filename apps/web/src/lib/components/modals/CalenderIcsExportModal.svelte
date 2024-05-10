@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { List, Modal, A, Heading, Checkbox, Button, Toggle, Input, Label } from "flowbite-svelte";
-	import { Hr } from "$lib/components";
+	import {Field, Hr, Select} from "$lib/components";
 	import { EventTypeOptions } from "@frcn/shared";
 	import { Routes, api } from "$lib/api";
 	import { ClipboardButton } from "$lib/components";
@@ -11,8 +11,31 @@
 	const eventTypes1 = eventTypes.slice(0, Math.ceil(eventTypes.length/2));
 	const eventTypes2 = eventTypes.slice(Math.ceil(eventTypes.length/2));
 
+	let onlyMyEvents: boolean = false;
+	let eventTypesChecked: Array<string> = [];
+	let eventTypesString: string = "";
+
 	const linkData = { "id": 0, "accessKey": "" };
 	let showLink: boolean = false;
+
+	function updateEventTypesSting(event: Event) {
+		if (!event.target) {
+			return;
+		}
+		if(event.target.checked) {
+			eventTypesChecked.push(event.target.dataset.name);
+		} else if (!eventTypesChecked.includes(event.target.value)) {
+			eventTypesChecked.splice(eventTypesChecked.indexOf(event.target.dataset.name), 1);
+		}
+		eventTypesString = eventTypesChecked.length > 0 ? "that are of the type " : "";
+		eventTypesChecked.forEach((value, key) => {
+			eventTypesString += value + (
+					(key + 2) < eventTypesChecked.length ? ", " :
+							((key + 2) === eventTypesChecked.length ? " or " : "")
+			);
+		});
+	}
+
 </script>
 
 <Modal size="md" title="Event ICS Export" placement="center" bind:open bodyClass="overflow-y-visible" on:close={async () => { showLink = false; }}>
@@ -48,7 +71,7 @@
 						<Input type="text" id="conf_name" name="conf_name" placeholder="Give your Config a name" required />
 					</div>
 					<div class="pt-5">
-						<Toggle name="only_my_events" value="true" class="p-3">Only my Events</Toggle>
+						<Toggle on:change={(event) => { onlyMyEvents = event.target.checked; }} name="only_my_events" value="true" class="p-3">Only my Events</Toggle>
 					</div>
 				</div>
 			</div>
@@ -56,14 +79,14 @@
 				<div>
 					{#each eventTypes1 as eventType1}
 						<div class="rounded border border-gray-200 dark:border-gray-700">
-							<Checkbox name="event_types" value="{eventType1.value}" class="p-3">{eventType1.name}</Checkbox>
+							<Checkbox on:change={(event) => { updateEventTypesSting(event); }} data-name="{eventType1.name}" name="event_types" value="{eventType1.value}" class="p-3">{eventType1.name}</Checkbox>
 						</div>
 					{/each}
 				</div>
 				<div>
 					{#each eventTypes2 as eventType2}
 						<div class="rounded border border-gray-200 dark:border-gray-700">
-							<Checkbox name="event_types" value="{eventType2.value}" class="p-3">{eventType2.name}</Checkbox>
+							<Checkbox on:change={(event) => { updateEventTypesSting(event); }} data-name="{eventType2.name}" name="event_types" value="{eventType2.value}" class="p-3">{eventType2.name}</Checkbox>
 						</div>
 					{/each}
 				</div>
@@ -71,6 +94,16 @@
 			<Button type="submit">Create Link
 			</Button>
 		</form>
+		<p>
+			Your link will include all events
+			{#if onlyMyEvents}
+				that you singed up to
+				{#if eventTypesString !== "" }
+					and
+				{/if}
+			{/if}
+			{eventTypesString}
+		</p>
 	{:else }
 		<div>
 			{api.getUri()+Routes.getIcsExport(linkData.id, linkData.accessKey)}

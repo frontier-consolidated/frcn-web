@@ -99,26 +99,27 @@ model UserRole {
 }
 
 model User {
-  id              String             @id @default(uuid())
-  discordId       String             @unique @map("discord_id")
-  discordName     String             @map("discord_name")
-  discordUsername String             @map("discord_username")
-  scName          String?            @map("sc_name")
-  scVerified      Boolean            @map("sc_verified")
-  scVerifyCode    String?            @map("sc_verify_code")
-  avatarUrl       String             @map("avatar_url")
-  primaryRole     UserRole           @relation(fields: [primaryRoleId], references: [id])
-  primaryRoleId   String             @map("primary_role_id")
-  roles           UsersInUserRoles[]
-  rsvps           EventUser[]
-  events          Event[]
-  resources       Resource[]
-  sessions        UserSession[]
-  status          UserStatus?
-  settings        UserSettings?
-  fileUploads     FileUpload[]
-  updatedAt       DateTime           @updatedAt @map("updated_at")
-  createdAt       DateTime           @default(now()) @map("created_at")
+  id               String             @id @default(uuid())
+  discordId        String             @unique @map("discord_id")
+  discordName      String             @map("discord_name")
+  discordUsername  String             @map("discord_username")
+  scName           String?            @map("sc_name")
+  scVerified       Boolean            @map("sc_verified")
+  scVerifyCode     String?            @map("sc_verify_code")
+  avatarUrl        String             @map("avatar_url")
+  primaryRole      UserRole           @relation(fields: [primaryRoleId], references: [id])
+  primaryRoleId    String             @map("primary_role_id")
+  roles            UsersInUserRoles[]
+  rsvps            EventUser[]
+  events           Event[]
+  resources        Resource[]
+  sessions         UserSession[]
+  status           UserStatus?
+  settings         UserSettings?
+  fileUploads      FileUpload[]
+  updatedAt        DateTime           @updatedAt @map("updated_at")
+  createdAt        DateTime           @default(now()) @map("created_at")
+  EventsIcsExports EventsIcsExports[]
 
   @@map("users")
   @@schema("user")
@@ -236,6 +237,20 @@ model Event {
 
   @@index([startAt, posted])
   @@map("events")
+  @@schema("events")
+}
+
+model EventsIcsExports {
+  id           Int      @id @default(autoincrement())
+  configName   String   @map("config_name")
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String   @map("user_id")
+  onlyMyEvents Boolean  @default(true) @map("only_my_events")
+  eventTypes   String[] @map("event_types")
+  flags        Int
+  accessKey    String   @map("access_key")
+
+  @@map("ics_exports")
   @@schema("events")
 }
 
