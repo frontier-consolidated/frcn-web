@@ -115,7 +115,7 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 			})
 		)
 		.setFooter({
-			text: `Created by ${escapeMarkdown(event.owner?.discordName ?? "[DELETED USER]")}`,
+			text: `Created by ${event.owner?.discordName ?? "[DELETED USER]"}`,
 		});
 
 	if (event.imageUrl) eventEmbed.setImage(event.imageUrl);

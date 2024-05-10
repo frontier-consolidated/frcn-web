@@ -68,7 +68,9 @@ const { context, onStart } = await createApp({
 });
 
 context.discordClient.login(process.env.DISCORD_TOKEN);
-await $discord.$init(context.discordClient);
+
+await $events.$init(context);
+await $discord.$init(context);
 
 const apiPort = getPort();
 
