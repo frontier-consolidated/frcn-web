@@ -579,7 +579,7 @@ async function postEvent(event: Event, discordClient: DiscordClient) {
 	});
 
 	if (updatedEvent.channel) {
-		await updateEventChannelCalendarMessage(discordClient, updatedEvent.channel);
+		await updateEventChannelCalendarMessage(discordClient, updatedEvent.channel, true);
 	}
 }
 
@@ -872,7 +872,7 @@ async function $init(context: Context) {
 	const channels = await database.eventChannel.findMany();
 
 	for (const channel of channels) {
-		await updateEventChannelCalendarMessage(context.discordClient, channel);
+		await updateEventChannelCalendarMessage(context.discordClient, channel, true);
 	}
 }
 
