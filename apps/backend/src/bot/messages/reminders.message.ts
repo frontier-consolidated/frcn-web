@@ -33,12 +33,11 @@ const reminderText = {
 
 export const reminderTimes = {
 	[EventReminder.OnStart]: 0,
-	[EventReminder.StartSoon]: 15 * 60 * 1000,
     [EventReminder.TenMinutesBefore]: 10 * 60 * 1000,
     [EventReminder.OneHourBefore]: 60 * 60 * 1000,
     [EventReminder.OneDayBefore]: 24 * 60 * 60 * 1000,
     [EventReminder.OneWeekBefore]: 7 * 24 * 60 * 60 * 1000,
-} satisfies Record<EventReminder, number>;
+} satisfies Record<SelectableEventReminder, number>;
 
 export function buildRemindersMessage(event: Event, reminders: EventReminder[]) {
 	const embed = new EmbedBuilder()

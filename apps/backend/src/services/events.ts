@@ -20,6 +20,7 @@ const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000;
 
 export enum EventReminder {
 	OnStart = "ON_START",
+	OnEnd = "ON_END",
 	StartSoon = "START_SOON",
 	TenMinutesBefore = "TEN_MINUTES",
 	OneHourBefore = "ONE_HOUR",
@@ -401,6 +402,20 @@ async function setUserReminder(rsvp: EventUser, reminder: EventReminder) {
 		where: { id: rsvp.id },
 		data: {
 			reminders: rsvp.reminders.includes(reminder) ? rsvp.reminders.filter(r => r !== reminder) : [...rsvp.reminders, reminder]
+		}
+	});
+}
+
+async function setEventReminder(event: Event, reminder: EventReminder) {
+	if (event.remindersSent.includes(reminder)) return event;
+
+	const remindersSent = [...event.remindersSent, reminder];
+	event.remindersSent = remindersSent;
+
+	return await database.event.update({
+		where: { id: event.id },
+		data: {
+			remindersSent
 		}
 	});
 }
@@ -898,6 +913,7 @@ export const $events = {
 	getRSVPMembers,
 	getUserRsvp,
 	setUserReminder,
+	setEventReminder,
 	createEvent,
 	editEvent,
 	postEvent,
