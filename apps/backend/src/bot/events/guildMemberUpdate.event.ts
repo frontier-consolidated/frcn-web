@@ -14,6 +14,16 @@ export const listener: EventListener<"guildMemberUpdate"> = async function (oldM
     const user = await $users.getUserByDiscordId(newMember.user.id);
     if (!user) return;
 
+    const newName = newMember.nickname ?? newMember.displayName;
+    if (user.discordName !== newName) {
+        await database.user.update({
+            where: { id: user.id },
+            data: {
+                discordName: newName
+            }
+        });
+    }
+
     const { added, removed } = $discord.getGuildMemberRoleDiffs(oldMember.roles, newMember.roles);
 
     if (added.length + removed.length === 0) return;
