@@ -36,6 +36,11 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 								},
 							},
 						},
+						orderBy: {
+							user: {
+								discordName: "asc"
+							}
+						}
 					},
 				},
 			},
