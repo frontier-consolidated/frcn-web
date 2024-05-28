@@ -37,6 +37,12 @@ async function getUsers(
 				}
 			},
 			{
+				discordUsername: {
+					contains: search,
+					mode: "insensitive"
+				}
+			},
+			{
 				scName: {
 					contains: search,
 					mode: "insensitive"
