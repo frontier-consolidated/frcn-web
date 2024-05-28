@@ -2,8 +2,10 @@ import type { User } from "@prisma/client";
 import { type APIUser, ChannelType, User as DJSUser, type NonThreadGuildBasedChannel, type GuildBasedChannel, CategoryChannel, VoiceChannel, GuildMemberRoleManager, Role } from "discord.js";
 
 import { $system } from "./system";
+import { $users } from "./users";
 import type { DiscordClient } from "../bot";
 import type { Context } from "../context";
+import { database } from "../database";
 import { logger } from "../logger";
 
 const cacheTimestamps = {
@@ -275,6 +277,25 @@ async function $init({ discordClient }: Context) {
 	await getAllMembers(discordClient);
 	await getAllRoles(discordClient);
 	await getAllEmojis(discordClient);
+
+	logger.info("Scheduling discord member nickname sweep");
+
+	setImmediate(async () => {
+		const members = await getAllMembers(discordClient);
+
+		for (const member of members) {
+			const user = await $users.getUserByDiscordId(member.user.id);
+			if (!user) continue;
+
+			const discordName = member.nickname ?? member.displayName;
+			if (user.discordName !== discordName) {
+				await database.user.update({
+					where: { id: user.id },
+					data: { discordName }
+				});
+			}
+		}
+	});
 
 	logger.info("Discord client initiated");
 }
