@@ -1,12 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from "fs";
-import path from "path";
 import { fileURLToPath } from "url";
 
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
-import typescript from "@rollup/plugin-typescript";
 import type { Adapter, RouteDefinition } from "@sveltejs/kit";
 import { rollup } from "rollup";
 
@@ -14,10 +12,6 @@ interface AdapterOptions {
     out?: string;
     precompress?: boolean;
 	envPrefix?: string;
-	main?: {
-		input: string;
-		tsconfig?: string;
-	};
 }
 
 export interface AdapterPageConfig {
@@ -25,7 +19,7 @@ export interface AdapterPageConfig {
 }
 
 export default function (opts: AdapterOptions = {}) {
-    const { out = "build", precompress = true, envPrefix = "", main } = opts;
+    const { out = "build", precompress = true, envPrefix = "" } = opts;
 
     return {
         name: "@frcn/adapter",
@@ -111,34 +105,34 @@ export default function (opts: AdapterOptions = {}) {
 				chunkFileNames: "chunks/[name]-[hash].js"
 			});
 
-			if (main) {
-				const tsconfigPath = main.tsconfig ?? "tsconfig.json";
+			// if (main) {
+			// 	const tsconfigPath = main.tsconfig ?? "tsconfig.json";
 
-				const mainBundle = await rollup({
-					input: {
-						main: path.join(process.cwd(), main.input)
-					},
-					external: [
-						...Object.keys(pkg.dependencies || {}).map((d) => new RegExp(`^${d}(\\/.*)?$`)),
-					],
-					plugins: [
-						...(main.input.endsWith(".ts") ? [typescript({ project: tsconfigPath, skipLibCheck: true })] : []),
-						nodeResolve({
-							preferBuiltins: true,
-							exportConditions: ["node"]
-						}),
-						(commonjs as any)({ strictRequires: true }),
-						(json as any)()
-					]
-				});
+			// 	const mainBundle = await rollup({
+			// 		input: {
+			// 			main: path.join(process.cwd(), main.input)
+			// 		},
+			// 		external: [
+			// 			...Object.keys(pkg.dependencies || {}).map((d) => new RegExp(`^${d}(\\/.*)?$`)),
+			// 		],
+			// 		plugins: [
+			// 			...(main.input.endsWith(".ts") ? [typescript({ project: tsconfigPath, skipLibCheck: true })] : []),
+			// 			nodeResolve({
+			// 				preferBuiltins: true,
+			// 				exportConditions: ["node"]
+			// 			}),
+			// 			(commonjs as any)({ strictRequires: true }),
+			// 			(json as any)()
+			// 		]
+			// 	});
 
-				await mainBundle.write({
-					dir: `${out}/main`,
-					format: "esm",
-					sourcemap: true,
-					chunkFileNames: "chunks/[name]-[hash].js"
-				});
-			}
+			// 	await mainBundle.write({
+			// 		dir: `${out}/main`,
+			// 		format: "esm",
+			// 		sourcemap: true,
+			// 		chunkFileNames: "chunks/[name]-[hash].js"
+			// 	});
+			// }
 
 			builder.copy(files, out, {
 				replace: {
@@ -148,7 +142,7 @@ export default function (opts: AdapterOptions = {}) {
 					SERVER: "./server/index.js",
 					SHIMS: "./shims.js",
 					ENV_PREFIX: JSON.stringify(envPrefix),
-					MAIN_ENTRYPOINT: main ? "./main/main.js" : "false"
+					// MAIN_ENTRYPOINT: main ? "./main/main.js" : "false"
 				}
 			});
         },
