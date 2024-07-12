@@ -1,5 +1,5 @@
 # Setup database
-pnpm db-deploy
+pnpm db:deploy
 
 # Start backend
 pnpm start

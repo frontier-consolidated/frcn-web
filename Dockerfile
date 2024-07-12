@@ -19,7 +19,7 @@ WORKDIR $SRC
 ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm --filter=backend db-generate
+RUN pnpm --filter=backend db:generate
 
 RUN pnpm run -r build
 RUN pnpm deploy --filter=backend --prod $PROD/backend
