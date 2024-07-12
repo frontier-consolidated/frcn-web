@@ -1,7 +1,7 @@
 import { error } from "@sveltejs/kit";
 
 import type { PageServerLoad } from "./$types";
-import { getEvents } from "./helpers";
+import { get_events } from "./helpers";
 
 export const load = (async ({ locals, url, depends }) => {
     depends("app:events");
@@ -10,5 +10,5 @@ export const load = (async ({ locals, url, depends }) => {
         message: "Must be authenticated to view this page"
     });
 
-    return await getEvents(locals.apollo, url);
+    return await get_events(locals.apollo, url);
 }) satisfies PageServerLoad;

@@ -1,11 +1,11 @@
 import { building } from "$app/environment";
 
-import { CmsClient, createCmsClient } from "./client";
+import { CmsClient, create_cms_client } from "./client";
 
-let cmsClient: CmsClient | null = null;
+let cms_client: CmsClient | null = null;
 
-export function getCmsClient() {
+export function get_cms_client() {
     if (building) throw new Error("Cannot use CmsClient during build");
-    if (!cmsClient) cmsClient = createCmsClient();
-    return cmsClient;
+    if (!cms_client) cms_client = create_cms_client();
+    return cms_client;
 }

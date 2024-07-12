@@ -12,12 +12,12 @@ export class FieldValidator {
         delete this.fields[id];
     }
 
-    validate(ignoreRequired = false) {
+    validate(ignore_required = false) {
         let valid = true;
         for (const id of Object.keys(this.fields)) {
             const validate = this.fields[id];
-            const fieldValid = validate(ignoreRequired);
-            valid &&= fieldValid;
+            const field_valid = validate(ignore_required);
+            valid &&= field_valid;
         }
         return valid;
     }

@@ -15,38 +15,38 @@
 	export let role: PageData["rsvpRoles"][number];
 	export let validator: FieldValidator;
 
-	let editRole = structuredClone(role);
+	let edit_role = structuredClone(role);
 
-	function updateRole(edit: PageData["rsvpRoles"][number]) {
+	function update_role(edit: PageData["rsvpRoles"][number]) {
 		const index = roles.findIndex(r => r.id === role.id);
-		const updatedRoles = [...roles.filter((r) => r.id != role.id)];
-		updatedRoles.splice(index, 0, edit);
-		roles = updatedRoles;
+		const updated_roles = [...roles.filter((r) => r.id != role.id)];
+		updated_roles.splice(index, 0, edit);
+		roles = updated_roles;
 		role = edit;
 		return structuredClone(role);
 	}
 
 	$: {
 		if (
-			role.name !== editRole.name ||
-			role.limit !== editRole.limit ||
-			role.emoji.id !== editRole.emoji.id
+			role.name !== edit_role.name ||
+			role.limit !== edit_role.limit ||
+			role.emoji.id !== edit_role.emoji.id
 		) {
-			editRole = updateRole(editRole);
+			edit_role = update_role(edit_role);
 		}
 	}
 
-	let emojiInput: Emoji | null;
+	let emoji_input: Emoji | null;
 	$: {
-		if (emojiInput) {
-			const id = emojiInput.id ?? emojiInput.name;
-			if (id != editRole.emoji.id) {
-				editRole.emoji = {
+		if (emoji_input) {
+			const id = emoji_input.id ?? emoji_input.name;
+			if (id != edit_role.emoji.id) {
+				edit_role.emoji = {
 					id,
-					name: emojiInput.name,
-					image: emojiInput.imageUrl,
+					name: emoji_input.name,
+					image: emoji_input.imageUrl,
 				};
-				editRole = updateRole(editRole);
+				edit_role = update_role(edit_role);
 			}
 		}
 	}
@@ -60,24 +60,24 @@
 			})) as Emoji[])
 		: [];
 
-	let limitInput = editRole.limit == 0 ? INFINITY : `${editRole.limit}`;
+	let limit_input = edit_role.limit == 0 ? INFINITY : `${edit_role.limit}`;
 </script>
 
 <TableBodyRow>
 	<TableBodyCell class="text-center">
-		<EmojiPickerInput init={editRole.emoji.id} {additionalEmojis} categoryIcons={data.options?.emojis ? {
+		<EmojiPickerInput init={edit_role.emoji.id} {additionalEmojis} categoryIcons={data.options?.emojis ? {
 			[data.options.emojis.serverName.toLowerCase()]: data.options.emojis.serverAvatar ?? DatabaseSolid
-		} : undefined} bind:value={emojiInput} />
+		} : undefined} bind:value={emoji_input} />
 	</TableBodyCell>
 	<TableBodyCell>
-		<Field {validator} for="role-name-{role.id}" value={editRole.name} required>
+		<Field {validator} for="role-name-{role.id}" value={edit_role.name} required>
 			<Input
 				id="role-name-{role.id}"
 				name="event-role-name"
 				class="!bg-transparent !border-transparent !p-1 text-ellipsis rounded"
 				placeholder="Role name"
 				maxlength="255"
-				bind:value={editRole.name}
+				bind:value={edit_role.name}
 			/>
 		</Field>
 	</TableBodyCell>
@@ -88,22 +88,22 @@
 			min="0"
 			pattern="([0-9]+|{INFINITY})"
 			class="!bg-transparent !border-transparent !p-1 no-inner-spin text-center rounded"
-			bind:value={limitInput}
+			bind:value={limit_input}
 			on:blur={() => {
-				let num = Number(limitInput);
+				let num = Number(limit_input);
 				if (isNaN(num)) num = 0;
 				num = Math.floor(Math.max(0, num));
 
 				if (num == 0) {
-					limitInput = INFINITY;
-					editRole.limit = 0;
+					limit_input = INFINITY;
+					edit_role.limit = 0;
 				} else {
-					limitInput = `${num}`;
-					editRole.limit = num;
+					limit_input = `${num}`;
+					edit_role.limit = num;
 				}
 			}}
 			on:keydown={(ev) => {
-				let num = Number(limitInput);
+				let num = Number(limit_input);
 				if (isNaN(num)) num = 0;
 
 				let update = false;
@@ -115,7 +115,7 @@
 					update = true;
 				}
 
-				if (update) limitInput = `${Math.floor(Math.max(0, num))}`;
+				if (update) limit_input = `${Math.floor(Math.max(0, num))}`;
 			}}
 		/>
 	</TableBodyCell>

@@ -1,18 +1,18 @@
 import crypto from "crypto";
 
-const etagLookup = {
+const etag_lookup = {
     "[]": "\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\"",
     "{}": "\"2-vyGp6PvFo4RvsFtPoIWeCReyIC8\""
 } as Record<string, string>;
 
-export function createETag(value: string | Buffer) {
+export function create_etag(value: string | Buffer) {
     if (value.length === 0) {
         // fast-path empty
         return "\"0-2jmj7l5rSw0yVb/vlWAYkK/YBwk\"";
     }
 
-    if (typeof value === "string" && etagLookup[value]) {
-        return etagLookup[value];
+    if (typeof value === "string" && etag_lookup[value]) {
+        return etag_lookup[value];
     }
 
     // compute hash of entity

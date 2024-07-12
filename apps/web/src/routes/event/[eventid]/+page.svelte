@@ -14,7 +14,7 @@
 
 	$: eventType = data.eventType ? strings.toTitleCase(data.eventType) : null;
 
-	let settingsOpen = data.posted ? undefined : true;
+	let settings_open = data.posted ? undefined : true;
 </script>
 
 <Head
@@ -55,7 +55,7 @@
 			{/if}
 			{#if data.canEdit}
 				<TabItem
-					bind:open={settingsOpen}
+					bind:open={settings_open}
 					title="Settings"
 					defaultClass="inline-block text-md font-medium text-center disabled:cursor-not-allowed"
 				>

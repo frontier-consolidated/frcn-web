@@ -7,12 +7,12 @@
 	$: {
 		weekdays = [];
 		for (let i = 0; i < 7; i++) {
-			const weekdayDate = new Date(0, 0, i);
+			const weekday_date = new Date(0, 0, i);
 			weekdays.push(
 				new Intl.DateTimeFormat($locale!, {
 					weekday: "short",
 				})
-					.format(weekdayDate)
+					.format(weekday_date)
 					.slice(0, 2)
 			);
 		}
@@ -22,7 +22,7 @@
 	export let selectedDate: Date | null;
 	export let disable: "past" | "future" | false;
 
-	function isDisabled(month: Date, day: Date) {
+	function is_disabled(month: Date, day: Date) {
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 		let disabled = false;
@@ -36,36 +36,36 @@
 		return disabled || !dates.isCurrentMonth(month, day);
 	}
 
-	function setDate(date: Date) {
-		if (isDisabled(viewDate, date)) return;
-		const newSelectedDate = new Date(date);
+	function set_date(date: Date) {
+		if (is_disabled(viewDate, date)) return;
+		const new_selected_date = new Date(date);
 		if (selectedDate) {
-			newSelectedDate.setHours(
+			new_selected_date.setHours(
 				selectedDate.getHours(),
 				selectedDate.getMinutes(),
 				selectedDate.getSeconds()
 			);
 		}
-		selectedDate = newSelectedDate;
+		selectedDate = new_selected_date;
 	}
 
 	let days: Date[] = [];
 	$: {
-		const previousMonth = dates.getPreviousMonth(viewDate);
-		const daysInMonth = dates.getDaysInMonth(viewDate);
-		const daysInPreviousMonth = dates.getDaysInMonth(previousMonth);
+		const previous_month = dates.getPreviousMonth(viewDate);
+		const days_in_month = dates.getDaysInMonth(viewDate);
+		const days_in_previous_month = dates.getDaysInMonth(previous_month);
 
-		const firstDay = viewDate.getDay();
+		const first_day = viewDate.getDay();
 
 		days = [];
 		for (let i = 0; i < dates.daysPerMonth; i++) {
-			const relativeDay = i - firstDay;
+			const relative_day = i - first_day;
 			const day =
-				(relativeDay < 0 ? daysInPreviousMonth + relativeDay : relativeDay % daysInMonth) +
+				(relative_day < 0 ? days_in_previous_month + relative_day : relative_day % days_in_month) +
 				1;
-			const monthShift = relativeDay < 0 ? -1 : Math.floor(relativeDay / daysInMonth);
+			const month_shift = relative_day < 0 ? -1 : Math.floor(relative_day / days_in_month);
 			let year = viewDate.getFullYear();
-			let month = viewDate.getMonth() + monthShift;
+			let month = viewDate.getMonth() + month_shift;
 			if (month > 11) {
 				month -= 12;
 				year++;
@@ -87,19 +87,19 @@
 <div class="grid grid-cols-7 w-64">
 	{#each days as day}
 		{@const selected = dates.isSelected(selectedDate, day)}
-		{@const disabled = isDisabled(viewDate, day)}
-		{@const disabledClass = disabled ? "dark:text-gray-500" : "dark:text-white cursor-pointer"}
-		{@const selectedClass = disabled ? selected ? "bg-primary-800 dark:text-gray-200" : "" : selected ? "bg-primary-600 dark:hover:bg-primary-700" : "dark:hover:bg-gray-600"}
-		{@const todayClass = dates.isToday(day) ? twMerge("bg-gray-500", disabled ? "dark:text-gray-400" : undefined) : ""}
+		{@const disabled = is_disabled(viewDate, day)}
+		{@const disabled_class = disabled ? "dark:text-gray-500" : "dark:text-white cursor-pointer"}
+		{@const selected_class = disabled ? selected ? "bg-primary-800 dark:text-gray-200" : "" : selected ? "bg-primary-600 dark:hover:bg-primary-700" : "dark:hover:bg-gray-600"}
+		{@const today_class = dates.isToday(day) ? twMerge("bg-gray-500", disabled ? "dark:text-gray-400" : undefined) : ""}
 		<span
 			role="button"
 			tabindex="0"
 			aria-disabled={disabled}
 			data-timestamp={day.getTime()}
-			class={twMerge("block rounded-lg text-center text-sm font-semibold p-2", disabledClass, selectedClass, todayClass)}
-			on:click={() => setDate(day)}
+			class={twMerge("block rounded-lg text-center text-sm font-semibold p-2", disabled_class, selected_class, today_class)}
+			on:click={() => set_date(day)}
 			on:keydown={(ev) => {
-				if (ev.key == "Enter") setDate(day);
+				if (ev.key == "Enter") set_date(day);
 			}}
 		>
 			{day.getDate()}

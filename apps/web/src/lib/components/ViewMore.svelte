@@ -1,5 +1,5 @@
 <script lang="ts">
-	let hasMore = false;
+	let has_more = false;
 	let more = false;
 
 	let div: HTMLElement;
@@ -9,11 +9,11 @@
 			if (!observer) {
 				observer = new ResizeObserver(() => {
 					if (!div) return;
-					hasMore = more || div.scrollHeight > div.clientHeight;
+					has_more = more || div.scrollHeight > div.clientHeight;
 				});
 				observer.observe(div);
 			}
-			hasMore = div.scrollHeight > div.clientHeight;
+			has_more = div.scrollHeight > div.clientHeight;
 		}
 	}
 </script>
@@ -21,7 +21,7 @@
 <div bind:this={div} class={more ? "" : "line-clamp-5"}>
 	<slot />
 </div>
-{#if hasMore}
+{#if has_more}
 	<span
 		role="button"
 		tabindex="0"

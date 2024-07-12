@@ -7,8 +7,8 @@
 
 	import { transformContainer } from "$lib/cms/transformContainer";
 	import { Button, FieldValidator, ConfirmationModal } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import ContainerConfigRenderer from "./ContainerConfigRenderer.svelte";
 
@@ -17,16 +17,16 @@
     export let allowedChildren: CMSContainerType[];
     export let addName = "Add";
 
-    let openDropdown = false;
-    let deleteContainer: CmsContainer | null = null;
+    let dropdown_open = false;
+    let delete_container: CmsContainer | null = null;
 
     $: children = container.getChildrenOfTypes(allowedChildren);
 
-    let changeFn = getContext<() => void>("containerchange");
+    let change_fn = getContext<() => void>("containerchange");
 
-    async function addChild(type: CMSContainerType) {
-        openDropdown = false;
-        const { data, errors } = await getApollo().mutate({
+    async function add_child(type: CMSContainerType) {
+        dropdown_open = false;
+        const { data, errors } = await get_apollo().mutate({
 			mutation: Mutations.CREATE_CONTENT_CONTAINER,
 			variables: {
 				type: type,
@@ -36,7 +36,7 @@
 		});
 
 		if (!data?.container || (errors && errors.length > 0)) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to add child",
 			});
@@ -44,10 +44,10 @@
 			return;
 		}
 
-        const childContainer = transformContainer(data.container);
-        container.pushChild(childContainer);
+        const child_container = transformContainer(data.container);
+        container.pushChild(child_container);
         children = container.getChildrenOfTypes(allowedChildren);
-        changeFn();
+        change_fn();
     }
 </script>
 
@@ -55,7 +55,7 @@
     <div class="flex justify-end gap-2">
         <Button disabled={allowedChildren.length === 0} size="sm" on:click={() => {
             if (allowedChildren.length > 1) return;
-            addChild(allowedChildren[0]).catch(console.error);
+            add_child(allowedChildren[0]).catch(console.error);
         }}>
             {addName}
             {#if allowedChildren.length > 1}
@@ -63,9 +63,9 @@
             {/if}
         </Button>
         {#if allowedChildren.length > 1}
-            <Dropdown containerClass="rounded divide-y z-50" bind:open={openDropdown}>
+            <Dropdown containerClass="rounded divide-y z-50" bind:open={dropdown_open}>
                 {#each allowedChildren as type}
-                    <DropdownItem on:click={() => addChild(type).catch(console.error)}>
+                    <DropdownItem on:click={() => add_child(type).catch(console.error)}>
                         {strings.toTitleCase(type)}
                     </DropdownItem>
                 {/each}
@@ -91,7 +91,7 @@
                         </a>
                         <TrashBinSolid class="text-black hover:text-red-500 dark:text-white dark:hover:text-red-600" on:click={(e) => {
                             e.stopPropagation();
-                            deleteContainer = container;
+                            delete_container = container;
                         }} />
                         <div class="self-stretch w-px ml-2 bg-gray-300 dark:bg-gray-600"></div>
                     </div>
@@ -106,19 +106,19 @@
     {/if}
 </section>
 
-<ConfirmationModal title="Delete container" open={!!deleteContainer} on:close={() => (deleteContainer = null)} on:confirm={async () => {
-    if (!deleteContainer) return;
+<ConfirmationModal title="Delete container" open={!!delete_container} on:close={() => (delete_container = null)} on:confirm={async () => {
+    if (!delete_container) return;
     
-    const { errors } = await getApollo().mutate({
+    const { errors } = await get_apollo().mutate({
         mutation: Mutations.DELETE_CONTENT_CONTAINER,
         variables: {
-            id: deleteContainer.id
+            id: delete_container.id
         },
 		errorPolicy: "all",
     });
 
     if (errors && errors.length > 0) {
-        pushNotification({
+        push_notification({
             type: "error",
             message: "Failed to delete container",
         });
@@ -126,10 +126,10 @@
         return;
     }
 
-    container.removeChild(deleteContainer);
-    deleteContainer = null;
+    container.removeChild(delete_container);
+    delete_container = null;
     children = container.getChildrenOfTypes(allowedChildren);
 }}>
-    <span class="block text-gray-500 text-xs">Container Id: {deleteContainer?.id}</span>
+    <span class="block text-gray-500 text-xs">Container Id: {delete_container?.id}</span>
     <span>Are you sure you want to delete this container? Once deleted it cannot be undone.</span>
 </ConfirmationModal>

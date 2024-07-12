@@ -5,9 +5,9 @@
 
 	import { Button, Field, FieldValidator, Head, Select } from "$lib/components";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import preventNavigation from "$lib/preventNavigation";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import prevent_navigation from "$lib/preventNavigation";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import type { PageData } from "./$types";
 
@@ -15,7 +15,7 @@
 
     const validator = new FieldValidator();
 
-    function cloneChannelData(data: PageData["channel"]) {
+    function clone_channel_data(data: PageData["channel"]) {
 		return {
 			channelId: data.discord.id,
             categoryId: data.discordCategory?.id,
@@ -23,39 +23,39 @@
 		};
 	}
 
-    let editData = cloneChannelData(data.channel);
-    const { canNavigate, initNavigation } = preventNavigation();
+    let edit_data = clone_channel_data(data.channel);
+    const { can_navigate, init_navigation } = prevent_navigation();
 
-	let isDirty = false;
+	let is_data = false;
 	$: {
-		isDirty = editData.channelId !== data.channel.discord.id || editData.categoryId !== data.channel.discordCategory?.id || editData.readyRoomName !== data.channel.readyRoomName;
-		canNavigate.set(!isDirty);
+		is_data = edit_data.channelId !== data.channel.discord.id || edit_data.categoryId !== data.channel.discordCategory?.id || edit_data.readyRoomName !== data.channel.readyRoomName;
+		can_navigate.set(!is_data);
 	}
 
     async function save() {
         if (!validator.validate()) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Check your inputs",
 			});
 			return;
 		}
 
-		const { data: updatedData, errors } = await getApollo().mutate({
+		const { data: updated_data, errors } = await get_apollo().mutate({
 			mutation: Mutations.EDIT_EVENT_CHANNEL,
 			variables: {
 				id: data.channel.id,
 				data: {
-					channelId: editData.channelId,
-                    categoryId: editData.categoryId,
-                    readyRoomName: editData.readyRoomName
+					channelId: edit_data.channelId,
+                    categoryId: edit_data.categoryId,
+                    readyRoomName: edit_data.readyRoomName
 				}
 			},
 			errorPolicy: "all",
 		});
 
 		if (errors && errors.length > 0) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to save",
 			});
@@ -68,10 +68,10 @@
 			...data, 
 			channel: {
 				...data.channel,
-				...updatedData?.channel
+				...updated_data?.channel
 			},
 		} as PageData;
-		editData = cloneChannelData(data.channel);
+		edit_data = clone_channel_data(data.channel);
     }
 </script>
 
@@ -85,9 +85,9 @@
 <SectionHeading>
     Edit Event Channel - {data.channel.discord.name}
 </SectionHeading>
-<div class="flex-1 flex flex-col justify-between" use:initNavigation>
+<div class="flex-1 flex flex-col justify-between" use:init_navigation>
 	<div class="flex flex-col gap-4 p-4">
-        <Field {validator} for="event-channel-ready-room-name" value={editData.readyRoomName}>
+        <Field {validator} for="event-channel-ready-room-name" value={edit_data.readyRoomName}>
             <Label for="event-channel-ready-room-name" class="mb-2">Ready Room Name</Label>
             <Input
                 class="rounded"
@@ -96,13 +96,13 @@
                 type="text"
                 placeholder="Event Ready Room"
                 pattern="[A-Za-z]"
-                bind:value={editData.readyRoomName}
+                bind:value={edit_data.readyRoomName}
             />
         </Field>
 		<Field
 			{validator}
 			for="event-channel-guild"
-			value={editData.channelId}
+			value={edit_data.channelId}
 			required
 		>
 			<Label for="event-channel-guild" class="mb-2">Discord Guild</Label>
@@ -122,7 +122,7 @@
         <Field
 			{validator}
 			for="event-channel-channel"
-			value={editData.channelId}
+			value={edit_data.channelId}
 			required
 		>
 			<Label for="event-channel-channel" class="mb-2">Discord Channel</Label>
@@ -135,7 +135,7 @@
                 }))}
                 search
                 required
-                bind:value={editData.channelId}
+                bind:value={edit_data.channelId}
             />
             <Helper class="mt-1">
                 Only channels the bot can send messages in will appear in this list, if a channel is not appearing the bot is probably missing permissions
@@ -144,7 +144,7 @@
         <Field
 			{validator}
 			for="event-channel-category"
-			value={editData.categoryId}
+			value={edit_data.categoryId}
 			required
 		>
 			<Label for="event-channel-category" class="mb-2">Discord Category</Label>
@@ -157,7 +157,7 @@
                 }))}
                 search
                 required
-                bind:value={editData.categoryId}
+                bind:value={edit_data.categoryId}
             />
             <Helper class="mt-1">
                 The category that event voice channels will be created under
@@ -166,14 +166,14 @@
 	</div>
 	<div class="flex justify-end items-center gap-2">
 		<Button color="alternative" on:click={() => {
-			editData = cloneChannelData(data.channel);
+			edit_data = clone_channel_data(data.channel);
 		}}>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>
 		<Button
-			disabled={!isDirty}
+			disabled={!is_data}
 			on:click={() => {
-				if (!isDirty) return;
+				if (!is_data) return;
 				save().catch(console.error);
 			}}
 		>

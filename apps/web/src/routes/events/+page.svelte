@@ -18,10 +18,10 @@
 
 	const view = queryParam("view");
 	const search = queryParam("q");
-	let searchInput = $search;
+	let search_input = $search;
 
-	let showFilter = false;
-	const includeCompleted = queryParam("includecompleted", {
+	let show_filter = false;
+	const include_completed = queryParam("includecompleted", {
 		decode(value) {
 			return value === "" ? true : false;
 		},
@@ -29,7 +29,7 @@
 			return value ? "" : undefined;
 		},
 	}) as Writable<boolean>;
-	const eventType = queryParam("type");
+	const event_type = queryParam("type");
 </script>
 
 <Head
@@ -45,27 +45,27 @@
 			<div class="flex flex-col sm:flex-row gap-2">
 				<div class="flex-1 flex flex-col items-stretch gap-2">
 					<div class="flex gap-2">
-						<FButton class="rounded px-3 text-gray-600 dark:text-gray-300 bg-gray-50 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" on:click={() => (showFilter = !showFilter)}>
+						<FButton class="rounded px-3 text-gray-600 dark:text-gray-300 bg-gray-50 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600" on:click={() => (show_filter = !show_filter)}>
 							<FilterSolid tabindex="-1" class="outline-none" />
 						</FButton>
 						<Search size="md" placeholder="Search by name" class="sm:max-w-[400px] rounded" 
-							bind:value={searchInput} 
+							bind:value={search_input} 
 							on:keydown={(e) => {
-								if (e.key === "Enter") search.set(searchInput);
+								if (e.key === "Enter") search.set(search_input);
 							}} 
 							on:blur={() => {
-								search.set(searchInput);
+								search.set(search_input);
 							}} 
 						/>
 					</div>
-					{#if showFilter}
+					{#if show_filter}
 						<div transition:slide={{  }} class="flex flex-col px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded sm:max-w-[454px]">
 							<span class="font-semibold text-black dark:text-white">Filter</span>
 							<Hr />
 							<div class="flex flex-col gap-4">
 								<Label for="filter-include-completed" class="flex justify-between items-center flex-wrap gap-2">
 									Include completed events
-									<Toggle id="filter-include-completed" name="filter-include-completed" disabled={$view === "calendar"} bind:checked={$includeCompleted} classDiv="me-0" />
+									<Toggle id="filter-include-completed" name="filter-include-completed" disabled={$view === "calendar"} bind:checked={$include_completed} classDiv="me-0" />
 								</Label>
 								<div>
 									<Label for="filter-event-type" class="mb-2">Event Type</Label>
@@ -77,7 +77,7 @@
 											value: null
 										}, ...EventTypeOptions]}
 										required
-										bind:value={$eventType}
+										bind:value={$event_type}
 									/>
 								</div>
 							</div>

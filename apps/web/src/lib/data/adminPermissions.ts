@@ -1,9 +1,9 @@
 import { Permission } from "@frcn/shared";
 
-const adminPermissions = [
+const admin_permissions = [
     Permission.Admin,
     Permission.ManageRoles,
     Permission.ManageSystem
 ];
 
-export default adminPermissions;
+export default admin_permissions;

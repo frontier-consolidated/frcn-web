@@ -7,13 +7,13 @@
 	import { Head } from "$lib/components";
 	import Button from "$lib/components/Button.svelte";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import type { PageData } from "./$types";
 	import KeyRow from "./KeyRow.svelte";
 
-	const keySearch = queryParam("q");
+	const key_search = queryParam("q");
 
 	export let data: PageData;
 </script>
@@ -29,23 +29,23 @@
     Access Keys
 </SectionHeading>
 <div class="flex gap-2 px-2 my-4">
-    <Search size="md" bind:value={$keySearch} class="rounded" />
+    <Search size="md" bind:value={$key_search} class="rounded" />
     <Button class="shrink-0" on:click={async () => {
 		try {
-			const { data: createData } = await getApollo().mutate({
+			const { data: create_data } = await get_apollo().mutate({
 				mutation: Mutations.CREATE_ACCESS_KEY,
 			});
 
-			if (createData && createData.key) {
-				await goto(`/admin/general/accesskeys/${createData.key.id}`, {
+			if (create_data && create_data.key) {
+				await goto(`/admin/general/accesskeys/${create_data.key.id}`, {
 					invalidateAll: true,
 					state: {
-						newAccessKey: createData.key
+						newAccessKey: create_data.key
 					}
 				});
 			}
 		} catch (err) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to create access key"
 			});
@@ -67,7 +67,7 @@
 			<TableHeadCell class="w-32"></TableHeadCell>
 		</TableHead>
 		<tbody class="divide-y">
-			{#each data.keys.filter(k => !$keySearch || k.id.toString() === $keySearch.trim() || k.description.toLowerCase().includes($keySearch.trim().toLowerCase())) as key}
+			{#each data.keys.filter(k => !$key_search || k.id.toString() === $key_search.trim() || k.description.toLowerCase().includes($key_search.trim().toLowerCase())) as key}
 				{#key key.id}
 					<KeyRow accessKey={key} />
 				{/key}

@@ -1,40 +1,40 @@
 import type { LinkType } from "flowbite-svelte";
 
-export function getCurrentPage(query: URLSearchParams) {
-    const pageNum = Number(query.get("page") ?? "1");
-    if (isNaN(pageNum)) return 0;
-    return pageNum - 1;
+export function get_current_page(query: URLSearchParams) {
+    const page_num = Number(query.get("page") ?? "1");
+    if (isNaN(page_num)) return 0;
+    return page_num - 1;
 }
 
-export function getPageUrl(baseUrl: string | URL, page: number) {
-    const url = new URL(baseUrl, "http://host");
+export function get_page_url(base_url: string | URL, page: number) {
+    const url = new URL(base_url, "http://host");
     url.searchParams.set("page", `${page}`);
     return url.toString().substring(url.origin.length);
 }
 
-export function getPages(baseUrl: string | URL, currentPage: number, itemsPerPage: number, total: number) {
+export function get_pages(base_url: string | URL, current_page: number, items_per_page: number, total: number) {
     const pages: LinkType[] = [];
 
-    const lastPage = Math.ceil(total / itemsPerPage) - 1;
+    const last_page = Math.ceil(total / items_per_page) - 1;
 
-    let startPage = Math.max(0, currentPage - 2);
-    const endPage = Math.max(0, Math.min(lastPage, startPage + 4));
-    startPage = Math.max(0, Math.min(startPage, endPage - 4));
+    let start_page = Math.max(0, current_page - 2);
+    const end_page = Math.max(0, Math.min(last_page, start_page + 4));
+    start_page = Math.max(0, Math.min(start_page, end_page - 4));
 
-    for (let p = 0; p < (endPage - startPage + 1); p++) {
-        const page = startPage + p;
+    for (let p = 0; p < (end_page - start_page + 1); p++) {
+        const page = start_page + p;
 
         pages.push({
             name: `${page + 1}`,
-            href: getPageUrl(baseUrl, page + 1),
-            active: page === currentPage,
+            href: get_page_url(base_url, page + 1),
+            active: page === current_page,
         });
     }
 
     return pages;
 }
 
-export function getPageVars(query: URLSearchParams) {
+export function get_page_vars(query: URLSearchParams) {
     let page: number | null = null;
     if (query.has("page")) {
         page = Number(query.get("page"));

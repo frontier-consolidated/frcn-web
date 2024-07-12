@@ -1,32 +1,31 @@
 import { browser } from "$app/environment";
-import { goto } from "$app/navigation";
 import { ApolloError } from "@apollo/client/core";
 import { error, type NumericRange } from "@sveltejs/kit";
 import { AxiosError, isAxiosError } from "axios";
 
-import { pushNotification } from "./stores/NotificationStore";
+import { push_notification } from "./stores/NotificationStore";
 
-export function handleApiError(err?: AxiosError | ApolloError, options?: { notification?: boolean; throwAll?: boolean; }) {
+export function handle_api_error(err?: AxiosError | ApolloError, options?: { notification?: boolean; throwAll?: boolean; }) {
     if (!err) return;
 
     options ??= {};
     options.notification ??= browser;
 
     let message: string = "";
-    let statusCode: number = -1;
+    let status_code: number = -1;
     if (isAxiosError(err) && err.response?.status) {
-        statusCode = err.response.status;
+        status_code = err.response.status;
         message = err.message;
     } else if (err instanceof ApolloError && err.networkError && "statusCode" in err.networkError) {
-        statusCode = err.networkError.statusCode;
+        status_code = err.networkError.statusCode;
         message = err.message;
     }
 
-    if (statusCode < 400) return;
-    switch (statusCode) {
+    if (status_code < 400) return;
+    switch (status_code) {
         case 429:
             if (options?.notification) {
-                pushNotification({
+                push_notification({
                     type: "error",
                     message: "Too Many Requests"
                 });
@@ -37,12 +36,12 @@ export function handleApiError(err?: AxiosError | ApolloError, options?: { notif
         default:
             if (options?.throwAll) {
                 if (options?.notification) {
-                    pushNotification({
+                    push_notification({
                         type: "error",
                         message
                     });
                 } else {
-                    error(statusCode as NumericRange<400, 599>, message);
+                    error(status_code as NumericRange<400, 599>, message);
                 }
             }
     }

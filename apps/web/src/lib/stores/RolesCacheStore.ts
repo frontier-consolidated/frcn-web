@@ -2,28 +2,28 @@ import { browser } from "$app/environment";
 import { Permission, hasOneOfPermissions } from "@frcn/shared";
 import { readable } from "svelte/store";
 
-import { Queries, Subscriptions, getApollo, subscribe } from "$lib/graphql";
+import { Queries, Subscriptions, get_apollo, subscribe } from "$lib/graphql";
 import type { GetAllRolesQuery } from "$lib/graphql/__generated__/graphql";
-import { handleApiError } from "$lib/handleApiError";
+import { handle_api_error } from "$lib/handleApiError";
 
 import { user } from "./UserStore";
 
 const permissions = [Permission.CreateEvents, Permission.ManageEvents, Permission.ManageRoles];
 
-export const rolesCache = readable<GetAllRolesQuery["roles"]>([], (set) => {
+export const roles_cache = readable<GetAllRolesQuery["roles"]>([], (set) => {
     if (!browser) return;
 
-    let updateRoles = false;
+    let update_roles = false;
     let unsubscriber: () => void = () => {};
 
     user.subscribe((value) => {
         if (value.loading) return;
 
         if (value.data && value.adminMode && hasOneOfPermissions(value.data.permissions, permissions)) {
-            if (updateRoles) return;
-            updateRoles = true;
+            if (update_roles) return;
+            update_roles = true;
 
-            getApollo().query({
+            get_apollo().query({
                 query: Queries.GET_ALL_ROLES,
             })
                 .then(data => {
@@ -36,14 +36,14 @@ export const rolesCache = readable<GetAllRolesQuery["roles"]>([], (set) => {
                 })
                 .catch(err => {
                     console.error("Error fetching all roles", err);
-                    updateRoles = false;
-                    handleApiError(err);
+                    update_roles = false;
+                    handle_api_error(err);
                 });
             
             return;
         }
 
-        updateRoles = false;
+        update_roles = false;
         set([]);
         unsubscriber();
     });

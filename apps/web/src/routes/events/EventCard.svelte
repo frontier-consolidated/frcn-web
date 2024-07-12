@@ -3,10 +3,10 @@
 	import { Avatar } from "flowbite-svelte";
     
 	import { Button, CreatedByButton, RsvpModal } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
+	import { Mutations, get_apollo } from "$lib/graphql";
 	import { type EventFragmentFragment } from "$lib/graphql/__generated__/graphql";
     import placeholder from "$lib/images/stock/placeholder.jpg";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { push_notification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
 	import EventBreadcrumb from "./EventBreadcrumb.svelte";
@@ -16,7 +16,7 @@
     export let dependency: string | undefined = undefined;
 
     $: rsvped = event.members.find(member => member.user?.id === $user.data?.id);
-    let rsvpModalOpen = false;
+    let rsvp_modal_open = false;
 </script>
 
 <a href="/event/{event.id}" class="group/card flex flex-col md:flex-row bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 rounded clip-br-6 divide-gray-200 dark:divide-gray-700 shadow-md p-0 w-full">
@@ -61,7 +61,7 @@
                 <Button disabled={!event.posted} color="red" class="h-max" on:click={async (e) => {
                     e.preventDefault();
 
-                    const { data: unrsvpData, errors } = await getApollo().mutate({
+                    const { data: unrsvp_data, errors } = await get_apollo().mutate({
                         mutation: Mutations.UNRSVP_FOR_EVENT,
                         variables: {
                             eventId: event.id
@@ -69,8 +69,8 @@
                         errorPolicy: "all"
                     });
 
-                    if (!unrsvpData?.success || (errors && errors.length > 0)) {
-                        pushNotification({
+                    if (!unrsvp_data?.success || (errors && errors.length > 0)) {
+                        push_notification({
                             type: "error",
                             message: "Failed to unrsvp for event",
                         });
@@ -85,7 +85,7 @@
             {:else}
                 <Button disabled={!event.posted} class="h-max" on:click={async (e) => {
                     e.preventDefault();
-                    rsvpModalOpen = true;
+                    rsvp_modal_open = true;
                 }}>
                     RSVP
                 </Button>
@@ -94,4 +94,4 @@
     </div>
 </a>
 
-<RsvpModal {event} {dependency} bind:open={rsvpModalOpen} />
+<RsvpModal {event} {dependency} bind:open={rsvp_modal_open} />

@@ -2,21 +2,21 @@ import { browser } from "$app/environment";
 import { writable, get } from "svelte/store";
 
 import { Routes, api } from "$lib/api";
-import { Queries, Subscriptions, getApollo, subscribe } from "$lib/graphql";
+import { Queries, Subscriptions, get_apollo, subscribe } from "$lib/graphql";
 import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
-import { handleApiError } from "$lib/handleApiError";
+import { handle_api_error } from "$lib/handleApiError";
 
 type UserData = (NonNullable<GetCurrentUserQuery["user"]> & { __permissions: number }) | null | undefined;
 
-async function getCurrentUser(cache = true) {
-	const { data } = await getApollo().query({
+async function get_current_user(cache = true) {
+	const { data } = await get_apollo().query({
 		query: Queries.CURRENT_USER,
 		fetchPolicy: cache ? undefined : "no-cache",
 	});
 	return data;
 }
 
-let userPendingLogout: UserData = null;
+let user_pending_logout: UserData = null;
 
 export const user = writable<{ loading: boolean; adminMode: boolean; data: UserData }>(
 	{
@@ -54,37 +54,37 @@ export const user = writable<{ loading: boolean; adminMode: boolean; data: UserD
 			});
 		});
 
-		getCurrentUser()
+		get_current_user()
 			.then((data) => {
-				const adminMode = get(user).adminMode;
+				const admin_mode = get(user).adminMode;
 
 				set({
 					loading: false,
-					adminMode,
+					adminMode: admin_mode,
 					data: data.user ? {
 						...data.user,
-						permissions: adminMode ? data.user.permissions : 0,
+						permissions: admin_mode ? data.user.permissions : 0,
 						__permissions: data.user.permissions
 					} : null
 				});
 			})
 			.catch(err => {
 				console.error("Error fetching user", err);
-				handleApiError(err);
+				handle_api_error(err);
 			});
 	}
 );
 
-export function toggleAdminMode(enabled?: boolean) {
+export function toggle_admin_mode(enabled?: boolean) {
 	user.update((value) => {
-		const adminMode = enabled ?? !value.adminMode;
+		const admin_mode = enabled ?? !value.adminMode;
 
 		return {
 			...value,
-			adminMode,
+			adminMode: admin_mode,
 			data: value.data ? {
 				...value.data,
-				permissions: adminMode ? value.data.__permissions : 0,
+				permissions: admin_mode ? value.data.__permissions : 0,
 			} : null
 		};
 	});
@@ -93,22 +93,22 @@ export function toggleAdminMode(enabled?: boolean) {
 export async function login() {
 	let data: GetCurrentUserQuery;
 	try {
-		data = await getCurrentUser(false);
+		data = await get_current_user(false);
 	} catch (err) {
 		console.error("Error fetching user", err);
-		handleApiError(err as any);
+		handle_api_error(err as any);
 		return;
 	}
 
 	if (!data.user) {
 		if (!browser) return;
 
-		const redirectUri = new URL(window.location.href);
-		redirectUri.searchParams.delete("login_err");
-		redirectUri.searchParams.delete("missing_consent");
+		const redirect_uri = new URL(window.location.href);
+		redirect_uri.searchParams.delete("login_err");
+		redirect_uri.searchParams.delete("missing_consent");
 
 		const params = new URLSearchParams({
-			redirect_uri: redirectUri.toString(),
+			redirect_uri: redirect_uri.toString(),
 		});
 
 		window.location.href = `${import.meta.env.VITE_API_BASEURL}/oauth?${params.toString()}`;
@@ -128,9 +128,9 @@ export async function login() {
 
 export async function logout() {
 	const $user = get(user);
-	if (!$user || userPendingLogout) return;
+	if (!$user || user_pending_logout) return;
 
-	userPendingLogout = $user.data;
+	user_pending_logout = $user.data;
 	user.update((obj) => ({
 		...obj,
 		loading: false,
@@ -147,10 +147,10 @@ export async function logout() {
 		user.update((obj) => ({
 			...obj,
 			loading: false,
-			data: userPendingLogout,
+			data: user_pending_logout,
 		}));
 		throw err;
 	} finally {
-		userPendingLogout = null;
+		user_pending_logout = null;
 	}
 }

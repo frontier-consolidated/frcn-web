@@ -8,53 +8,53 @@ import type { PageServerLoad } from "./$types";
 export const load = (async ({ params, locals, depends }) => {
     depends("app:currentevent");
 
-    const { data: eventData } = await locals.apollo.query({
+    const { data: event_data } = await locals.apollo.query({
 		query: Queries.GET_EVENT,
 		variables: {
 			eventId: params.eventid,
         },
 	});
 
-	if (!eventData.event) {
+	if (!event_data.event) {
 		error(404, "Event not found");
 	}
     
-    const canEdit = hasOwnedObjectPermission({
+    const can_edit = hasOwnedObjectPermission({
         user: locals.user,
-        owner: eventData.event.owner,
+        owner: event_data.event.owner,
         required: Permission.CreateEvents,
         override: Permission.ManageEvents
     });
 
-    if (canEdit) {
-        const { data: eventSettingsData, errors } = await locals.apollo.query({
+    if (can_edit) {
+        const { data: event_settings_data, errors } = await locals.apollo.query({
             query: Queries.GET_EVENT_SETTINGS,
             variables: {
-                eventId: eventData.event.id,
-                guildId: eventData.event.channel?.discordGuild.id
+                eventId: event_data.event.id,
+                guildId: event_data.event.channel?.discordGuild.id
             },
             errorPolicy: "all",
         });
 
-        if (!eventSettingsData) {
+        if (!event_settings_data) {
             console.error(errors);
             throw new Error("MISSING DATA");
         }
 
         return {
-            ...eventData.event,
-            ...eventSettingsData.event,
-            canEdit,
+            ...event_data.event,
+            ...event_settings_data.event,
+            canEdit: can_edit,
             options: {
-                channels: eventSettingsData.eventChannels.filter(channel => channel.discord.sendMessages),
-                emojis: eventSettingsData.customEmojis,
-                discordRoles: eventSettingsData.discordRoles
+                channels: event_settings_data.eventChannels.filter(channel => channel.discord.sendMessages),
+                emojis: event_settings_data.customEmojis,
+                discordRoles: event_settings_data.discordRoles
             },
         };
     }
 
 	return {
-		...eventData.event,
-		canEdit,
+		...event_data.event,
+		canEdit: can_edit,
 	};
 }) satisfies PageServerLoad;

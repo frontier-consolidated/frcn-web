@@ -5,15 +5,15 @@ import { Queries } from "$lib/graphql";
 import type { PageServerLoad } from "./$types";
 
 export const load = (async ({ parent, params, locals }) => {
-    const { channels, options: defaultOptions, defaultGuild } = await parent();
+    const { channels, options: default_options, defaultGuild: default_guild } = await parent();
 
     const channel = channels.find(channel => channel.id.toString() === params.channelId);
     if (!channel) error(404, "Event channel not found");
 
-    if (channel.discordGuild.id === defaultGuild.id) {
+    if (channel.discordGuild.id === default_guild.id) {
         return {
             channel,
-            options: defaultOptions
+            options: default_options
         };
     }
 
@@ -27,7 +27,7 @@ export const load = (async ({ parent, params, locals }) => {
     return {
         channel,
         options: {
-            guilds: defaultOptions.guilds,
+            guilds: default_options.guilds,
             channels: data.discordChannels,
             voiceChannels: data.discordVoiceChannels,
             categories: data.discordCategories

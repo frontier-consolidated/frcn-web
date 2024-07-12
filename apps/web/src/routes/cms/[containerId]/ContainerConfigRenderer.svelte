@@ -16,11 +16,11 @@
 </script>
 
 {#if container.type === CMSContainerType.Index}
-    <IndexContainerConfig {validator} {isChild} bind:container_={container} />
+    <IndexContainerConfig {validator} isChild={isChild} bind:container_={container} />
 {:else if container.type === CMSContainerType.AboutSection}
     <AboutSectionContainerConfig {validator} {isChild} bind:container_={container} />
 {:else if container.type === CMSContainerType.Section}
-    <SectionContainerConfig {validator} {isChild} bind:container_={container} />
+    <SectionContainerConfig {validator} isChild={isChild} bind:container_={container} />
 {:else if container.type === CMSContainerType.Gallery}
     <GalleryContainerConfig {validator} {isChild} bind:container_={container} />
 {:else if container.type === CMSContainerType.CallToAction}

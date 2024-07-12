@@ -6,7 +6,7 @@
 
 	import NavigationSelect from "$lib/components/select/NavigationSelect.svelte";
 
-    const pageGroup = [
+    const page_group = [
         {
             name: "System Settings",
             pages: [
@@ -50,7 +50,7 @@
 <section class="flex flex-col lg:flex-row gap-8 px-4 mx-auto w-full max-w-6xl mt-24">
     <Sidebar asideClass="shrink-0 w-64 hidden lg:block" {activeUrl}>
         <SidebarWrapper>
-            {#each pageGroup as group, i}
+            {#each page_group as group, i}
                 <SidebarGroup border={i > 0}>
                     <div class="flex items-center gap-2 dark:text-gray-400 px-2">
                         <span class="self-center font-semibold whitespace-nowrap">
@@ -73,7 +73,7 @@
     <NavigationSelect
         {activeUrl}
         class="lg:hidden"
-        options={pageGroup.map(group => ({
+        options={page_group.map(group => ({
             name: group.name,
             options: group.pages.map(page => ({
                 name: page.name,

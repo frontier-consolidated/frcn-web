@@ -8,9 +8,9 @@
 	import { Button, Field, FieldValidator, Head, Tooltip } from "$lib/components";
 	import PermissionToggles from "$lib/components/PermissionToggles.svelte";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import preventNavigation from "$lib/preventNavigation";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import prevent_navigation from "$lib/preventNavigation";
+	import { push_notification } from "$lib/stores/NotificationStore";
     import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
@@ -19,13 +19,13 @@
 
     const validator = new FieldValidator();
 
-    let editData = { ...data.key };
-    const { canNavigate, initNavigation } = preventNavigation();
+    let edit_data = { ...data.key };
+    const { can_navigate, init_navigation } = prevent_navigation();
 
-	let isDirty = false;
+	let is_dirty = false;
 	$: {
-		isDirty = editData.description !== data.key.description || editData.permissions !== data.key.permissions;
-		canNavigate.set(!isDirty);
+		is_dirty = edit_data.description !== data.key.description || edit_data.permissions !== data.key.permissions;
+		can_navigate.set(!is_dirty);
 	}
 
     let key = $page.state.newAccessKey?.key ?? null;
@@ -35,27 +35,27 @@
 
     async function save() {
         if (!validator.validate()) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Check your inputs",
 			});
 			return;
 		}
 
-		const { data: updatedData, errors } = await getApollo().mutate({
+		const { data: updated_data, errors } = await get_apollo().mutate({
 			mutation: Mutations.EDIT_ACCESS_KEY,
 			variables: {
 				id: data.key.id,
 				data: {
-					description: editData.description,
-                    permissions: editData.permissions
+					description: edit_data.description,
+                    permissions: edit_data.permissions
 				}
 			},
 			errorPolicy: "all",
 		});
 
 		if (errors && errors.length > 0) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to save",
 			});
@@ -68,14 +68,14 @@
 			...data, 
 			key: {
 				...data.key,
-				...updatedData?.key
+				...updated_data?.key
 			},
 		} as PageData;
-		editData = { ...data.key };
+		edit_data = { ...data.key };
     }
 
     async function regenerate() {
-        const { data: regeneratedData, errors } = await getApollo().mutate({
+        const { data: regenerated_data, errors } = await get_apollo().mutate({
             mutation: Mutations.REGENERATE_ACCESS_KEY,
             variables: {
                 id: data.key.id
@@ -84,7 +84,7 @@
         });
 
         if (errors && errors.length > 0) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to regenerate key",
 			});
@@ -92,14 +92,14 @@
 			return;
 		}
 
-        key = regeneratedData?.key?.key ?? null;
+        key = regenerated_data?.key?.key ?? null;
     }
 
     function copy(e: MouseEvent) {
         if (!key) return;
         navigator.clipboard.writeText(key);
         (e.currentTarget as HTMLButtonElement).innerHTML = "Copied!";
-        pushNotification({
+        push_notification({
             type: "success",
             message: "Copied key to clipboard!",
             timeout: 5000
@@ -117,9 +117,9 @@
 <SectionHeading>
     Edit Key - {data.key.id}
 </SectionHeading>
-<div class="flex-1 flex flex-col justify-between" use:initNavigation>
+<div class="flex-1 flex flex-col justify-between" use:init_navigation>
 	<div class="flex flex-col gap-4 p-4">
-        <Field {validator} for="access-key-description" value={editData.description}>
+        <Field {validator} for="access-key-description" value={edit_data.description}>
             <Label for="access-key-description" class="mb-2">Key Description</Label>
             <Input
                 class="rounded"
@@ -128,7 +128,7 @@
                 type="text"
                 placeholder="Description"
                 pattern="[A-Za-z]"
-                bind:value={editData.description}
+                bind:value={edit_data.description}
             />
         </Field>
         <div>
@@ -152,7 +152,7 @@
         </div>
         <div>
             <Label class="mb-4">Permissions</Label>
-            <PermissionToggles disableToggles={{ [Permission.Admin]: !hasAdmin($user.data?.permissions ?? 0) }} bind:permissions={editData.permissions} class="flex flex-col gap-4" let:info let:disabled>
+            <PermissionToggles disableToggles={{ [Permission.Admin]: !hasAdmin($user.data?.permissions ?? 0) }} bind:permissions={edit_data.permissions} class="flex flex-col gap-4" let:info let:disabled>
                 {#if info.permission === Permission.Admin && disabled}
                     <Tooltip>
                         <ExclamationCircleSolid slot="icon" class="ms-2 text-orange-400" />
@@ -164,14 +164,14 @@
 	</div>
 	<div class="flex justify-end items-center gap-2">
 		<Button color="alternative" on:click={() => {
-			editData = { ...data.key };
+			edit_data = { ...data.key };
 		}}>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>
 		<Button
-			disabled={!isDirty}
+			disabled={!is_dirty}
 			on:click={() => {
-				if (!isDirty) return;
+				if (!is_dirty) return;
 				save().catch(console.error);
 			}}
 		>

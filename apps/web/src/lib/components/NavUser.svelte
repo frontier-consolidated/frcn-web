@@ -3,18 +3,18 @@
 	import { Avatar, Dropdown, DropdownItem, DropdownDivider, Toggle } from "flowbite-svelte";
 	import { createEventDispatcher } from "svelte";
 
-	import adminPermissions from "$lib/data/adminPermissions";
-	import { viewUserProfile } from "$lib/stores/UserProfileViewStore";
-	import { toggleAdminMode, user } from "$lib/stores/UserStore";
+	import admin_permissions from "$lib/data/adminPermissions";
+	import { view_user_profile } from "$lib/stores/UserProfileViewStore";
+	import { toggle_admin_mode, user } from "$lib/stores/UserStore";
 
 	import MediaQuery from "./utils/MediaQuery.svelte";
 
 	const dispatch = createEventDispatcher();
 
-	$: showSystemSettings = $user.data && hasOneOfPermissions($user.data.permissions, adminPermissions);
+	$: showSystemSettings = $user.data && hasOneOfPermissions($user.data.permissions, admin_permissions);
 	$: showCms = $user.data && hasAllOfPermissions($user.data.permissions, [Permission.CmsRead, Permission.CmsWrite]);
 
-	let adminMode = $user.adminMode;
+	let admin_mode = $user.adminMode;
 </script>
 
 <div class="shrink-0 flex items-center space-x-2 cursor-pointer">
@@ -27,13 +27,13 @@
 </div>
 <Dropdown containerClass="rounded divide-y z-50" class="w-44">
 	<DropdownItem on:click={() => {
-		if ($user.data) viewUserProfile($user.data);
+		if ($user.data) view_user_profile($user.data);
 	}}>My Profile</DropdownItem>
 	<DropdownItem href="/account">Settings</DropdownItem>
 	{#if hasAdmin($user.data?.__permissions ?? 0)}
 		<li>
-			<Toggle size="small" class="flex-row-reverse py-2 px-4 font-medium text-sm hover:bg-gray-100 dark:hover:bg-gray-600" classDiv="me-0 ms-3" bind:checked={adminMode} on:change={() => {
-				toggleAdminMode(adminMode);
+			<Toggle size="small" class="flex-row-reverse py-2 px-4 font-medium text-sm hover:bg-gray-100 dark:hover:bg-gray-600" classDiv="me-0 ms-3" bind:checked={admin_mode} on:change={() => {
+				toggle_admin_mode(admin_mode);
 			}}>
 				<span class="mr-auto">Admin Mode</span>
 			</Toggle>

@@ -2,23 +2,23 @@ import { goto } from "$app/navigation";
 import { dates } from "@frcn/shared";
 import { getLocations } from "@frcn/shared/locations";
 
-import { Queries, getApollo, type TypedApolloClient, Mutations } from "$lib/graphql";
+import { Queries, get_apollo, type TypedApolloClient, Mutations } from "$lib/graphql";
 import type { GetEventsQueryVariables } from "$lib/graphql/__generated__/graphql";
-import { getPageVars } from "$lib/pageHelpers";
-import { pushNotification } from "$lib/stores/NotificationStore";
+import { get_page_vars } from "$lib/pageHelpers";
+import { push_notification } from "$lib/stores/NotificationStore";
 
-function getCalendarDate(relative: Date, index: number) {
-    const previousMonth = dates.getPreviousMonth(relative);
-    const daysInMonth = dates.getDaysInMonth(relative);
-    const daysInPreviousMonth = dates.getDaysInMonth(previousMonth);
+function get_calendar_date(relative: Date, index: number) {
+    const previous_month = dates.getPreviousMonth(relative);
+    const days_in_month = dates.getDaysInMonth(relative);
+    const days_in_previous_month = dates.getDaysInMonth(previous_month);
     
-    const relativeDay = index - relative.getDay();
+    const relative_day = index - relative.getDay();
     const day =
-        (relativeDay < 0 ? daysInPreviousMonth + relativeDay : relativeDay % daysInMonth) +
+        (relative_day < 0 ? days_in_previous_month + relative_day : relative_day % days_in_month) +
         1;
-    const monthShift = relativeDay < 0 ? -1 : Math.floor(relativeDay / daysInMonth);
+    const month_shift = relative_day < 0 ? -1 : Math.floor(relative_day / days_in_month);
     let year = relative.getFullYear();
-    let month = relative.getMonth() + monthShift;
+    let month = relative.getMonth() + month_shift;
     if (month > 11) {
         month -= 12;
         year++;
@@ -30,41 +30,41 @@ function getCalendarDate(relative: Date, index: number) {
     return new Date(year, month, day);
 }
 
-export async function getEvents(apollo: TypedApolloClient, url: URL) {
+export async function get_events(apollo: TypedApolloClient, url: URL) {
     let variables: GetEventsQueryVariables;
 
     const view = url.searchParams.get("view");
 
     if (view === "calendar") {
-        const initDate = new Date(url.searchParams.get("month") ?? Date.now());
-        const date = new Date(initDate.getFullYear(), initDate.getMonth());
+        const init_date = new Date(url.searchParams.get("month") ?? Date.now());
+        const date = new Date(init_date.getFullYear(), init_date.getMonth());
 
         variables = {
             filter: {
                 search: url.searchParams.get("q"),
                 includeCompleted: true,
-                minStartAt: getCalendarDate(date, 0).getTime(),
-                maxStartAt: getCalendarDate(date, dates.daysPerMonth).getTime(),
+                minStartAt: get_calendar_date(date, 0).getTime(),
+                maxStartAt: get_calendar_date(date, dates.daysPerMonth).getTime(),
             }
         };
     } else {
-        const { page, limit } = getPageVars(url.searchParams);
-        const includeCompleted = url.searchParams.has("includecompleted");
+        const { page, limit } = get_page_vars(url.searchParams);
+        const include_completed = url.searchParams.has("includecompleted");
         
         variables = {
             filter: {
                 search: url.searchParams.get("q"),
-                includeCompleted
+                includeCompleted: include_completed
             },
             page,
             limit
         };
     }
 
-    const eventType = url.searchParams.get("type");
-    if (eventType) {
+    const event_type = url.searchParams.get("type");
+    if (event_type) {
         variables.filter ??= {};
-        variables.filter.eventType = eventType;
+        variables.filter.eventType = event_type;
     }
 
     const { data } = await apollo.query({
@@ -87,26 +87,26 @@ export async function getEvents(apollo: TypedApolloClient, url: URL) {
     };
 }
 
-export async function createEvent(startAt?: Date) {
+export async function create_event(start_at?: Date) {
     try {
         // rounded to next hour
-        if (startAt) {
-            const hourMs = 60 * 60 * 1000;
-            startAt = new Date(Math.ceil(startAt.getTime() / hourMs) * hourMs);
+        if (start_at) {
+            const hour_ms = 60 * 60 * 1000;
+            start_at = new Date(Math.ceil(start_at.getTime() / hour_ms) * hour_ms);
         }
 
-        const { data: createData } = await getApollo().mutate({
+        const { data: create_data } = await get_apollo().mutate({
             mutation: Mutations.CREATE_EVENT,
             variables: {
-                startAt: startAt ? startAt.getTime() : undefined
+                startAt: start_at ? start_at.getTime() : undefined
             }
         });
 
-        if (createData && createData.event) {
-            goto(`/event/${createData.event}`);
+        if (create_data && create_data.event) {
+            goto(`/event/${create_data.event}`);
         }
     } catch (err) {
-        pushNotification({
+        push_notification({
             type: "error",
             message: "Failed to create event"
         });

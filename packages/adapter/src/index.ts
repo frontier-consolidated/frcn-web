@@ -25,6 +25,7 @@ export interface AdapterPageConfig {
 }
 
 export default function (opts: AdapterOptions = {}) {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     const { out = "build", precompress = true, envPrefix = "", main } = opts;
 
     return {
@@ -53,29 +54,29 @@ export default function (opts: AdapterOptions = {}) {
 
 			builder.log.minor("Building server");
 
-			const isrRoutes = new Map<RouteDefinition, boolean>();
+			const isr_routes = new Map<RouteDefinition, boolean>();
 
 			for (const route of builder.routes) {
 				const config = { ...route.config } as AdapterPageConfig;
 
 				if (config.isr) {
 					if (route.prerender !== "auto") {
-						builder.log.error(`Isr route ${getPathname(route)} must export prerender="auto"`);
+						builder.log.error(`Isr route ${get_pathname(route)} must export prerender="auto"`);
 					}
-					isrRoutes.set(route, config.isr);
+					isr_routes.set(route, config.isr);
 				}
 			}
 
 			builder.writeServer(tmp);
 
-			const isrPaths = Array.from(isrRoutes.keys()).map(r => getPathname(r));
+			const isr_paths = Array.from(isr_routes.keys()).map(r => get_pathname(r));
 
 			fs.writeFileSync(
 				`${tmp}/manifest.js`,
 				[
 					`export const manifest = ${builder.generateManifest({ relativePath: "./" })};`,
 					`export const prerendered = new Set(${JSON.stringify(builder.prerendered.paths)});`,
-					`export const isr = new Set(${JSON.stringify(isrPaths)});`,
+					`export const isr = new Set(${JSON.stringify(isr_paths)});`,
 					`export const base = ${JSON.stringify(builder.config.kit.paths.base)};`
 				].join("\n\n")
 			);
@@ -85,7 +86,7 @@ export default function (opts: AdapterOptions = {}) {
 			// we bundle the Vite output so that deployments only need
 			// their production dependencies. Anything in devDependencies
 			// will get included in the bundled code
-			const serverBundle = await rollup({
+			const server_bundle = await rollup({
 				input: {
 					index: `${tmp}/index.js`,
 					manifest: `${tmp}/manifest.js`,
@@ -104,7 +105,7 @@ export default function (opts: AdapterOptions = {}) {
 				]
 			});
 
-			await serverBundle.write({
+			await server_bundle.write({
 				dir: `${out}/server`,
 				format: "esm",
 				sourcemap: true,
@@ -112,9 +113,9 @@ export default function (opts: AdapterOptions = {}) {
 			});
 
 			if (main) {
-				const tsconfigPath = main.tsconfig ?? "tsconfig.json";
+				const tsconfig_path = main.tsconfig ?? "tsconfig.json";
 
-				const mainBundle = await rollup({
+				const main_bundle = await rollup({
 					input: {
 						main: path.join(process.cwd(), main.input)
 					},
@@ -122,7 +123,7 @@ export default function (opts: AdapterOptions = {}) {
 						...Object.keys(pkg.dependencies || {}).map((d) => new RegExp(`^${d}(\\/.*)?$`)),
 					],
 					plugins: [
-						...(main.input.endsWith(".ts") ? [typescript({ project: tsconfigPath, skipLibCheck: true })] : []),
+						...(main.input.endsWith(".ts") ? [typescript({ project: tsconfig_path, skipLibCheck: true })] : []),
 						nodeResolve({
 							preferBuiltins: true,
 							exportConditions: ["node"]
@@ -132,7 +133,7 @@ export default function (opts: AdapterOptions = {}) {
 					]
 				});
 
-				await mainBundle.write({
+				await main_bundle.write({
 					dir: `${out}/main`,
 					format: "esm",
 					sourcemap: true,
@@ -159,7 +160,7 @@ export default function (opts: AdapterOptions = {}) {
     } satisfies Adapter;
 }
 
-function getPathname(route: RouteDefinition) {
+function get_pathname(route: RouteDefinition) {
 	let i = 1;
 
 	return route.segments

@@ -3,54 +3,54 @@
 	import { CloseSolid, EditOutline, LockOpenSolid, LockSolid } from "flowbite-svelte-icons";
 
 	import { SectionHeading, Field, FieldValidator, Button, Head } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import preventNavigation from "$lib/preventNavigation";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import prevent_navigation from "$lib/preventNavigation";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import type { PageData } from "./$types";
 
     export let data: PageData;
 
-    function cloneSystemSettings(data: PageData) {
+    function clone_system_settings(data: PageData) {
         return {
             discordGuild: { ...data.discordGuild },
         };
     }
 
     const validator = new FieldValidator();
-    let editData = cloneSystemSettings(data);
+    let edit_data = clone_system_settings(data);
 
-    const { canNavigate, initNavigation } = preventNavigation();
+    const { can_navigate, init_navigation } = prevent_navigation();
 
-	let isDirty = false;
+	let is_dirty = false;
 	$: {
-		isDirty = data.discordGuild.id !== editData.discordGuild.id;
-		canNavigate.set(!isDirty);
+		is_dirty = data.discordGuild.id !== edit_data.discordGuild.id;
+		can_navigate.set(!is_dirty);
 	}
 
-    let guildIdFieldLocked = true;
+    let guild_id_field_locked = true;
 
     async function save() {
         if (!validator.validate()) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Check your inputs",
 			});
 			return;
 		}
 
-		const { data: updatedData, errors } = await getApollo().mutate({
+		const { data: updated_data, errors } = await get_apollo().mutate({
 			mutation: Mutations.EDIT_SYSTEM_SETTINGS,
 			variables: {
 				data: {
-                    discordGuildId: editData.discordGuild.id,
+                    discordGuildId: edit_data.discordGuild.id,
                 }
 			},
 			errorPolicy: "all",
 		});
 
 		if (errors && errors.length > 0) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to save",
 			});
@@ -60,9 +60,9 @@
 
 		data = {
 			...data, 
-			...updatedData?.settings
+			...updated_data?.settings
 		};
-        editData = cloneSystemSettings(data);
+        edit_data = clone_system_settings(data);
 	}
 </script>
 
@@ -73,7 +73,7 @@
 <SectionHeading>
     General Settings
 </SectionHeading>
-<div class="flex-1 flex flex-col justify-between" use:initNavigation>
+<div class="flex-1 flex flex-col justify-between" use:init_navigation>
     <div class="flex flex-col gap-4 p-4">
         <Field {validator} for="system-general-guildid" value={"a"} required>
             <Label for="system-general-guildid" class="mb-1">Discord Guild</Label>
@@ -85,12 +85,12 @@
                 type="text"
                 placeholder="0"
                 pattern="[0-9]+"
-                disabled={guildIdFieldLocked}
+                disabled={guild_id_field_locked}
                 required
-                bind:value={editData.discordGuild.id}
+                bind:value={edit_data.discordGuild.id}
             >
-                <button slot="right" class="text-gray-600 dark:text-gray-300" on:click={() => (guildIdFieldLocked = !guildIdFieldLocked)}>
-                    <svelte:component this={guildIdFieldLocked ? LockSolid : LockOpenSolid} tabindex="-1" class="outline-none" size="sm" />
+                <button slot="right" class="text-gray-600 dark:text-gray-300" on:click={() => (guild_id_field_locked = !guild_id_field_locked)}>
+                    <svelte:component this={guild_id_field_locked ? LockSolid : LockOpenSolid} tabindex="-1" class="outline-none" size="sm" />
                 </button>
             </Input>
             <Helper class="mt-1">
@@ -109,14 +109,14 @@
     </div>
     <div class="flex justify-end items-center gap-2">
         <Button color="alternative" on:click={() => {
-            editData = cloneSystemSettings(data);
+            edit_data = clone_system_settings(data);
         }}>
             <CloseSolid class="me-2" tabindex="-1" /> Cancel
         </Button>
         <Button
-            disabled={!isDirty}
+            disabled={!is_dirty}
             on:click={() => {
-                if (!isDirty) return;
+                if (!is_dirty) return;
                 save();
             }}
         >

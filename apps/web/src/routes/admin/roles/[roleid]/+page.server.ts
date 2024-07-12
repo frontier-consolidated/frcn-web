@@ -7,21 +7,21 @@ import type { PageServerLoad } from "./$types";
 export const load = (async ({ locals, params, depends }) => {
     depends("app:currentrole");
     
-    const { data: roleData } = await locals.apollo.query({
+    const { data: role_data } = await locals.apollo.query({
         query: Queries.GET_ROLE,
         variables: {
             roleId: params.roleid
         }
     });
 
-    if (!roleData.role) {
+    if (!role_data.role) {
 		error(404, "Role not found");
 	}
 
     return {
-        role: roleData.role,
+        role: role_data.role,
         options: {
-            discordRoles: roleData.discordRoles
+            discordRoles: role_data.discordRoles
         }
     };
 }) satisfies PageServerLoad;

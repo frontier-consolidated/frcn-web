@@ -2,9 +2,9 @@
 import { redirect } from "@sveltejs/kit";
 
 import { Queries, type TypedApolloClient } from "$lib/graphql";
-import { getPageVars } from "$lib/pageHelpers";
+import { get_page_vars } from "$lib/pageHelpers";
 
-export async function getResources(apollo: TypedApolloClient, url: URL, setHeaders: (headers: Record<string, string>) => void) {
+export async function get_resources(apollo: TypedApolloClient, url: URL, set_headers: (headers: Record<string, string>) => void) {
     if (url.searchParams.has("id")) {
         const { data } = await apollo.query({
             query: Queries.GET_RESOURCE,
@@ -14,9 +14,9 @@ export async function getResources(apollo: TypedApolloClient, url: URL, setHeade
         });
 
         if (!data.resource) {
-            const redirectUrl = new URL(url);
-            redirectUrl.searchParams.delete("id");
-            redirect(308, redirectUrl.href);
+            const redirect_url = new URL(url);
+            redirect_url.searchParams.delete("id");
+            redirect(308, redirect_url.href);
         }
 
         return {
@@ -29,7 +29,7 @@ export async function getResources(apollo: TypedApolloClient, url: URL, setHeade
         };
     }
     
-    const { page, limit } = getPageVars(url.searchParams);
+    const { page, limit } = get_page_vars(url.searchParams);
     const tags = url.searchParams.get("tags")?.split(",") ?? [];
 
     const { data } = await apollo.query({
@@ -46,7 +46,7 @@ export async function getResources(apollo: TypedApolloClient, url: URL, setHeade
 
     const resources = (data.resources?.items ?? []);
 
-    setHeaders({
+    set_headers({
         "Cache-Control": "public, must-revalidate, max-age=1800, s-maxage=300"
     });
 

@@ -1,13 +1,13 @@
 import { browser } from "$app/environment";
 import { get, writable } from "svelte/store";
 
-import { Queries, Subscriptions, getApollo, subscribe } from "$lib/graphql";
+import { Queries, Subscriptions, get_apollo, subscribe } from "$lib/graphql";
 import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";
-import { handleApiError } from "$lib/handleApiError";
+import { handle_api_error } from "$lib/handleApiError";
 
-import { pushNotification } from "./NotificationStore";
+import { push_notification } from "./NotificationStore";
 
-export const userProfileView = writable<{
+export const user_profile_view = writable<{
     data: UserFragmentFragment | null;
     open: boolean;
     request: number;
@@ -20,7 +20,7 @@ export const userProfileView = writable<{
 
     let unsubscriber: () => void = () => { };
     
-    userProfileView.subscribe((data) => {
+    user_profile_view.subscribe((data) => {
         if (!data.open || !data.data) {
             unsubscriber();
             return;
@@ -46,38 +46,38 @@ export const userProfileView = writable<{
     });
 });
 
-export function viewUserProfile(user: string | UserFragmentFragment) {
-    const request = ++get(userProfileView).request;
+export function view_user_profile(user: string | UserFragmentFragment) {
+    const request = ++get(user_profile_view).request;
 
     if (typeof user === "string") {
-        userProfileView.set({
+        user_profile_view.set({
             data: null,
             open: true,
             request
         });
 
-        getApollo().query({
+        get_apollo().query({
             query: Queries.GET_USER,
             variables: {
                 id: user
             }
         }).then(({ data }) => {
-            const view = get(userProfileView);
+            const view = get(user_profile_view);
             if (!view.open || view.request !== request) return;
             if (data.user) {
-                userProfileView.update(oldView => ({ ...oldView, data: data.user! }));
+                user_profile_view.update(old_view => ({ ...old_view, data: data.user! }));
             } else {
-                pushNotification({
+                push_notification({
                     type: "error",
                     message: "Failed to get user's profile"
                 });
             }
         }).catch(err => {
             console.error(err);
-            handleApiError(err);
+            handle_api_error(err);
 
-            if (get(userProfileView).open) {
-                pushNotification({
+            if (get(user_profile_view).open) {
+                push_notification({
                     type: "error",
                     message: "Failed to get user's profile"
                 });
@@ -87,7 +87,7 @@ export function viewUserProfile(user: string | UserFragmentFragment) {
         return;
     }
 
-    userProfileView.set({
+    user_profile_view.set({
         data: user,
         open: true,
         request

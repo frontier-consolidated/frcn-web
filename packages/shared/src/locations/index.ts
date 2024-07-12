@@ -34,7 +34,7 @@ export const areas = {
 	],
 } as const satisfies Record<string, Area[]>;
 
-export function getChildren(location: AnyLocation) {
+export function get_children(location: AnyLocation) {
 	if ("children" in location) {
 		const children = [...location.children];
 		if (location.type in areas) {
@@ -46,29 +46,29 @@ export function getChildren(location: AnyLocation) {
 	return null;
 }
 
-export function getLocations(path: string[]) {
-	const pathLocations: AnyLocation[] = [];
+export function get_locations(path: string[]) {
+	const path_locations: AnyLocation[] = [];
 
 	for (const name of path) {
-		const currentLocation = pathLocations.slice(-1)[0];
+		const current_location = path_locations.slice(-1)[0];
 
-		if (!currentLocation) {
+		if (!current_location) {
 			const location = locations.find((loc) => loc.name == name);
 			if (!location) break;
-			pathLocations.push(location);
+			path_locations.push(location);
 			continue;
 		}
 
-		if ("children" in currentLocation) {
-			const location = getChildren(currentLocation)?.find(
+		if ("children" in current_location) {
+			const location = get_children(current_location)?.find(
 				(loc) => loc.name == name
 			) as AnyLocation;
 			if (!location) break;
-			pathLocations.push(location);
+			path_locations.push(location);
 		} else {
 			break;
 		}
 	}
 
-	return pathLocations;
+	return path_locations;
 }

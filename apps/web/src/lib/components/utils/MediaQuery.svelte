@@ -4,34 +4,34 @@
 	export let query: string;
 
 	let mql: MediaQueryList;
-	let mqlListener: (ev: MediaQueryListEvent) => any;
-	let wasMounted = false;
+	let mql_listener: (ev: MediaQueryListEvent) => any;
+	let was_mounted = false;
 	let matches = false;
 
 	onMount(() => {
-		wasMounted = true;
+		was_mounted = true;
 		return () => {
-			removeActiveListener();
+			remove_active_listener();
 		};
 	});
 
 	$: {
-		if (wasMounted) {
-			removeActiveListener();
-			addNewListener(query);
+		if (was_mounted) {
+			remove_active_listener();
+			add_new_listener(query);
 		}
 	}
 
-	function addNewListener(query: string) {
+	function add_new_listener(query: string) {
 		mql = window.matchMedia(query);
-		mqlListener = (v) => (matches = v.matches);
-		mql.addEventListener("change", mqlListener);
+		mql_listener = (v) => (matches = v.matches);
+		mql.addEventListener("change", mql_listener);
 		matches = mql.matches;
 	}
 
-	function removeActiveListener() {
-		if (mql && mqlListener) {
-			mql.removeEventListener("change", mqlListener);
+	function remove_active_listener() {
+		if (mql && mql_listener) {
+			mql.removeEventListener("change", mql_listener);
 		}
 	}
 </script>

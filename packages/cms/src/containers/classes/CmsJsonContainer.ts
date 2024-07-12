@@ -18,7 +18,7 @@ export abstract class CmsJsonContainer<T extends object> extends CmsContainer {
 
     protected updateData(fn: (data: T) => T) {
         const data = this.getData();
-        const newData = fn(data);
-        this.setData(newData);
+        const new_data = fn(data);
+        this.setData(new_data);
     }
 }

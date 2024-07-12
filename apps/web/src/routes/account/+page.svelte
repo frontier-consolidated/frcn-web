@@ -4,11 +4,11 @@
 	import { CloseSolid } from "flowbite-svelte-icons";
 
 	import { Button, ConfirmationModal, Head } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import { push_notification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
-    let deleteModalOpen = false;
+    let delete_modal_open = false;
 </script>
 
 <Head
@@ -22,21 +22,21 @@
     </Alert>
     <div class="mt-4 flex justify-center items-center gap-2">
         <Button color="red" on:click={() => {
-            deleteModalOpen = true;
+            delete_modal_open = true;
         }}>
             <CloseSolid class="me-2" tabindex="-1" /> Delete Account
         </Button>
     </div>
 </div>
 
-<ConfirmationModal title="Delete account" bind:open={deleteModalOpen} on:confirm={async () => {
-    const { errors } = await getApollo().mutate({
+<ConfirmationModal title="Delete account" bind:open={delete_modal_open} on:confirm={async () => {
+    const { errors } = await get_apollo().mutate({
         mutation: Mutations.DELETE_CURRENT_USER,
 		errorPolicy: "all",
     });
 
     if (errors && errors.length > 0) {
-        pushNotification({
+        push_notification({
             type: "error",
             message: "Failed to delete account, please try again later",
         });
@@ -44,7 +44,7 @@
         return;
     }
 
-    deleteModalOpen = false;
+    delete_modal_open = false;
     user.update(value => ({
         ...value,
 		loading: false,

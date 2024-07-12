@@ -12,50 +12,50 @@
 	export let value: Date | null = null;
 	export let disable: "past" | "future" | false = false;
 
-	let dropdownOpen = false;
+	let dropdown_open = false;
 
-	let initViewDate = value ?? new Date();
-	let selectedDate: Date | null = null;
-	let viewDate = new Date(initViewDate.getFullYear(), initViewDate.getMonth());
+	let init_view_date = value ?? new Date();
+	let selected_date: Date | null = null;
+	let view_date = new Date(init_view_date.getFullYear(), init_view_date.getMonth());
 
-	function formatDate(date: Date) {
+	function format_date(date: Date) {
 		return new Intl.DateTimeFormat($locale!, {
 			dateStyle: "short",
 			timeStyle: "short",
 		}).format(date);
 	}
 
-	function isNaD(date: Date) {
+	function is_nad(date: Date) {
 		return !(date instanceof Date && !isNaN(date as unknown as number));
 	}
 
-	let inputValue: string = "";
+	let input_value: string = "";
 	$: {
-		if (value != selectedDate) {
-			if (value != null && selectedDate == null) {
-				selectedDate = value;
+		if (value != selected_date) {
+			if (value != null && selected_date == null) {
+				selected_date = value;
 			} else {
-				value = selectedDate;
+				value = selected_date;
 			}
-			inputValue = selectedDate ? formatDate(selectedDate) : inputValue;
-		} else if (inputValue && (!selectedDate || inputValue != formatDate(selectedDate))) {
-			let valueDate = new Date(inputValue);
-			if (isNaD(valueDate)) {
-				let timestamp = Number(inputValue);
+			input_value = selected_date ? format_date(selected_date) : input_value;
+		} else if (input_value && (!selected_date || input_value != format_date(selected_date))) {
+			let value_date = new Date(input_value);
+			if (is_nad(value_date)) {
+				let timestamp = Number(input_value);
 				if (!isNaN(timestamp)) {
 					// if bigger than some time much further in the future then it is probably already in milliseconds
 					timestamp = timestamp * 1000 >= 2e13 ? timestamp : timestamp * 1000;
-					valueDate = new Date(timestamp);
+					value_date = new Date(timestamp);
 				}
 			}
 
-			if (isNaD(valueDate)) {
-				inputValue = selectedDate ? formatDate(selectedDate) : inputValue;
+			if (is_nad(value_date)) {
+				input_value = selected_date ? format_date(selected_date) : input_value;
 			} else {
-				selectedDate = valueDate;
-				viewDate = new Date(selectedDate.getFullYear(), selectedDate.getMonth());
-				inputValue = formatDate(valueDate);
-				value = valueDate;
+				selected_date = value_date;
+				view_date = new Date(selected_date.getFullYear(), selected_date.getMonth());
+				input_value = format_date(value_date);
+				value = value_date;
 			}
 		}
 	}
@@ -72,13 +72,13 @@
 		{id}
 		placeholder="Select date and time"
 		class={twMerge("rounded", $$restProps.class)}
-		bind:value={inputValue}
+		bind:value={input_value}
 	>
 		<CalendarEditSolid slot="left" size="sm" class="ms-1" tabindex="-1" />
 	</Input>
 </div>
 <Dropdown
-	bind:open={dropdownOpen}
+	bind:open={dropdown_open}
 	triggeredBy="#{id}-ref"
 	containerClass="divide-y z-50 rounded"
 	class="border rounded border-gray-300 dark:border-gray-600 p-4"
@@ -91,12 +91,12 @@
 	<div class="grid grid-flow-col auto-cols-max gap-2">
 		<DateControls
 			{disable}
-			bind:viewDate
-			bind:selectedDate
+			bind:viewDate={view_date}
+			bind:selectedDate={selected_date}
 			on:refocus={() => {
 				input?.focus();
 			}}
 		/>
-		<TimeControls bind:selectedDate />
+		<TimeControls bind:selectedDate={selected_date} />
 	</div>
 </Dropdown>

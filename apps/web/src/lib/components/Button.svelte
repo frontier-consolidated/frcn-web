@@ -3,7 +3,7 @@
 	import { getContext } from "svelte";
 	import { twMerge } from "tailwind-merge";
 
-    const sizeClasses = {
+    const size_classes = {
         xs: "px-3 py-2 text-xs",
         sm: "px-4 py-2 text-sm",
         md: "px-5 py-2.5 text-sm",
@@ -11,7 +11,7 @@
         xl: "px-6 py-3.5 text-base"
     };
 
-    const outlineClasses = {
+    const outline_classes = {
         alternative: "bg-gray-800 dark:bg-gray-600",
         blue: "bg-blue-700 dark:bg-blue-500",
         dark: "bg-gray-800 dark:bg-gray-600",
@@ -24,7 +24,7 @@
         none: ""
     };
 
-    const borderClasses = {
+    const border_classes = {
         alternative: "bg-gray-200 hover:bg-gray-200 dark:bg-gray-600 dark:hover:bg-gray-700",
         blue: "",
         dark: "",
@@ -37,7 +37,7 @@
         none: ""
     };
 
-    const innerBorderClasses = {
+    const inner_border_classes = {
         alternative: "bg-white group-hover:bg-gray-100 dark:bg-gray-950 dark:group-hover:bg-gray-950",
         blue: "",
         dark: "",
@@ -50,7 +50,7 @@
         none: ""
     };
 
-    const outlineBgClasses = {
+    const outline_bg_classes = {
         alternative: "",
         blue: "",
         dark: "",
@@ -65,7 +65,7 @@
 
     const group = getContext("group");
 
-    export let size: keyof typeof sizeClasses = group ? "sm" : "md";
+    export let size: keyof typeof size_classes = group ? "sm" : "md";
     export let outline: boolean = false;
     export let color: "red" | "yellow" | "green" | "purple" | "blue" | "light" | "dark" | "primary" | "none" | "alternative" = group ? (outline ? "dark" : "alternative") : "primary";
     export let clip: string = "clip-opposite-4";
@@ -76,13 +76,13 @@
     $: classRounded = ($$restProps.class as string ?? "").split(" ").filter(clazz => clazz.includes("rounded")).join(" ");
 </script>
 
-<Button {...$$restProps} class={twMerge("group rounded", clip, (outline || borderClasses[color]) && "border-none p-px", outline && outlineClasses[color], !outline && borderClasses[color], $$restProps.class)} {outline} {color} {size}  on:click on:change on:keydown on:keyup on:touchstart on:touchend on:touchcancel on:mouseenter on:mouseleave>
+<Button {...$$restProps} class={twMerge("group rounded", clip, (outline || border_classes[color]) && "border-none p-px", outline && outline_classes[color], !outline && border_classes[color], $$restProps.class)} {outline} {color} {size}  on:click on:change on:keydown on:keyup on:touchstart on:touchend on:touchcancel on:mouseenter on:mouseleave>
     {#if outline}
-        <div class={twMerge("w-full h-full inline-flex items-center justify-center group-hover:bg-transparent", outlineBgColor, outlineBgClasses[color], clip, sizeClasses[size], classRounded || "rounded", classInner)}>
+        <div class={twMerge("w-full h-full inline-flex items-center justify-center group-hover:bg-transparent", outlineBgColor, outline_bg_classes[color], clip, size_classes[size], classRounded || "rounded", classInner)}>
             <slot />
         </div>
-    {:else if borderClasses[color]}
-        <div class={twMerge("w-full h-full inline-flex items-center justify-center", clip, sizeClasses[size], innerBorderClasses[color], classRounded || "rounded", classInner)}>
+    {:else if border_classes[color]}
+        <div class={twMerge("w-full h-full inline-flex items-center justify-center", clip, size_classes[size], inner_border_classes[color], classRounded || "rounded", classInner)}>
             <slot />
         </div>
     {:else}

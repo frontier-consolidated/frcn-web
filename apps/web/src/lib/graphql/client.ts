@@ -14,14 +14,14 @@ import { Routes, apiUri } from "$lib/api";
 
 import { fragments } from "./documents/fragments";
 
-export function createApolloClient(headers?: Record<string, string>) {
-	const httpLink = new HttpLink({
+export function create_apollo_client(headers?: Record<string, string>) {
+	const http_link = new HttpLink({
 		uri: apiUri(Routes.graphqlServer()),
 		credentials: "include",
 		headers
 	});
 	
-	const wsLink = browser
+	const ws_link = browser
 		? new GraphQLWsLink(
 				createClient({
 					url: apiUri(Routes.graphqlServer(), location.protocol === "https:" ? "wss" : "ws"),
@@ -29,7 +29,7 @@ export function createApolloClient(headers?: Record<string, string>) {
 		  )
 		: null;
 	
-	function linkSplitter({ query }: Operation) {
+	function link_splitter({ query }: Operation) {
 		const definition = getMainDefinition(query);
 		return (
 			definition.kind === Kind.OPERATION_DEFINITION &&
@@ -37,11 +37,11 @@ export function createApolloClient(headers?: Record<string, string>) {
 		);
 	}
 	
-	const linkChain = wsLink ? setContext(() => ({})).split(linkSplitter, wsLink, httpLink) : httpLink;
+	const link_chain = ws_link ? setContext(() => ({})).split(link_splitter, ws_link, http_link) : http_link;
 	
 	return new ApolloClient({
 		ssrMode: !browser,
-		link: linkChain,
+		link: link_chain,
 		cache: new InMemoryCache({
 			fragments,
 			typePolicies: {
@@ -59,12 +59,12 @@ export function createApolloClient(headers?: Record<string, string>) {
 	});
 }
 
-export type TypedApolloClient = ReturnType<typeof createApolloClient>;
-const browserApollo = browser ? createApolloClient() : null;
+export type TypedApolloClient = ReturnType<typeof create_apollo_client>;
+const browser_apollo = browser ? create_apollo_client() : null;
 
-export function getApollo() {
+export function get_apollo() {
 	if (!browser) throw new Error("DO NOT USE SHARED APOLLO CLIENT ON SERVER, use locals.apollo");
-	return browserApollo!;
+	return browser_apollo!;
 }
 
 type SubscribeOptions<T extends TypedDocumentNode<any, any>> = {
@@ -75,7 +75,7 @@ type SubscribeOptions<T extends TypedDocumentNode<any, any>> = {
 };
 
 export function subscribe<T extends TypedDocumentNode<any, any>>(document: T, options: SubscribeOptions<T>) {
-	const observer = getApollo().subscribe({
+	const observer = get_apollo().subscribe({
 		query: document,
 		variables: options.variables,
 		errorPolicy: "all"
@@ -97,7 +97,7 @@ export function subscribe<T extends TypedDocumentNode<any, any>>(document: T, op
 	};
 }
 
-export function subscribeOnMount<T extends TypedDocumentNode<any, any>>(document: T, options: SubscribeOptions<T>) {
+export function subscribe_on_mount<T extends TypedDocumentNode<any, any>>(document: T, options: SubscribeOptions<T>) {
 	onMount(() => {
 		return subscribe(document, options);
 	});

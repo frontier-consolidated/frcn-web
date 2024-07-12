@@ -9,7 +9,7 @@
 	export let tokens: Token[] = [];
 	export let token: Token | undefined = undefined;
 
-	function getRenderer(type: string) {
+	function get_renderer(type: string) {
 		if (components[type]) return components[type];
 		return renderers[type as keyof typeof renderers] as ComponentType<SvelteComponent>;
 	}
@@ -29,7 +29,7 @@
 			{/each}
 		</svelte:component>
 	{:else if token.type in renderers}
-		<svelte:component this={getRenderer(token.type)} {token}>
+		<svelte:component this={get_renderer(token.type)} {token}>
 			{#if "tokens" in token}
 				<svelte:self tokens={token.tokens} {disabled} {components} />
 			{:else}

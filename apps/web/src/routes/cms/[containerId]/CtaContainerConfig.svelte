@@ -5,12 +5,12 @@
 
 	import { Field, FieldValidator, Select } from "$lib/components";
 
-    const presetOptions = Object.values(CallToActionPreset).filter(val => typeof val !== "string").map(preset => ({
+    const preset_options = Object.values(CallToActionPreset).filter(val => typeof val !== "string").map(preset => ({
         name: CallToActionPreset[preset as CallToActionPreset],
         value: preset
     }));
     
-    function createEditData(container: CtaContainer) {
+    function create_edit_data(container: CtaContainer) {
         return {
             identifier: container.getIdentifier(),
             text: container.getTitle(),
@@ -25,16 +25,16 @@
     let container = container_.as<CtaContainer>();
     $: container = container_.as<CtaContainer>();
 
-    let editData = createEditData(container);
+    let edit_data = create_edit_data(container);
     $: {
-        container.setIdentifier(editData.identifier);
-        container.setTitle(editData.text);
-        container.setPreset(editData.preset);
+        container.setIdentifier(edit_data.identifier);
+        container.setTitle(edit_data.text);
+        container.setPreset(edit_data.preset);
         getContext<() => void>("containerchange")();
     }
 </script>
 
-<Field {validator} for="cta-identifier-{container.id}" value={editData.identifier} required={!isChild}>
+<Field {validator} for="cta-identifier-{container.id}" value={edit_data.identifier} required={!isChild}>
     <Label for="cta-identifier-{container.id}" class="mb-2">Identifier</Label>
     <Input
         class="rounded"
@@ -44,21 +44,21 @@
         placeholder="/"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.identifier}
+        bind:value={edit_data.identifier}
     />
 </Field>
-<Field {validator} for="cta-preset-{container.id}" value={editData.preset}>
+<Field {validator} for="cta-preset-{container.id}" value={edit_data.preset}>
     <Label for="cta-preset-{container.id}" class="mb-2">Preset</Label>
     <Select
         id="cta-preset-{container.id}"
         name="cta-preset"
-        options={presetOptions}
+        options={preset_options}
         required
-        bind:value={editData.preset}
+        bind:value={edit_data.preset}
     />
 </Field>
-{#if editData.preset === CallToActionPreset.None}
-    <Field {validator} for="cta-text-{container.id}" value={editData.text}>
+{#if edit_data.preset === CallToActionPreset.None}
+    <Field {validator} for="cta-text-{container.id}" value={edit_data.text}>
         <Label for="cta-text-{container.id}" class="mb-2">Text</Label>
         <Input
             class="rounded"
@@ -68,7 +68,7 @@
             placeholder="Text"
             pattern="[A-Za-z]"
             maxlength="255"
-            bind:value={editData.text}
+            bind:value={edit_data.text}
         />
     </Field>
 {/if}

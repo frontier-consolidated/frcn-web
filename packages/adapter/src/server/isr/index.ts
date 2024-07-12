@@ -12,19 +12,19 @@ import { Queue, queue } from "./queue";
 
 const concurrency = 1;
 
-const prerenderedDir = path.join(path.dirname(fileURLToPath(import.meta.url)), "prerendered");
-if (!fs.existsSync(prerenderedDir)) {
-	mkdirp(prerenderedDir);
+const prerendered_dir = path.join(path.dirname(fileURLToPath(import.meta.url)), "prerendered");
+if (!fs.existsSync(prerendered_dir)) {
+	mkdirp(prerendered_dir);
 }
 
 let server: Server;
-let assetsDir: string;
-const isrRendered = new Map<string, boolean>();
-const invalidateIsrFiles = new Map<string, boolean>();
+let assets_dir: string;
+const isr_rendered = new Map<string, boolean>();
+const invalidate_isr_files = new Map<string, boolean>();
 
 export function configure_isr(opts: { server: Server, asset_dir: string }) {
 	server = opts.server;
-	assetsDir = opts.asset_dir;
+	assets_dir = opts.asset_dir;
 }
 
 export function is_isr_route(pathname: string) {
@@ -158,7 +158,7 @@ async function save_isr_render(response: Response, body: Buffer, pathname: strin
 	const is_html = response_type === REDIRECT || type === "text/html";
 
 	const file = output_filename(pathname, is_html);
-	const dest = path.join(prerenderedDir, file);
+	const dest = path.join(prerendered_dir, file);
 	const dir = path.dirname(dest);
 
 	if (response_type === REDIRECT) {
@@ -217,7 +217,7 @@ export async function render_isr_route(pathname: string, q: Queue, saved: Map<st
 			if (filepath) return fs.readFileSync(filepath);
 
 			// stuff in `static`
-			return fs.readFileSync(path.join(assetsDir, file));
+			return fs.readFileSync(path.join(assets_dir, file));
 		}
 	});
 
@@ -238,8 +238,8 @@ export async function render_isr_route(pathname: string, q: Queue, saved: Map<st
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const headers = Object.fromEntries(response.headers);
 
-	isrRendered.set(pathname, true);
-	invalidateIsrFiles.set(pathname, true);
+	isr_rendered.set(pathname, true);
+	invalidate_isr_files.set(pathname, true);
 }
 
 export async function render_isr_routes() {

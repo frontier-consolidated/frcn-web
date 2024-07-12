@@ -6,17 +6,17 @@
 	import { ArrowLeftSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
 	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button, PermissionToggles, Head, ConfirmationModal } from "$lib/components";
-	import { getApollo, Mutations } from "$lib/graphql";
+	import { get_apollo, Mutations } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
-	import preventNavigation from "$lib/preventNavigation";
-	import { pushNotification } from "$lib/stores/NotificationStore";
-	import { rolesCache } from "$lib/stores/RolesCacheStore";
+	import prevent_navigation from "$lib/preventNavigation";
+	import { push_notification } from "$lib/stores/NotificationStore";
+	import { roles_cache } from "$lib/stores/RolesCacheStore";
 	import { user } from "$lib/stores/UserStore";
 
     import type { PageData } from "./$types";
 	import UserButton from "./UserButton.svelte";
 
-	function cloneRoleData(data: PageData["role"]) {
+	function clone_role_data(data: PageData["role"]) {
 		return {
 			name: data.name,
 			primary: data.primary,
@@ -25,49 +25,49 @@
 		};
 	}
 
-	function checkIfDirty(source: PageData["role"], mutable: ReturnType<typeof cloneRoleData>) {
+	function check_if_dirty(source: PageData["role"], mutable: ReturnType<typeof clone_role_data>) {
 		let clean = true;
 		const diff: string[] = [];
 		for (const key of Object.keys(mutable) as (keyof typeof mutable)[]) {
-			const valueClean = mutable[key] == source[key];
-			if (!valueClean) diff.push(key);
-			clean &&= valueClean;
+			const value_clean = mutable[key] == source[key];
+			if (!value_clean) diff.push(key);
+			clean &&= value_clean;
 		}
 		// console.log(diff, mutable);
 		return !clean;
 	}
 
     export let data: PageData;
-	let editData = cloneRoleData(data.role);
+	let edit_data = clone_role_data(data.role);
 
-	const { canNavigate, initNavigation } = preventNavigation();
+	const { can_navigate, init_navigation } = prevent_navigation();
 
-	let isDirty = false;
+	let is_dirty = false;
 	$: {
-		isDirty = checkIfDirty(data.role, editData);
-		canNavigate.set(!isDirty);
+		is_dirty = check_if_dirty(data.role, edit_data);
+		can_navigate.set(!is_dirty);
 	}
 
-	function checkIfCanToggleAdmin(roles: typeof $rolesCache, role: PageData["role"], user: GetCurrentUserQuery["user"]) {
+	function check_if_can_toggle_admin(roles: typeof $roles_cache, role: PageData["role"], user: GetCurrentUserQuery["user"]) {
 		if (!user) return false;
 		if (!hasAdmin(user.permissions)) return false;
 		if (role.default) return false;
 
-		const userRoles = [user.primaryRole, ...user.roles];
-		const adminRoles = roles.filter(r => !!userRoles.find(r2 => r2.id === r.id) && hasAdmin(r.permissions));
-		if (adminRoles.length === 0) return true; // root admin user
-		if (adminRoles.length > 1) return true; // user has multiple admin roles, let them toggle it
-		return adminRoles[0].id != role.id;
+		const user_roles = [user.primaryRole, ...user.roles];
+		const admin_roles = roles.filter(r => !!user_roles.find(r2 => r2.id === r.id) && hasAdmin(r.permissions));
+		if (admin_roles.length === 0) return true; // root admin user
+		if (admin_roles.length > 1) return true; // user has multiple admin roles, let them toggle it
+		return admin_roles[0].id != role.id;
 	}
 
-	$: canToggleAdmin = checkIfCanToggleAdmin($rolesCache, data.role, $user.data);
+	$: canToggleAdmin = check_if_can_toggle_admin($roles_cache, data.role, $user.data);
 
 	const validator = new FieldValidator();
-	let makeDefaultPrimaryModal = false;
+	let make_default_primary_modal_open = false;
 
 	async function save(confirm = false) {
 		if (!validator.validate()) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Check your inputs",
 			});
@@ -75,27 +75,27 @@
 		}
 
 		// If setting this to a primary role will make it the default, display a confirmation
-		if (!confirm && editData.primary && data.role.primary === false && $rolesCache.findIndex(r => r.id === data.role.id) < $rolesCache.findIndex(r => r.primary)) {
-			makeDefaultPrimaryModal = true;
+		if (!confirm && edit_data.primary && data.role.primary === false && $roles_cache.findIndex(r => r.id === data.role.id) < $roles_cache.findIndex(r => r.primary)) {
+			make_default_primary_modal_open = true;
 			return;
 		}
 
-		const { errors } = await getApollo().mutate({
+		const { errors } = await get_apollo().mutate({
 			mutation: Mutations.EDIT_ROLE,
 			variables: {
 				roleId: data.role.id,
 				data: {
-					name: editData.name,
-					discordId: editData.discordId ? editData.discordId : null,
-					permissions: editData.permissions,
-					primary: editData.primary
+					name: edit_data.name,
+					discordId: edit_data.discordId ? edit_data.discordId : null,
+					permissions: edit_data.permissions,
+					primary: edit_data.primary
 				}
 			},
 			errorPolicy: "all",
 		});
 
 		if (errors && errors.length > 0) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to save",
 			});
@@ -111,7 +111,7 @@
 	title="{data.role?.name} Role - Admin"
 />
 
-<a class="flex items-center text-gray-300 mb-2 p-2 cursor-pointer hover:text-gray-400" href="/admin/roles" use:initNavigation>
+<a class="flex items-center text-gray-300 mb-2 p-2 cursor-pointer hover:text-gray-400" href="/admin/roles" use:init_navigation>
 	<ArrowLeftSolid class="me-2" tabindex="-1" /> Back to Roles
 </a>
 <SectionHeading>
@@ -122,7 +122,7 @@
 		<Tabs style="underline" class="mt-2" contentClass="">
 			<TabItem title="General" open={$page.url.hash === "#general" || !$page.url.hash} on:click={() => window.location.hash = "#general"}>
 				<div class="flex flex-col gap-4 p-4">
-					<Field {validator} for="system-roles-role-name" value={editData.name} required>
+					<Field {validator} for="system-roles-role-name" value={edit_data.name} required>
 						<Label for="system-roles-role-name" class="mb-2">Role Name</Label>
 						<Input
 							class="rounded"
@@ -132,12 +132,12 @@
 							placeholder="Role name"
 							pattern="[A-Za-z]"
 							required
-							bind:value={editData.name}
+							bind:value={edit_data.name}
 						/>
 					</Field>
 					<Hr />
-					<Field {validator} for="system-roles-role-primary" value={editData.primary} required>
-						<Toggle id="system-roles-role-primary" bind:checked={editData.primary}>
+					<Field {validator} for="system-roles-role-primary" value={edit_data.primary} required>
+						<Toggle id="system-roles-role-primary" bind:checked={edit_data.primary}>
 							Primary Role
 						</Toggle>
 						<Helper class="mt-1">
@@ -145,7 +145,7 @@
 						</Helper>
 					</Field>
 					<Hr />
-					<Field {validator} for="system-roles-role-discord-role" value={editData.discordId}>
+					<Field {validator} for="system-roles-role-discord-role" value={edit_data.discordId}>
 						<Label for="system-roles-role-discord-role" class="mb-2 flex items-center">
 							Discord Role
 							{#if data.role.discordId && !data.options.discordRoles.find(r => r.id === data.role.discordId)}
@@ -169,7 +169,7 @@
 								}
 							}))]}
 							search
-							bind:value={editData.discordId}
+							bind:value={edit_data.discordId}
 							let:option
 						>
 							<div class="flex items-center">
@@ -186,7 +186,7 @@
 				</div>
 			</TabItem>
 			<TabItem title="Permissions" open={$page.url.hash === "#permissions"} on:click={() => window.location.hash = "#permissions"}>
-				<PermissionToggles disableToggles={{ [Permission.Admin]: !canToggleAdmin }} bind:permissions={editData.permissions} let:info let:checked>
+				<PermissionToggles disableToggles={{ [Permission.Admin]: !canToggleAdmin }} bind:permissions={edit_data.permissions} let:info let:checked>
 					{#if info.permission === Permission.Admin && !canToggleAdmin}
 						{#if data.role.default}
 							<Tooltip>
@@ -213,14 +213,14 @@
 	</div>
 	<div class="flex justify-end items-center gap-2">
 		<Button color="alternative" on:click={() => {
-			editData = cloneRoleData(data.role);
+			edit_data = clone_role_data(data.role);
 		}}>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>
 		<Button
-			disabled={!isDirty}
+			disabled={!is_dirty}
 			on:click={() => {
-				if (!isDirty) return;
+				if (!is_dirty) return;
 				save().catch(console.error);
 			}}
 		>
@@ -229,8 +229,8 @@
 	</div>
 </div>
 
-<ConfirmationModal title="Make default primary role" bind:open={makeDefaultPrimaryModal} on:confirm={async () => {
-	save(true).then(() => (makeDefaultPrimaryModal = false)).catch(console.error);
+<ConfirmationModal title="Make default primary role" bind:open={make_default_primary_modal_open} on:confirm={async () => {
+	save(true).then(() => (make_default_primary_modal_open = false)).catch(console.error);
 }}>
     <span>WARNING! Making this a primary role will make it the default primary role. Place this role above the default before making it primary to prevent this.</span>
 </ConfirmationModal>

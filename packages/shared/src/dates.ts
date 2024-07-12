@@ -1,88 +1,88 @@
-export const daysPerMonth = 42;
+export const DAYS_PER_MONTH = 42;
 
-export function getDaysInMonth(date: Date) {
-	return daysPerMonth - new Date(date.getFullYear(), date.getMonth(), daysPerMonth).getDate();
+export function get_days_in_month(date: Date) {
+	return DAYS_PER_MONTH - new Date(date.getFullYear(), date.getMonth(), DAYS_PER_MONTH).getDate();
 }
 
-export function getCenturyStartYear(date: Date) {
+export function get_century_start_year(date: Date) {
 	return new Date(Math.floor(date.getFullYear() / 100) * 100, date.getMonth());
 }
 
-export function getNextCentury(date: Date) {
-	const startYear = getCenturyStartYear(date);
-	return new Date(startYear.getFullYear() + 100, date.getMonth());
+export function get_next_century(date: Date) {
+	const start_year = get_century_start_year(date);
+	return new Date(start_year.getFullYear() + 100, date.getMonth());
 }
 
-export function getPreviousCentury(date: Date) {
-	const startYear = getCenturyStartYear(date);
-	return new Date(startYear.getFullYear() - 100, date.getMonth());
+export function get_previous_century(date: Date) {
+	const start_year = get_century_start_year(date);
+	return new Date(start_year.getFullYear() - 100, date.getMonth());
 }
 
-export function getDecadeStartYear(date: Date) {
+export function get_decade_start_year(date: Date) {
 	return new Date(Math.floor(date.getFullYear() / 10) * 10, date.getMonth());
 }
 
-export function getNextDecade(date: Date) {
-	const startYear = getDecadeStartYear(date);
-	return new Date(startYear.getFullYear() + 10, date.getMonth());
+export function get_next_decade(date: Date) {
+	const start_year = get_decade_start_year(date);
+	return new Date(start_year.getFullYear() + 10, date.getMonth());
 }
 
-export function getPreviousDecade(date: Date) {
-	const startYear = getDecadeStartYear(date);
-	return new Date(startYear.getFullYear() - 10, date.getMonth());
+export function get_previous_decade(date: Date) {
+	const start_year = get_decade_start_year(date);
+	return new Date(start_year.getFullYear() - 10, date.getMonth());
 }
 
-export function getNextYear(date: Date) {
+export function get_next_year(date: Date) {
 	return new Date(date.getFullYear() + 1, date.getMonth());
 }
 
-export function getPreviousYear(date: Date) {
+export function get_previous_year(date: Date) {
 	return new Date(date.getFullYear() - 1, date.getMonth());
 }
 
-export function getNextMonth(date: Date) {
+export function get_next_month(date: Date) {
 	return new Date(
 		date.getFullYear() + (date.getMonth() == 11 ? 1 : 0),
 		date.getMonth() == 11 ? 0 : date.getMonth() + 1
 	);
 }
 
-export function getPreviousMonth(date: Date) {
+export function get_previous_month(date: Date) {
 	return new Date(
 		date.getFullYear() - (date.getMonth() == 0 ? 1 : 0),
 		date.getMonth() == 0 ? 11 : date.getMonth() - 1
 	);
 }
 
-export function isCurrentMonth(month: Date, date: Date) {
+export function is_current_month(month: Date, date: Date) {
 	return date.getMonth() == month.getMonth();
 }
 
-export function isSelected(selected: Date | null, date: Date) {
+export function is_selected_date(selected: Date | null, date: Date) {
 	return (
 		selected && new Date(date).setHours(0, 0, 0, 0) == new Date(selected).setHours(0, 0, 0, 0)
 	);
 }
 
-export function isToday(date: Date) {
+export function is_today(date: Date) {
 	return new Date(date).setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0);
 }
 
-export function isTomorrow(date: Date) {
+export function is_tomorrow(date: Date) {
 	return (
 		new Date(date).setHours(0, 0, 0, 0) ==
 		new Date(Date.now() + 24 * 3600 * 1000).setHours(0, 0, 0, 0)
 	);
 }
 
-export function isYesterday(date: Date) {
+export function is_yesterday(date: Date) {
 	return (
 		new Date(date).setHours(0, 0, 0, 0) ==
 		new Date(Date.now() - 24 * 3600 * 1000).setHours(0, 0, 0, 0)
 	);
 }
 
-export function toDurationComponents(value?: number | null) {
+export function to_duration_components(value?: number | null) {
 	if (!value) {
 		return {
 			milliseconds: 0,
@@ -102,8 +102,8 @@ export function toDurationComponents(value?: number | null) {
 	};
 }
 
-export function toDuration(value: number) {
-	const { days, hours, minutes, seconds } = toDurationComponents(value);
+export function to_duration(value: number) {
+	const { days, hours, minutes, seconds } = to_duration_components(value);
 
 	const components: string[] = [];
 	if (days > 0) {

@@ -5,10 +5,10 @@
 	import {
 		notifications,
 		type Notification,
-		dropNotification,
+		drop_notification,
 	} from "$lib/stores/NotificationStore";
 
-	function getColor(
+	function get_color(
 		type: Notification["type"]
 	):
 		| "gray"
@@ -31,7 +31,7 @@
 		}
 	}
 
-	function getIcon(type: Notification["type"]) {
+	function get_icon(type: Notification["type"]) {
 		switch (type) {
 			case "error":
 				return ExclamationCircleSolid;
@@ -46,12 +46,12 @@
 <div id="notifications" class="fixed flex flex-col-reverse gap-2 bottom-0 left-0 w-64 m-8 z-100">
 	{#each $notifications as notification}
 		<Toast
-			color={getColor(notification.type)}
+			color={get_color(notification.type)}
 			on:close={() => {
-				dropNotification(notification.id);
+				drop_notification(notification.id);
 			}}
 		>
-			<svelte:component this={getIcon(notification.type)} slot="icon" class="w-5 h-5" tabindex="-1" />
+			<svelte:component this={get_icon(notification.type)} slot="icon" class="w-5 h-5" tabindex="-1" />
 			{notification.message}
 		</Toast>
 	{/each}

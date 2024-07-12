@@ -7,9 +7,9 @@
 	let years: Date[] = [];
 	$: {
 		years = [];
-		const decadeStart = dates.getCenturyStartYear(viewDate);
+		const decade_start = dates.getCenturyStartYear(viewDate);
 		for (let i = 0; i < 10; i++) {
-			const date = new Date(decadeStart.getFullYear() + i * 10, viewDate.getMonth());
+			const date = new Date(decade_start.getFullYear() + i * 10, viewDate.getMonth());
 			years.push(date);
 		}
 	}

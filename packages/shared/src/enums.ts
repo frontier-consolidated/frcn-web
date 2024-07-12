@@ -10,7 +10,7 @@ export enum EventType {
 	Misc = "MISC",
 }
 
-const eventTypeNameMap = {
+const EventTypeNameMap = {
 	[EventType.Mining]: "Mining",
 	[EventType.Salvage]: "Salvage",
 	[EventType.Combat]: "Combat",
@@ -24,6 +24,6 @@ const eventTypeNameMap = {
 export const EventTypeOptions = Object.values(EventType).map((value) => {
 	return {
 		value,
-		name: eventTypeNameMap[value],
+		name: EventTypeNameMap[value],
 	};
 });

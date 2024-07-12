@@ -11,7 +11,7 @@
     // eslint-disable-next-line no-undef
 	type S = $$Generic<Record<string, any>>;
 
-    function flattenOptions(options: (NavigationOption<S> | OptionGroup<NavigationOption<S>>)[]) {
+    function flatten_options(options: (NavigationOption<S> | OptionGroup<NavigationOption<S>>)[]) {
         let flattened: NavigationOption<S>[] = [];
         for (const opt of options) {
             if ("options" in opt) {
@@ -23,7 +23,7 @@
         return flattened;
     }
 
-    function getOptionGroups(options: (NavigationOption<S> | OptionGroup<NavigationOption<S>>)[]) {
+    function get_option_groups(options: (NavigationOption<S> | OptionGroup<NavigationOption<S>>)[]) {
         let groups: OptionGroup<NavigationOption<S>>[] = [];
         for (const opt of options) {
             if ("options" in opt) {
@@ -33,7 +33,7 @@
         return groups;
     }
 
-    function getLooseOptions(options: (NavigationOption<S> | OptionGroup<NavigationOption<S>>)[]) {
+    function get_loose_options(options: (NavigationOption<S> | OptionGroup<NavigationOption<S>>)[]) {
         let opts: NavigationOption<S>[] = [];
         for (const opt of options) {
             if ("options" in opt) continue;
@@ -49,7 +49,7 @@
     let clazz = "";
     export { clazz as class };
 
-    $: currentOption = flattenOptions(options).find(opt => opt.href === activeUrl);
+    $: currentOption = flatten_options(options).find(opt => opt.href === activeUrl);
 
     let background = getContext("background");
 </script>
@@ -82,7 +82,7 @@
         containerClass="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded border border-gray-300 dark:border-gray-600 divide-gray-100 dark:divide-gray-600 shadow-md divide-y z-50 w-full cursor-pointer overflow-y-scroll max-h-64"
         class="rounded"
     >
-        {#each getOptionGroups(options) as group}
+        {#each get_option_groups(options) as group}
             <li class="font-medium text-sm mb-2 w-full text-left">
                 <span class="block p-2 font-semibold text-md">{group.name}</span>
                 <ul class="border-t border-gray-300 dark:border-gray-600">
@@ -103,7 +103,7 @@
                 </ul>
             </li>
         {/each}
-        {#each getLooseOptions(options) as option}
+        {#each get_loose_options(options) as option}
             {#key option}
                 <DropdownItem
                     on:click={() => {

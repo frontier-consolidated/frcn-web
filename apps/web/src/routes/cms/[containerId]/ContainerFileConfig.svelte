@@ -8,14 +8,14 @@
     export let file: CmsFile;
     export let validator: FieldValidator;
 
-    let editData = { identifier: file.getIdentifier() };
+    let edit_data = { identifier: file.getIdentifier() };
     $: {
-        file.setIdentifier(editData.identifier);
+        file.setIdentifier(edit_data.identifier);
         getContext<() => void>("containerchange")();
     }
 </script>
 
-<Field {validator} for="file-identifier-{file.id}" value={editData.identifier}>
+<Field {validator} for="file-identifier-{file.id}" value={edit_data.identifier}>
     <Label for="file-identifier-{file.id}" class="mb-2">Identifier</Label>
     <Input
         class="rounded"
@@ -25,6 +25,6 @@
         placeholder="/"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.identifier}
+        bind:value={edit_data.identifier}
     />
 </Field>

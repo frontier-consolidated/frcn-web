@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto, invalidate } from "$app/navigation";
 	import { strings, EventTypeOptions } from "@frcn/shared";
-	import { getLocations } from "@frcn/shared/locations";
 	import { Checkbox, Helper, Input, Label, Toggle } from "flowbite-svelte";
 	import {
 		EditOutline,
@@ -13,93 +12,93 @@
 	import isURL from "validator/lib/isURL";
 
 	import { DatetimePicker, DurationPicker, LocationSelectInput, MarkdownEditor, ConfirmationModal, SectionHeading, Select, Field, FieldValidator, Button } from "$lib/components";
-	import { Mutations, Queries, getApollo } from "$lib/graphql";
+	import { Mutations, Queries, get_apollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
-	import preventNavigation from "$lib/preventNavigation";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import prevent_navigation from "$lib/preventNavigation";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import type { PageData } from "./$types";
 	import RsvpTable from "./RSVPTable.svelte";
-	import { checkIfDirty, cloneEventSettingsData } from "./settings";
+	import { check_if_dirty, clone_event_settings_data } from "./settings";
 
-	const urlPattern =
+	const url_pattern =
 		"[Hh][Tt][Tt][Pp][Ss]?://(?:(?:[a-zA-Z\u00a1-\uffff0-9]+-?)*[a-zA-Z\u00a1-\uffff0-9]+)(?:.(?:[a-zA-Z\u00a1-\uffff0-9]+-?)*[a-zA-Z\u00a1-\uffff0-9]+)*(?:.(?:[a-zA-Z\u00a1-\uffff]{2,}))(?::d{2,5})?(?:/[^s]*)?";
 
 	export let data: PageData;
-	let editData = cloneEventSettingsData(data);
+	let edit_data = clone_event_settings_data(data);
 
-	const { canNavigate, initNavigation } = preventNavigation();
+	const { can_navigate, init_navigation } = prevent_navigation();
 
-	let isDirty = false;
+	let is_dirty = false;
 	$: {
-		isDirty = checkIfDirty(data, editData);
-		canNavigate.set(!isDirty);
+		is_dirty = check_if_dirty(data, edit_data);
+		can_navigate.set(!is_dirty);
 	}
 
 	$: canEdit = !data.archived && !data.endedAt;
 
-	let startDate: Date | null = editData.startAt ? new Date(editData.startAt) : null;
-	$: if (startDate) editData.startAt = startDate.getTime();
+	let start_date: Date | null = edit_data.startAt ? new Date(edit_data.startAt) : null;
+	$: if (start_date) edit_data.startAt = start_date.getTime();
 
-	let imagePlaceholder = false;
+	let image_placeholder = false;
 	let validator = new FieldValidator();
 
-	let deleteModalOpen = false;
-	let archiveModalOpen = false;
+	let delete_modal_open = false;
+	let archive_modal_open = false;
 
-	async function save(notifyOfSuccess = true) {
+	async function save(notify_success = true) {
 		if (!validator.validate(!data.posted)) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Check your inputs",
 			});
 			return false;
 		}
-		if (editData.location.some(loc => !loc)) {
-			pushNotification({
+		if (edit_data.location.some(loc => !loc)) {
+			push_notification({
 				type: "error",
 				message: "Invalid location",
 			});
 			return false;
 		}
 		
-		const { errors } = await getApollo().mutate({
+		const { errors } = await get_apollo().mutate({
 			mutation: Mutations.EDIT_EVENT,
 			variables: {
 				eventId: data.id,
 				data: {
-					channel: editData.channel.id ? editData.channel.id : undefined,
-					name: editData.name ? editData.name : undefined,
-					summary: editData.summary ? editData.summary : undefined,
-					description: editData.description ? editData.description.slice(0, 2024) : undefined,
-					imageUrl: editData.imageUrl,
-					eventType: editData.eventType,
-					location: editData.location.map((loc) => loc.name),
-					startAt: editData.startAt,
-					duration: editData.duration,
-					roles: editData.rsvpRoles.map((r) => ({
+					channel: edit_data.channel.id ? edit_data.channel.id : undefined,
+					name: edit_data.name ? edit_data.name : undefined,
+					summary: edit_data.summary ? edit_data.summary : undefined,
+					description: edit_data.description ? edit_data.description.slice(0, 2024) : undefined,
+					imageUrl: edit_data.imageUrl,
+					eventType: edit_data.eventType,
+					location: edit_data.location.map((loc) => loc.name),
+					startAt: edit_data.startAt,
+					duration: edit_data.duration,
+					roles: edit_data.rsvpRoles.map((r) => ({
 						id: r.id,
 						name: r.name,
 						limit: r.limit,
 						emoji: r.emoji.name,
 						emojiId: r.emoji.id,
 					})),
-					mentions: editData.mentions,
+					mentions: edit_data.mentions,
 					settings: {
-						createEventThread: editData.settings.createEventThread,
-						hideLocation: editData.settings.hideLocation,
-						inviteOnly: editData.settings.inviteOnly,
-						openToJoinRequests: editData.settings.openToJoinRequests,
+						createEventThread: edit_data.settings.createEventThread,
+						hideLocation: edit_data.settings.hideLocation,
+						inviteOnly: edit_data.settings.inviteOnly,
+						openToJoinRequests: edit_data.settings.openToJoinRequests,
 					},
-					accessType: editData.accessType,
-					accessRoles: editData.accessRoles.map((role) => role.id),
+					accessType: edit_data.accessType,
+					accessRoles: edit_data.accessRoles.map((role) => role.id),
 				},
 			},
 			errorPolicy: "all",
 		});
 
 		if (errors && errors.length > 0) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to save",
 			});
@@ -109,8 +108,8 @@
 
 		await invalidate("app:currentevent");
 
-		if (notifyOfSuccess) {
-			pushNotification({
+		if (notify_success) {
+			push_notification({
 				type: "success",
 				message: "Event successfully saved!",
 			});
@@ -120,15 +119,15 @@
 
 	async function post() {
 		if (!validator.validate()) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Check your inputs",
 			});
 			return false;
 		}
-		if (isDirty && !(await save(false))) return false;
+		if (is_dirty && !(await save(false))) return false;
 
-		const { data: postData, errors } = await getApollo().mutate({
+		const { data: post_data, errors } = await get_apollo().mutate({
 			mutation: Mutations.POST_EVENT,
 			variables: {
 				eventId: data.id,
@@ -136,8 +135,8 @@
 			errorPolicy: "all",
 		});
 
-		if (!postData?.success || (errors && errors.length > 0)) {
-			pushNotification({
+		if (!post_data?.success || (errors && errors.length > 0)) {
+			push_notification({
 				type: "error",
 				message: "Failed to post",
 			});
@@ -146,73 +145,73 @@
 		}
 
 		await invalidate("app:currentevent");
-		pushNotification({
+		push_notification({
 			type: "success",
 			message: "Event successfully posted!",
 		});
 		return true;
 	}
 
-	let guildOptions = data.options;
+	let guild_options = data.options;
 
-	let previousEventChannelId = editData.channel.id;
-	let fetchingGuildData = false;
+	let previous_event_channel_id = edit_data.channel.id;
+	let fetching_guild_data = false;
 	$: {
-		if (data.options && editData.channel.id !== previousEventChannelId) {
-			previousEventChannelId = editData.channel.id;
-			fetchingGuildData = true;
+		if (data.options && edit_data.channel.id !== previous_event_channel_id) {
+			previous_event_channel_id = edit_data.channel.id;
+			fetching_guild_data = true;
 
-			editData.mentions = [];
+			edit_data.mentions = [];
 
-			editData.channel = data.options.channels.find(channel => channel.id === editData.channel.id) ?? editData.channel;
+			edit_data.channel = data.options.channels.find(channel => channel.id === edit_data.channel.id) ?? edit_data.channel;
 			
-			if (editData.channel.id === data.channel?.id) {
-				guildOptions = data.options;
-				fetchingGuildData = false;
-			} else if ("id" in editData.channel.discordGuild) {
-				getApollo().query({
+			if (edit_data.channel.id === data.channel?.id) {
+				guild_options = data.options;
+				fetching_guild_data = false;
+			} else if ("id" in edit_data.channel.discordGuild) {
+				get_apollo().query({
                     query: Queries.GET_EVENT_SETTINGS_CHANNEL_OPTIONS,
                     variables: {
-                        guildId: editData.channel.discordGuild.id
+                        guildId: edit_data.channel.discordGuild.id
                     }
                 })
                 .then((options) => {
-					guildOptions = {
+					guild_options = {
 						channels: data.options!.channels,
 						emojis: data.options!.emojis,
 						discordRoles: options.data.discordRoles
 					};
                 })
                 .catch((err) => {
-                    pushNotification({
+                    push_notification({
                         type: "error",
                         message: "Failed to fetch data for selected event channel"
                     });
                     console.error(err);
                 })
                 .finally(() => {
-                    fetchingGuildData = false;
+                    fetching_guild_data = false;
                 });
 			} else {
-				guildOptions = {
+				guild_options = {
 					channels: data.options.channels,
 					emojis: data.options.emojis,
 					discordRoles: []
 				};
-				fetchingGuildData = false;
+				fetching_guild_data = false;
 			}
 		}
 	}
 </script>
 
-<div class="flex flex-col md:grid md:grid-cols-2 md:gap-6" use:initNavigation>
+<div class="flex flex-col md:grid md:grid-cols-2 md:gap-6" use:init_navigation>
 	<div>
 		<section>
 			<SectionHeading>
 				General Settings
 			</SectionHeading>
 			<div class="flex flex-col gap-4 p-4">
-				<Field {validator} for="event-type" value={editData.eventType} required>
+				<Field {validator} for="event-type" value={edit_data.eventType} required>
 					<Label for="event-type" class="mb-2">Event Type</Label>
 					<Select
 						id="event-type"
@@ -220,10 +219,10 @@
 						options={EventTypeOptions}
 						required
 						disabled={!canEdit}
-						bind:value={editData.eventType}
+						bind:value={edit_data.eventType}
 					/>
 				</Field>
-				<Field {validator} for="event-name" value={editData.name} required>
+				<Field {validator} for="event-name" value={edit_data.name} required>
 					<Label for="event-name" class="mb-2">Event Name</Label>
 					<Input
 						id="event-name"
@@ -235,10 +234,10 @@
 						autocomplete="new-password"
 						class="rounded"
 						disabled={!canEdit}
-						bind:value={editData.name}
+						bind:value={edit_data.name}
 					/>
 				</Field>
-				<Field {validator} for="event-summary" value={editData.summary} required>
+				<Field {validator} for="event-summary" value={edit_data.summary} required>
 					<Label for="event-summary" class="mb-2">Event Summary</Label>
 					<Input
 						id="event-summary"
@@ -250,13 +249,13 @@
 						autocomplete="new-password"
 						class="rounded"
 						disabled={!canEdit}
-						bind:value={editData.summary}
+						bind:value={edit_data.summary}
 					/>
 					<Helper class="mt-1">
 						This is used on the events page and as a description in link embeds
 					</Helper>
 				</Field>
-				<Field {validator} for="event-image" value={editData.imageUrl} validate={(value) => {
+				<Field {validator} for="event-image" value={edit_data.imageUrl} validate={(value) => {
 					if (!value) return [true, null];
 					const valid = isURL(value, {
 						require_protocol: true,
@@ -273,22 +272,22 @@
 						name="event-image"
 						type="text"
 						placeholder="https://example.com/image.png"
-						pattern={urlPattern}
+						pattern={url_pattern}
 						required
 						maxlength="2084"
 						autocomplete="new-password"
 						class="rounded"
 						disabled={!canEdit}
-						bind:value={editData.imageUrl}
+						bind:value={edit_data.imageUrl}
 					/>
-					{#if editData.imageUrl}
+					{#if edit_data.imageUrl}
 						<div class="mt-2">
-							<img src={editData.imageUrl} alt="Event thumbnail" class={twMerge("rounded h-48", imagePlaceholder ? "hidden" : undefined)} on:error={() => {
-								imagePlaceholder = true;
+							<img src={edit_data.imageUrl} alt="Event thumbnail" class={twMerge("rounded h-48", image_placeholder ? "hidden" : undefined)} on:error={() => {
+								image_placeholder = true;
 							}} on:load={() => {
-								imagePlaceholder = false;
+								image_placeholder = false;
 							}} />
-							<div role="status" class={twMerge("animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700", imagePlaceholder ? undefined : "hidden")}>
+							<div role="status" class={twMerge("animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700", image_placeholder ? undefined : "hidden")}>
 								<svg width="48" height="48" class="text-gray-200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="currentColor" viewBox="0 0 640 512">
 									<path d="M480 80C480 35.82 515.8 0 560 0C604.2 0 640 35.82 640 80C640 124.2 604.2 160 560 160C515.8 160 480 124.2 480 80zM0 456.1C0 445.6 2.964 435.3 8.551 426.4L225.3 81.01C231.9 70.42 243.5 64 256 64C268.5 64 280.1 70.42 286.8 81.01L412.7 281.7L460.9 202.7C464.1 196.1 472.2 192 480 192C487.8 192 495 196.1 499.1 202.7L631.1 419.1C636.9 428.6 640 439.7 640 450.9C640 484.6 612.6 512 578.9 512H55.91C25.03 512 .0006 486.1 .0006 456.1L0 456.1z" />
 								</svg>
@@ -296,13 +295,13 @@
 						</div>
 					{/if}
 				</Field>
-				<Field {validator} for="event-description" value={editData.description}>
+				<Field {validator} for="event-description" value={edit_data.description}>
 					<Label for="event-description" class="mb-2">Event Description</Label>
 					<MarkdownEditor
 						maxlength="2048"
 						placeholder="Describe the event"
 						disabled={!canEdit}
-						bind:value={editData.description}
+						bind:value={edit_data.description}
 					/>
 				</Field>
 			</div>
@@ -314,23 +313,23 @@
 				Event Time
 			</SectionHeading>
 			<div class="flex flex-col gap-4 p-4">
-				<Field {validator} for="event-start" value={startDate} required>
+				<Field {validator} for="event-start" value={start_date} required>
 					<Label for="event-start" class="mb-2">Event Start</Label>
 					<DatetimePicker
 						id="event-start"
 						name="event-start"
 						disable="past"
 						disabled={!canEdit}
-						bind:value={startDate}
+						bind:value={start_date}
 					/>
 				</Field>
-				<Field {validator} for="event-duration" value={editData.duration} required>
+				<Field {validator} for="event-duration" value={edit_data.duration} required>
 					<Label for="event-duration" class="mb-2">Event Duration</Label>
 					<DurationPicker
 						id="event-duration"
 						name="event-duration"
 						disabled={!canEdit}
-						bind:value={editData.duration}
+						bind:value={edit_data.duration}
 					/>
 				</Field>
 			</div>
@@ -340,16 +339,16 @@
 				Event Location
 			</SectionHeading>
 			<div class="flex flex-col gap-4 p-4">
-				<Field {validator} for="event-hide-location" value={editData.settings.hideLocation}>
-					<Checkbox id="event-hide-location" disabled={!canEdit} bind:checked={editData.settings.hideLocation}>
+				<Field {validator} for="event-hide-location" value={edit_data.settings.hideLocation}>
+					<Checkbox id="event-hide-location" disabled={!canEdit} bind:checked={edit_data.settings.hideLocation}>
 						Hide Location
 					</Checkbox>
 					<Helper>
 						If enabled, the event location will only be shown to users once the event starts
 					</Helper>
 				</Field>
-				<Field {validator} for="event-location" value={editData.location}>
-					<LocationSelectInput id="event-location" disabled={!canEdit} bind:value={editData.location} />
+				<Field {validator} for="event-location" value={edit_data.location}>
+					<LocationSelectInput id="event-location" disabled={!canEdit} bind:value={edit_data.location} />
 				</Field>
 			</div>
 		</section>
@@ -358,7 +357,7 @@
 				Join Permissions
 			</SectionHeading>
 			<div class="flex flex-col gap-4 p-4">
-				<Field {validator} for="event-access" value={editData.accessType}>
+				<Field {validator} for="event-access" value={edit_data.accessType}>
 					<Label for="event-access" class="mb-2">Event Access</Label>
 					<Select
 						id="event-access"
@@ -369,7 +368,7 @@
 						}))}
 						required
 						disabled={!canEdit}
-						bind:value={editData.accessType}
+						bind:value={edit_data.accessType}
 					/>
 				</Field>
 				<!-- <Field {validator} for="event-require-invite" value={editData.settings.inviteOnly}>
@@ -399,7 +398,7 @@
 				Discord Settings
 			</SectionHeading>
 			<div class="flex flex-col gap-4 p-4">
-				<Field {validator} for="event-channel" value={editData.channel.id} required>
+				<Field {validator} for="event-channel" value={edit_data.channel.id} required>
 					<Label for="event-channel" class="mb-2">Events Channel</Label>
 					<Select
 						id="event-channel"
@@ -407,18 +406,18 @@
 						options={data.options?.channels.map((channel) => ({
 							value: channel.id,
 							name: `${channel.discordGuild.name} > ${channel.discord.name}`,
-						})) ?? [{ value: editData.channel.id, name: `${editData.channel.discordGuild.name} > ${editData.channel.discord.name}` }]}
+						})) ?? [{ value: edit_data.channel.id, name: `${edit_data.channel.discordGuild.name} > ${edit_data.channel.discord.name}` }]}
 						required
 						disabled={!canEdit}
-						bind:value={editData.channel.id}
+						bind:value={edit_data.channel.id}
 					/>
 				</Field>
-				<Field {validator} for="event-mentions" value={editData.mentions}>
+				<Field {validator} for="event-mentions" value={edit_data.mentions}>
 					<Label for="event-mentions" class="mb-2">Mentions</Label>
 					<Select
 						id="event-mentions"
 						name="event-mentions"
-						options={guildOptions?.discordRoles.map(role => ({
+						options={guild_options?.discordRoles.map(role => ({
 							value: role.id,
 							name: role.name,
 							style: {
@@ -429,8 +428,8 @@
 						multi
 						search
 						max={10}
-						disabled={!canEdit || fetchingGuildData}
-						bind:value={editData.mentions}
+						disabled={!canEdit || fetching_guild_data}
+						bind:value={edit_data.mentions}
 						let:option
 					>
 						<div class="flex items-center">
@@ -439,8 +438,8 @@
 						</div>
 					</Select>
 				</Field>
-				<Field {validator} for="event-create-thread" value={editData.settings.createEventThread}>
-					<Toggle id="event-create-thread" disabled={!canEdit || data.posted} bind:checked={editData.settings.createEventThread}>
+				<Field {validator} for="event-create-thread" value={edit_data.settings.createEventThread}>
+					<Toggle id="event-create-thread" disabled={!canEdit || data.posted} bind:checked={edit_data.settings.createEventThread}>
 						Create Event Thread
 					</Toggle>
 					<Helper class="mt-1">
@@ -456,38 +455,38 @@
 		Event RSVPs
 	</SectionHeading>
 	<div class="py-4 sm:px-4">
-		<RsvpTable id="event-rsvps" {validator} {data} disabled={!canEdit} bind:value={editData.rsvpRoles} />
+		<RsvpTable id="event-rsvps" {validator} {data} disabled={!canEdit} bind:value={edit_data.rsvpRoles} />
 	</div>
 </section>
 <div class="flex flex-wrap justify-end items-center gap-2">
-	{#if startDate && startDate <= new Date()}
+	{#if start_date && start_date <= new Date()}
 		<Button disabled={data.archived} color="dark" class="mr-auto" on:click={() => {
 			if (data.archived) return;
-			archiveModalOpen = true;
+			archive_modal_open = true;
 		}}>
 			<ArchiveSolid class="me-2" tabindex="-1" /> Archive
 		</Button>
 	{:else}
 		<Button color="red" class="mr-auto" on:click={() => {
-			deleteModalOpen = true;
+			delete_modal_open = true;
 		}}>
 			<CloseSolid class="me-2" tabindex="-1" /> Delete
 		</Button>
 	{/if}
 	<Button color="alternative" on:click={() => {
 		if (data.createdAt === data.updatedAt) {
-			deleteModalOpen = true;
+			delete_modal_open = true;
 		} else {
-			editData = cloneEventSettingsData(data);
+			edit_data = clone_event_settings_data(data);
 		}
 	}}>
 		<CloseSolid class="me-2" tabindex="-1" /> Cancel
 	</Button>
 	{#if data.posted}
 		<Button
-			disabled={!isDirty || !canEdit}
+			disabled={!is_dirty || !canEdit}
 			on:click={() => {
-				if (!isDirty || !canEdit) return;
+				if (!is_dirty || !canEdit) return;
 				save();
 			}}
 		>
@@ -496,9 +495,9 @@
 	{:else}
 		<Button
 			color="green"
-			disabled={!isDirty}
+			disabled={!is_dirty}
 			on:click={() => {
-				if (!isDirty) return;
+				if (!is_dirty) return;
 				save();
 			}}
 		>
@@ -516,8 +515,8 @@
 	{/if}
 </div>
 
-<ConfirmationModal title="Delete event" bind:open={deleteModalOpen} on:confirm={async () => {
-    const { errors } = await getApollo().mutate({
+<ConfirmationModal title="Delete event" bind:open={delete_modal_open} on:confirm={async () => {
+    const { errors } = await get_apollo().mutate({
         mutation: Mutations.DELETE_EVENT,
         variables: {
             id: data.id
@@ -526,7 +525,7 @@
     });
 
     if (errors && errors.length > 0) {
-        pushNotification({
+        push_notification({
             type: "error",
             message: "Failed to delete event",
         });
@@ -534,14 +533,14 @@
         return;
     }
 
-    deleteModalOpen = false;
+    delete_modal_open = false;
 	goto("/events");
 }}>
     <span>Are you sure you want to delete this event? Once deleted it cannot be undone.</span>
 </ConfirmationModal>
 
-<ConfirmationModal title="Archive event" bind:open={archiveModalOpen} on:confirm={async () => {
-    const { errors } = await getApollo().mutate({
+<ConfirmationModal title="Archive event" bind:open={archive_modal_open} on:confirm={async () => {
+    const { errors } = await get_apollo().mutate({
         mutation: Mutations.ARCHIVE_EVENT,
         variables: {
             id: data.id
@@ -550,7 +549,7 @@
     });
 
     if (errors && errors.length > 0) {
-        pushNotification({
+        push_notification({
             type: "error",
             message: "Failed to archive event",
         });
@@ -558,7 +557,7 @@
         return;
     }
 
-    archiveModalOpen = false;
+    archive_modal_open = false;
 	await invalidate("app:currentevent");
 }}>
     <p>Are you sure you want to archive this event?</p>

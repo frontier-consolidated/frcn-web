@@ -7,7 +7,7 @@
 
 	import ContainerChildrenInput from "./ContainerChildrenInput.svelte";
     
-    function createEditData(container: IndexContainer) {
+    function create_edit_data(container: IndexContainer) {
         return {
             identifier: container.getIdentifier(),
             title: container.getTitle(),
@@ -24,19 +24,19 @@
     let container = container_.as<IndexContainer>();
     $: container = container_.as<IndexContainer>();
 
-    let editData = createEditData(container);
+    let edit_data = create_edit_data(container);
     $: {
-        container.setIdentifier(editData.identifier);
-        container.setTitle(editData.title);
-        container.setSubTitle(editData.subTitle);
-        container.setMetaTitle(editData.metaTitle);
-        container.setMetaDescription(editData.metaDescription);
+        container.setIdentifier(edit_data.identifier);
+        container.setTitle(edit_data.title);
+        container.setSubTitle(edit_data.subTitle);
+        container.setMetaTitle(edit_data.metaTitle);
+        container.setMetaDescription(edit_data.metaDescription);
         getContext<() => void>("containerchange")();
     }
 
 </script>
 
-<Field {validator} for="index-identifier-{container.id}" value={editData.identifier} required={!isChild}>
+<Field {validator} for="index-identifier-{container.id}" value={edit_data.identifier} required={!isChild}>
     <Label for="index-identifier-{container.id}" class="mb-2">Identifier</Label>
     <Input
         class="rounded"
@@ -46,10 +46,10 @@
         placeholder="/"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.identifier}
+        bind:value={edit_data.identifier}
     />
 </Field>
-<Field {validator} for="index-title-{container.id}" value={editData.title}>
+<Field {validator} for="index-title-{container.id}" value={edit_data.title}>
     <Label for="index-title-{container.id}" class="mb-2">Title</Label>
     <Input
         class="rounded"
@@ -59,10 +59,10 @@
         placeholder="Title"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.title}
+        bind:value={edit_data.title}
     />
 </Field>
-<Field {validator} for="index-sub-title-{container.id}" value={editData.subTitle}>
+<Field {validator} for="index-sub-title-{container.id}" value={edit_data.subTitle}>
     <Label for="index-sub-title-{container.id}" class="mb-2">Sub Title</Label>
     <Input
         class="rounded"
@@ -72,10 +72,10 @@
         placeholder="Sub title"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.subTitle}
+        bind:value={edit_data.subTitle}
     />
 </Field>
-<Field {validator} for="index-meta-title-{container.id}" value={editData.metaTitle}>
+<Field {validator} for="index-meta-title-{container.id}" value={edit_data.metaTitle}>
     <Label for="index-meta-title-{container.id}" class="mb-2">Meta Title</Label>
     <Input
         class="rounded"
@@ -85,10 +85,10 @@
         placeholder="Meta title"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.metaTitle}
+        bind:value={edit_data.metaTitle}
     />
 </Field>
-<Field {validator} for="index-meta-description-{container.id}" value={editData.metaDescription}>
+<Field {validator} for="index-meta-description-{container.id}" value={edit_data.metaDescription}>
     <Label for="index-meta-description-{container.id}" class="mb-2">Meta Description</Label>
     <Input
         class="rounded"
@@ -98,7 +98,7 @@
         placeholder="Meta description"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.metaDescription}
+        bind:value={edit_data.metaDescription}
     />
 </Field>
 <div>

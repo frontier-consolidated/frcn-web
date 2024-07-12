@@ -5,12 +5,12 @@
 
 	import { Routes, api } from "$lib/api";
 	import { Field, FieldValidator, ImageInput, MarkdownEditor } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import ContainerChildrenInput from "./ContainerChildrenInput.svelte";
     
-    function createEditData(container: SectionContainer) {
+    function create_edit_data(container: SectionContainer) {
         return {
             identifier: container.getIdentifier(),
             title: container.getTitle(),
@@ -25,67 +25,67 @@
     let container = container_.as<SectionContainer>();
     $: container = container_.as<SectionContainer>();
 
-    let imageFile: CmsFile | null = container.getFiles()[0];
+    let image_file: CmsFile | null = container.getFiles()[0];
 
-    let editData = createEditData(container);
+    let edit_data = create_edit_data(container);
     $: {
-        container.setIdentifier(editData.identifier);
-        container.setTitle(editData.title);
-        container.setContent(editData.content);
+        container.setIdentifier(edit_data.identifier);
+        container.setTitle(edit_data.title);
+        container.setContent(edit_data.content);
         getContext<() => void>("containerchange")();
     }
 
-    async function uploadFile(file: File, currentFile: CmsFile | null) {
-        pushNotification({
+    async function upload_file(file: File, current_file: CmsFile | null) {
+        push_notification({
 			type: "info",
 			message: "Uploading file...",
 		});
 
-		const formData = new FormData();
-		formData.append("file", file);
+		const form_data = new FormData();
+		form_data.append("file", file);
         
 		try {
-            if (currentFile) {
-                await getApollo().mutate({
+            if (current_file) {
+                await get_apollo().mutate({
                     mutation: Mutations.DELETE_CONTENT_CONTAINER_FILE,
                     variables: {
-                        id: currentFile.id
+                        id: current_file.id
                     },
                 });
-                container.removeFile(currentFile);
+                container.removeFile(current_file);
             }
 
-			const response = await api.post(Routes.upload("cms_container", container.id), formData, {
+			const response = await api.post(Routes.upload("cms_container", container.id), form_data, {
 				headers: {
 					"Content-Type": "multipart/form-data"
 				},
 			});
 
-            currentFile = new CmsFile({
+            current_file = new CmsFile({
                 id: response.data.id,
                 fileName: response.data.fileName,
                 fileSizeKb: response.data.fileSizeKb,
                 contentType: response.data.contentType,
                 fileSrc: response.data.previewUrl,
             });
-            container.pushFile(currentFile);
+            container.pushFile(current_file);
             
-            pushNotification({
+            push_notification({
                 type: "success",
                 message: "Successfully uploaded!",
             });
 		} catch (err) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to upload file",
 			});
 			console.error(err);
 		}
-        return currentFile;
+        return current_file;
     }
 
-    async function removeFile(file: CmsFile) {
-        const { errors } = await getApollo().mutate({
+    async function remove_file(file: CmsFile) {
+        const { errors } = await get_apollo().mutate({
             mutation: Mutations.DELETE_CONTENT_CONTAINER_FILE,
             variables: {
                 id: file.id
@@ -94,7 +94,7 @@
         });
 
         if (errors && errors.length > 0) {
-            pushNotification({
+            push_notification({
                 type: "error",
                 message: "Failed to delete image",
             });
@@ -105,7 +105,7 @@
     }
 </script>
 
-<Field {validator} for="section-identifier-{container.id}" value={editData.identifier} required={!isChild}>
+<Field {validator} for="section-identifier-{container.id}" value={edit_data.identifier} required={!isChild}>
     <Label for="section-identifier-{container.id}" class="mb-2">Identifier</Label>
     <Input
         class="rounded"
@@ -115,10 +115,10 @@
         placeholder="/"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.identifier}
+        bind:value={edit_data.identifier}
     />
 </Field>
-<Field {validator} for="section-title-{container.id}" value={editData.title}>
+<Field {validator} for="section-title-{container.id}" value={edit_data.title}>
     <Label for="section-title-{container.id}" class="mb-2">Title</Label>
     <Input
         class="rounded"
@@ -128,14 +128,14 @@
         placeholder="Title"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.title}
+        bind:value={edit_data.title}
     />
 </Field>
-<Field {validator} for="section-content-{container.id}" value={editData.content}>
+<Field {validator} for="section-content-{container.id}" value={edit_data.content}>
     <Label for="section-content-{container.id}" class="mb-2">Content</Label>
     <MarkdownEditor
         placeholder="Content"
-        bind:value={editData.content}
+        bind:value={edit_data.content}
     />
 </Field>
 <div>
@@ -148,14 +148,14 @@
 </div>
 <div>
     <Label for="section-image-{container.id}" class="mb-2">Image</Label>
-    <ImageInput id="section-image-{container.id}" name="section-image" src={imageFile?.getSrc()} 
+    <ImageInput id="section-image-{container.id}" name="section-image" src={image_file?.getSrc()} 
         upload={async (file) => {
-            imageFile = await uploadFile(file, imageFile);
+            image_file = await upload_file(file, image_file);
         }}
         remove={async () => {
-            if (!imageFile) return;
-            if (await removeFile(imageFile)) {
-                imageFile = null;
+            if (!image_file) return;
+            if (await remove_file(image_file)) {
+                image_file = null;
             }
         }}
     />

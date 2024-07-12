@@ -11,7 +11,7 @@
 	export let data: PageData;
 
 	const search = queryParam("q");
-	let searchInput = $search;
+	let search_input = $search;
 </script>
 
 <Head
@@ -26,12 +26,12 @@
 		<div>
 			<div class="flex flex-col sm:flex-row gap-2">
 				<Search size="md" placeholder="Search by name" class="sm:max-w-[400px] rounded"
-					bind:value={searchInput} 
+					bind:value={search_input} 
 					on:keydown={(e) => {
-						if (e.key === "Enter") search.set(searchInput);
+						if (e.key === "Enter") search.set(search_input);
 					}} 
 					on:blur={() => {
-						search.set(searchInput);
+						search.set(search_input);
 					}} 
 				/>
 				<div class="shrink-0 flex flex-col justify-end min-[480px]:flex-row gap-2">

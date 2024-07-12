@@ -2,7 +2,7 @@ import { Permission, hasPermission } from "@frcn/shared";
 import { error } from "@sveltejs/kit";
 
 import { Queries } from "$lib/graphql";
-import { getPageVars } from "$lib/pageHelpers";
+import { get_page_vars } from "$lib/pageHelpers";
 
 import type { PageServerLoad } from "./$types";
 
@@ -13,7 +13,7 @@ export const load = (async ({ locals, depends, url }) => {
         error(403, "Missing permission");
     }
 
-    const { page, limit } = getPageVars(url.searchParams);
+    const { page, limit } = get_page_vars(url.searchParams);
 
     const { data } = await locals.apollo.query({
         query: Queries.GET_ALL_USERS,

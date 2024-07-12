@@ -7,7 +7,7 @@
 
 	import ContainerFilesInput from "./ContainerFilesInput.svelte";
     
-    function createEditData(container: GalleryContainer) {
+    function create_edit_data(container: GalleryContainer) {
         return {
             identifier: container.getIdentifier(),
         };
@@ -20,14 +20,14 @@
     let container = container_.as<GalleryContainer>();
     $: container = container_.as<GalleryContainer>();
 
-    let editData = createEditData(container);
+    let edit_data = create_edit_data(container);
     $: {
-        container.setIdentifier(editData.identifier);
+        container.setIdentifier(edit_data.identifier);
         getContext<() => void>("containerchange")();
     }
 </script>
 
-<Field {validator} for="section-identifier-{container.id}" value={editData.identifier} required={!isChild}>
+<Field {validator} for="section-identifier-{container.id}" value={edit_data.identifier} required={!isChild}>
     <Label for="section-identifier-{container.id}" class="mb-2">Identifier</Label>
     <Input
         class="rounded"
@@ -37,7 +37,7 @@
         placeholder="/"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.identifier}
+        bind:value={edit_data.identifier}
     />
 </Field>
 <div>

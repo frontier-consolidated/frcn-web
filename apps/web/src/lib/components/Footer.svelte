@@ -6,7 +6,7 @@
 	import { DISCORD_URL, GITHUB_URL, YOUTUBE_URL } from "$lib/constants";
     import logo from "$lib/images/logo.png";
     import madeByTheCommunity from "$lib/images/mbtc.png";
-	import { cookieConsentModal } from "$lib/stores/CookieConsentModalStore";
+	import { cookie_consent_modal } from "$lib/stores/CookieConsentModalStore";
 
 	import Hr from "./Hr.svelte";
 	import ScreenQuery from "./utils/ScreenQuery.svelte";
@@ -52,7 +52,7 @@
                     <FooterLink liClass="mb-4" href="/legal/privacy">Privacy Policy</FooterLink>
                     <li class="mb-4">
                         <button class="hover:underline" on:click={() => {
-                            cookieConsentModal.set(true);
+                            cookie_consent_modal.set(true);
                         }}>Cookie Settings</button>
                     </li>
                     <FooterLink liClass="mb-4" href="/legal/cookies">Cookie Policy</FooterLink>

@@ -4,7 +4,7 @@
 
     import placeholder from "$lib/images/stock/placeholder.jpg";
 
-    let uploadInput: HTMLInputElement | null = null;
+    let upload_input: HTMLInputElement | null = null;
     export let src: string | undefined = undefined;
     export let upload: (file: File) => void | Promise<void>;
     export let remove: (() => Promise<void>) | undefined = undefined;
@@ -12,10 +12,10 @@
 	let files: FileList;
     let uploading = false;
 
-	function handleFileKeydown(ev: KeyboardEvent) {
-		if (uploadInput && [" ", "Enter"].includes(ev.key)) {
+	function handle_file_keydown(ev: KeyboardEvent) {
+		if (upload_input && [" ", "Enter"].includes(ev.key)) {
 			ev.preventDefault();
-			uploadInput.click();
+			upload_input.click();
 		}
 	}
 
@@ -23,7 +23,7 @@
         if (files && files.length > 0 && !uploading) {
             uploading = true;
             Promise.resolve(upload(files[0])).catch(console.error).finally(() => {
-                if (uploadInput) uploadInput.value = "";
+                if (upload_input) upload_input.value = "";
                 uploading = false;
             });
         }
@@ -33,7 +33,7 @@
 <button
     type="button"
     class={twMerge("group relative max-w-lg", $$restProps.class)} 
-    on:keydown={handleFileKeydown}
+    on:keydown={handle_file_keydown}
 >
     <img src={(files?.length ?? 0) > 0 ? URL.createObjectURL(files[0]) : src ?? placeholder} alt="Input preview" class="rounded w-full group-hover:brightness-110" />
     <input 
@@ -41,7 +41,7 @@
         type="file"
         accept="image/*"
         class="absolute cursor-pointer top-0 left-0 h-full w-full z-0 opacity-0" 
-        bind:this={uploadInput} 
+        bind:this={upload_input} 
         bind:files
     />
     {#if remove && ((files?.length ?? 0) > 0 || src)}
@@ -50,8 +50,8 @@
             e.stopPropagation();
             if (src) {
                 await remove();
-            } else if (uploadInput) {
-                uploadInput.value = "";
+            } else if (upload_input) {
+                upload_input.value = "";
             }
         }}>
             <TrashBinSolid />

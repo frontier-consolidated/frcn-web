@@ -11,7 +11,7 @@
 	import { twMerge } from "tailwind-merge";
 
 	import { Underline } from "./extensions";
-	import { darkTheme } from "./theme/dark";
+	import { dark_theme } from "./theme/dark";
 
 	export let value = "";
 	
@@ -50,22 +50,22 @@
 				Emoji
 			]
 		}),
-		darkTheme,
+		dark_theme,
 	].filter((e): e is Extension => !!e);
 	$: view && update(value);
 	$: view && state_extensions && reconfigure();
 
-	onMount(() => view = createEditorView());
+	onMount(() => view = create_editor_view());
 	onDestroy(() => view?.destroy());
 
-	function createEditorView() {
+	function create_editor_view() {
 	  return new EditorView({
 		parent: element,
-		state: createEditorState(value),
+		state: create_editor_state(value),
 		dispatch(transaction) {
 		  view.update([transaction]);
 		  if (!update_from_prop && transaction.docChanged) {
-			handleChange();
+			handle_change();
 		  }
 		}
 	  });
@@ -81,7 +81,7 @@
 	  });
 	}
 
-	function update(newValue: string) {
+	function update(new_value: string) {
 	  if (first_update) {
 		first_update = false;
 		return;
@@ -91,11 +91,11 @@
 		return;
 	  }
 	  update_from_prop = true;
-	  view.setState(createEditorState(newValue));
+	  view.setState(create_editor_state(new_value));
 	  update_from_prop = false;
 	}
 
-	function handleChange() {
+	function handle_change() {
 	  const new_value = view.state.doc.toString();
 	  if (new_value === value)
 		return;
@@ -105,23 +105,23 @@
 	  dispatch("change", value);
 	}
 	
-	function createEditorState(newValue: string) {
+	function create_editor_state(new_value: string) {
 	  return EditorState.create({
-		doc: newValue ?? undefined,
+		doc: new_value ?? undefined,
 		extensions: state_extensions
 	  });
 	}
 
-	let paddingClass = "[&_.cm-editor]:p-2.5 [&_.cm-editor]:h-full [&_.cm-content]:p-0 [&_.cm-line]:pl-0";
-	let placeholderClass = "[&_.cm-placeholder]:text-gray-400";
-	let urlClass = "[&_.ͼurl]:text-primary-600 dark:[&_.ͼurl]:text-primary-500";
-	let divClass = twMerge("w-full rounded border border-gray-200 dark:border-gray-600 text-sm focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 overflow-hidden overflow-y-auto resize-y bg-gray-50 text-gray-900 dark:text-white", background ? "dark:bg-gray-600" : "dark:bg-gray-700", paddingClass, placeholderClass, urlClass, clazz);
+	let padding_class = "[&_.cm-editor]:p-2.5 [&_.cm-editor]:h-full [&_.cm-content]:p-0 [&_.cm-line]:pl-0";
+	let placeholder_class = "[&_.cm-placeholder]:text-gray-400";
+	let url_class = "[&_.ͼurl]:text-primary-600 dark:[&_.ͼurl]:text-primary-500";
+	let div_class = twMerge("w-full rounded border border-gray-200 dark:border-gray-600 text-sm focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500 overflow-hidden overflow-y-auto resize-y bg-gray-50 text-gray-900 dark:text-white", background ? "dark:bg-gray-600" : "dark:bg-gray-700", padding_class, placeholder_class, url_class, clazz);
 </script>
 
 {#if browser}
-	<div class={twMerge("codemirror-wrapper", divClass)} bind:this={element} {...$$restProps} />
+	<div class={twMerge("codemirror-wrapper", div_class)} bind:this={element} {...$$restProps} />
 {:else}
-	<div class={twMerge("relative", divClass)} {...$$restProps}>
+	<div class={twMerge("relative", div_class)} {...$$restProps}>
 		<Spinner class="m-auto" />
 
 		<pre class="scm-pre cm-editor">{value}</pre>

@@ -7,50 +7,50 @@
 	import { queryParam } from "sveltekit-search-params";
 
 	import { Button, Head, SectionHeading } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
+	import { Mutations, get_apollo } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
-	import preventNavigation from "$lib/preventNavigation";
-	import { pushNotification } from "$lib/stores/NotificationStore";
-	import { rolesCache } from "$lib/stores/RolesCacheStore";
+	import prevent_navigation from "$lib/preventNavigation";
+	import { push_notification } from "$lib/stores/NotificationStore";
+	import { roles_cache } from "$lib/stores/RolesCacheStore";
 	import { user } from "$lib/stores/UserStore";
 
 	import RoleRow from "./RoleRow.svelte";
 
-	const roleSearch = queryParam("q");
+	const role_search = queryParam("q");
     
-	$: editRoles = $rolesCache.toReversed();
+	$: editRoles = $roles_cache.toReversed();
 
-	$: filteredRoles = $roleSearch ? editRoles.filter(r => r.name.toLowerCase().includes($roleSearch!.toLowerCase())) : editRoles;
+	$: filteredRoles = $role_search ? editRoles.filter(r => r.name.toLowerCase().includes($role_search!.toLowerCase())) : editRoles;
 
-	function getHighestMovableRole(roles: typeof $rolesCache, user: GetCurrentUserQuery["user"]) {
+	function get_highest_movable_role(roles: typeof $roles_cache, user: GetCurrentUserQuery["user"]) {
 		if (!user) return roles.length;
 		if (hasAdmin(user.permissions)) return -1;
 
-		const userRoles = [user.primaryRole, ...user.roles];
+		const user_roles = [user.primaryRole, ...user.roles];
 
 		let highest = roles.length;
 		for (const [i, role] of roles.entries()) {
-			const userRole = userRoles.find(r => r.id === role.id);
-			if (userRole && i < highest) {
+			const user_role = user_roles.find(r => r.id === role.id);
+			if (user_role && i < highest) {
 				highest = i;
 			}
 		}
 		return highest;
 	}
 
-	$: highestMoveable = getHighestMovableRole(filteredRoles, $user.data);
+	$: highestMoveable = get_highest_movable_role(filteredRoles, $user.data);
 
-	const { canNavigate, initNavigation } = preventNavigation();
+	const { can_navigate, init_navigation } = prevent_navigation();
 
-	let isDirty = false;
+	let is_dirty = false;
 	$: {
-		isDirty = $rolesCache.toReversed().reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false);
-		canNavigate.set(!isDirty);
+		is_dirty = $roles_cache.toReversed().reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false);
+		can_navigate.set(!is_dirty);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let sortable: Sortable;
-    function initSortable(el: HTMLElement) {
+    function init_sortable(el: HTMLElement) {
 		sortable = new Sortable(el, {
 			handle: ".move-handle",
 			forceFallback: true,
@@ -62,16 +62,16 @@
 				}
 			},
 			onEnd: function (ev) {
-				const updatedRoles = [...editRoles];
-				const movedRole = updatedRoles.splice(ev.oldIndex!, 1)[0];
-				updatedRoles.splice(ev.newIndex!, 0, movedRole);
-				editRoles = updatedRoles;
+				const updated_roles = [...editRoles];
+				const moved_role = updated_roles.splice(ev.oldIndex!, 1)[0];
+				updated_roles.splice(ev.newIndex!, 0, moved_role);
+				editRoles = updated_roles;
 			}
 		});
     }
 
 	async function save() {
-		const { errors } = await getApollo().mutate({
+		const { errors } = await get_apollo().mutate({
 			mutation: Mutations.REORDER_ROLES,
 			variables: {
 				order: editRoles.toReversed().map(r => r.id)
@@ -80,7 +80,7 @@
 		});
 
 		if (errors && errors.length > 0) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to save",
 			});
@@ -88,7 +88,7 @@
 			return;
 		}
 
-		editRoles = $rolesCache.toReversed();
+		editRoles = $roles_cache.toReversed();
 	}
 </script>
 
@@ -99,19 +99,19 @@
 <SectionHeading>
     User Roles
 </SectionHeading>
-<div class="flex gap-2 px-2 my-4" use:initNavigation>
-    <Search size="md" bind:value={$roleSearch} class="rounded" />
+<div class="flex gap-2 px-2 my-4" use:init_navigation>
+    <Search size="md" bind:value={$role_search} class="rounded" />
     <Button class="shrink-0" on:click={async () => {
 		try {
-			const { data: createData } = await getApollo().mutate({
+			const { data: create_data } = await get_apollo().mutate({
 				mutation: Mutations.CREATE_ROLE,
 			});
 
-			if (createData && createData.role) {
-				await goto(`/admin/roles/${createData.role}`);
+			if (create_data && create_data.role) {
+				await goto(`/admin/roles/${create_data.role}`);
 			}
 		} catch (err) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to create role"
 			});
@@ -133,24 +133,24 @@
 			</TableHeadCell>
 			<TableHeadCell class="w-32"></TableHeadCell>
 		</TableHead>
-		<tbody class="divide-y" use:initSortable>
+		<tbody class="divide-y" use:init_sortable>
 			{#each filteredRoles as role, i}
 				{#key role.id}
-					<RoleRow {role} locked={i <= highestMoveable} canMove={!$roleSearch} />
+					<RoleRow {role} locked={i <= highestMoveable} canMove={!$role_search} />
 				{/key}
 			{/each}
 		</tbody>
 	</Table>
 	<div class="flex justify-end items-center gap-2">
 		<Button color="alternative" on:click={() => {
-			editRoles = $rolesCache.toReversed();
+			editRoles = $roles_cache.toReversed();
 		}}>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>
 		<Button
-			disabled={!isDirty}
+			disabled={!is_dirty}
 			on:click={() => {
-				if (!isDirty) return;
+				if (!is_dirty) return;
 				save();
 			}}
 		>

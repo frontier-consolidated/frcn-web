@@ -2,9 +2,9 @@
 	import { Avatar, Dropdown, DropdownDivider, DropdownItem } from "flowbite-svelte";
 	import { DotsVerticalOutline, UserRemoveSolid, ArrowLeftToBracketOutline } from "flowbite-svelte-icons";
 
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
-	import { viewUserProfile } from "$lib/stores/UserProfileViewStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import { push_notification } from "$lib/stores/NotificationStore";
+	import { view_user_profile } from "$lib/stores/UserProfileViewStore";
 	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
@@ -18,7 +18,7 @@
 
 <button class="rounded flex items-center gap-2 px-1 w-full dark:text-white hover:bg-gray-300 dark:hover:bg-gray-700" on:click={() => {
 	if (!member.user) return;
-	viewUserProfile(member.user.id);
+	view_user_profile(member.user.id);
 }}>
 	<Avatar rounded size="sm" src={member.user?.avatarUrl} />
 	<div class="flex flex-col items-start">
@@ -50,7 +50,7 @@
 <Dropdown containerClass="rounded divide-y z-50" triggeredBy="#{optionsId}">
 	<DropdownItem on:click={() => {
 		if (!member.user) return;
-		viewUserProfile(member.user.id);
+		view_user_profile(member.user.id);
 	}}>
 		View Profile
 	</DropdownItem>
@@ -58,7 +58,7 @@
 		<DropdownDivider />
 		{#if $user.data && $user.data.id === member.user?.id}
 			<DropdownItem class="flex dark:hover:bg-red-500" on:click={async () => {
-				const { data: unrsvpData, errors } = await getApollo().mutate({
+				const { data: unrsvp_data, errors } = await get_apollo().mutate({
 					mutation: Mutations.UNRSVP_FOR_EVENT,
 					variables: {
 						eventId: event.id
@@ -66,8 +66,8 @@
 					errorPolicy: "all"
 				});
 
-				if (!unrsvpData?.success || (errors && errors.length > 0)) {
-					pushNotification({
+				if (!unrsvp_data?.success || (errors && errors.length > 0)) {
+					push_notification({
 						type: "error",
 						message: "Failed to leave event",
 					});
@@ -77,7 +77,7 @@
 
 				event.rsvp = null;
 				event.members = event.members.filter(m => m.user?.id !== $user.data?.id);
-				pushNotification({
+				push_notification({
 					type: "success",
 					message: "UnRSVPed for event",
 				});
@@ -87,7 +87,7 @@
 		{:else}
 			{#if event.canEdit}
 				<DropdownItem class="flex dark:hover:bg-red-500" on:click={async () => {
-					const { data: kickData, errors } = await getApollo().mutate({
+					const { data: kick_data, errors } = await get_apollo().mutate({
 						mutation: Mutations.KICK_EVENT_MEMBER,
 						variables: {
 							id: member.id
@@ -95,8 +95,8 @@
 						errorPolicy: "all"
 					});
 
-					if (!kickData?.kicked || (errors && errors.length > 0)) {
-						pushNotification({
+					if (!kick_data?.kicked || (errors && errors.length > 0)) {
+						push_notification({
 							type: "error",
 							message: "Failed to kick user",
 						});
@@ -105,7 +105,7 @@
 					}
 
 					event.members = event.members.filter(m => m.id !== member.id);
-					pushNotification({
+					push_notification({
 						type: "success",
 						message: "Kicked user from event",
 					});

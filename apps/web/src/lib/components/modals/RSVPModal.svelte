@@ -2,9 +2,9 @@
 	import { invalidate } from "$app/navigation";
 	import { Label, Modal } from "flowbite-svelte";
 
-	import { Mutations, getApollo } from "$lib/graphql";
+	import { Mutations, get_apollo } from "$lib/graphql";
 	import type { EventFragmentFragment } from "$lib/graphql/__generated__/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import Button from "../Button.svelte";
 	import Select from "../select/Select.svelte";
@@ -13,7 +13,7 @@
     export let open: boolean = false;
     export let dependency = "app:events";
 
-    let rsvpRole: string | null = null;
+    let rsvp_role: string | null = null;
 </script>
 
 <Modal title="RSVP for '{event.name}'" placement="top-center" outsideclose bind:open bodyClass="overflow-y-visible">
@@ -27,23 +27,23 @@
 				name: role.name,
 			}))}
 			required
-			bind:value={rsvpRole}
+			bind:value={rsvp_role}
 		/>
 	</div>
 	<svelte:fragment slot="footer">
-		<Button disabled={!rsvpRole} on:click={async () => {
-			if (!rsvpRole) return;
+		<Button disabled={!rsvp_role} on:click={async () => {
+			if (!rsvp_role) return;
 			
-            const { data: rsvpData, errors } = await getApollo().mutate({
+            const { data: rsvp_data, errors } = await get_apollo().mutate({
                 mutation: Mutations.RSVP_FOR_EVENT,
                 variables: {
                     eventId: event.id,
-                    rsvpId: rsvpRole
+                    rsvpId: rsvp_role
                 }
             });
 
-            if (!rsvpData?.success || (errors && errors.length > 0)) {
-                pushNotification({
+            if (!rsvp_data?.success || (errors && errors.length > 0)) {
+                push_notification({
                     type: "error",
                     message: "Failed to rsvp for event",
                 });
@@ -52,7 +52,7 @@
             }
 
             await invalidate(dependency);
-			pushNotification({
+			push_notification({
 				type: "success",
 				message: "RSVPed for event",
 			});

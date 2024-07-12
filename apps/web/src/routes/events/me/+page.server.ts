@@ -17,12 +17,12 @@ export const load = (async ({ locals, url, depends }) => {
 
     const query = url.searchParams.get("q");
     const events = data.events?.events ? data.events.events.filter(event => query ? event.name.toLowerCase().includes(query.toLowerCase()) : true) : [];
-    const eventsWithLocations = events.map(event => ({
+    const events_with_locations = events.map(event => ({
         ...event,
         location: event.location ? getLocations(event.location) : null
     }));
     
     return {
-        events: eventsWithLocations
+        events: events_with_locations
     };
 }) satisfies PageServerLoad;

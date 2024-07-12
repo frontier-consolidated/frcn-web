@@ -23,7 +23,7 @@ export function system(name: string, children: System["children"] = []) {
 	} satisfies System;
 }
 
-export function jumpPoint(name: string, children: JumpPoint["children"]) {
+export function jump_point(name: string, children: JumpPoint["children"]) {
 	return {
 		type: "JUMP_POINT",
 		name,
@@ -31,7 +31,7 @@ export function jumpPoint(name: string, children: JumpPoint["children"]) {
 	} satisfies JumpPoint;
 }
 
-export function lagrangePoint(name: string, children: LagrangePoint["children"]) {
+export function lagrange_point(name: string, children: LagrangePoint["children"]) {
 	return {
 		type: "LAGRANGE_POINT",
 		name,
@@ -39,7 +39,7 @@ export function lagrangePoint(name: string, children: LagrangePoint["children"])
 	} satisfies LagrangePoint;
 }
 
-export function astroidField(name: string) {
+export function astroid_field(name: string) {
 	return {
 		type: "ASTROID_FIELD",
 		name,
@@ -90,10 +90,10 @@ export function prison(name: string) {
 	} satisfies Prison;
 }
 
-export function raceTrack(name: string, inSpace: boolean = false) {
+export function race_track(name: string, space: boolean = false) {
 	return {
 		type: "RACE_TRACK",
-		inSpace,
+		inSpace: space,
 		name,
 	} satisfies RaceTrack;
 }
@@ -105,17 +105,17 @@ export function station(name: string) {
 	} satisfies Station;
 }
 
-export function commArray(name: string) {
+export function comm_array(name: string) {
 	return {
 		type: "COMM_ARRAY",
 		name,
 	} satisfies CommArray;
 }
 
-export function securityPost(name: string, inSpace: boolean = false) {
+export function security_post(name: string, space: boolean = false) {
 	return {
 		type: "SECURITY_POST",
-		inSpace,
+		inSpace: space,
 		name,
 	} satisfies SecurityPost;
 }

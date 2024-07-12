@@ -5,17 +5,17 @@
 	import { twMerge } from "tailwind-merge";
 
 	import { ConfirmationModal, Tooltip } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
-	import { rolesCache } from "$lib/stores/RolesCacheStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import { push_notification } from "$lib/stores/NotificationStore";
+	import { roles_cache } from "$lib/stores/RolesCacheStore";
 
-    export let role: (typeof $rolesCache)[number];
+    export let role: (typeof $roles_cache)[number];
     export let canMove: boolean = false;
     export let locked: boolean = false;
 
     $: internalCanMove = canMove && !locked;
 
-    let modalOpen = false;
+    let modal_open = false;
 </script>
 
 <TableBodyRow data-role-id={role.id} class={twMerge("group cursor-pointer dark:hover:bg-gray-600", internalCanMove ? undefined : "cannot-reorder")} on:click={() => {
@@ -45,7 +45,7 @@
                 </Tooltip>
             {/if}
             {role.name}
-            {#if $rolesCache.find(r => r.primary)?.id === role.id}
+            {#if $roles_cache.find(r => r.primary)?.id === role.id}
                 <Tooltip>
                     <Badge slot="icon" color="dark" class="ms-2">Default</Badge>
                     Default primary role
@@ -77,7 +77,7 @@
                     on:click={(ev) => {
                         ev.stopPropagation();
                         if (locked) return;
-                        modalOpen = true;
+                        modal_open = true;
                     }}
                 />
                 Delete
@@ -86,8 +86,8 @@
     </TableBodyCell>
 </TableBodyRow>
 
-<ConfirmationModal title="Delete role - {role.name}" bind:open={modalOpen} on:confirm={async () => {
-    const { errors } = await getApollo().mutate({
+<ConfirmationModal title="Delete role - {role.name}" bind:open={modal_open} on:confirm={async () => {
+    const { errors } = await get_apollo().mutate({
         mutation: Mutations.DELETE_ROLE,
         variables: {
             roleId: role.id
@@ -96,7 +96,7 @@
     });
 
     if (errors && errors.length > 0) {
-        pushNotification({
+        push_notification({
             type: "error",
             message: "Failed to delete role",
         });
@@ -104,7 +104,7 @@
         return;
     }
 
-    modalOpen = false;
+    modal_open = false;
 }}>
     <span>Are you sure you want to delete the <strong>{role.name}</strong> role? Once deleted it cannot be undone.</span>
 </ConfirmationModal>

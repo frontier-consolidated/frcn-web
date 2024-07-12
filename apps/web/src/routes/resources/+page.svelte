@@ -18,7 +18,7 @@
 	import tradeToolsIcon from "$lib/images/tool-icons/sc-trade-tools.webp";
 	import scorgToolsIcon from "$lib/images/tool-icons/scorgtools.svg";
 	import verseGuideIcon from "$lib/images/tool-icons/verseguide.svg";
-	import { getCurrentPage, getPageUrl, getPages } from "$lib/pageHelpers";
+	import { get_current_page, get_page_url, get_pages } from "$lib/pageHelpers";
 	import { user } from "$lib/stores/UserStore";
 
 
@@ -29,7 +29,7 @@
 	import ToolButton from "./ToolButton.svelte";
 
 	const search = queryParam("q");
-	const selectedTags = queryParam("tags", {
+	const selected_tags = queryParam("tags", {
 		decode(value) {
 			if (!value) return [];
 			return value.split(",");
@@ -39,7 +39,7 @@
 			return value.join(",");
 		},
 	});
-	let searchInput = $search;
+	let search_input = $search;
 
 	const tools = [
 		{ name: "SC Trade Tools", icon: tradeToolsIcon, href: "https://sc-trade.tools/" },
@@ -54,13 +54,13 @@
 
 	export let data: PageData;
 
-	let fileModal = { open: false, edit: null } as {
+	let file_modal_data = { open: false, edit: null } as {
 		open: boolean;
 		edit: ResourceFragmentFragment | null
 	};
 
-	$: currentPage = getCurrentPage($page.url.searchParams);
-	$: pages = getPages($page.url, currentPage, data.itemsPerPage, data.total);
+	$: currentPage = get_current_page($page.url.searchParams);
+	$: pages = get_pages($page.url, currentPage, data.itemsPerPage, data.total);
 </script>
 
 <Head
@@ -85,20 +85,20 @@
 		<div>
 			<div class="flex flex-col sm:flex-row gap-2">
 				<Search size="md" placeholder="Search by name" class="rounded flex-1 sm:w-96" 
-					bind:value={searchInput} 
+					bind:value={search_input} 
 					on:keydown={(e) => {
-						if (e.key === "Enter") search.set(searchInput);
+						if (e.key === "Enter") search.set(search_input);
 					}} 
 					on:blur={() => {
-						search.set(searchInput);
+						search.set(search_input);
 					}} 
 				/>
 				{#if hasOneOfPermissions($user.data?.permissions ?? 0, [Permission.CreateResources, Permission.ManageResources])}
 					<Button
 						class="self-end sm:shrink-0"
 						on:click={() => {
-							fileModal.edit = null;
-							fileModal.open = true;
+							file_modal_data.edit = null;
+							file_modal_data.open = true;
 						}}
 					>
 						<CirclePlusSolid class="me-2" tabindex="-1" /> Upload Resource
@@ -108,14 +108,14 @@
 			<div class="mt-4 flex flex-wrap gap-2">
 				{#each tags as tag}
 					<Button
-						color={$selectedTags?.includes(tag) ? "blue" : "dark"}
+						color={$selected_tags?.includes(tag) ? "blue" : "dark"}
 						size="xs"
 						class="px-6 shrink-0"
 						on:click={() => {
-							if ($selectedTags?.includes(tag)) {
-								selectedTags.update(tags => (tags ?? []).filter(t => t !== tag));
+							if ($selected_tags?.includes(tag)) {
+								selected_tags.update(tags => (tags ?? []).filter(t => t !== tag));
 							} else {
-								selectedTags.update(tags => [...(tags ?? []), tag]);
+								selected_tags.update(tags => [...(tags ?? []), tag]);
 							}
 						}}
 					>
@@ -127,18 +127,18 @@
 		<div class="flex flex-col items-center self-start w-full">
 			<div class="w-full grid min-[580px]:grid-cols-2 lg:grid-cols-3 gap-2 p-4">
 				{#each data.resources as resource}
-					<ResourceCard {selectedTags} {resource} on:edit={(ev) => {
-						fileModal.edit = ev.detail;
-						fileModal.open = true;
+					<ResourceCard selected_tags={selected_tags} {resource} on:edit={(ev) => {
+						file_modal_data.edit = ev.detail;
+						file_modal_data.open = true;
 					}} />
 				{/each}
 			</div>
 			<Pagination
 				{pages}
-				on:previous={() => { if (data.prevPage != null) goto(getPageUrl($page.url, data.prevPage + 1)); }}
-				on:next={() => { if (data.nextPage != null) goto(getPageUrl($page.url, data.nextPage + 1)); }}
+				on:previous={() => { if (data.prevPage != null) goto(get_page_url($page.url, data.prevPage + 1)); }}
+				on:next={() => { if (data.nextPage != null) goto(get_page_url($page.url, data.nextPage + 1)); }}
 			/>
 		</div>
 	</section>
 </div>
-<ResourceModal open={fileModal.open} data={fileModal.edit} />
+<ResourceModal open={file_modal_data.open} data={file_modal_data.edit} />

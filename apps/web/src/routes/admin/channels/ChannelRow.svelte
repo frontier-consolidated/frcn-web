@@ -4,16 +4,16 @@
 	import { EditOutline, ExclamationCircleSolid, TrashBinSolid } from "flowbite-svelte-icons";
 
 	import { ConfirmationModal, Tooltip } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
+	import { Mutations, get_apollo } from "$lib/graphql";
 	import { EventState } from "$lib/graphql/__generated__/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import type { PageData } from "./$types";
 
     export let channel: PageData["channels"][number];
 
-    let modalOpen = false;
-    let deleteRelatedVoiceChannels = false;
+    let modal_open = false;
+    let delete_related_voice_channels = false;
 </script>
 
 <TableBodyRow data-channel-id={channel.id} class="group cursor-pointer dark:hover:bg-gray-600" on:click={() => {
@@ -92,7 +92,7 @@
                     class="dark:text-white dark:hover:text-red-600 cursor-pointer"
                     on:click={(ev) => {
                         ev.stopPropagation();
-                        modalOpen = true;
+                        modal_open = true;
                     }}
                 />
                 Delete
@@ -101,18 +101,18 @@
     </TableBodyCell>
 </TableBodyRow>
 
-<ConfirmationModal title="Delete Channel Link - {channel.discord.name}" bind:open={modalOpen} on:confirm={async () => {
-    const { errors } = await getApollo().mutate({
+<ConfirmationModal title="Delete Channel Link - {channel.discord.name}" bind:open={modal_open} on:confirm={async () => {
+    const { errors } = await get_apollo().mutate({
         mutation: Mutations.DELETE_EVENT_CHANNEL,
         variables: {
             id: channel.id,
-            deleteVoiceChannels: deleteRelatedVoiceChannels
+            deleteVoiceChannels: delete_related_voice_channels
         },
         errorPolicy: "all",
     });
 
     if (errors && errors.length > 0) {
-        pushNotification({
+        push_notification({
             type: "error",
             message: "Failed to delete event channel",
         });
@@ -121,9 +121,9 @@
     }
 
     await invalidate("app:eventchannels");
-    modalOpen = false;
+    modal_open = false;
 }}>
     <p>Are you sure you want to delete the link to the <strong>{channel.discord.name}</strong> event channel? Once deleted it cannot be undone.</p>
     <p>Any scheduled events posted in this channel will have to be reposted in another event channel.</p>
-    <Toggle bind:checked={deleteRelatedVoiceChannels}>Delete Voice Channels</Toggle>
+    <Toggle bind:checked={delete_related_voice_channels}>Delete Voice Channels</Toggle>
 </ConfirmationModal>

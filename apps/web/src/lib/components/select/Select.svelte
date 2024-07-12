@@ -6,7 +6,7 @@
 
 	import type { Option } from "./types";
 
-	const searchClass = "flex-1 bg-transparent border-transparent w-full text-sm focus:outline-none";
+	const search_class = "flex-1 bg-transparent border-transparent w-full text-sm focus:outline-none";
 
 	// eslint-disable-next-line no-undef
 	type T = $$Generic;
@@ -26,15 +26,15 @@
 	let clazz: string = "";
 	export { clazz as class };
 
-	let searchInput: string = "";
-	let lastSearchInput: string = searchInput;
-	let dropdownOpen = false;
+	let search_input: string = "";
+	let last_search_input: string = search_input;
+	let dropdown_open = false;
 
 	type Value = (Multi extends true ? T[] : T | undefined);
 
 	export let value: Value = (multi ? [] : undefined) as Value;
 
-	function getSelectedOptions(multi: boolean, value: Value, options: Option<T, S>[]) {
+	function get_selected_options(multi: boolean, value: Value, options: Option<T, S>[]) {
 		if (multi) {
 			if (!Array.isArray(value)) return [];
 			const selected = options.filter(option => value.includes(option.value));
@@ -49,30 +49,30 @@
 		}
 	}
 
-	$: selectedOptions = getSelectedOptions(multi, value, options);
-	$: selectableOptions = (multi ? (!max || selectedOptions.length < max) ? options.filter(option => !(value as T[]).includes(option.value)) : [] : options).filter(option => !searchInput || option.name.toLowerCase().includes(searchInput));
+	$: selectedOptions = get_selected_options(multi, value, options);
+	$: selectableOptions = (multi ? (!max || selectedOptions.length < max) ? options.filter(option => !(value as T[]).includes(option.value)) : [] : options).filter(option => !search_input || option.name.toLowerCase().includes(search_input));
 
 
 	let input: HTMLInputElement | null = null;
-	function initInput(el: HTMLInputElement) {
+	function init_input(el: HTMLInputElement) {
 		input = el;
 	}
 	
 	$: {
-		if (searchInput != lastSearchInput) {
-			lastSearchInput = searchInput;
-			dropdownOpen = true;
-			if (searchInput && !multi) {
+		if (search_input != last_search_input) {
+			last_search_input = search_input;
+			dropdown_open = true;
+			if (search_input && !multi) {
 				value = undefined as Value;
 			}
 		}
 	}
-	$: if (search && input && dropdownOpen) input.focus();
+	$: if (search && input && dropdown_open) input.focus();
 
-	function selectOption(option: Option<T, S>) {
-		dropdownOpen = multi;
-		searchInput = "";
-		lastSearchInput = "";
+	function select_option(option: Option<T, S>) {
+		dropdown_open = multi;
+		search_input = "";
+		last_search_input = "";
 		if (multi) {
 			if (!Array.isArray(value)) return;
 			if (!value.includes(option.value)) {
@@ -86,13 +86,13 @@
 		if (multi && input) input.focus();
 	}
 
-	function removeOption(option: Option<T, S>) {
+	function remove_option(option: Option<T, S>) {
 		if (!multi || !Array.isArray(value)) return;
 		value = (value as T[]).filter(v => v !== option.value) as Value;
 		if (input) input.focus();
 	}
 
-	function onInputKeydown(ev: KeyboardEvent) {
+	function on_input_keydown(ev: KeyboardEvent) {
 		if (ev.key === "Backspace") {
 			if (multi && Array.isArray(value)) {
 				value = value.slice(0, -1) as Value;
@@ -125,26 +125,26 @@
 							<slot {option}>
 								<span>{option.name}</span>
 							</slot>
-							<button class="focus:outline-none whitespace-normal m-0.5 rounded-sm focus:ring-1 p-0.5 ms-1.5 -me-1.5" on:click={() => removeOption(option)}>
+							<button class="focus:outline-none whitespace-normal m-0.5 rounded-sm focus:ring-1 p-0.5 ms-1.5 -me-1.5" on:click={() => remove_option(option)}>
 								<span class="sr-only">Remove {option.name}</span>
 								<CloseSolid class="w-2.5 h-2.5" tabindex="-1" />
 							</button>
 						</Badge>
 					{/each}
 					{#if !disabled && search}
-						<input class={searchClass} use:initInput bind:value={searchInput} on:keydown={onInputKeydown} />
+						<input class={search_class} use:init_input bind:value={search_input} on:keydown={on_input_keydown} />
 					{/if}
 				{:else}
 					<slot option={selectedOptions[0]}>
 						<span>{selectedOptions[0].name}</span>
 					</slot>
 					{#if !disabled && search}
-						<input class={searchClass} use:initInput bind:value={searchInput} on:keydown={onInputKeydown} />
+						<input class={search_class} use:init_input bind:value={search_input} on:keydown={on_input_keydown} />
 					{/if}
 				{/if}
 			{:else}
 				{#if !disabled && search}
-					<input {placeholder} class={searchClass} use:initInput bind:value={searchInput} on:keydown={onInputKeydown} />
+					<input {placeholder} class={search_class} use:init_input bind:value={search_input} on:keydown={on_input_keydown} />
 				{:else}
 					<span>{placeholder}</span>
 				{/if}
@@ -158,7 +158,7 @@
 		<Dropdown
 			containerClass="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded border border-gray-300 dark:border-gray-600 divide-gray-100 dark:divide-gray-600 shadow-md divide-y z-50 w-full cursor-pointer overflow-y-scroll max-h-64"
 			class="rounded"
-			bind:open={dropdownOpen}
+			bind:open={dropdown_open}
 		>
 			<DropdownItem disabled defaultClass="font-medium py-2 px-4 text-sm text-gray-500"
 				>{placeholder}</DropdownItem
@@ -167,7 +167,7 @@
 				{#key option}
 					<DropdownItem
 						on:click={() => {
-							selectOption(option);
+							select_option(option);
 						}}
 					>
 						<slot {option}>

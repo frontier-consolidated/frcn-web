@@ -5,11 +5,11 @@
 
 	import JoinDiscordButton from "../JoinDiscordButton.svelte";
 
-    const notInGuild = browser ? queryParam("not_in_guild") : null;
+    const not_in_guild = browser ? queryParam("not_in_guild") : null;
 </script>
 
-<Modal id="join-guild-modal" open={!!$notInGuild} class="clip-opposite-8 rounded" bodyClass="space-y-2 px-10" size="xs" on:close={() => {
-    notInGuild?.set(null);
+<Modal id="join-guild-modal" open={!!$not_in_guild} class="clip-opposite-8 rounded" bodyClass="space-y-2 px-10" size="xs" on:close={() => {
+    not_in_guild?.set(null);
 }}>
     <span class="block font-medium text-xl text-center text-gray-800 dark:text-white">Join our Discord!</span>
     <p>

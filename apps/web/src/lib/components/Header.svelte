@@ -35,18 +35,18 @@
 
 	$: activeUrl = $page.url.pathname;
 
-	const aboutItems = [
+	const about_items = [
 		{ name: "COMMUNITY", href: "/about/community", description: "Try before you fly", icon: UsersSolid },
 		{ name: "ORGANISATION", href: "/about/org", description: "Be part of something great", icon: BuildingSolid },
 		{ name: "ACTIVITIES", href: "/about/activities", description: "The joy of multiplayer action", icon: MapPinAltSolid },
 		{ name: "MERCH STORE", href: MERCH_URL, target: "_blank", description: "Show your true colours", icon: BagSolid },
 	];
 
-	let aboutOpen = false;
+	let about_open = false;
 	
-	const activeClass =
+	const active_class =
 		"clip-br-4 lg:clip-none md:py-2 md:pe-4 md:ps-3 lg:p-0 text-white dark:text-white bg-primary-600 hover:bg-primary-500 dark:hover:bg-primary-700 lg:bg-transparent lg:hover:bg-transparent lg:dark:hover:bg-transparent lg:text-primary-700 lg:dark:text-white dark:bg-primary-600 lg:dark:bg-transparent";
-	const nonActiveClass = "clip-br-4 lg:clip-none md:py-2 md:pe-4 md:ps-3 lg:p-0 text-gray-800 bg-gray-300 hover:bg-gray-200 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 dark:text-gray-400 lg:dark:hover:text-white dark:bg-gray-800 lg:bg-transparent lg:dark:bg-transparent dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent";
+	const non_active_class = "clip-br-4 lg:clip-none md:py-2 md:pe-4 md:ps-3 lg:p-0 text-gray-800 bg-gray-300 hover:bg-gray-200 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 dark:text-gray-400 lg:dark:hover:text-white dark:bg-gray-800 lg:bg-transparent lg:dark:bg-transparent dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent";
 </script>
 
 <Navbar fluid let:NavContainer class="text-gray-800 bg-transparent dark:bg-transparent">
@@ -86,11 +86,11 @@
 			</a>
 			<NavHamburger class="md:block lg:hidden" />
 		</div>
-		<NavUl divClass="w-full lg:!block lg:w-auto" class="mr-auto order-1 lg:flex-1 lg:ml-4 lg:mr-4 2xl:ml-8" ulClass="flex flex-col gap-1 lg:py-4 mt-4 lg:!flex-row lg:flex-wrap lg:!gap-x-8 lg:!gap-y-2 rtl:justify-end lg:mt-0 lg:text-sm lg:font-medium border-none bg-transparent dark:bg-transparent" {activeUrl} {activeClass} {nonActiveClass}>
+		<NavUl divClass="w-full lg:!block lg:w-auto" class="mr-auto order-1 lg:flex-1 lg:ml-4 lg:mr-4 2xl:ml-8" ulClass="flex flex-col gap-1 lg:py-4 mt-4 lg:!flex-row lg:flex-wrap lg:!gap-x-8 lg:!gap-y-2 rtl:justify-end lg:mt-0 lg:text-sm lg:font-medium border-none bg-transparent dark:bg-transparent" {activeUrl} activeClass={active_class} nonActiveClass={non_active_class}>
 			{#if !$user.data}
 				<li class="sm:hidden">
 					<button
-						class={twMerge("block w-full py-2 pe-4 ps-3 md:p-0 rounded md:border-0", activeClass)}
+						class={twMerge("block w-full py-2 pe-4 ps-3 md:p-0 rounded md:border-0", active_class)}
 						on:click={() => {
 							if ($user.loading) return;
 							login().catch(console.error);
@@ -106,16 +106,16 @@
 			<ScreenQuery size="lg" let:matches>
 				{#if !browser || matches}
 					<NavLi
-						class={twMerge("flex gap-2 items-center cursor-pointer", activeUrl.startsWith("/about") ? activeClass : undefined)}
+						class={twMerge("flex gap-2 items-center cursor-pointer", activeUrl.startsWith("/about") ? active_class : undefined)}
 					>
-						<InfoCircleSolid size="sm" tabindex="-1" />ABOUT US<ChevronDownOutline class={twMerge("transition-all w-3 h-3", aboutOpen && "rotate-180")} tabindex="-1" />
+						<InfoCircleSolid size="sm" tabindex="-1" />ABOUT US<ChevronDownOutline class={twMerge("transition-all w-3 h-3", about_open && "rotate-180")} tabindex="-1" />
 					</NavLi>
 					{#if browser}
 						<MegaMenu full offset={26}
 							class="bg-gray-100/60 dark:bg-slate-900/80 pb-4 backdrop-blur-xl"
 							ulClass="grid grid-flow-row gap-y-4 md:gap-x-8 auto-col-max auto-row-max"
-							items={aboutItems}
-							bind:open={aboutOpen}
+							items={about_items}
+							bind:open={about_open}
 							let:item
 						>
 							<a href={item.href} target={item.target} class="block transition p-4 border-l border-gray-700 dark:border-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600 h-full clip-r-4">
@@ -130,7 +130,7 @@
 						</MegaMenu>
 					{/if}
 				{:else}
-					{#each aboutItems as item}
+					{#each about_items as item}
 						<NavLi href={item.href} target={item.target} class="flex gap-2 items-center">
 							<svelte:component this={item.icon} size="sm" tabindex="-1" />{item.name}
 							{#if item.target}

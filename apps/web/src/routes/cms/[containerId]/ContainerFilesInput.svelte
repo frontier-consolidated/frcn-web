@@ -6,54 +6,54 @@
 
 	import { Routes, api } from "$lib/api";
 	import { Button, FieldValidator, ConfirmationModal, ImageInput } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import ContainerFileConfig from "./ContainerFileConfig.svelte";
 
     export let container: CmsContainer;
     export let validator: FieldValidator;
 
-    let openUploadModal = false;
-    let deleteFile: CmsFile | null = null;
+    let upload_modal_open = false;
+    let delete_file: CmsFile | null = null;
 
     $: files = container.getFiles();
 
-    let changeFn = getContext<() => void>("containerchange");
+    let change_fn = getContext<() => void>("containerchange");
 
-    async function uploadFile(file: File) {
-        pushNotification({
+    async function upload_file(file: File) {
+        push_notification({
 			type: "info",
 			message: "Uploading file...",
 		});
 
-		const formData = new FormData();
-		formData.append("file", file);
+		const form_data = new FormData();
+		form_data.append("file", file);
         
 		try {
-			const response = await api.post(Routes.upload("cms_container", container.id), formData, {
+			const response = await api.post(Routes.upload("cms_container", container.id), form_data, {
 				headers: {
 					"Content-Type": "multipart/form-data"
 				},
 			});
 
-            const newFile = new CmsFile({
+            const new_file = new CmsFile({
                 id: response.data.id,
                 fileName: response.data.fileName,
                 fileSizeKb: response.data.fileSizeKb,
                 contentType: response.data.contentType,
                 fileSrc: response.data.previewUrl,
             });
-            container.pushFile(newFile);
+            container.pushFile(new_file);
             files = container.getFiles();
-            changeFn();
+            change_fn();
             
-            pushNotification({
+            push_notification({
                 type: "success",
                 message: "Successfully uploaded!",
             });
 		} catch (err) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to upload file",
 			});
@@ -64,7 +64,7 @@
 
 <section class="flex flex-col gap-2 p-2 rounded border border-gray-200 dark:border-gray-800">
     <div class="flex justify-end gap-2">
-        <Button size="sm" on:click={() => (openUploadModal = true)}>
+        <Button size="sm" on:click={() => (upload_modal_open = true)}>
             Upload File
         </Button>
     </div>
@@ -83,7 +83,7 @@
                         <span class="ml-auto text-gray-500 text-xs">{file.sizeKb}KB</span>
                         <TrashBinSolid class="text-black hover:text-red-500 dark:text-white dark:hover:text-red-600" on:click={(e) => {
                             e.stopPropagation();
-                            deleteFile = file;
+                            delete_file = file;
                         }} />
                         <div class="self-stretch w-px ml-2 bg-gray-300 dark:bg-gray-600"></div>
                     </div>
@@ -98,13 +98,13 @@
     {/if}
 </section>
 
-<Modal title="Upload file" open={openUploadModal}>
+<Modal title="Upload file" open={upload_modal_open}>
     <div>
         <Label for="upload-file-{container.id}" class="mb-2">Image</Label>
         <ImageInput id="upload-file-{container.id}" name="upload-file" class="max-w-none"
             upload={async (file) => {
-                await uploadFile(file);
-                openUploadModal = false;
+                await upload_file(file);
+                upload_modal_open = false;
             }}
         />
         <Helper>
@@ -113,19 +113,19 @@
     </div>
 </Modal>
 
-<ConfirmationModal title="Delete file" open={!!deleteFile} on:close={() => (deleteFile = null)} on:confirm={async () => {
-    if (!deleteFile) return;
+<ConfirmationModal title="Delete file" open={!!delete_file} on:close={() => (delete_file = null)} on:confirm={async () => {
+    if (!delete_file) return;
     
-    const { errors } = await getApollo().mutate({
+    const { errors } = await get_apollo().mutate({
         mutation: Mutations.DELETE_CONTENT_CONTAINER_FILE,
         variables: {
-            id: deleteFile.id
+            id: delete_file.id
         },
 		errorPolicy: "all",
     });
 
     if (errors && errors.length > 0) {
-        pushNotification({
+        push_notification({
             type: "error",
             message: "Failed to delete container",
         });
@@ -133,10 +133,10 @@
         return;
     }
 
-    container.removeFile(deleteFile);
-    deleteFile = null;
+    container.removeFile(delete_file);
+    delete_file = null;
     files = container.getFiles();
 }}>
-    <span class="block text-gray-500 text-xs">File Id: {deleteFile?.id}</span>
-    <span>Are you sure you want to delete the <strong>{deleteFile?.name}</strong> file? Once deleted it cannot be undone.</span>
+    <span class="block text-gray-500 text-xs">File Id: {delete_file?.id}</span>
+    <span>Are you sure you want to delete the <strong>{delete_file?.name}</strong> file? Once deleted it cannot be undone.</span>
 </ConfirmationModal>

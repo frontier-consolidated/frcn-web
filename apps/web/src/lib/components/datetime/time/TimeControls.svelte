@@ -7,28 +7,28 @@
 
 	export let selectedDate: Date | null;
 
-	let selectedHour: number = 0;
-	let selectedMinute: number = 0;
+	let selected_hour: number = 0;
+	let selected_minute: number = 0;
 
 	function pad(number: number) {
 		return number.toString().padStart(2, "0");
 	}
 
-	let inputHour = pad(selectedHour);
-	let inputMinute = pad(selectedMinute);
+	let input_hour = pad(selected_hour);
+	let input_minute = pad(selected_minute);
 
-	let hoursDiv: HTMLElement | null = null;
-	let minutesDiv: HTMLElement | null = null;
-	function scrollToHour(hour: number, instant?: boolean) {
-		const el = hoursDiv?.querySelector<HTMLElement>(`[data-hour="${hour}"]`);
+	let hours_div: HTMLElement | null = null;
+	let minutes_div: HTMLElement | null = null;
+	function scroll_to_hour(hour: number, instant?: boolean) {
+		const el = hours_div?.querySelector<HTMLElement>(`[data-hour="${hour}"]`);
 		if (el)
 			el.scrollIntoView({
 				behavior: instant ? "instant" : "smooth",
 				block: "center",
 			});
 	}
-	function scrollToMinute(minute: number, instant?: boolean) {
-		const el = minutesDiv?.querySelector<HTMLElement>(`[data-minute="${minute}"]`);
+	function scroll_to_minute(minute: number, instant?: boolean) {
+		const el = minutes_div?.querySelector<HTMLElement>(`[data-minute="${minute}"]`);
 		if (el)
 			el.scrollIntoView({
 				behavior: instant ? "instant" : "smooth",
@@ -36,61 +36,61 @@
 			});
 	}
 
-	function initHours(el: HTMLElement) {
-		hoursDiv = el;
-		scrollToHour(selectedHour, true);
+	function init_hours(el: HTMLElement) {
+		hours_div = el;
+		scroll_to_hour(selected_hour, true);
 	}
-	function initMinutes(el: HTMLElement) {
-		minutesDiv = el;
-		scrollToMinute(selectedMinute, true);
-	}
-
-	function setHour(hour: number) {
-		inputHour = pad(hour);
-		selectedHour = hour;
-
-		scrollToHour(hour);
-
-		const newDate = new Date(selectedDate!);
-		newDate.setHours(hour);
-		selectedDate = newDate;
+	function init_minutes(el: HTMLElement) {
+		minutes_div = el;
+		scroll_to_minute(selected_minute, true);
 	}
 
-	function setMinute(minute: number) {
-		inputMinute = pad(minute);
-		selectedMinute = minute;
+	function set_hour(hour: number) {
+		input_hour = pad(hour);
+		selected_hour = hour;
 
-		scrollToMinute(minute);
+		scroll_to_hour(hour);
 
-		const newDate = new Date(selectedDate!);
-		newDate.setMinutes(minute);
-		selectedDate = newDate;
+		const new_date = new Date(selectedDate!);
+		new_date.setHours(hour);
+		selectedDate = new_date;
+	}
+
+	function set_minute(minute: number) {
+		input_minute = pad(minute);
+		selected_minute = minute;
+
+		scroll_to_minute(minute);
+
+		const new_date = new Date(selectedDate!);
+		new_date.setMinutes(minute);
+		selectedDate = new_date;
 	}
 
 	$: {
 		selectedDate ??= new Date();
-		setHour(selectedDate.getHours() ?? 0);
-		setMinute(selectedDate.getMinutes() ?? 0);
+		set_hour(selectedDate.getHours() ?? 0);
+		set_minute(selectedDate.getMinutes() ?? 0);
 	}
 
 	$: {
-		const hour = Math.max(0, Math.min(23, Number(inputHour)));
-		setHour(hour.valueOf());
+		const hour = Math.max(0, Math.min(23, Number(input_hour)));
+		set_hour(hour.valueOf());
 	}
 	$: {
-		const minute = Math.max(0, Math.min(59, Number(inputMinute)));
-		setMinute(minute.valueOf());
+		const minute = Math.max(0, Math.min(59, Number(input_minute)));
+		set_minute(minute.valueOf());
 	}
 
-	const spanClass = "block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer";
-	const activeClass = "bg-primary-600 dark:hover:bg-primary-700";
-	const inactiveClass = "dark:hover:bg-gray-600";
+	const span_class = "block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer";
+	const active_class = "bg-primary-600 dark:hover:bg-primary-700";
+	const inactive_class = "dark:hover:bg-gray-600";
 </script>
 
 <div>
 	<div class="flex justify-between items-center mb-2 p-1">
 		<Input
-			bind:value={inputHour}
+			bind:value={input_hour}
 			class="w-14 text-center no-inner-spin rounded"
 			type="number"
 			min="0"
@@ -98,7 +98,7 @@
 		/>
 		<span class="font-bold">:</span>
 		<Input
-			bind:value={inputMinute}
+			bind:value={input_minute}
 			class="w-14 text-center no-inner-spin rounded"
 			type="number"
 			min="0"
@@ -106,32 +106,32 @@
 		/>
 	</div>
 	<div class="grid grid-cols-2 h-56 w-32">
-		<div use:initHours class="overflow-y-scroll no-scrollbar">
+		<div use:init_hours class="overflow-y-scroll no-scrollbar">
 			{#each hours as hour}
 				<span
 					role="button"
 					tabindex="0"
 					data-hour={hour}
-					class={twMerge(spanClass, hour === selectedHour ? activeClass : inactiveClass)}
-					on:click={() => setHour(hour)}
+					class={twMerge(span_class, hour === selected_hour ? active_class : inactive_class)}
+					on:click={() => set_hour(hour)}
 					on:keydown={(ev) => {
-						if (ev.key == "Enter") setHour(hour);
+						if (ev.key == "Enter") set_hour(hour);
 					}}
 				>
 					{pad(hour)}
 				</span>
 			{/each}
 		</div>
-		<div use:initMinutes class="overflow-y-scroll no-scrollbar">
+		<div use:init_minutes class="overflow-y-scroll no-scrollbar">
 			{#each minutes as minute}
 				<span
 					role="button"
 					tabindex="0"
 					data-minute={minute}
-					class={twMerge(spanClass, minute === selectedMinute ? activeClass : inactiveClass)}
-					on:click={() => setMinute(minute)}
+					class={twMerge(span_class, minute === selected_minute ? active_class : inactive_class)}
+					on:click={() => set_minute(minute)}
 					on:keydown={(ev) => {
-						if (ev.key == "Enter") setMinute(minute);
+						if (ev.key == "Enter") set_minute(minute);
 					}}
 				>
 					{pad(minute)}

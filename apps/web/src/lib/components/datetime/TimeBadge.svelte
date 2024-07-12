@@ -9,16 +9,16 @@
 	export let format: "duration" | "datetime" | "datetime-relative" = "datetime";
 	export let value: number;
 	
-	function formatTime(value: number) {
+	function format_time(value: number) {
 		let datetime: string;
 		let text: string;
-		let popoverText: string;
+		let popover_text: string;
 
 		switch (format) {
 			case "duration":
 				{
 					text = dates.toDuration(value);
-					popoverText = text;
+					popover_text = text;
 
 					const { hours, minutes, seconds } = dates.toDurationComponents(value);
 					datetime = `PT${hours}H${minutes}M${seconds}S`;
@@ -29,17 +29,17 @@
 					const now = new Date();
 					const date = new Date(value);
 
-					const hoursMinutes = new Intl.DateTimeFormat($locale!, {
+					const hours_minutes = new Intl.DateTimeFormat($locale!, {
 						hour: "2-digit",
 						minute: "2-digit",
 					}).format(date);
 
 					if (dates.isToday(date)) {
-						text = `Today ${hoursMinutes}`;
+						text = `Today ${hours_minutes}`;
 					} else if (dates.isTomorrow(date)) {
-						text = `Tomorrow ${hoursMinutes}`;
+						text = `Tomorrow ${hours_minutes}`;
 					} else if (dates.isYesterday(date)) {
-						text = `Yesterday ${hoursMinutes}`;
+						text = `Yesterday ${hours_minutes}`;
 					} else if (now > date) {
 						text = new Intl.DateTimeFormat($locale!, {
 							dateStyle: "short",
@@ -52,7 +52,7 @@
 						}).format(date);
 					}
 
-					popoverText = date.toString();
+					popover_text = date.toString();
 					datetime = date.toISOString();
 				}
 				break;
@@ -61,7 +61,7 @@
 					const now = new Date();
 					const date = new Date(value);
 
-					const hoursMinutes = new Intl.DateTimeFormat($locale!, {
+					const hours_minutes = new Intl.DateTimeFormat($locale!, {
 						hour: "2-digit",
 						minute: "2-digit",
 					}).format(date);
@@ -74,11 +74,11 @@
 					}
 
 					if (dates.isToday(date)) {
-						text = `Today ${hoursMinutes} (${relative})`;
+						text = `Today ${hours_minutes} (${relative})`;
 					} else if (dates.isTomorrow(date)) {
-						text = `Tomorrow ${hoursMinutes} (${relative})`;
+						text = `Tomorrow ${hours_minutes} (${relative})`;
 					} else if (dates.isYesterday(date)) {
-						text = `Yesterday ${hoursMinutes}`;
+						text = `Yesterday ${hours_minutes}`;
 					} else if (now > date) {
 						text = new Intl.DateTimeFormat($locale!, {
 							dateStyle: "short",
@@ -91,7 +91,7 @@
 						}).format(date);
 					}
 
-					popoverText = date.toString();
+					popover_text = date.toString();
 					datetime = date.toISOString();
 				}
 				break;
@@ -100,18 +100,18 @@
 		return {
 			datetime,
 			text,
-			popoverText
+			popover_text
 		};
 	}
 
-	let { datetime, text, popoverText } = formatTime(value);
+	let { datetime, text, popover_text } = format_time(value);
 
 	onMount(() => {
 		const interval = setInterval(() => {
-			const updated = formatTime(value);
+			const updated = format_time(value);
 			datetime = updated.datetime;
 			text = updated.text;
-			popoverText = updated.popoverText;
+			popover_text = updated.popover_text;
 		}, 15000);
 
 		return () => clearInterval(interval);
@@ -121,4 +121,4 @@
 <Badge {id} color="none" {...$$restProps} class={twMerge("tabular-nums dark:text-gray-300", $$restProps.class)}>
 	<time {datetime}>{text}</time>
 </Badge>
-<Popover defaultClass="px-2 py-1 text-xs" triggeredBy="#{id}">{popoverText}</Popover>
+<Popover defaultClass="px-2 py-1 text-xs" triggeredBy="#{id}">{popover_text}</Popover>

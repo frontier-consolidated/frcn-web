@@ -4,22 +4,22 @@
 	import { queryParam } from "sveltekit-search-params";
 
 	import { Routes, api } from "$lib/api";
-	import { cookieConsentModal } from "$lib/stores/CookieConsentModalStore";
+	import { cookie_consent_modal } from "$lib/stores/CookieConsentModalStore";
 
 	import Button from "../Button.svelte";
 
-    const missingConsent = browser ? queryParam("missing_consent") : null;
+    const missing_consent = browser ? queryParam("missing_consent") : null;
 
     function cleanup() {
-        if ($missingConsent) {
-            missingConsent!.set(null);
+        if ($missing_consent) {
+            missing_consent!.set(null);
         }
-        if ($cookieConsentModal) {
-            cookieConsentModal.set(false);
+        if ($cookie_consent_modal) {
+            cookie_consent_modal.set(false);
         }
     }
 
-    async function updateConsent(action: "reject" | "necessary" | "all") {
+    async function update_consent(action: "reject" | "necessary" | "all") {
         await api.put(Routes.consent(), {
             action
         });
@@ -28,7 +28,7 @@
     }
 </script>
 
-<Modal id="cookie-consent-modal" dismissable={!$missingConsent} outsideclose={!$missingConsent} open={!!$missingConsent || $cookieConsentModal} placement="bottom-center" class="clip-opposite-8 rounded" bodyClass="space-y-2 px-10" size="lg" on:close={() => {
+<Modal id="cookie-consent-modal" dismissable={!$missing_consent} outsideclose={!$missing_consent} open={!!$missing_consent || $cookie_consent_modal} placement="bottom-center" class="clip-opposite-8 rounded" bodyClass="space-y-2 px-10" size="lg" on:close={() => {
     cleanup();
 }}>
     <span class="font-medium text-xl text-gray-800 dark:text-white">We use cookies</span>
@@ -39,17 +39,17 @@
     </p>
     <div class="flex flex-wrap gap-4 pt-4">
         <Button class="w-full md:flex-1" on:click={() => {
-            updateConsent("all").catch(console.error);
+            update_consent("all").catch(console.error);
         }}>
             Accept all cookies
         </Button>
         <Button class="w-full md:flex-1" on:click={() => {
-            updateConsent("necessary").catch(console.error);
+            update_consent("necessary").catch(console.error);
         }}>
             Necessary cookies only
         </Button>
         <Button outline outlineBgColor="bg-white dark:bg-gray-800" class="w-full md:flex-1" on:click={() => {
-            updateConsent("reject").catch(console.error);
+            update_consent("reject").catch(console.error);
         }}>
             Reject all cookies
         </Button>

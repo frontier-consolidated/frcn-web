@@ -40,33 +40,33 @@ export function permissions(masks: Permission[] = []) {
 	return permission;
 }
 
-export function hasAdmin(permissions: number) {
+export function has_admin(permissions: number) {
 	return (permissions & Permission.Admin) > 0;
 }
 
-export function hasPermission(permissions: number, permission: Permission) {
-	if (hasAdmin(permissions)) return true;
+export function has_permission(permissions: number, permission: Permission) {
+	if (has_admin(permissions)) return true;
 	return (permissions & permission) > 0;
 }
 
-export function hasOneOfPermissions(permissions: number, oneOf: Permission[]) {
-	for (const permission of oneOf) {
-		if (hasPermission(permissions, permission)) return true;
+export function has_one_of_permissions(permissions: number, masks: Permission[]) {
+	for (const permission of masks) {
+		if (has_permission(permissions, permission)) return true;
 	}
 	return false;
 }
 
-export function hasAllOfPermissions(permissions: number, allOf: Permission[]) {
-	for (const permission of allOf) {
-		if (!hasPermission(permissions, permission)) return false;
+export function has_all_of_permissions(permissions: number, masks: Permission[]) {
+	for (const permission of masks) {
+		if (!has_permission(permissions, permission)) return false;
 	}
 	return true;
 }
 
-export function hasOwnedObjectPermission({ user, owner, required, override }: { user: { id?: string, permissions: number } | null | undefined, owner: { id?: string } | null | undefined, required: Permission, override?: Permission }) {
+export function has_owned_object_permission({ user, owner, required, override }: { user: { id?: string, permissions: number } | null | undefined, owner: { id?: string } | null | undefined, required: Permission, override?: Permission }) {
 	if (!user) return false;
-	const isOwner = !!user.id && !!owner?.id && user.id === owner?.id;
+	const is_owner = !!user.id && !!owner?.id && user.id === owner?.id;
 
-	if (isOwner && hasPermission(user.permissions, required)) return true;
-	return override && hasPermission(user.permissions, override);
+	if (is_owner && has_permission(user.permissions, required)) return true;
+	return override && has_permission(user.permissions, override);
 }

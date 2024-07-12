@@ -5,8 +5,8 @@
 
 	import { transformContainer } from "$lib/cms/transformContainer";
 	import { Button, Field, FieldValidator, Head, Hr } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
     import type { PageData } from "./$types";
 
@@ -15,35 +15,35 @@
     export let data: PageData;
     $: indexes = data.indexes.map(i => transformContainer<IndexContainer>(i));
 
-    function createModalData() {
+    function create_modal_data() {
         return {
             identifier: ""
         };
     }
 
-    let openModal = false;
-    let modalData = createModalData();
+    let modal_open = false;
+    let modal_data = create_modal_data();
 
-    async function createIndex() {
+    async function create_index() {
         if (!validator.validate()) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Check your inputs",
 			});
 			return;
 		}
 
-        const { errors } = await getApollo().mutate({
+        const { errors } = await get_apollo().mutate({
 			mutation: Mutations.CREATE_CONTENT_CONTAINER,
 			variables: {
 				type: CMSContainerType.Index,
-				identifier: modalData.identifier
+				identifier: modal_data.identifier
 			},
 			errorPolicy: "all",
 		});
 
 		if (errors && errors.length > 0) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to create index",
 			});
@@ -51,9 +51,9 @@
 			return;
 		}
 
-		modalData = createModalData();
+		modal_data = create_modal_data();
         await invalidate("cms:indexes");
-        openModal = false;
+        modal_open = false;
     }
 </script>
 
@@ -71,18 +71,18 @@
             <span class="text-gray-500 text-xs">{index.id}</span>
         </a>
         {/each}
-        <Button class="mt-4" on:click={() => (openModal = true)}>
+        <Button class="mt-4" on:click={() => (modal_open = true)}>
             Create Index
         </Button>
     </div>
 </div>
 
-<Modal title="Create Index" bind:open={openModal} dismissable>
+<Modal title="Create Index" bind:open={modal_open} dismissable>
 	<div class="flex flex-col gap-4 p-4">
 		<Field
 			{validator}
 			for="cms-index-identifier"
-			value={modalData.identifier}
+			value={modal_data.identifier}
 			required
 		>
 			<Label for="cms-index-identifier" class="mb-2">Identifier</Label>
@@ -94,20 +94,20 @@
 				placeholder="/"
 				required
                 maxlength="255"
-				bind:value={modalData.identifier}
+				bind:value={modal_data.identifier}
 			/>
 		</Field>
 
 	</div>
 	<svelte:fragment slot="footer">
         <Button on:click={() => {
-            createIndex().catch(console.error);
+            create_index().catch(console.error);
         }}>
             Create
         </Button>
         <Button color="alternative" on:click={() => {
-            openModal = false;
-            modalData = createModalData();
+            modal_open = false;
+            modal_data = create_modal_data();
         }}>
             Cancel
         </Button>

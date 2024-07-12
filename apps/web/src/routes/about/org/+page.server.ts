@@ -1,18 +1,18 @@
 
 import { building } from "$app/environment";
 
-import { getCmsClient } from "$lib/server/cms";
+import { get_cms_client } from "$lib/server/cms";
 
 import type { PageServerLoad } from "./$types";
 
-const cmsIdentifier = "/about/org";
+const cms_identifier = "/about/org";
 
 export const prerender = "auto";
 export const config = { isr: true };
 
 export const load = (async () => {
     if (building) return {};
-    const index = await getCmsClient().getIndex(cmsIdentifier);
+    const index = await get_cms_client().getIndex(cms_identifier);
 
     return {
         index,

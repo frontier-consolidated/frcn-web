@@ -1,7 +1,7 @@
 import { CMSContainerType } from "@frcn/cms";
 
 import type { ContentContainerData } from "$lib/cms/transformContainer";
-import { createApolloClient, Queries, type TypedApolloClient } from "$lib/graphql";
+import { create_apollo_client, Queries, type TypedApolloClient } from "$lib/graphql";
 
 import { env } from "$env/dynamic/private";
 
@@ -75,8 +75,8 @@ export class CmsClient {
     }
 }
 
-export function createCmsClient() {
-    const apollo = createApolloClient({
+export function create_cms_client() {
+    const apollo = create_apollo_client({
         "x-frcn-access-key": env.LOCAL_ACCESS_TOKEN ?? env.CMS_ACCESS_KEY
     });
 

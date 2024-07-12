@@ -4,7 +4,7 @@
 
 	import Hr from "./Hr.svelte";
 
-    const permissionDefs = [
+    const permission_defs = [
         {
             permission: Permission.CreateEvents,
             name: "Create Events",
@@ -55,7 +55,7 @@
     export let permissions: number;
     export let disableToggles: Partial<Record<Permission, boolean>> = {};
 
-    function togglePermission(ev: Event, permission: Permission) {
+    function toggle_permission(ev: Event, permission: Permission) {
 		const target = (ev.target) as HTMLInputElement;
 		if (target.checked) {
 			permissions |= permission;
@@ -66,14 +66,14 @@
 </script>
 
 <div class="flex flex-col gap-4 p-4 mt-2" {...$$restProps}>
-    {#each permissionDefs as info, i}
+    {#each permission_defs as info, i}
         {@const disabled = disableToggles[info.permission]}
         {@const checked = (permissions & info.permission) > 0}
         <div>
             <Toggle
                 {disabled}
                 {checked}
-                on:change={(ev) => togglePermission(ev, info.permission)}
+                on:change={(ev) => toggle_permission(ev, info.permission)}
             >
                 {info.name}
                 <slot {info} {checked} {disabled} />
@@ -82,7 +82,7 @@
                 {info.help}
             </Helper>
         </div>
-        {#if i + 1 < Object.values(permissionDefs).length}
+        {#if i + 1 < Object.values(permission_defs).length}
             <Hr />
         {/if}
     {/each}

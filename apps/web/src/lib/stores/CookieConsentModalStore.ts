@@ -1,3 +1,3 @@
 import { writable } from "svelte/store";
 
-export const cookieConsentModal = writable<boolean>(false);
+export const cookie_consent_modal = writable<boolean>(false);

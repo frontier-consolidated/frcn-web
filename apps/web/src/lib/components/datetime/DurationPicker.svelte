@@ -10,31 +10,31 @@
 	export let title: string | undefined = undefined;
 	export let value: number | null = null;
 
-	let dropdownOpen = false;
+	let dropdown_open = false;
 
-	let inputValue: string = "";
+	let input_value: string = "";
 	$: {
-		if (inputValue && (!value || inputValue != dates.toDuration(value))) {
-			let duration = Number(inputValue);
+		if (input_value && (!value || input_value != dates.toDuration(value))) {
+			let duration = Number(input_value);
 			if (isNaN(duration)) {
-				inputValue = dates.toDuration(value ?? 0);
+				input_value = dates.toDuration(value ?? 0);
 			} else {
 				if (duration < 1000) duration *= 1000;
 
 				value = duration;
-				inputValue = dates.toDuration(duration);
+				input_value = dates.toDuration(duration);
 			}
 		} else if (value) {
-			inputValue = dates.toDuration(value);
+			input_value = dates.toDuration(value);
 		}
 	}
 </script>
 
-<Input bind:value={inputValue} {id} placeholder="Select duration" {...$$restProps} class={twMerge("rounded", $$restProps.class)}>
+<Input bind:value={input_value} {id} placeholder="Select duration" {...$$restProps} class={twMerge("rounded", $$restProps.class)}>
 	<ClockSolid slot="left" size="sm" class="ms-1" tabindex="-1" />
 </Input>
 <Dropdown
-	bind:open={dropdownOpen}
+	bind:open={dropdown_open}
 	containerClass="divide-y z-50 rounded"
 	class="border rounded border-gray-300 dark:border-gray-600 p-4"
 >

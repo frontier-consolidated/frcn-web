@@ -5,26 +5,25 @@
 	import Button from "../Button.svelte";
 	import type { Option } from "../select/types";
 
-
-	const rootOptions = locations.map((location) => ({
+	const root_options = locations.map((location) => ({
 		name: location.name,
 		value: location,
 	}));
 
 	export let value: AnyLocation[] = [];
 	export let disabled = false;
-	let liOptions: Option<AnyLocation>[][] = [rootOptions];
+	let li_options: Option<AnyLocation>[][] = [root_options];
 
-	let canAdd = false;
+	let can_add = false;
 
 	$: {
-		if (value.length > liOptions.length && value.every((loc) => !!loc)) {
-			const refreshedOptions: Option<AnyLocation>[][] = [rootOptions];
+		if (value.length > li_options.length && value.every((loc) => !!loc)) {
+			const refreshed_options: Option<AnyLocation>[][] = [root_options];
 			for (const loc of value.slice(0, -1)) {
 				const children = getChildren(loc);
 				if (!children) break;
 
-				refreshedOptions.push(
+				refreshed_options.push(
 					children.map((location) => ({
 						name: location.name,
 						value: location,
@@ -32,44 +31,44 @@
 				);
 			}
 
-			value = value.slice(0, refreshedOptions.length);
-			liOptions = refreshedOptions;
+			value = value.slice(0, refreshed_options.length);
+			li_options = refreshed_options;
 		}
 
 		if (value[0] == undefined && value.length > 1) {
-			liOptions = [rootOptions];
+			li_options = [root_options];
 			value = [value[0]];
 		}
 
-		const lastValue = value.slice(-1)[0];
-		canAdd = lastValue && "children" in lastValue && value.length == liOptions.length;
+		const last_value = value.slice(-1)[0];
+		can_add = last_value && "children" in last_value && value.length == li_options.length;
 	}
 </script>
 
 <ul class="flex flex-col gap-2" {...$$restProps}>
-	{#each liOptions as options, i}
+	{#each li_options as options, i}
 		<LocationSelectLi
 			{options}
 			deletable={i > 0}
-			disabled={disabled || i + 1 != liOptions.length}
+			disabled={disabled || i + 1 != li_options.length}
 			bind:value={value[i]}
 			on:delete={() => {
-				if (i + 1 != liOptions.length) return;
-				liOptions = [...liOptions.slice(0, -1)];
-				value = [...value.slice(0, liOptions.length)];
+				if (i + 1 != li_options.length) return;
+				li_options = [...li_options.slice(0, -1)];
+				value = [...value.slice(0, li_options.length)];
 			}}
 		/>
 	{/each}
-	{#if canAdd}
+	{#if can_add}
 		<Button
 			{disabled}
 			on:click={() => {
-				const lastValue = value.slice(-1)[0];
-				const children = getChildren(lastValue);
+				const last_value = value.slice(-1)[0];
+				const children = getChildren(last_value);
 				if (!children) return;
 
-				liOptions = [
-					...liOptions,
+				li_options = [
+					...li_options,
 					children.map((location) => ({
 						name: location.name,
 						value: location,

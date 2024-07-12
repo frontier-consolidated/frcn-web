@@ -4,14 +4,14 @@
 	import { EditOutline, TrashBinSolid } from "flowbite-svelte-icons";
 
 	import { ConfirmationModal, Tooltip } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import type { PageData } from "./$types";
 
     export let accessKey: PageData["keys"][number];
 
-    let modalOpen = false;
+    let modal_open = false;
 </script>
 
 <TableBodyRow data-key-id={accessKey.id} class="group cursor-pointer dark:hover:bg-gray-600" on:click={() => {
@@ -40,7 +40,7 @@
                     class="dark:text-white dark:hover:text-red-600 cursor-pointer"
                     on:click={(ev) => {
                         ev.stopPropagation();
-                        modalOpen = true;
+                        modal_open = true;
                     }}
                 />
                 Delete
@@ -49,8 +49,8 @@
     </TableBodyCell>
 </TableBodyRow>
 
-<ConfirmationModal title="Delete Access Key - {accessKey.id}" bind:open={modalOpen} on:confirm={async () => {
-    const { errors } = await getApollo().mutate({
+<ConfirmationModal title="Delete Access Key - {accessKey.id}" bind:open={modal_open} on:confirm={async () => {
+    const { errors } = await get_apollo().mutate({
         mutation: Mutations.DELETE_ACCESS_KEY,
         variables: {
             id: accessKey.id
@@ -59,7 +59,7 @@
     });
 
     if (errors && errors.length > 0) {
-        pushNotification({
+        push_notification({
             type: "error",
             message: "Failed to delete access key",
         });
@@ -68,7 +68,7 @@
     }
 
     await invalidate("app:accesskeys");
-    modalOpen = false;
+    modal_open = false;
 }}>
     <span>Are you sure you want to delete the access key? Once deleted it cannot be undone.</span>
 </ConfirmationModal>

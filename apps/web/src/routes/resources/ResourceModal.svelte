@@ -5,13 +5,13 @@
 
 	import { Routes, api } from "$lib/api";
     import { Select, Field, FieldValidator, Button } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
+	import { Mutations, get_apollo } from "$lib/graphql";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import { tags } from "./tags";
 
-	function cloneResourceData(data?: ResourceFragmentFragment | null) {
+	function clone_resource_data(data?: ResourceFragmentFragment | null) {
 		return {
 			name: data?.name ?? "",
 			shortDescription: data?.shortDescription ?? "",
@@ -21,62 +21,62 @@
 
     export let open: boolean = false;
 	export let data: ResourceFragmentFragment | null = null;
-	let editData = cloneResourceData(data);
+	let edit_data = clone_resource_data(data);
 
-	$: isDirty = !!data && (data.name !== editData.name || data.shortDescription !== editData.shortDescription || data.tags.length !== editData.tags.length || data.tags.some(tag => !editData.tags.find(t => t === tag)));
+	$: isDirty = !!data && (data.name !== edit_data.name || data.shortDescription !== edit_data.shortDescription || data.tags.length !== edit_data.tags.length || data.tags.some(tag => !edit_data.tags.find(t => t === tag)));
 
-	let lastData = data;
+	let last_data = data;
 
 	$: {
-		if (lastData !== data) {
-			editData = cloneResourceData(data);
+		if (last_data !== data) {
+			edit_data = clone_resource_data(data);
 		}
-		lastData = data;
+		last_data = data;
 	}
 
-    let uploadInput: HTMLInputElement | null = null;
-	let uploadFiles: FileList;
+    let upload_input: HTMLInputElement | null = null;
+	let upload_files: FileList;
 
-	function handleFileKeydown(ev: KeyboardEvent) {
-		if (uploadInput && [" ", "Enter"].includes(ev.key)) {
+	function handle_file_keydown(ev: KeyboardEvent) {
+		if (upload_input && [" ", "Enter"].includes(ev.key)) {
 			ev.preventDefault();
-			uploadInput.click();
+			upload_input.click();
 		}
 	}
 
 	const validator = new FieldValidator();
 
 	function clear() {
-		editData = cloneResourceData(data);
-		if (uploadInput) uploadInput.value = "";
+		edit_data = clone_resource_data(data);
+		if (upload_input) upload_input.value = "";
 	}
 
 	async function upload() {
 		const valid = validator.validate();
 		if (!valid) return;
 
-		if (!uploadFiles || uploadFiles.length < 1) {
-			pushNotification({
+		if (!upload_files || upload_files.length < 1) {
+			push_notification({
 				type: "error",
 				message: "No file found",
 			});
 			return; 
 		}
 
-		const { data: createData, errors } = await getApollo().mutate({
+		const { data: create_data, errors } = await get_apollo().mutate({
 			mutation: Mutations.CREATE_RESOURCE,
 			variables: {
 				data: {
-					name: editData.name,
-					shortDescription: editData.shortDescription,
-					tags: editData.tags
+					name: edit_data.name,
+					shortDescription: edit_data.shortDescription,
+					tags: edit_data.tags
 				}
 			},
 			errorPolicy: "all",
 		});
 
 		if (errors && errors.length > 0) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to create resource",
 			});
@@ -84,21 +84,21 @@
 			return;
 		}
 
-		pushNotification({
+		push_notification({
 			type: "info",
 			message: "Uploading file...",
 		});
 
-		const formData = new FormData();
-		formData.append("file", uploadFiles[0]);
+		const form_data = new FormData();
+		form_data.append("file", upload_files[0]);
 		try {
-			await api.post(Routes.upload("resource", createData!.resource.id), formData, {
+			await api.post(Routes.upload("resource", create_data!.resource.id), form_data, {
 				headers: {
 					"Content-Type": "multipart/form-data"
 				},
 			});
 		} catch (err) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to upload file for resource",
 			});
@@ -106,7 +106,7 @@
 			return;
 		}
 
-		pushNotification({
+		push_notification({
 			type: "success",
 			message: "Resource created!",
 		});
@@ -119,28 +119,28 @@
 	async function save() {
 		if (!data) return;
 		if (!validator.validate()) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Check your inputs",
 			});
 			return;
 		}
 
-		const { errors } = await getApollo().mutate({
+		const { errors } = await get_apollo().mutate({
 			mutation: Mutations.EDIT_RESOURCE,
 			variables: {
 				id: data.id,
 				data: {
-					name: editData.name,
-					shortDescription: editData.shortDescription,
-					tags: editData.tags
+					name: edit_data.name,
+					shortDescription: edit_data.shortDescription,
+					tags: edit_data.tags
 				}
 			},
 			errorPolicy: "all",
 		});
 
 		if (errors && errors.length > 0) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to save resource",
 			});
@@ -158,7 +158,7 @@
 		<Field 
 			{validator}
 			for="resource-upload-name"
-			value={editData.name}
+			value={edit_data.name}
 			required
 		>
 			<Label for="resource-upload-name" class="mb-2">Name</Label>
@@ -171,13 +171,13 @@
 				required
                 maxlength="255"
 				autocomplete="new-password"
-				bind:value={editData.name}
+				bind:value={edit_data.name}
 			/>
 		</Field>
         <Field 
 			{validator}
 			for="resource-upload-description"
-			value={editData.shortDescription}
+			value={edit_data.shortDescription}
 		>
 			<Label for="resource-upload-description" class="mb-2">Description</Label>
 			<Textarea
@@ -188,13 +188,13 @@
 				placeholder="Resource description"
                 maxlength="512"
 				autocomplete="new-password"
-				bind:value={editData.shortDescription}
+				bind:value={edit_data.shortDescription}
 			/>
 		</Field>
         <Field 
 			{validator}
 			for="resource-upload-tags"
-			value={editData.tags}
+			value={edit_data.tags}
 			required
 		>
 			<Label for="resource-upload-tags" class="mb-2">Tags</Label>
@@ -208,25 +208,25 @@
                 required
                 multi
                 search
-				bind:value={editData.tags}
+				bind:value={edit_data.tags}
             />
 		</Field>
 		{#if !data}
-			<Field {validator} for="resource-upload" value={uploadFiles} required>
+			<Field {validator} for="resource-upload" value={upload_files} required>
 				<Label for="resource-upload" class="mb-2">Files</Label>
 				<button
 					type="button"
 					class="relative flex justify-center items-center w-full h-64 bg-gray-50 rounded border-2 border-gray-300 border-dashed dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600" 
-					on:keydown={handleFileKeydown}
+					on:keydown={handle_file_keydown}
 				>
-					{#if uploadFiles?.length > 0}
+					{#if upload_files?.length > 0}
 						<div class="flex flex-col items-center">
-							{#if uploadFiles[0].type.startsWith("image")}
-								<img src={URL.createObjectURL(uploadFiles[0])} alt="Preview image of '{uploadFiles[0].name}' file" class="rounded h-32" />
+							{#if upload_files[0].type.startsWith("image")}
+								<img src={URL.createObjectURL(upload_files[0])} alt="Preview image of '{upload_files[0].name}' file" class="rounded h-32" />
 							{:else}
 								<FileSolid class="text-white" size="xl" tabindex="-1" />
 							{/if}
-							<p class="text-md text-gray-500 dark:text-gray-400">{uploadFiles[0].name}</p>
+							<p class="text-md text-gray-500 dark:text-gray-400">{upload_files[0].name}</p>
 						</div>
 					{:else}
 						<div class="flex flex-col items-center w-full flex-1">
@@ -241,8 +241,8 @@
 						name="resource-upload"
 						accept="image/*,.pdf"
 						class="absolute cursor-pointer top-0 left-0 h-full w-full z-0 opacity-0" 
-						bind:this={uploadInput} 
-						bind:files={uploadFiles}
+						bind:this={upload_input} 
+						bind:files={upload_files}
 					/>
 				</button>
 			</Field>

@@ -16,15 +16,15 @@
 	export let categoryIcons: Record<string, string | ComponentType<SvelteComponent>> = {};
 
 	let icon: any;
-	let imageSrc: string | null = null;
+	let image_src: string | null = null;
 	$: {
-		const customIcon = categoryIcons[category];
-		imageSrc = null;
-		if (customIcon) {
-			if (typeof customIcon === "string") {
-				imageSrc = customIcon;
+		const custom_icon = categoryIcons[category];
+		image_src = null;
+		if (custom_icon) {
+			if (typeof custom_icon === "string") {
+				image_src = custom_icon;
 			} else {
-				icon = customIcon;
+				icon = custom_icon;
 			}
 		} else {
 			switch (category) {
@@ -60,8 +60,8 @@
 	}
 </script>
 
-{#if imageSrc}
-	<img src={imageSrc} alt="Emoji category icon" class="shrink-0 w-6 h-6 me-2 object-contain" {...$$restProps} />
+{#if image_src}
+	<img src={image_src} alt="Emoji category icon" class="shrink-0 w-6 h-6 me-2 object-contain" {...$$restProps} />
 {:else}
 	<svelte:component this={icon} class="shrink-0 w-6 h-6 me-2" {...$$restProps} />
 {/if}

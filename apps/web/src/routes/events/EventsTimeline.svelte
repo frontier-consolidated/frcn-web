@@ -4,15 +4,15 @@
 	import { Timeline, TimelineItem, Pagination } from "flowbite-svelte";
 
 	import { TimeBadge } from "$lib/components";
-	import { getCurrentPage, getPageUrl, getPages } from "$lib/pageHelpers";
+	import { get_current_page, get_page_url, get_pages } from "$lib/pageHelpers";
 
     import type { PageData } from "./$types";
 	import EventCard from "./EventCard.svelte";
 
 	export let data: PageData;
 	
-	$: currentPage = getCurrentPage($page.url.searchParams);
-	$: pages = getPages($page.url, currentPage, data.itemsPerPage, data.total);
+	$: currentPage = get_current_page($page.url.searchParams);
+	$: pages = get_pages($page.url, currentPage, data.itemsPerPage, data.total);
 </script>
 
 <svelte:head>
@@ -40,8 +40,8 @@
     {#if data.events.length > 0}
         <Pagination 
             {pages}
-            on:previous={() => { if (data.prevPage != null) goto(getPageUrl($page.url, data.prevPage + 1)); }}
-                on:next={() => { if (data.nextPage != null) goto(getPageUrl($page.url, data.nextPage + 1)); }}
+            on:previous={() => { if (data.prevPage != null) goto(get_page_url($page.url, data.prevPage + 1)); }}
+                on:next={() => { if (data.nextPage != null) goto(get_page_url($page.url, data.nextPage + 1)); }}
         />
     {/if}
 </div>

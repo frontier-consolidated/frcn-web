@@ -1,5 +1,6 @@
 import pgtbus from "pg-tbus";
 import type * as pgtbusExports from "pg-tbus";
+// eslint-disable-next-line @typescript-eslint/naming-convention
 const { defineEvent, Type } = pgtbus as unknown as typeof pgtbusExports;
 
 const IndexUpdated = defineEvent({

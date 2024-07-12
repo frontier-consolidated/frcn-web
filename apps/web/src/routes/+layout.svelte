@@ -7,17 +7,17 @@
 	import { CookieConsentModal, Footer, Header, Notifications, UserProfileModal } from "$lib/components";
 	import JoinGuildModal from "$lib/components/modals/JoinGuildModal.svelte";
 
-	let showSpinner = false;
+	let show_spinner = false;
 	// eslint-disable-next-line no-undef
-	let spinnerTimeout: NodeJS.Timeout | null = null; 
+	let spinner_timeout: NodeJS.Timeout | null = null; 
 	$: {
-		if (browser && !showSpinner && !spinnerTimeout && $navigating) {
-			spinnerTimeout = setTimeout(() => {
-				if ($navigating) showSpinner = true;
-				spinnerTimeout = null;
+		if (browser && !show_spinner && !spinner_timeout && $navigating) {
+			spinner_timeout = setTimeout(() => {
+				if ($navigating) show_spinner = true;
+				spinner_timeout = null;
 			}, 200);
-		} else if (showSpinner && !$navigating) {
-			showSpinner = false;
+		} else if (show_spinner && !$navigating) {
+			show_spinner = false;
 		}
 	}
 </script>
@@ -34,7 +34,7 @@
 			<CodeSolid class="me-2" tabindex="-1" /> Currently Under Construction
 		</Banner> -->
 	</div>
-	{#if showSpinner}
+	{#if show_spinner}
 		<main class="flex-1 flex flex-col w-full box-border justify-center items-center">
 			<Spinner />
 		</main>

@@ -2,7 +2,7 @@ import { ApolloError } from "@apollo/client/core";
 import { error, type Handle, type HandleServerError, type NumericRange } from "@sveltejs/kit";
 import { locale } from "svelte-i18n";
 
-import { Queries, createApolloClient } from "$lib/graphql";
+import { Queries, create_apollo_client } from "$lib/graphql";
 
 import { env } from "$env/dynamic/private";
 
@@ -13,14 +13,14 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	const cookie = event.request.headers.get("cookie");
-	const apollo = createApolloClient(cookie ? {
+	const apollo = create_apollo_client(cookie ? {
 		cookie
 	} : undefined);
 
 	event.locals.apollo = apollo;
 
 	if (cookie) {
-		const userFetchApollo = createApolloClient({
+		const userFetchApollo = create_apollo_client({
 			cookie,
 			"x-frcn-access-key": env.LOCAL_ACCESS_TOKEN ?? ""
 		});

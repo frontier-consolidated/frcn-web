@@ -1,9 +1,9 @@
 import { tags } from "@lezer/highlight";
 import { createTheme } from "@uiw/codemirror-themes";
 
-import { customTags } from "../extensions";
+import { custom_tags } from "../extensions";
 
-export const darkTheme = createTheme({
+export const light_theme = createTheme({
     theme: "light",
     styles: [
         {
@@ -28,7 +28,7 @@ export const darkTheme = createTheme({
             fontWeight: "bold"
         },
         {
-            tag: customTags.underline,
+            tag: custom_tags.underline,
             textDecoration: "underline"
         },
         {

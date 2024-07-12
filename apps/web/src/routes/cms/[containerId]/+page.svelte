@@ -7,9 +7,9 @@
 
 	import { transformContainer, type ContentContainerData } from "$lib/cms/transformContainer";
 	import { Button, ConfirmationModal, FieldValidator, Head, SectionHeading } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import preventNavigation from "$lib/preventNavigation";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import prevent_navigation from "$lib/preventNavigation";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
     import type { PageData } from "./$types";
 	import ContainerConfigRenderer from "./ContainerConfigRenderer.svelte";
@@ -19,92 +19,92 @@
     export let data: PageData;
     $: container = transformContainer(data.container);
 
-    function checkIfFileDirty(source: ContentContainerData["files"][number], mutable: CmsFile, prefix = "", diff?: string[]) {
+    function check_if_file_dirty(source: ContentContainerData["files"][number], mutable: CmsFile, prefix = "", diff?: string[]) {
         let clean = true;
 		diff ??= [];
 
-        let valueClean;
-        valueClean = source.identifier == mutable.getIdentifier();
-        if (!valueClean) diff.push(prefix + mutable.id + ".identifier");
-        clean &&= valueClean;
+        let value_clean;
+        value_clean = source.identifier == mutable.getIdentifier();
+        if (!value_clean) diff.push(prefix + mutable.id + ".identifier");
+        clean &&= value_clean;
 
         return !clean;
     }
 
-    function checkIfDirty(source: ContentContainerData, mutable: CmsContainer, traverseChildren = true, prefix = "", diff?: string[]) {
+    function check_if_dirty(source: ContentContainerData, mutable: CmsContainer, traverse_children = true, prefix = "", diff?: string[]) {
         let clean = true;
 		diff ??= [];
 
-        let valueClean;
+        let value_clean;
 
-        const rawData = mutable.getRawData();
+        const raw_data = mutable.getRawData();
 
-        valueClean = source.identifier == rawData.identifier;
-        if (!valueClean) diff.push(prefix + "identifier");
-        clean &&= valueClean;
+        value_clean = source.identifier == raw_data.identifier;
+        if (!value_clean) diff.push(prefix + "identifier");
+        clean &&= value_clean;
 
-        valueClean = source.title === rawData.title;
-        if (!valueClean) diff.push(prefix + "title");
-        clean &&= valueClean;
+        value_clean = source.title === raw_data.title;
+        if (!value_clean) diff.push(prefix + "title");
+        clean &&= value_clean;
 
-        valueClean = source.content == rawData.content;
-        if (!valueClean) diff.push(prefix + "content");
-        clean &&= valueClean;
+        value_clean = source.content == raw_data.content;
+        if (!value_clean) diff.push(prefix + "content");
+        clean &&= value_clean;
 
-        valueClean = (source.children?.length ?? 0) === mutable.getChildren().length;
-        if (!valueClean) diff.push(prefix + "children.length");
-        clean &&= valueClean;
+        value_clean = (source.children?.length ?? 0) === mutable.getChildren().length;
+        if (!value_clean) diff.push(prefix + "children.length");
+        clean &&= value_clean;
 
-        if (traverseChildren) {
+        if (traverse_children) {
             for (const child of mutable.getChildren()) {
-                const sourceChild = (source.children ?? []).find(c => c.id === child.id);
-                if (!sourceChild) {
+                const source_child = (source.children ?? []).find(c => c.id === child.id);
+                if (!source_child) {
                     diff.push(prefix + "children." + child.id);
                     clean = false;
                     continue;
                 }
-                const childClean = !checkIfDirty(sourceChild, child, true, `${prefix}children.${child.id}.`, diff);
-                clean &&= childClean;
+                const child_clean = !check_if_dirty(source_child, child, true, `${prefix}children.${child.id}.`, diff);
+                clean &&= child_clean;
             }
         }
 
-        valueClean = source.files.length === mutable.getFiles().length;
-        if (!valueClean) diff.push(prefix + "files.length");
-        clean &&= valueClean;
+        value_clean = source.files.length === mutable.getFiles().length;
+        if (!value_clean) diff.push(prefix + "files.length");
+        clean &&= value_clean;
 
         for (const file of mutable.getFiles()) {
-            const sourceFile = source.files.find(f => f.id === file.id);
-            if (!sourceFile) {
+            const source_file = source.files.find(f => f.id === file.id);
+            if (!source_file) {
                 diff.push(prefix + "files." + file.id);
                 clean = false;
                 continue;
             }
 
-            const fileClean = !checkIfFileDirty(sourceFile, file, prefix + "files.", diff);
-            clean &&= fileClean;
+            const file_clean = !check_if_file_dirty(source_file, file, prefix + "files.", diff);
+            clean &&= file_clean;
         }
 		
         // if (!prefix && traverseChildren) console.log("DIFF", diff);
 		return !clean;
 	}
 
-	const { canNavigate, initNavigation } = preventNavigation();
+	const { can_navigate, init_navigation } = prevent_navigation();
 
-    let updateTrigger = false;
+    let update_trigger = false;
     setContext("containerchange", () => {
-        updateTrigger = !updateTrigger;
+        update_trigger = !update_trigger;
     });
 
-	let isDirty = false;
+	let is_dirty = false;
 	$: {
-        updateTrigger;
-		isDirty = checkIfDirty(data.container, container);
-		canNavigate.set(!isDirty);
+        update_trigger;
+		is_dirty = check_if_dirty(data.container, container);
+		can_navigate.set(!is_dirty);
 	}
 
     async function save() {
         if (!validator.validate()) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Check your inputs",
 			});
@@ -112,23 +112,23 @@
 		}
 
         let promises: Promise<any>[] = [];
-        function makeContainerEditPromise(container: CmsContainer) {
-            const rawData = container.getRawData();
-            promises.push(getApollo().mutate({
+        function make_container_edit_promise(container: CmsContainer) {
+            const raw_data = container.getRawData();
+            promises.push(get_apollo().mutate({
                 mutation: Mutations.EDIT_CONTENT_CONTAINER,
                 variables: {
                     id: container.id,
                     data: {
-                        identifier: rawData.identifier,
-                        title: rawData.title,
-                        content: rawData.content
+                        identifier: raw_data.identifier,
+                        title: raw_data.title,
+                        content: raw_data.content
                     }
                 }
             }));
         }
 
-        function makeContainerFileEditPromise(file: CmsFile) {
-            promises.push(getApollo().mutate({
+        function make_container_file_edit_promise(file: CmsFile) {
+            promises.push(get_apollo().mutate({
                 mutation: Mutations.EDIT_CONTENT_CONTAINER_FILE,
                 variables: {
                     id: file.id,
@@ -139,33 +139,33 @@
             }));
         }
 
-        function makePromises(source: ContentContainerData, container: CmsContainer) {
-            const dirty = checkIfDirty(source, container, false);
-            if (dirty) makeContainerEditPromise(container);
+        function make_promises(source: ContentContainerData, container: CmsContainer) {
+            const dirty = check_if_dirty(source, container, false);
+            if (dirty) make_container_edit_promise(container);
 
             for (const file of container.getFiles()) {
-                const sourceFile = source.files.find(f => f.id === file.id);
-                if (!sourceFile || checkIfFileDirty(sourceFile, file)) {
-                    makeContainerFileEditPromise(file);
+                const source_file = source.files.find(f => f.id === file.id);
+                if (!source_file || check_if_file_dirty(source_file, file)) {
+                    make_container_file_edit_promise(file);
                 }
             }
 
             for (const child of container.getChildren()) {
-                const sourceChild = (source.children ?? []).find(c => c.id === child.id);
-                if (!sourceChild) {
-                    makeContainerEditPromise(child);
+                const source_child = (source.children ?? []).find(c => c.id === child.id);
+                if (!source_child) {
+                    make_container_edit_promise(child);
                     continue;
                 }
-                makePromises(sourceChild, child);
+                make_promises(source_child, child);
             }
         }
 
-        makePromises(data.container, container);
+        make_promises(data.container, container);
 
         try {
             await Promise.all(promises);
         } catch (err) {
-            pushNotification({
+            push_notification({
 				type: "error",
 				message: "Failed to save",
 			});
@@ -176,14 +176,14 @@
         await invalidate("cms:currentcontainer");
     }
 
-    let deleteModalOpen = false;
+    let delete_modal_open = false;
 </script>
 
 <Head
 	title="Edit Container - CMS"
 />
 
-<div class="mt-24 flex flex-col min-h-[80vh] py-4 px-3 w-full max-w-4xl mx-auto bg-gray-50 rounded dark:bg-gray-900" use:initNavigation>
+<div class="mt-24 flex flex-col min-h-[80vh] py-4 px-3 w-full max-w-4xl mx-auto bg-gray-50 rounded dark:bg-gray-900" use:init_navigation>
     {#if data.container.parent?.id}
         <a class="flex items-center text-gray-300 mb-2 p-2 cursor-pointer hover:text-gray-400" href="/cms/{data.container.parent.id}">
             <ArrowLeftSolid class="me-2" tabindex="-1" /> Back to Parent Container
@@ -202,7 +202,7 @@
         </div>
         <div class="flex justify-end items-center gap-2">
             <Button color="red" class="mr-auto" on:click={() => {
-                deleteModalOpen = true;
+                delete_modal_open = true;
             }}>
                 <CloseSolid class="me-2" tabindex="-1" /> Delete
             </Button>
@@ -212,9 +212,9 @@
                 <CloseSolid class="me-2" tabindex="-1" /> Cancel
             </Button>
             <Button
-                disabled={!isDirty}
+                disabled={!is_dirty}
                 on:click={() => {
-                    if (!isDirty) return;
+                    if (!is_dirty) return;
                     save().catch(console.error);
                 }}
             >
@@ -224,8 +224,8 @@
     </div>
 </div>
 
-<ConfirmationModal title="Delete container" bind:open={deleteModalOpen} on:confirm={async () => {
-    const { errors } = await getApollo().mutate({
+<ConfirmationModal title="Delete container" bind:open={delete_modal_open} on:confirm={async () => {
+    const { errors } = await get_apollo().mutate({
         mutation: Mutations.DELETE_CONTENT_CONTAINER,
         variables: {
             id: container.id
@@ -234,7 +234,7 @@
     });
 
     if (errors && errors.length > 0) {
-        pushNotification({
+        push_notification({
             type: "error",
             message: "Failed to delete container",
         });
@@ -242,7 +242,7 @@
         return;
     }
 
-    deleteModalOpen = false;
+    delete_modal_open = false;
 	goto("/cms");
 }}>
     <span>Are you sure you want to delete this container? Once deleted it cannot be undone.</span>

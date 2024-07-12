@@ -11,28 +11,28 @@
 	export let selectedDate: Date | null;
 	export let disable: "past" | "future" | false = false;
 
-	let zoomLevel = 3;
-	let previousZoomLevel = zoomLevel;
+	let zoom_level = 3;
+	let previous_zoom_level = zoom_level;
 
 	const dispatch = createEventDispatcher();
 
 	$: {
-		if (zoomLevel != previousZoomLevel) {
+		if (zoom_level != previous_zoom_level) {
 			dispatch("refocus");
-			previousZoomLevel = zoomLevel;
+			previous_zoom_level = zoom_level;
 		}
 	}
 </script>
 
 <div>
-	<DateViewControls bind:viewDate bind:zoomLevel />
-	{#if zoomLevel == 3}
-		<DaysGrid {disable} {viewDate} bind:selectedDate />
-	{:else if zoomLevel == 2}
-		<MonthsGrid bind:viewDate bind:zoomLevel />
-	{:else if zoomLevel == 1}
-		<DecadeGrid bind:viewDate bind:zoomLevel />
+	<DateViewControls bind:viewDate={viewDate} bind:zoomLevel={zoom_level} />
+	{#if zoom_level == 3}
+		<DaysGrid {disable} viewDate={viewDate} bind:selectedDate={selectedDate} />
+	{:else if zoom_level == 2}
+		<MonthsGrid bind:viewDate={viewDate} bind:zoomLevel={zoom_level} />
+	{:else if zoom_level == 1}
+		<DecadeGrid bind:viewDate={viewDate} bind:zoomLevel={zoom_level} />
 	{:else}
-		<CenturyGrid bind:viewDate bind:zoomLevel />
+		<CenturyGrid bind:viewDate bind:zoomLevel={zoom_level} />
 	{/if}
 </div>

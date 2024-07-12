@@ -1,7 +1,7 @@
 
 import { building } from "$app/environment";
 
-import { getCmsClient } from "$lib/server/cms";
+import { get_cms_client } from "$lib/server/cms";
 
 import type { PageServerLoad } from "./$types";
 
@@ -14,7 +14,7 @@ export const load = (async ({ depends }) => {
         indexes: []
     };
 
-    const indexes = await getCmsClient().getIndexes();
+    const indexes = await get_cms_client().getIndexes();
 
     return {
         indexes

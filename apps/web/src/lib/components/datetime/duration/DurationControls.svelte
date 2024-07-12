@@ -4,11 +4,11 @@
 	import { twMerge } from "tailwind-merge";
 
 	const hours = new Array(24).fill(0).map((_, index) => index);
-	const minutesAndSeconds = new Array(60).fill(0).map((_, index) => index);
+	const minutes_and_seconds = new Array(60).fill(0).map((_, index) => index);
 
 	export let value: number | null;
 
-	function setComponents({
+	function set_components({
 		hours,
 		minutes,
 		seconds,
@@ -36,31 +36,31 @@
 		return number.toString().padStart(2, "0");
 	}
 
-	let inputHours = pad(dates.toDurationComponents(value).hours);
-	let inputMinutes = pad(dates.toDurationComponents(value).minutes);
-	let inputSeconds = pad(dates.toDurationComponents(value).seconds);
+	let input_hours = pad(dates.toDurationComponents(value).hours);
+	let input_minutes = pad(dates.toDurationComponents(value).minutes);
+	let input_seconds = pad(dates.toDurationComponents(value).seconds);
 
-	let hoursDiv: HTMLElement | null = null;
-	let minutesDiv: HTMLElement | null = null;
-	let secondsDiv: HTMLElement | null = null;
-	function scrollToHour(hour: number, instant?: boolean) {
-		const el = hoursDiv?.querySelector<HTMLElement>(`[data-hour="${hour}"]`);
+	let hours_div: HTMLElement | null = null;
+	let minutes_div: HTMLElement | null = null;
+	let seconds_div: HTMLElement | null = null;
+	function scroll_to_hour(hour: number, instant?: boolean) {
+		const el = hours_div?.querySelector<HTMLElement>(`[data-hour="${hour}"]`);
 		if (el)
 			el.scrollIntoView({
 				behavior: instant ? "instant" : "smooth",
 				block: "center",
 			});
 	}
-	function scrollToMinute(minute: number, instant?: boolean) {
-		const el = minutesDiv?.querySelector<HTMLElement>(`[data-minute="${minute}"]`);
+	function scroll_to_minute(minute: number, instant?: boolean) {
+		const el = minutes_div?.querySelector<HTMLElement>(`[data-minute="${minute}"]`);
 		if (el)
 			el.scrollIntoView({
 				behavior: instant ? "instant" : "smooth",
 				block: "center",
 			});
 	}
-	function scrollToSecond(second: number, instant?: boolean) {
-		const el = secondsDiv?.querySelector<HTMLElement>(`[data-second="${second}"]`);
+	function scroll_to_second(second: number, instant?: boolean) {
+		const el = seconds_div?.querySelector<HTMLElement>(`[data-second="${second}"]`);
 		if (el)
 			el.scrollIntoView({
 				behavior: instant ? "instant" : "smooth",
@@ -68,73 +68,73 @@
 			});
 	}
 
-	function initHours(el: HTMLElement) {
-		hoursDiv = el;
-		scrollToHour(dates.toDurationComponents(value).hours, true);
+	function init_hours(el: HTMLElement) {
+		hours_div = el;
+		scroll_to_hour(dates.toDurationComponents(value).hours, true);
 	}
-	function initMinutes(el: HTMLElement) {
-		minutesDiv = el;
-		scrollToMinute(dates.toDurationComponents(value).minutes, true);
+	function init_minutes(el: HTMLElement) {
+		minutes_div = el;
+		scroll_to_minute(dates.toDurationComponents(value).minutes, true);
 	}
-	function initSeconds(el: HTMLElement) {
-		secondsDiv = el;
-		scrollToSecond(dates.toDurationComponents(value).seconds, true);
-	}
-
-	function setHours(hours: number) {
-		inputHours = pad(hours);
-		scrollToHour(hours);
-		setComponents({ hours });
+	function init_seconds(el: HTMLElement) {
+		seconds_div = el;
+		scroll_to_second(dates.toDurationComponents(value).seconds, true);
 	}
 
-	function setMinutes(minutes: number) {
-		inputMinutes = pad(minutes);
-		scrollToMinute(minutes);
-		setComponents({ minutes });
+	function set_hours(hours: number) {
+		input_hours = pad(hours);
+		scroll_to_hour(hours);
+		set_components({ hours });
 	}
 
-	function setSeconds(seconds: number) {
-		inputSeconds = pad(seconds);
-		scrollToSecond(seconds);
-		setComponents({ seconds });
+	function set_minutes(minutes: number) {
+		input_minutes = pad(minutes);
+		scroll_to_minute(minutes);
+		set_components({ minutes });
+	}
+
+	function set_seconds(seconds: number) {
+		input_seconds = pad(seconds);
+		scroll_to_second(seconds);
+		set_components({ seconds });
 	}
 
 	$: {
 		if (value) {
-			setHours(dates.toDurationComponents(value).hours);
-			setMinutes(dates.toDurationComponents(value).minutes);
+			set_hours(dates.toDurationComponents(value).hours);
+			set_minutes(dates.toDurationComponents(value).minutes);
 		}
 	}
 
 	$: {
-		const hour = Math.max(0, Number(inputHours));
-		setHours(hour.valueOf());
+		const hour = Math.max(0, Number(input_hours));
+		set_hours(hour.valueOf());
 	}
 	$: {
-		const minute = Math.max(0, Math.min(59, Number(inputMinutes)));
-		setMinutes(minute.valueOf());
+		const minute = Math.max(0, Math.min(59, Number(input_minutes)));
+		set_minutes(minute.valueOf());
 	}
 	$: {
-		const seconds = Math.max(0, Math.min(59, Number(inputSeconds)));
-		setSeconds(seconds.valueOf());
+		const seconds = Math.max(0, Math.min(59, Number(input_seconds)));
+		set_seconds(seconds.valueOf());
 	}
 
-	const spanClass = "block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer";
-	const activeClass = "bg-primary-600 dark:hover:bg-primary-700";
-	const inactiveClass = "dark:hover:bg-gray-600";
+	const span_class = "block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer";
+	const active_class = "bg-primary-600 dark:hover:bg-primary-700";
+	const inactive_class = "dark:hover:bg-gray-600";
 </script>
 
 <div>
 	<div class="grid grid-flow-col items-center mb-2 p-1">
 		<Input
-			bind:value={inputHours}
+			bind:value={input_hours}
 			class="w-10 text-center no-inner-spin rounded"
 			type="number"
 			min="0"
 		/>
 		<span class="font-semibold p-1 me-1">hours</span>
 		<Input
-			bind:value={inputMinutes}
+			bind:value={input_minutes}
 			class="w-10 text-center no-inner-spin rounded"
 			type="number"
 			min="0"
@@ -142,7 +142,7 @@
 		/>
 		<span class="font-semibold p-1 me-1">mins</span>
 		<Input
-			bind:value={inputSeconds}
+			bind:value={input_seconds}
 			class="w-10 text-center no-inner-spin rounded"
 			type="number"
 			min="0"
@@ -151,48 +151,48 @@
 		<span class="font-semibold p-1 me-1">secs</span>
 	</div>
 	<div class="grid grid-cols-3 h-28 w-full gap-4">
-		<div use:initHours class="overflow-y-scroll no-scrollbar">
+		<div use:init_hours class="overflow-y-scroll no-scrollbar">
 			{#each hours as hour}
 				<span
 					role="button"
 					tabindex="0"
 					data-hour={hour}
-					class={twMerge(spanClass, hour === dates.toDurationComponents(value).hours ? activeClass : inactiveClass)}
-					on:click={() => setHours(hour)}
+					class={twMerge(span_class, hour === dates.toDurationComponents(value).hours ? active_class : inactive_class)}
+					on:click={() => set_hours(hour)}
 					on:keydown={(ev) => {
-						if (ev.key == "Enter") setHours(hour);
+						if (ev.key == "Enter") set_hours(hour);
 					}}
 				>
 					{pad(hour)}
 				</span>
 			{/each}
 		</div>
-		<div use:initMinutes class="overflow-y-scroll no-scrollbar">
-			{#each minutesAndSeconds as minute}
+		<div use:init_minutes class="overflow-y-scroll no-scrollbar">
+			{#each minutes_and_seconds as minute}
 				<span
 					role="button"
 					tabindex="0"
 					data-minute={minute}
-					class={twMerge(spanClass, minute === dates.toDurationComponents(value).minutes ? activeClass : inactiveClass)}
-					on:click={() => setMinutes(minute)}
+					class={twMerge(span_class, minute === dates.toDurationComponents(value).minutes ? active_class : inactive_class)}
+					on:click={() => set_minutes(minute)}
 					on:keydown={(ev) => {
-						if (ev.key == "Enter") setMinutes(minute);
+						if (ev.key == "Enter") set_minutes(minute);
 					}}
 				>
 					{pad(minute)}
 				</span>
 			{/each}
 		</div>
-		<div use:initSeconds class="overflow-y-scroll no-scrollbar">
-			{#each minutesAndSeconds as second}
+		<div use:init_seconds class="overflow-y-scroll no-scrollbar">
+			{#each minutes_and_seconds as second}
 				<span
 					role="button"
 					tabindex="0"
 					data-second={second}
-					class={twMerge(spanClass, second === dates.toDurationComponents(value).seconds ? activeClass : inactiveClass)}
-					on:click={() => setSeconds(second)}
+					class={twMerge(span_class, second === dates.toDurationComponents(value).seconds ? active_class : inactive_class)}
+					on:click={() => set_seconds(second)}
 					on:keydown={(ev) => {
-						if (ev.key == "Enter") setSeconds(second);
+						if (ev.key == "Enter") set_seconds(second);
 					}}
 				>
 					{pad(second)}

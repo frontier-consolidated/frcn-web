@@ -1,8 +1,8 @@
 import type { PageData } from "./$types";
 
-export type MutableData = ReturnType<typeof cloneEventSettingsData>;
+export type MutableData = ReturnType<typeof clone_event_settings_data>;
 
-export function cloneEventSettingsData(data: PageData) {
+export function clone_event_settings_data(data: PageData) {
 	return {
 		channel: data.channel ? structuredClone(data.channel) : { id: null, discord: { name: "!ERROR" }, discordGuild: { name: "!ERROR" } },
 		name: data.name,
@@ -21,49 +21,49 @@ export function cloneEventSettingsData(data: PageData) {
 	};
 }
 
-export function checkIfDirty(source: PageData, mutable: MutableData) {
+export function check_if_dirty(source: PageData, mutable: MutableData) {
 	let clean = true;
 	const diff: string[] = [];
 	for (const key of Object.keys(mutable) as (keyof typeof mutable)[]) {
 		switch (key) {
 			case "channel":
 				{
-					const mutableChannel = mutable.channel?.id;
-					const sourceChannel = mutable.channel?.id;
-					const valueClean = mutableChannel === sourceChannel;
-					if (!valueClean) diff.push(key);
-					clean &&= valueClean;
+					const mutable_channel = mutable.channel?.id;
+					const source_channel = mutable.channel?.id;
+					const value_clean = mutable_channel === source_channel;
+					if (!value_clean) diff.push(key);
+					clean &&= value_clean;
 				}
 				break;
 			case "location":
 				{
 					if (!mutable.location.some(loc => !loc)) {
-						const mutableLocation = mutable.location.map((loc) => loc.name).join("/");
-						const sourceLocation = source.location?.map((loc) => loc.name).join("/");
-						const valueClean = mutableLocation === sourceLocation;
-						if (!valueClean) diff.push(key);
-						clean &&= valueClean;
+						const mutable_location = mutable.location.map((loc) => loc.name).join("/");
+						const source_location = source.location?.map((loc) => loc.name).join("/");
+						const value_clean = mutable_location === source_location;
+						if (!value_clean) diff.push(key);
+						clean &&= value_clean;
 					}
 				}
 				break;
 			case "rsvpRoles":
 				{
-					const valueClean = mutable.rsvpRoles.length === source.rsvpRoles.length;
-					if (!valueClean) diff.push(key + ".length");
-					clean &&= valueClean;
+					const value_clean = mutable.rsvpRoles.length === source.rsvpRoles.length;
+					if (!value_clean) diff.push(key + ".length");
+					clean &&= value_clean;
 
 					for (const role of mutable.rsvpRoles) {
-						const sourceRole = source.rsvpRoles.find((r) => r.id === role.id);
-						if (sourceRole) {
-							const nameClean = sourceRole.name === role.name;
-							const limitClean = sourceRole.limit === role.limit;
-							const emojiClean = sourceRole.emoji.id === role.emoji.id;
+						const source_role = source.rsvpRoles.find((r) => r.id === role.id);
+						if (source_role) {
+							const name_clean = source_role.name === role.name;
+							const limit_clean = source_role.limit === role.limit;
+							const emoji_clean = source_role.emoji.id === role.emoji.id;
 
-							if (!nameClean) diff.push(key + "." + role.id + ".name");
-							if (!limitClean) diff.push(key + "." + role.id + ".limit");
-							if (!emojiClean) diff.push(key + "." + role.id + ".emoji");
+							if (!name_clean) diff.push(key + "." + role.id + ".name");
+							if (!limit_clean) diff.push(key + "." + role.id + ".limit");
+							if (!emoji_clean) diff.push(key + "." + role.id + ".emoji");
 
-							clean &&= nameClean && limitClean && emojiClean;
+							clean &&= name_clean && limit_clean && emoji_clean;
 						} else {
 							diff.push(key + "." + role.id);
 							clean = false;
@@ -73,13 +73,13 @@ export function checkIfDirty(source: PageData, mutable: MutableData) {
 				break;
 			case "mentions":
 				{
-					const valueClean = mutable.mentions.length === source.mentions!.length;
-					if (!valueClean) diff.push(key + ".length");
-					clean &&= valueClean;
+					const value_clean = mutable.mentions.length === source.mentions!.length;
+					if (!value_clean) diff.push(key + ".length");
+					clean &&= value_clean;
 
 					for (const mention of mutable.mentions) {
-						const sourceMention = source.mentions!.find((m) => m === mention);
-						if (!sourceMention) {
+						const source_mention = source.mentions!.find((m) => m === mention);
+						if (!source_mention) {
 							diff.push(key + "." + mention);
 							clean = false;
 						}
@@ -91,24 +91,24 @@ export function checkIfDirty(source: PageData, mutable: MutableData) {
 					for (const setting of Object.keys(
 						mutable.settings
 					) as (keyof typeof mutable.settings)[]) {
-						const valueClean = mutable.settings[setting] === source.settings?.[setting];
-						if (!valueClean) diff.push(key + "." + setting);
-						clean &&= valueClean;
+						const value_clean = mutable.settings[setting] === source.settings?.[setting];
+						if (!value_clean) diff.push(key + "." + setting);
+						clean &&= value_clean;
 					}
 				}
 				break;
 			case "accessRoles":
 				{
-					const valueClean = mutable.accessRoles.length === source.accessRoles!.length;
-					if (!valueClean) diff.push(key + ".length");
-					clean &&= valueClean;
+					const value_clean = mutable.accessRoles.length === source.accessRoles!.length;
+					if (!value_clean) diff.push(key + ".length");
+					clean &&= value_clean;
 
-					for (const accessRole of mutable.accessRoles) {
-						const sourceAccessRole = source.accessRoles!.find(
-							(r) => r.id === accessRole.id
+					for (const access_role of mutable.accessRoles) {
+						const source_access_role = source.accessRoles!.find(
+							(r) => r.id === access_role.id
 						);
-						if (!sourceAccessRole) {
-							diff.push(key + "." + accessRole.id);
+						if (!source_access_role) {
+							diff.push(key + "." + access_role.id);
 							clean = false;
 						}
 					}
@@ -116,9 +116,9 @@ export function checkIfDirty(source: PageData, mutable: MutableData) {
 				break;
 			default:
 				{
-					const valueClean = mutable[key] == source[key];
-					if (!valueClean) diff.push(key);
-					clean &&= valueClean;
+					const value_clean = mutable[key] == source[key];
+					if (!value_clean) diff.push(key);
+					clean &&= value_clean;
 				}
 				break;
 		}

@@ -1,4 +1,4 @@
-export function toTitleCase(str: string) {
+export function to_title_case(str: string) {
 	return str
 		.toLowerCase()
 		.replace(/_/g, " ")
@@ -7,6 +7,6 @@ export function toTitleCase(str: string) {
 		.join(" ");
 }
 
-export function kebabCaseToTitleCase(str: string) {
-	return toTitleCase(str.replace(/-/g, " "));
+export function kebab_case_to_title_case(str: string) {
+	return to_title_case(str.replace(/-/g, " "));
 }

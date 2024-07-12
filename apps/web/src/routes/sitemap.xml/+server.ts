@@ -1,4 +1,4 @@
-import { createETag } from "$lib/server/etag";
+import { create_etag } from "$lib/server/etag";
 
 import type { RequestHandler } from "./$types";
 
@@ -57,7 +57,7 @@ export const GET: RequestHandler = async ({ url }) => {
         headers: {
             "Content-Type": "application/xml",
             "Cache-Control": "public, must-revalidate, max-age=300",
-            "ETag": createETag(xml)
+            "ETag": create_etag(xml)
         }
     });
 };

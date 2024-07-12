@@ -90,12 +90,12 @@ class Integration {
                 return;
             }
 
-            const requestId = uuid();
+            const request_id = uuid();
             function listener(event: MessageEvent<IntegrationPayload>) {
                 if (!event.data || event.data.type !== "frcnIntegrationResponse") return;
                 
                 const message = event.data.message;
-                if (message.requestId !== requestId) return;
+                if (message.requestId !== request_id) return;
 
                 if ("error" in message) {
                     reject(new Error(message.error.message));
@@ -111,7 +111,7 @@ class Integration {
             window.postMessage({
                 type: "frcnIntegrationRequest",
                 message: {
-                    id: requestId,
+                    id: request_id,
                     type,
                     message
                 }

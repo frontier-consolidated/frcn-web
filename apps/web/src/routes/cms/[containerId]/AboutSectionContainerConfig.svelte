@@ -6,12 +6,12 @@
 
 	import { Routes, api } from "$lib/api";
 	import { Field, FieldValidator, ImageInput, MarkdownEditor, Select } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import { push_notification } from "$lib/stores/NotificationStore";
 
 	import ContainerChildrenInput from "./ContainerChildrenInput.svelte";
     
-    function createEditData(container: AboutSectionContainer) {
+    function create_edit_data(container: AboutSectionContainer) {
         return {
             identifier: container.getIdentifier(),
             position: container.getPosition() ?? "top-left",
@@ -27,39 +27,39 @@
     let container = container_.as<AboutSectionContainer>();
     $: container = container_.as<AboutSectionContainer>();
 
-    let defaultImageFile = container.getDefaultImageFile();
-    let desktopImageFile = container.getDesktopImageFile();
+    let default_image_file = container.getDefaultImageFile();
+    let desktop_image_file = container.getDesktopImageFile();
 
-    let editData = createEditData(container);
+    let edit_data = create_edit_data(container);
     $: {
-        container.setIdentifier(editData.identifier);
-        container.setPosition(editData.position);
-        container.setTitle(editData.title);
-        container.setContent(editData.content);
+        container.setIdentifier(edit_data.identifier);
+        container.setPosition(edit_data.position);
+        container.setTitle(edit_data.title);
+        container.setContent(edit_data.content);
         getContext<() => void>("containerchange")();
     }
 
-    async function uploadFile(file: File, identifier: string, currentFile: CmsFile | null) {
-        pushNotification({
+    async function upload_file(file: File, identifier: string, current_file: CmsFile | null) {
+        push_notification({
 			type: "info",
 			message: "Uploading file...",
 		});
 
-		const formData = new FormData();
-		formData.append("file", file);
-        formData.append("metadata", JSON.stringify({ identifier }));
+		const form_data = new FormData();
+		form_data.append("file", file);
+        form_data.append("metadata", JSON.stringify({ identifier }));
 		try {
-			const response = await api.post(Routes.upload("cms_container", container.id), formData, {
+			const response = await api.post(Routes.upload("cms_container", container.id), form_data, {
 				headers: {
 					"Content-Type": "multipart/form-data"
 				},
 			});
 
-            if (currentFile) {
-                container.removeFile(currentFile);
+            if (current_file) {
+                container.removeFile(current_file);
             }
 
-            currentFile = new CmsFile({
+            current_file = new CmsFile({
                 id: response.data.id,
                 fileName: response.data.fileName,
                 fileSizeKb: response.data.fileSizeKb,
@@ -67,24 +67,24 @@
                 fileSrc: response.data.previewUrl,
                 identifier
             });
-            container.pushFile(currentFile);
+            container.pushFile(current_file);
             
-            pushNotification({
+            push_notification({
                 type: "success",
                 message: "Successfully uploaded!",
             });
 		} catch (err) {
-			pushNotification({
+			push_notification({
 				type: "error",
 				message: "Failed to upload file",
 			});
 			console.error(err);
 		}
-        return currentFile;
+        return current_file;
     }
 
-    async function removeFile(file: CmsFile) {
-        const { errors } = await getApollo().mutate({
+    async function remove_file(file: CmsFile) {
+        const { errors } = await get_apollo().mutate({
             mutation: Mutations.DELETE_CONTENT_CONTAINER_FILE,
             variables: {
                 id: file.id
@@ -92,7 +92,7 @@
         });
 
         if (errors && errors.length > 0) {
-            pushNotification({
+            push_notification({
                 type: "error",
                 message: "Failed to delete image",
             });
@@ -103,7 +103,7 @@
     }
 </script>
 
-<Field {validator} for="about-section-identifier-{container.id}" value={editData.identifier} required={!isChild}>
+<Field {validator} for="about-section-identifier-{container.id}" value={edit_data.identifier} required={!isChild}>
     <Label for="about-section-identifier-{container.id}" class="mb-2">Identifier</Label>
     <Input
         class="rounded"
@@ -113,10 +113,10 @@
         placeholder="/"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.identifier}
+        bind:value={edit_data.identifier}
     />
 </Field>
-<Field {validator} for="about-section-position-{container.id}" value={editData.position}>
+<Field {validator} for="about-section-position-{container.id}" value={edit_data.position}>
     <Label for="about-section-position-{container.id}" class="mb-2">Position</Label>
     <Select
         id="about-section-position-{container.id}"
@@ -126,10 +126,10 @@
             value: pos
         }))}
         required
-        bind:value={editData.position}
+        bind:value={edit_data.position}
     />
 </Field>
-<Field {validator} for="about-section-title-{container.id}" value={editData.title}>
+<Field {validator} for="about-section-title-{container.id}" value={edit_data.title}>
     <Label for="about-section-title-{container.id}" class="mb-2">Title</Label>
     <Input
         class="rounded"
@@ -139,14 +139,14 @@
         placeholder="Title"
         pattern="[A-Za-z]"
         maxlength="255"
-        bind:value={editData.title}
+        bind:value={edit_data.title}
     />
 </Field>
-<Field {validator} for="about-section-content-{container.id}" value={editData.content}>
+<Field {validator} for="about-section-content-{container.id}" value={edit_data.content}>
     <Label for="about-section-content-{container.id}" class="mb-2">Content</Label>
     <MarkdownEditor
         placeholder="Content"
-        bind:value={editData.content}
+        bind:value={edit_data.content}
     />
 </Field>
 <div>
@@ -155,14 +155,14 @@
 </div>
 <div>
     <Label for="about-section-default-image-{container.id}" class="mb-2">Default Image</Label>
-    <ImageInput id="about-section-default-image-{container.id}" name="about-section-default-image" src={defaultImageFile?.getSrc()} 
+    <ImageInput id="about-section-default-image-{container.id}" name="about-section-default-image" src={default_image_file?.getSrc()} 
         upload={async (file) => {
-            defaultImageFile = await uploadFile(file, AboutSectionContainer.DEFAULT_IMAGE_IDENTIFIER, defaultImageFile);
+            default_image_file = await upload_file(file, AboutSectionContainer.DEFAULT_IMAGE_IDENTIFIER, default_image_file);
         }}
         remove={async () => {
-            if (!defaultImageFile) return;
-            if (await removeFile(defaultImageFile)) {
-                defaultImageFile = null;
+            if (!default_image_file) return;
+            if (await remove_file(default_image_file)) {
+                default_image_file = null;
             }
         }}
     />
@@ -172,14 +172,14 @@
 </div>
 <div>
     <Label for="about-section-default-image-{container.id}" class="mb-2">Desktop Image</Label>
-    <ImageInput id="about-section-default-image-{container.id}" name="about-section-default-image" src={desktopImageFile?.getSrc()} 
+    <ImageInput id="about-section-default-image-{container.id}" name="about-section-default-image" src={desktop_image_file?.getSrc()} 
         upload={async (file) => {
-            desktopImageFile = await uploadFile(file, AboutSectionContainer.DESKTOP_IMAGE_IDENTIFIER, desktopImageFile);
+            desktop_image_file = await upload_file(file, AboutSectionContainer.DESKTOP_IMAGE_IDENTIFIER, desktop_image_file);
         }}
         remove={async () => {
-            if (!desktopImageFile) return;
-            if (await removeFile(desktopImageFile)) {
-                desktopImageFile = null;
+            if (!desktop_image_file) return;
+            if (await remove_file(desktop_image_file)) {
+                desktop_image_file = null;
             }
         }}
     />

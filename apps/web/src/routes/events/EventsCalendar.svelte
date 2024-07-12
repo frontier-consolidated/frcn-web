@@ -14,44 +14,44 @@
     import type { PageData } from "./$types";
 	import CreateEventButton from "./CreateEventButton.svelte";
 	import EventCard from "./EventCard.svelte";
-	import { createEvent } from "./helpers";
+	import { create_event } from "./helpers";
 
-    function toMonthString(value: Date) {
+    function to_month_string(value: Date) {
         return `${value.getFullYear()}-${(value.getMonth() + 1).toString().padStart(2, "0")}`;
     }
 
-    function getDefaultViewMonth() {
+    function get_default_view_month() {
         const now = new Date();
-        return new Date(toMonthString(now));
+        return new Date(to_month_string(now));
     }
 
-    function getToday() {
+    function get_today() {
         const today = new Date();
 		today.setHours(0, 0, 0, 0);
         return today;
     }
 
-    function getEventStartAt(date: Date) {
-        if (date >= getToday() && date < new Date()) {
+    function get_event_start_at(date: Date) {
+        if (date >= get_today() && date < new Date()) {
             return new Date();
         }
-        const startAt = new Date(date);
-        startAt.setHours(12, 0, 0, 0);
-        return startAt;
+        const start_at = new Date(date);
+        start_at.setHours(12, 0, 0, 0);
+        return start_at;
     }
 
-    const viewMonth = queryParam("month", {
+    const view_month = queryParam("month", {
         decode(value) {
-            if (!value) return getDefaultViewMonth();
+            if (!value) return get_default_view_month();
             return new Date(value);
         },
         encode(value) {
-            return toMonthString(value);
+            return to_month_string(value);
         },
-        defaultValue: getDefaultViewMonth()
+        defaultValue: get_default_view_month()
     }) as Writable<Date>;
 
-    const selectedDate = queryParam("selectedDate", {
+    const selected_date = queryParam("selectedDate", {
         decode(value) {
             if (!value) return null;
             const timestamp = Number(value);
@@ -68,22 +68,22 @@
     
 	let days: { date: Date, events: PageData["events"] }[] = [];
 	$: {
-        const viewDate = $viewMonth ?? new Date();
-		const previousMonth = dates.getPreviousMonth(viewDate);
-		const daysInMonth = dates.getDaysInMonth(viewDate);
-		const daysInPreviousMonth = dates.getDaysInMonth(previousMonth);
+        const view_date = $view_month ?? new Date();
+		const previous_month = dates.getPreviousMonth(view_date);
+		const days_in_month = dates.getDaysInMonth(view_date);
+		const days_in_previous_month = dates.getDaysInMonth(previous_month);
 
-		const firstDay = viewDate.getDay();
+		const first_day = view_date.getDay();
 
 		days = [];
 		for (let i = 0; i < dates.daysPerMonth; i++) {
-			const relativeDay = i - firstDay;
+			const relative_day = i - first_day;
 			const day =
-				(relativeDay < 0 ? daysInPreviousMonth + relativeDay : relativeDay % daysInMonth) +
+				(relative_day < 0 ? days_in_previous_month + relative_day : relative_day % days_in_month) +
 				1;
-			const monthShift = relativeDay < 0 ? -1 : Math.floor(relativeDay / daysInMonth);
-			let year = viewDate.getFullYear();
-			let month = viewDate.getMonth() + monthShift;
+			const month_shift = relative_day < 0 ? -1 : Math.floor(relative_day / days_in_month);
+			let year = view_date.getFullYear();
+			let month = view_date.getMonth() + month_shift;
 			if (month > 11) {
 				month -= 12;
 				year++;
@@ -93,10 +93,10 @@
 			}
 
             const date = new Date(year, month, day);
-            const nextDate = new Date(year, month, day + 1);
+            const next_date = new Date(year, month, day + 1);
 			days.push({
                 date,
-                events: data.events.filter(event => event.startAt && new Date(event.startAt) >= date && new Date(event.startAt) < nextDate)
+                events: data.events.filter(event => event.startAt && new Date(event.startAt) >= date && new Date(event.startAt) < next_date)
             });
 		}
 	}
@@ -107,7 +107,7 @@
         <Button
             class="min-[400px]:ml-auto dark:bg-gray-700 dark:hover:bg-gray-600 py-2"
             on:click={() => {
-                viewMonth.set(getDefaultViewMonth());
+                view_month.set(get_default_view_month());
             }}
         >
             Today
@@ -116,7 +116,7 @@
             <Button
                 class="dark:bg-gray-700 dark:hover:bg-gray-600 p-3 aspect-square"
                 on:click={() => {
-                    viewMonth.set(dates.getPreviousMonth($viewMonth));
+                    view_month.set(dates.getPreviousMonth($view_month));
                 }}
             >
                 <ArrowLeftSolid size="xs" tabindex="-1" />
@@ -125,12 +125,12 @@
                 {new Intl.DateTimeFormat($locale ?? "en", {
 					month: "long",
 					year: "numeric",
-				}).format($viewMonth)}
+				}).format($view_month)}
             </span>
             <Button
                 class="dark:bg-gray-700 dark:hover:bg-gray-600 p-3 aspect-square"
                 on:click={() => {
-                    viewMonth.set(dates.getNextMonth($viewMonth));
+                    view_month.set(dates.getNextMonth($view_month));
                 }}
             >
                 <ArrowRightSolid size="xs" tabindex="-1" />
@@ -140,26 +140,26 @@
     <ScreenQuery size="md" let:matches>
         <div class="grid grid-cols-7 text-black dark:text-white text-xs sm:text-sm md:text-base">
             {#each days as day, i}
-                {@const topRow = i < 7}
-                {@const inPast = day.date < getToday()}
-                {@const selected = dates.isSelected($selectedDate, day.date)}
-                {@const disabled = inPast || !dates.isCurrentMonth($viewMonth, day.date)}
-                {@const canCreateEvents = !inPast && hasOneOfPermissions($user.data?.permissions ?? 0, [Permission.CreateEvents, Permission.ManageEvents])}
+                {@const top_row = i < 7}
+                {@const in_past = day.date < get_today()}
+                {@const selected = dates.isSelected($selected_date, day.date)}
+                {@const disabled = in_past || !dates.isCurrentMonth($view_month, day.date)}
+                {@const can_create_events = !in_past && hasOneOfPermissions($user.data?.permissions ?? 0, [Permission.CreateEvents, Permission.ManageEvents])}
                 <button
-                    class={twMerge("w-full aspect-square md:aspect-auto min-h-[64px] h-none md:h-32 lg:h-40 flex flex-col items-center bg-zinc-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-l border-b cursor-default", disabled && "text-gray-500", topRow && "border-t", (i + 1) % 7 === 0 && "border-r", i === 0 && "rounded-tl", i === 6 && "rounded-tr", i === dates.daysPerMonth - 7 && "rounded-bl", i === dates.daysPerMonth - 1 && "rounded-br", !matches && "cursor-pointer", (!matches && selected) && "bg-slate-200 dark:bg-gray-700")}
+                    class={twMerge("w-full aspect-square md:aspect-auto min-h-[64px] h-none md:h-32 lg:h-40 flex flex-col items-center bg-zinc-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700 border-l border-b cursor-default", disabled && "text-gray-500", top_row && "border-t", (i + 1) % 7 === 0 && "border-r", i === 0 && "rounded-tl", i === 6 && "rounded-tr", i === dates.daysPerMonth - 7 && "rounded-bl", i === dates.daysPerMonth - 1 && "rounded-br", !matches && "cursor-pointer", (!matches && selected) && "bg-slate-200 dark:bg-gray-700")}
                     on:click={() => {
-                        selectedDate.set(day.date);
+                        selected_date.set(day.date);
                     }}
                 >
                     <button
-                        class={twMerge("group/date relative w-full py-1 sm:py-2 flex flex-col items-center", matches && "cursor-default", (matches && canCreateEvents) && "hover:bg-zinc-200 dark:hover:bg-gray-700 cursor-pointer")}
+                        class={twMerge("group/date relative w-full py-1 sm:py-2 flex flex-col items-center", matches && "cursor-default", (matches && can_create_events) && "hover:bg-zinc-200 dark:hover:bg-gray-700 cursor-pointer")}
                         on:click={async (e) => {
-                            if (!matches || !canCreateEvents) return;
+                            if (!matches || !can_create_events) return;
                             e.stopPropagation();
-                            await createEvent(getEventStartAt(day.date));
+                            await create_event(get_event_start_at(day.date));
                         }}
                     >
-                        {#if topRow}
+                        {#if top_row}
                             <span>
                                 {new Intl.DateTimeFormat($locale ?? "en", {
                                     weekday: "short",
@@ -169,7 +169,7 @@
                             </span>
                         {/if}
                         <span class={twMerge("block rounded px-3 font-medium", dates.isToday(day.date) && "bg-primary-500 text-white dark:bg-primary-600")}>{day.date.getDate()}</span>
-                        {#if matches && canCreateEvents}
+                        {#if matches && can_create_events}
                             <CirclePlusSolid class="absolute top-1 right-1 text-primary-500 dark:text-gray-200 hidden group-hover/date:block" size="sm" />
                         {/if}
                     </button>
@@ -177,7 +177,7 @@
                         {#if matches}
                             <div class="w-full px-1 flex flex-col gap-px items-stretch">
                                 {#each day.events as event}
-                                    {@const eventStart = event.startAt && new Date(event.startAt)}
+                                    {@const event_start = event.startAt && new Date(event.startAt)}
                                     <Button href="/event/{event.id}" target="_blank" disabled={!!event.endedAt} color="dark" class="flex justify-start gap-1 text-left rounded p-px pl-0" size="xs" on:click={(e) => {
                                         e.stopPropagation();
                                     }}>
@@ -185,13 +185,13 @@
                                         <span class="flex-1 truncate">
                                             {event.name}
                                         </span>
-                                        {#if eventStart}
+                                        {#if event_start}
                                             <span class="shrink-0 font-normal text-gray-300">
                                                 {new Intl.DateTimeFormat($locale ?? "en", {
                                                     hour: "2-digit",
                                                     minute: "2-digit"
                                                 })
-                                                    .format(eventStart)}
+                                                    .format(event_start)}
                                             </span>
                                         {/if}
                                     </Button>
@@ -204,15 +204,15 @@
                 </button>
             {/each}
         </div>
-        {#if !matches && $selectedDate}
-            {@const selectedEvents = days.find(day => day.date.getTime() === $selectedDate?.getTime())?.events ?? []}
+        {#if !matches && $selected_date}
+            {@const selected_events = days.find(day => day.date.getTime() === $selected_date?.getTime())?.events ?? []}
             <section class="flex flex-col items-stretch gap-2">
                 <Heading tag="h2" class="text-xl">Events for {new Intl.DateTimeFormat($locale ?? "en", {
                     dateStyle: "long",
-                }).format($selectedDate)}</Heading>
-                <CreateEventButton startAt={getEventStartAt($selectedDate)} />
+                }).format($selected_date)}</Heading>
+                <CreateEventButton startAt={get_event_start_at($selected_date)} />
                 <Timeline class="w-full">
-                    {#each selectedEvents as event}
+                    {#each selected_events as event}
                         <TimelineItem>
                             <div class="mb-2">
                                 <TimeBadge id="test-event-time" format="datetime-relative" value={event.startAt ?? 0} />

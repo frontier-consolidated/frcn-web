@@ -7,30 +7,30 @@
 	export let viewDate: Date;
 	export let zoomLevel: number;
 
-	let zoomText: string = "";
+	let zoom_text: string = "";
 	$: {
 		switch (zoomLevel) {
 			case 3:
-				zoomText = new Intl.DateTimeFormat($locale!, {
+				zoom_text = new Intl.DateTimeFormat($locale!, {
 					month: "long",
 					year: "numeric",
 				}).format(viewDate);
 				break;
 			case 2:
-				zoomText = new Intl.DateTimeFormat($locale!, {
+				zoom_text = new Intl.DateTimeFormat($locale!, {
 					year: "numeric",
 				}).format(viewDate);
 				break;
 			case 1:
 				{
-					const startYear = dates.getDecadeStartYear(viewDate);
-					zoomText = `${startYear.getFullYear()} - ${startYear.getFullYear() + 9}`;
+					const start_year = dates.getDecadeStartYear(viewDate);
+					zoom_text = `${start_year.getFullYear()} - ${start_year.getFullYear() + 9}`;
 				}
 				break;
 			case 0:
 				{
-					const startYear = dates.getCenturyStartYear(viewDate);
-					zoomText = `${startYear.getFullYear()} - ${startYear.getFullYear() + 90}`;
+					const start_year = dates.getCenturyStartYear(viewDate);
+					zoom_text = `${start_year.getFullYear()} - ${start_year.getFullYear() + 90}`;
 				}
 				break;
 		}
@@ -65,7 +65,7 @@
 			zoomLevel = Math.max(0, zoomLevel - 1);
 		}}
 	>
-		{zoomText}
+		{zoom_text}
 	</Button>
 	<Button
 		class="dark:bg-gray-700 dark:hover:bg-gray-600 p-3"

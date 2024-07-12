@@ -7,7 +7,7 @@
 
     export let data: PageData;
 
-    let isFutureEvent = data.startAt ? new Date(data.startAt) >= new Date() : true;
+    let is_future_event = data.startAt ? new Date(data.startAt) >= new Date() : true;
 </script>
 
 <div class="flex flex-col gap-4">
@@ -23,7 +23,7 @@
         <span class="text-sm font-semibold dark:text-gray-400">
             {#if data.startAt}
                 {#key data.startAt}
-                    {isFutureEvent ? "Starts" : "Started"}: <TimeBadge
+                    {is_future_event ? "Starts" : "Started"}: <TimeBadge
                         id="event-start-badge"
                         format="datetime-relative"
                         value={data.startAt}

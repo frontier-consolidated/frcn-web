@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { locale } from "svelte-i18n";
 
-	function getMonthAbbr(month: Date) {
+	function get_month_abbr(month: Date) {
 		return new Intl.DateTimeFormat($locale!, {
 			month: "short",
 		}).format(month);
@@ -38,7 +38,7 @@
 				}
 			}}
 		>
-			{getMonthAbbr(month)}
+			{get_month_abbr(month)}
 		</span>
 	{/each}
 </div>

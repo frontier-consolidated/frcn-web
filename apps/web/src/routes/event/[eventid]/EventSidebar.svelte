@@ -11,25 +11,23 @@
 		ArrowLeftToBracketOutline,
 		EyeSlashSolid,
 		EyeSolid,
-		PlusSolid,
 		UserPlusSolid,
 		UsersSolid,
 	} from "flowbite-svelte-icons";
 
 	import { RsvpModal } from "$lib/components";
-	import { Mutations, getApollo } from "$lib/graphql";
-	import { pushNotification } from "$lib/stores/NotificationStore";
+	import { Mutations, get_apollo } from "$lib/graphql";
+	import { push_notification } from "$lib/stores/NotificationStore";
 	import { user } from "$lib/stores/UserStore";
 
 	import type { PageData } from "./$types";
 	import EventMember from "./EventMember.svelte";
-	import EventTeam from "./EventTeam.svelte";
 	import SidebarButton from "./SidebarButton.svelte";
 
 	export let data: PageData;
 
-	let hideMembers = false;
-	let rsvpModal = false;
+	let hide_members = false;
+	let rsvp_modal_open = false;
 </script>
 
 <Sidebar asideClass="z-10 shrink-0 lg:w-72 lg:-mb-12">
@@ -45,15 +43,15 @@
 					label="End Event"
 					class="rounded clip-opposite-4 dark:hover:bg-red-500"
 					on:click={async () => {
-						const { data: endData, errors } = await getApollo().mutate({
+						const { data: end_data, errors } = await get_apollo().mutate({
 							mutation: Mutations.END_EVENT,
 							variables: {
 								id: data.id
 							}
 						});
 
-						if (!endData?.ended || (errors && errors.length > 0)) {
-							pushNotification({
+						if (!end_data?.ended || (errors && errors.length > 0)) {
+							push_notification({
 								type: "error",
 								message: "Failed to end event",
 							});
@@ -62,7 +60,7 @@
 						}
 
 						await invalidate("app:currentevent");
-						pushNotification({
+						push_notification({
 							type: "success",
 							message: "Successfully ended the event",
 						});
@@ -76,15 +74,15 @@
 						nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:text-white hover:bg-red-500"
 						label="Leave Event"
 						on:click={async () => {
-							const { data: unrsvpData, errors } = await getApollo().mutate({
+							const { data: unrsvp_data, errors } = await get_apollo().mutate({
 								mutation: Mutations.UNRSVP_FOR_EVENT,
 								variables: {
 									eventId: data.id
 								}
 							});
 
-							if (!unrsvpData?.success || (errors && errors.length > 0)) {
-								pushNotification({
+							if (!unrsvp_data?.success || (errors && errors.length > 0)) {
+								push_notification({
 									type: "error",
 									message: "Failed to leave event",
 								});
@@ -105,7 +103,7 @@
 						class="rounded clip-opposite-4"
 						nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white dark:hover:bg-primary-500"
 						label="Join Event"
-						on:click={() => rsvpModal = true}
+						on:click={() => rsvp_modal_open = true}
 					>
 						<svelte:fragment slot="icon">
 							<UserPlusSolid tabindex="-1" />
@@ -121,17 +119,17 @@
 					{data.members.length} Event Member{data.members.length !== 1 ? "s" : ""}
 				</span>
 			</div>
-			<SidebarButton on:click={() => (hideMembers = !hideMembers)}>
+			<SidebarButton on:click={() => (hide_members = !hide_members)}>
 				<svelte:fragment slot="icon">
-					<svelte:component this={hideMembers ? EyeSolid : EyeSlashSolid} size="sm" tabindex="-1" />
+					<svelte:component this={hide_members ? EyeSolid : EyeSlashSolid} size="sm" tabindex="-1" />
 				</svelte:fragment>
-				{hideMembers ? "Show Members" : "Hide Members"}
+				{hide_members ? "Show Members" : "Hide Members"}
 			</SidebarButton>
 			<!-- <SidebarButton class="text-white bg-primary-500 hover:bg-primary-600 dark:bg-primary-700 dark:hover:bg-primary-600">
 				<PlusSolid slot="icon" size="sm" tabindex="-1" />
 				Create Team
 			</SidebarButton> -->
-			<SidebarGroup ulClass={hideMembers ? "hidden" : ""}>
+			<SidebarGroup ulClass={hide_members ? "hidden" : ""}>
 				<!-- <EventTeam bind:event={data} /> -->
 				{#if data.members.length > 0}
 					{#each data.members as member}
@@ -145,4 +143,4 @@
 	</SidebarWrapper>
 </Sidebar>
 
-<RsvpModal event={data} dependency="app:currentevent" bind:open={rsvpModal} />
+<RsvpModal event={data} dependency="app:currentevent" bind:open={rsvp_modal_open} />

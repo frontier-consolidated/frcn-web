@@ -24,7 +24,7 @@ export const notifications = writable<Notification[]>([], (set, update) => {
 	};
 });
 
-export function pushNotification(notification: Omit<Notification, "id" | "exitAt">) {
+export function push_notification(notification: Omit<Notification, "id" | "exitAt">) {
 	notifications.update((value) => {
 		return [
 			...value,
@@ -37,7 +37,7 @@ export function pushNotification(notification: Omit<Notification, "id" | "exitAt
 	});
 }
 
-export function dropNotification(id: string) {
+export function drop_notification(id: string) {
 	notifications.update((value) => {
 		return value.filter((notif) => notif.id !== id);
 	});
