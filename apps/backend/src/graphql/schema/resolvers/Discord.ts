@@ -19,13 +19,13 @@ export async function resolveDiscordGuild(guild: string | Guild, context: GQLCon
 		guildObj = guild;
 	} else {
 		guildObj = await $discord.getGuild(context.app.discordClient, guild);
+	}
 
-		if (!guildObj) {
-			return {
-				id: guild,
-				name: "!UNKNOWN"
-			} satisfies DiscordGuild;
-		}
+	if (!guildObj) {
+		return {
+			id: (typeof guild === "string" ? guild : guild.id) || "!UNKNOWN",
+			name: "!UNKNOWN"
+		} satisfies DiscordGuild;
 	}
 
 	return {

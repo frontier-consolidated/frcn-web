@@ -47,6 +47,8 @@ function getAllGuilds(client: DiscordClient) {
 }
 
 async function getGuild(client: DiscordClient, id: string) {
+	if (!id) return null;
+
 	try {
 		const guild = client.guilds.cache.get(id) ?? await client.guilds.fetch(id);
 		return guild;
