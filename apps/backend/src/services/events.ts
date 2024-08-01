@@ -602,6 +602,9 @@ async function endEvent(event: Event, discordClient: DiscordClient, postMessage 
 		where: { id: event.id },
 		data: {
 			endedAt: new Date()
+		},
+		include: {
+			channel: true
 		}
 	});
 
@@ -611,6 +614,10 @@ async function endEvent(event: Event, discordClient: DiscordClient, postMessage 
 		} catch (err) {
 			logger.error("Error posting event end message", err);
 		}
+	}
+
+	if (endedEvent.channel) {
+		await updateEventChannelCalendarMessage(discordClient, endedEvent.channel);
 	}
 
 	return endedEvent;
