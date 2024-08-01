@@ -8,6 +8,8 @@ export const EVENT_MEMBER_FRAGMENT = gql(`
             id
             name
             avatarUrl
+            discordName
+            discordUsername
         }
         rsvp
         rsvpAt

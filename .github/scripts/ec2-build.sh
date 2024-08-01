@@ -14,7 +14,7 @@ pnpm --config.dedupe-peer-dependents=false --filter ./packages/adapter install
 pnpm --filter ./packages/adapter build
 pnpm install --frozen-lockfile
 
-pnpm --filter=backend db-generate
+pnpm --filter=backend db:generate
 
 echo "VITE_API_BASEURL=https://$HOSTNAME" > apps/web/.env.production
 

@@ -9,18 +9,12 @@ const config = {
 
 	kit: {
 		adapter: adapter({
-			out: "build",
-			main: {
-				input: "server/index.js",
-			}
+			out: "build"
 		}),
 		prerender: {
-			entries: [
-				"/legal/cookies",
-				"/legal/privacy"
-			]
+			entries: ["/legal/cookies", "/legal/privacy"]
 		}
-	},
+	}
 };
 
 export default config;

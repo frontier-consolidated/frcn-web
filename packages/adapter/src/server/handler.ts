@@ -184,13 +184,13 @@ function get_origin(headers: IncomingHttpHeaders) {
 export async function on_start() {
 	await render_isr_routes();
 
-	const main = "MAIN_ENTRYPOINT" as string;
-	if (main === "false") return;
+	// const main = "MAIN_ENTRYPOINT" as string;
+	// if (main === "false") return;
 
-	const mainModule = await import(/* @vite-ignore */ main) as { default?: () => void | Promise<void> };
-	if (!mainModule.default) throw new Error("No default export from main server module: " + main);
-	console.log("Starting main server module...");
-	await Promise.resolve(mainModule.default());
+	// const mainModule = await import(/* @vite-ignore */ main) as { default?: () => void | Promise<void> };
+	// if (!mainModule.default) throw new Error("No default export from main server module: " + main);
+	// console.log("Starting main server module...");
+	// await Promise.resolve(mainModule.default());
 }
 
 export const handler = sequence(

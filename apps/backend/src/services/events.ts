@@ -586,14 +586,21 @@ async function postEvent(event: Event, discordClient: DiscordClient) {
 async function unpostEvent(event: Event, discordClient: DiscordClient) {
 	await deleteEventThread(event, discordClient);
 	await deleteEventMessage(discordClient, event);
-	await database.event.update({
+	const unpostedEvent = await database.event.update({
 		where: { id: event.id },
 		data: {
 			discordEventMessageId: null,
 			discordThreadId: null,
 			posted: false,
 		},
+		include: {
+			channel: true
+		}
 	});
+
+	if (unpostedEvent.channel) {
+		await updateEventChannelCalendarMessage(discordClient, unpostedEvent.channel);
+	}
 }
 
 async function endEvent(event: Event, discordClient: DiscordClient, postMessage = true) {
@@ -602,6 +609,9 @@ async function endEvent(event: Event, discordClient: DiscordClient, postMessage 
 		where: { id: event.id },
 		data: {
 			endedAt: new Date()
+		},
+		include: {
+			channel: true
 		}
 	});
 
@@ -611,6 +621,10 @@ async function endEvent(event: Event, discordClient: DiscordClient, postMessage 
 		} catch (err) {
 			logger.error("Error posting event end message", err);
 		}
+	}
+
+	if (endedEvent.channel) {
+		await updateEventChannelCalendarMessage(discordClient, endedEvent.channel);
 	}
 
 	return endedEvent;
@@ -649,9 +663,16 @@ async function deleteEvent(event: Event, discordClient: DiscordClient) {
 
 	await deleteEventThread(event, discordClient);
 	await deleteEventMessage(discordClient, event);
-	await database.event.delete({
+	const deletedEvent = await database.event.delete({
 		where: { id: event.id },
+		include: {
+			channel: true
+		}
 	});
+
+	if (deletedEvent.channel) {
+		await updateEventChannelCalendarMessage(discordClient, deletedEvent.channel);
+	}
 }
 
 async function canJoinRsvp(rsvp: EventRsvpRole) {
