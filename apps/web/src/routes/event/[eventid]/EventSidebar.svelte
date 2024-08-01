@@ -28,24 +28,32 @@
 	export let data: PageData;
 
 	let exporting = false;
-	function exportMembers() {
+	function exportMembers(allData = false) {
 		if (exporting) return;
 		exporting = true;
 
-		const csv = [
-			["Display Name", "Discord Nickname", "Discord Username", "RSVP"]
-		];
+		const csv = [];
+
+		if (allData) {
+			csv.push(["Display Name", "Discord Nickname", "Discord Username", "RSVP"]);
+		} else {
+			csv.push(["Name"]);
+		}
 
 		for (const member of data.members) {
 			if (!member.user) continue;
 
-			const rsvpRole = data.rsvpRoles.find(role => role.id === member.rsvp);
-			csv.push([
-				member.user.name,
-				member.user.discordName,
-				member.user.discordUsername,
-				rsvpRole?.name ?? "!ERROR"
-			]);
+			if (allData) {
+				const rsvpRole = data.rsvpRoles.find(role => role.id === member.rsvp);
+				csv.push([
+					member.user.name,
+					member.user.discordName,
+					member.user.discordUsername,
+					rsvpRole?.name ?? "!ERROR"
+				]);
+			} else {
+				csv.push([member.user.name]);
+			}
 		}
 
 		const csvContent = csv.map(row => row.map(value => JSON.stringify(value)).join(",")).join("\n");
@@ -166,7 +174,9 @@
 				{hideMembers ? "Show Members" : "Hide Members"}
 			</SidebarButton>
 			{#if data.canEdit}
-				<SidebarButton on:click={() => exportMembers()}>
+				<SidebarButton on:click={(e) => {
+					exportMembers(e.altKey);
+				}}>
 					<svelte:fragment slot="icon">
 						<FileExportSolid size="sm" tabindex="-1" />
 					</svelte:fragment>
