@@ -11,7 +11,7 @@
 		ArrowLeftToBracketOutline,
 		EyeSlashSolid,
 		EyeSolid,
-		PlusSolid,
+		FileExportSolid,
 		UserPlusSolid,
 		UsersSolid,
 	} from "flowbite-svelte-icons";
@@ -23,10 +23,46 @@
 
 	import type { PageData } from "./$types";
 	import EventMember from "./EventMember.svelte";
-	import EventTeam from "./EventTeam.svelte";
 	import SidebarButton from "./SidebarButton.svelte";
 
 	export let data: PageData;
+
+	let exporting = false;
+	function exportMembers() {
+		if (exporting) return;
+		exporting = true;
+
+		const csv = [
+			["Display Name", "Discord Nickname", "Discord Username"]
+		];
+
+		for (const member of data.members) {
+			if (!member.user) continue;
+
+			csv.push([
+				member.user.name,
+				member.user.discordName,
+				member.user.discordUsername
+			]);
+		}
+
+		const csvContent = csv.map(row => row.map(value => JSON.stringify(value)).join(",")).join("\n");
+		const blob = new Blob([csvContent], {
+			type: "text/csv;charset=utf-8"
+		});
+
+		const url = URL.createObjectURL(blob);
+		
+		const link = document.createElement("a");
+		link.href = url;
+		link.download = `${data.id}-event-members.csv`;
+		link.click();
+
+		link.remove();
+		URL.revokeObjectURL(url);
+
+		exporting = false;
+	}
 
 	let hideMembers = false;
 	let rsvpModal = false;
@@ -127,6 +163,14 @@
 				</svelte:fragment>
 				{hideMembers ? "Show Members" : "Hide Members"}
 			</SidebarButton>
+			{#if data.canEdit}
+				<SidebarButton on:click={() => exportMembers()}>
+					<svelte:fragment slot="icon">
+						<FileExportSolid size="sm" tabindex="-1" />
+					</svelte:fragment>
+					Export members
+				</SidebarButton>
+			{/if}
 			<!-- <SidebarButton class="text-white bg-primary-500 hover:bg-primary-600 dark:bg-primary-700 dark:hover:bg-primary-600">
 				<PlusSolid slot="icon" size="sm" tabindex="-1" />
 				Create Team
