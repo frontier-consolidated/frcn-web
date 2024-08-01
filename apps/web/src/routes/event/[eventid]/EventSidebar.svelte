@@ -33,16 +33,18 @@
 		exporting = true;
 
 		const csv = [
-			["Display Name", "Discord Nickname", "Discord Username"]
+			["Display Name", "Discord Nickname", "Discord Username", "RSVP"]
 		];
 
 		for (const member of data.members) {
 			if (!member.user) continue;
 
+			const rsvpRole = data.rsvpRoles.find(role => role.id === member.rsvp);
 			csv.push([
 				member.user.name,
 				member.user.discordName,
-				member.user.discordUsername
+				member.user.discordUsername,
+				rsvpRole?.name ?? "!ERROR"
 			]);
 		}
 
@@ -52,7 +54,7 @@
 		});
 
 		const url = URL.createObjectURL(blob);
-		
+
 		const link = document.createElement("a");
 		link.href = url;
 		link.download = `${data.id}-event-members.csv`;
