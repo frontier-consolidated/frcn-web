@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
+	import { hasPermission, Permission } from "@frcn/shared";
 	import {
 		Sidebar,
 		SidebarGroup,
@@ -173,7 +174,7 @@
 				</svelte:fragment>
 				{hideMembers ? "Show Members" : "Hide Members"}
 			</SidebarButton>
-			{#if data.canEdit}
+			{#if data.canEdit || hasPermission($user.data?.__permissions ?? 0, Permission.CreateEvents)}
 				<SidebarButton on:click={(e) => {
 					exportMembers(e.altKey);
 				}}>
