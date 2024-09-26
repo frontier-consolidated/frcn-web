@@ -12,7 +12,7 @@ find . -name ".gitignore" -exec rm {} \;
 
 pnpm --config.dedupe-peer-dependents=false --filter ./packages/adapter install
 pnpm --filter ./packages/adapter build
-pnpm install --frozen-lockfile
+pnpm install --frozen-lockfile --ignore-scripts
 
 pnpm --filter=backend db:generate
 
