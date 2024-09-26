@@ -43,6 +43,10 @@ declare global {
 			AWS_S3_REGION: string;
 			AWS_S3_KEY: string;
 			AWS_S3_SECRET: string;
+
+			INTEGRATION_LEGION_CODA_TOKEN: string;
+			INTEGRATION_LEGION_CODA_DOC_ID: string;
+			INTEGRATION_LEGION_CODA_TABLE_ID: string;
 		}
 	}
 }

@@ -123,5 +123,9 @@ export function validateEnvironment() {
 	expectEnvvar("AWS_S3_KEY");
 	expectEnvvar("AWS_S3_SECRET");
 
+	expectEnvvar("INTEGRATION_LEGION_CODA_TOKEN");
+	expectEnvvar("INTEGRATION_LEGION_CODA_DOC_ID");
+	expectEnvvar("INTEGRATION_LEGION_CODA_TABLE_ID");
+
 	logger.info("No issues with environment found");
 }

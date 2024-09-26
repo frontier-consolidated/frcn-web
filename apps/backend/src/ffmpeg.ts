@@ -10,8 +10,10 @@ export function ffmpeg(fn: (command: fluentFfmpeg.FfmpegCommand) => fluentFfmpeg
         const command = fluentFfmpeg({
             niceness: 20,
         });
-        fn(command);
-        command.on("end", resolve);
+		fn(command);
+		// @ts-ignore
+		command.on("end", resolve);
+		// @ts-ignore
         command.on("error", reject);
 	});
 }
