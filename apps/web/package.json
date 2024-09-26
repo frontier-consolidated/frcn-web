@@ -48,7 +48,6 @@
     "@codemirror/view": "^6.26.2",
     "@floating-ui/dom": "^1.6.1",
     "@frcn/cms": "workspace:^",
-    "@frcn/cms-events": "workspace:^",
     "@frcn/shared": "workspace:^",
     "@lezer/highlight": "^1.2.0",
     "@lezer/markdown": "^1.2.0",
