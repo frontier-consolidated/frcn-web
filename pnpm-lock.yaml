@@ -261,6 +261,9 @@ importers:
       '@lezer/markdown':
         specifier: ^1.2.0
         version: 1.2.0
+      '@sveltejs/kit':
+        specifier: 2.5.0
+        version: 2.5.0(@sveltejs/vite-plugin-svelte@3.0.0(svelte@4.2.7)(vite@5.0.12(@types/node@20.11.5)))(svelte@4.2.7)(vite@5.0.12(@types/node@20.11.5))
       '@uiw/codemirror-themes':
         specifier: ^4.21.25
         version: 4.21.25(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.2)
@@ -316,9 +319,6 @@ importers:
       '@graphql-typed-document-node/core':
         specifier: ^3.2.0
         version: 3.2.0(graphql@16.8.1)
-      '@sveltejs/kit':
-        specifier: ^2.5.0
-        version: 2.5.0(@sveltejs/vite-plugin-svelte@3.0.0(svelte@4.2.7)(vite@5.0.12(@types/node@20.11.5)))(svelte@4.2.7)(vite@5.0.12(@types/node@20.11.5))
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.0.0
         version: 3.0.0(svelte@4.2.7)(vite@5.0.12(@types/node@20.11.5))
