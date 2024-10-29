@@ -1,12 +1,7 @@
 <script lang="ts">
 	import { invalidate } from "$app/navigation";
 	import { hasPermission, Permission } from "@frcn/shared";
-	import {
-		Sidebar,
-		SidebarGroup,
-		SidebarItem,
-		SidebarWrapper,
-	} from "flowbite-svelte";
+	import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from "flowbite-svelte";
 	import {
 		ArrowLeftSolid,
 		ArrowLeftToBracketOutline,
@@ -14,7 +9,7 @@
 		EyeSolid,
 		FileExportSolid,
 		UserPlusSolid,
-		UsersSolid,
+		UsersSolid
 	} from "flowbite-svelte-icons";
 
 	import { RsvpModal } from "$lib/components";
@@ -45,7 +40,7 @@
 			if (!member.user) continue;
 
 			if (allData) {
-				const rsvpRole = data.rsvpRoles.find(role => role.id === member.rsvp);
+				const rsvpRole = data.rsvpRoles.find((role) => role.id === member.rsvp);
 				csv.push([
 					member.user.name,
 					member.user.discordName,
@@ -57,7 +52,11 @@
 			}
 		}
 
-		const csvContent = csv.map(row => row.map(value => JSON.stringify(value)).join(",")).join("\n");
+		csv.sort((a, b) => a[0].localeCompare(b[0]));
+
+		const csvContent = csv
+			.map((row) => row.map((value) => JSON.stringify(value)).join(","))
+			.join("\n");
 		const blob = new Blob([csvContent], {
 			type: "text/csv;charset=utf-8"
 		});
@@ -80,8 +79,12 @@
 </script>
 
 <Sidebar asideClass="z-10 shrink-0 lg:w-72 lg:-mb-12">
-	<SidebarWrapper class="py-2 lg:py-4 rounded-none lg:h-full bg-transparent dark:bg-transparent lg:bg-zinc-100 lg:dark:bg-slate-900 bg-cover">
-		<ul class="flex flex-wrap [&>li]:flex-1 [&>li]:min-w-48 lg:[&>li]:min-w-0 [&>li]:w-full gap-2 lg:block lg:space-y-2">
+	<SidebarWrapper
+		class="py-2 lg:py-4 rounded-none lg:h-full bg-transparent dark:bg-transparent lg:bg-zinc-100 lg:dark:bg-slate-900 bg-cover"
+	>
+		<ul
+			class="flex flex-wrap [&>li]:flex-1 [&>li]:min-w-48 lg:[&>li]:min-w-0 [&>li]:w-full gap-2 lg:block lg:space-y-2"
+		>
 			<SidebarItem class="rounded clip-opposite-4" href="/events" label="Back To Events">
 				<svelte:fragment slot="icon">
 					<ArrowLeftSolid tabindex="-1" />
@@ -102,7 +105,7 @@
 						if (!endData?.ended || (errors && errors.length > 0)) {
 							pushNotification({
 								type: "error",
-								message: "Failed to end event",
+								message: "Failed to end event"
 							});
 							console.error(errors);
 							return;
@@ -111,7 +114,7 @@
 						await invalidate("app:currentevent");
 						pushNotification({
 							type: "success",
-							message: "Successfully ended the event",
+							message: "Successfully ended the event"
 						});
 					}}
 				/>
@@ -133,14 +136,16 @@
 							if (!unrsvpData?.success || (errors && errors.length > 0)) {
 								pushNotification({
 									type: "error",
-									message: "Failed to leave event",
+									message: "Failed to leave event"
 								});
 								console.error(errors);
 								return;
 							}
 
 							data.rsvp = null;
-							data.members = data.members.filter(member => member.user?.id !== $user.data?.id);
+							data.members = data.members.filter(
+								(member) => member.user?.id !== $user.data?.id
+							);
 						}}
 					>
 						<svelte:fragment slot="icon">
@@ -148,11 +153,11 @@
 						</svelte:fragment>
 					</SidebarItem>
 				{:else}
-					<SidebarItem	
+					<SidebarItem
 						class="rounded clip-opposite-4"
 						nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white dark:hover:bg-primary-500"
 						label="Join Event"
-						on:click={() => rsvpModal = true}
+						on:click={() => (rsvpModal = true)}
 					>
 						<svelte:fragment slot="icon">
 							<UserPlusSolid tabindex="-1" />
@@ -170,14 +175,20 @@
 			</div>
 			<SidebarButton on:click={() => (hideMembers = !hideMembers)}>
 				<svelte:fragment slot="icon">
-					<svelte:component this={hideMembers ? EyeSolid : EyeSlashSolid} size="sm" tabindex="-1" />
+					<svelte:component
+						this={hideMembers ? EyeSolid : EyeSlashSolid}
+						size="sm"
+						tabindex="-1"
+					/>
 				</svelte:fragment>
 				{hideMembers ? "Show Members" : "Hide Members"}
 			</SidebarButton>
 			{#if data.canEdit || hasPermission($user.data?.__permissions ?? 0, Permission.CreateEvents)}
-				<SidebarButton on:click={(e) => {
-					exportMembers(e.altKey);
-				}}>
+				<SidebarButton
+					on:click={(e) => {
+						exportMembers(e.altKey);
+					}}
+				>
 					<svelte:fragment slot="icon">
 						<FileExportSolid size="sm" tabindex="-1" />
 					</svelte:fragment>
@@ -195,7 +206,9 @@
 						<EventMember bind:event={data} {member} />
 					{/each}
 				{:else}
-					<span class="block text-sm text-center text-gray-400 dark:text-gray-600">No members</span>
+					<span class="block text-sm text-center text-gray-400 dark:text-gray-600"
+						>No members</span
+					>
 				{/if}
 			</SidebarGroup>
 		</SidebarGroup>
