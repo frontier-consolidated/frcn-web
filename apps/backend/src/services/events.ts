@@ -2,19 +2,34 @@ import { randomUUID } from "crypto";
 
 import type { EventType } from "@frcn/shared";
 import type { Event, EventChannel, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
-import { ChannelType, TextChannel, type GuildBasedChannel, ThreadAutoArchiveDuration, VideoQualityMode, Guild } from "discord.js";
+import {
+	ChannelType,
+	TextChannel,
+	type GuildBasedChannel,
+	ThreadAutoArchiveDuration,
+	VideoQualityMode,
+	Guild
+} from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { $system } from "./system";
 import type { DiscordClient } from "../bot";
-import { deleteEventMessage, postEventMessage, updateEventMessage } from "../bot/messages/event.message";
+import {
+	deleteEventMessage,
+	postEventMessage,
+	updateEventMessage
+} from "../bot/messages/event.message";
 import { updateEventChannelCalendarMessage } from "../bot/messages/eventChannelCalendar.message";
 import { postEventEndMessage } from "../bot/messages/eventStartEnd.message";
 import { postEventUpdateMessage } from "../bot/messages/eventUpdate.message";
 import type { Context } from "../context";
 import { database } from "../database";
-import { EventAccessType, type EventChannelEditInput, type EventEditInput } from "../graphql/__generated__/resolvers-types";
+import {
+	EventAccessType,
+	type EventChannelEditInput,
+	type EventEditInput
+} from "../graphql/__generated__/resolvers-types";
 import { logger } from "../logger";
 import { insertEventIntoLegionCoda } from "../integrations/coda";
 
@@ -32,24 +47,24 @@ export enum EventReminder {
 
 async function getEvent(id: string) {
 	const event = await database.event.findUnique({
-		where: { id },
+		where: { id }
 	});
 	return event;
 }
 
 async function getEventFromMessageId(id: string) {
 	const event = await database.event.findFirst({
-		where: { discordEventMessageId: id },
+		where: { discordEventMessageId: id }
 	});
 	return event;
 }
 
 type GetEventsFilter = {
 	search?: string;
-	eventType?: EventType,
-	startAt?: { min?: Date, max?: Date };
+	eventType?: EventType;
+	startAt?: { min?: Date; max?: Date };
 	duration?: { min?: number; max?: number };
-	includeCompleted?: boolean
+	includeCompleted?: boolean;
 };
 
 async function getEvents(
@@ -66,13 +81,18 @@ async function getEvents(
 	}
 
 	// If the date range is less than or equal to a calendar range then don't limit items
-	if (limit === -1 && startAt.min && startAt.max && new Date(startAt.min.getTime() + 45 * 24 * 3600 * 1000) >= startAt.max) {
+	if (
+		limit === -1 &&
+		startAt.min &&
+		startAt.max &&
+		new Date(startAt.min.getTime() + 45 * 24 * 3600 * 1000) >= startAt.max
+	) {
 		limit = -1;
 	} else {
 		if (limit === -1) limit = 20;
 		limit = Math.min(100, limit);
 	}
-	
+
 	const startAtOr: Prisma.EventWhereInput[] = [];
 
 	if (startAt.min || startAt.max) {
@@ -80,7 +100,7 @@ async function getEvents(
 			startAt: {
 				gte: startAt.min,
 				lte: startAt.max
-			},
+			}
 		});
 	}
 
@@ -91,7 +111,7 @@ async function getEvents(
 				lt: startAt.min,
 				gte: new Date(Date.now() - EVENT_EXPIRE_AFTER)
 			},
-			endedAt: null,
+			endedAt: null
 		});
 	}
 
@@ -99,8 +119,8 @@ async function getEvents(
 		where: {
 			name: search
 				? {
-					contains: search,
-					mode: "insensitive"
+						contains: search,
+						mode: "insensitive"
 				  }
 				: undefined,
 			eventType,
@@ -108,24 +128,24 @@ async function getEvents(
 			duration: duration
 				? {
 						gte: duration.min,
-						lte: duration.max,
+						lte: duration.max
 				  }
 				: undefined,
-			OR: startAtOr.length > 0 ? startAtOr : undefined,
+			OR: startAtOr.length > 0 ? startAtOr : undefined
 		},
 		orderBy: [
 			{
-				startAt: "asc",
+				startAt: "asc"
 			},
 			{
-				createdAt: "asc",
-			},
+				createdAt: "asc"
+			}
 		],
 		include: {
 			members: true,
 			accessRoles: true,
-			channel: true,
-		},
+			channel: true
+		}
 	});
 
 	const predicate = await Promise.all(
@@ -134,7 +154,8 @@ async function getEvents(
 		})
 	);
 	const filteredResult = result.filter((_, index) => predicate[index]);
-	const pageItems = limit === -1 ? filteredResult : filteredResult.slice(page * limit, (page + 1) * limit);
+	const pageItems =
+		limit === -1 ? filteredResult : filteredResult.slice(page * limit, (page + 1) * limit);
 
 	return {
 		items: pageItems,
@@ -142,7 +163,7 @@ async function getEvents(
 		itemsPerPage: limit,
 		page,
 		nextPage: limit > 0 && (page + 1) * limit < filteredResult.length ? page + 1 : null,
-		prevPage: limit > 0 && page > 0 ? page - 1 : null,
+		prevPage: limit > 0 && page > 0 ? page - 1 : null
 	};
 }
 
@@ -153,9 +174,11 @@ async function getUpcomingEvents(maxTimeInFutureMs?: number) {
 			posted: true,
 			archived: false,
 			endedAt: null,
-			startAt: maxTimeInFutureMs ? {
-				lte: new Date(now + maxTimeInFutureMs)
-			} : undefined
+			startAt: maxTimeInFutureMs
+				? {
+						lte: new Date(now + maxTimeInFutureMs)
+				  }
+				: undefined
 		},
 		include: {
 			channel: true
@@ -172,7 +195,7 @@ async function getEndingEvents() {
 			startAt: {
 				lt: new Date(now)
 			},
-			endedAt: null,
+			endedAt: null
 		},
 		include: {
 			channel: {
@@ -192,10 +215,15 @@ async function getEventsInChannel(id: number) {
 	});
 }
 
-async function getEventEventChannel<T extends Prisma.Event$channelArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$channelArgs>) {
-	const result = await database.event.findUnique({
-		where: { id }
-	}).channel<T>(args);
+async function getEventEventChannel<T extends Prisma.Event$channelArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.Event$channelArgs>
+) {
+	const result = await database.event
+		.findUnique({
+			where: { id }
+		})
+		.channel<T>(args);
 	return result;
 }
 
@@ -203,8 +231,13 @@ async function getEventDiscordChannel(event: Event, discordClient: DiscordClient
 	const eventChannel = await $events.getEventEventChannel(event.id);
 	if (!eventChannel) throw new Error("Event has no event channel");
 
-	const channel = await $discord.getChannel(discordClient, eventChannel.discordId, eventChannel.discordGuildId ?? undefined);
-	if (!channel?.isTextBased() || !(channel instanceof TextChannel)) throw new Error("Could not find event channel, or channel is somehow not text based");
+	const channel = await $discord.getChannel(
+		discordClient,
+		eventChannel.discordId,
+		eventChannel.discordGuildId ?? undefined
+	);
+	if (!channel?.isTextBased() || !(channel instanceof TextChannel))
+		throw new Error("Could not find event channel, or channel is somehow not text based");
 	return channel;
 }
 
@@ -213,13 +246,21 @@ async function getEventThread(event: Event, discordClient: DiscordClient) {
 
 	const eventChannel = event.channelId ? await getEventChannel(event.channelId) : null;
 
-	const thread = await $discord.getChannel(discordClient, event.discordThreadId, eventChannel?.discordGuildId ?? undefined);
+	const thread = await $discord.getChannel(
+		discordClient,
+		event.discordThreadId,
+		eventChannel?.discordGuildId ?? undefined
+	);
 	if (!thread?.isThread()) throw new Error("Could not find thread or channel is not a thread");
 
 	return thread;
 }
 
-async function createEventThread(event: Event, discordClient: DiscordClient, channel?: TextChannel) {
+async function createEventThread(
+	event: Event,
+	discordClient: DiscordClient,
+	channel?: TextChannel
+) {
 	channel ??= await getEventDiscordChannel(event, discordClient);
 	const settings = await getEventSettings(event.id);
 	if (!settings?.createEventThread) return null;
@@ -229,7 +270,7 @@ async function createEventThread(event: Event, discordClient: DiscordClient, cha
 		type: ChannelType.PrivateThread,
 		reason: "Create thread for event: " + event.name,
 		autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
-		invitable: false,
+		invitable: false
 	});
 
 	const rsvps = await $events.getEventMembers(event.id, {
@@ -256,7 +297,7 @@ async function createEventThread(event: Event, discordClient: DiscordClient, cha
 
 async function archiveEventThread(event: Event, discordClient: DiscordClient) {
 	if (!event.posted || !event.discordThreadId) return;
-	
+
 	try {
 		const thread = await getEventThread(event, discordClient);
 		await thread.setArchived(true);
@@ -276,17 +317,27 @@ async function deleteEventThread(event: Event, discordClient: DiscordClient) {
 	}
 }
 
-async function getEventOwner<T extends Prisma.Event$ownerArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$ownerArgs>) {
-	const result = await database.event.findUnique({
-		where: { id }
-	}).owner<T>(args);
+async function getEventOwner<T extends Prisma.Event$ownerArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.Event$ownerArgs>
+) {
+	const result = await database.event
+		.findUnique({
+			where: { id }
+		})
+		.owner<T>(args);
 	return result;
 }
 
-async function getEventSettings<T extends Prisma.Event$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$settingsArgs>) {
-	const result = await database.event.findUnique({
-		where: { id }
-	}).settings<T>(args);
+async function getEventSettings<T extends Prisma.Event$settingsArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.Event$settingsArgs>
+) {
+	const result = await database.event
+		.findUnique({
+			where: { id }
+		})
+		.settings<T>(args);
 	return result;
 }
 
@@ -296,8 +347,11 @@ async function getEventMember(id: string) {
 	});
 }
 
-async function getEventMembers<T extends Omit<Prisma.Event$membersArgs, "where">>(id: string, args?: Prisma.Subset<T, Prisma.Event$membersArgs>) {
-	return (await getEventRsvps<T>(id, {
+async function getEventMembers<T extends Omit<Prisma.Event$membersArgs, "where">>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.Event$membersArgs>
+) {
+	return await getEventRsvps<T>(id, {
 		...args,
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore not sure how to fix this type
@@ -306,34 +360,54 @@ async function getEventMembers<T extends Omit<Prisma.Event$membersArgs, "where">
 				not: null
 			}
 		}
-	}));
+	});
 }
 
-async function getEventRsvps<T extends Prisma.Event$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$membersArgs>) {
-	const result = await database.event.findUnique({
-		where: { id }
-	}).members<T>(args);
+async function getEventRsvps<T extends Prisma.Event$membersArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.Event$membersArgs>
+) {
+	const result = await database.event
+		.findUnique({
+			where: { id }
+		})
+		.members<T>(args);
 	return result ?? [];
 }
 
-async function getEventMemberUser<T extends Prisma.UserDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserDefaultArgs>) {
-	const result = await database.eventUser.findUnique({
-		where: { id }
-	}).user<T>(args);
+async function getEventMemberUser<T extends Prisma.UserDefaultArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.UserDefaultArgs>
+) {
+	const result = await database.eventUser
+		.findUnique({
+			where: { id }
+		})
+		.user<T>(args);
 	return result;
 }
 
-async function getEventMemberEvent<T extends Prisma.EventDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventDefaultArgs>) {
-	const result = await database.eventUser.findUnique({
-		where: { id }
-	}).event<T>(args);
+async function getEventMemberEvent<T extends Prisma.EventDefaultArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.EventDefaultArgs>
+) {
+	const result = await database.eventUser
+		.findUnique({
+			where: { id }
+		})
+		.event<T>(args);
 	return result;
 }
 
-async function getEventMemberRsvp<T extends Prisma.EventUser$rsvpArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventUser$rsvpArgs>) {
-	const result = await database.eventUser.findUnique({
-		where: { id }
-	}).rsvp<T>(args);
+async function getEventMemberRsvp<T extends Prisma.EventUser$rsvpArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.EventUser$rsvpArgs>
+) {
+	const result = await database.eventUser
+		.findUnique({
+			where: { id }
+		})
+		.rsvp<T>(args);
 	return result;
 }
 
@@ -361,44 +435,64 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 	if (updatedMember.user && updatedMember.event.discordThreadId) {
 		try {
 			const thread = await getEventThread(updatedMember.event, discordClient);
-			await thread.members.remove(updatedMember.user.discordId, "UnRSVPed / Kicked from event");
+			await thread.members.remove(
+				updatedMember.user.discordId,
+				"UnRSVPed / Kicked from event"
+			);
 		} catch (err) {
 			logger.error("Failed to remove user to event thread", err);
 		}
 	}
 }
 
-async function getEventAccessRoles<T extends Prisma.Event$accessRolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$accessRolesArgs>) {
-	const result = await database.event.findUnique({
-		where: { id }
-	}).accessRoles<T>(args);
+async function getEventAccessRoles<T extends Prisma.Event$accessRolesArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.Event$accessRolesArgs>
+) {
+	const result = await database.event
+		.findUnique({
+			where: { id }
+		})
+		.accessRoles<T>(args);
 	return result ?? [];
 }
 
-async function getRSVPRoles<T extends Prisma.Event$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.Event$rolesArgs>) {
-	const result = await database.event.findUnique({
-		where: { id }
-	}).roles<T>(args);
+async function getRSVPRoles<T extends Prisma.Event$rolesArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.Event$rolesArgs>
+) {
+	const result = await database.event
+		.findUnique({
+			where: { id }
+		})
+		.roles<T>(args);
 	return result ?? [];
 }
 
-async function getRSVPMembers<T extends Prisma.EventRsvpRole$membersArgs>(id: string, args?: Prisma.Subset<T, Prisma.EventRsvpRole$membersArgs>) {
-	const result = await database.eventRsvpRole.findUnique({
-		where: { id }
-	}).members<T>(args);
+async function getRSVPMembers<T extends Prisma.EventRsvpRole$membersArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.EventRsvpRole$membersArgs>
+) {
+	const result = await database.eventRsvpRole
+		.findUnique({
+			where: { id }
+		})
+		.members<T>(args);
 	return result ?? [];
 }
 
 async function getUserRsvp(event: Event, user: User) {
 	const rsvps = await getEventRsvps(event.id);
-	return rsvps.find(rsvp => rsvp.userId === user.id) ?? null;
+	return rsvps.find((rsvp) => rsvp.userId === user.id) ?? null;
 }
 
 async function setUserReminder(rsvp: EventUser, reminder: EventReminder) {
 	return await database.eventUser.update({
 		where: { id: rsvp.id },
 		data: {
-			reminders: rsvp.reminders.includes(reminder) ? rsvp.reminders.filter(r => r !== reminder) : [...rsvp.reminders, reminder]
+			reminders: rsvp.reminders.includes(reminder)
+				? rsvp.reminders.filter((r) => r !== reminder)
+				: [...rsvp.reminders, reminder]
 		}
 	});
 }
@@ -423,28 +517,34 @@ async function createEvent(owner: User, startAt: Date | undefined, discordClient
 
 	const guild = await $discord.getSystemGuild(discordClient);
 	if (!guild) throw new Error("Could not fetch guild");
-	
+
 	const discordChannel = await $discord.getChannel(discordClient, defaultEventChannel.discordId);
 	if (!discordChannel) throw new Error("Could not fetch default event discord channel");
 
-	const discordCategory = await $discord.getChannel(discordClient, defaultEventChannel.discordCategoryId);
+	const discordCategory = await $discord.getChannel(
+		discordClient,
+		defaultEventChannel.discordCategoryId
+	);
 	if (!discordCategory) throw new Error("Could not fetch default event channel discord category");
 
-	if (!(await $discord.canPostInChannel(discordChannel))) throw new Error("Cannot post messages in default event channel");
-	if (!(await $discord.canCreateThreadInChannel(discordChannel))) throw new Error("Cannot create threads in default event channel");
-	if (!(await $discord.canManageChannelsInCategory(discordCategory))) throw new Error("Cannot manage channels in default event channel category");
+	if (!(await $discord.canPostInChannel(discordChannel)))
+		throw new Error("Cannot post messages in default event channel");
+	if (!(await $discord.canCreateThreadInChannel(discordChannel)))
+		throw new Error("Cannot create threads in default event channel");
+	if (!(await $discord.canManageChannelsInCategory(discordCategory)))
+		throw new Error("Cannot manage channels in default event channel category");
 
 	const event = await database.event.create({
 		data: {
 			owner: {
 				connect: {
-					id: owner.id,
-				},
+					id: owner.id
+				}
 			},
 			channel: {
 				connect: {
-					id: defaultEventChannel.id,
-				},
+					id: defaultEventChannel.id
+				}
 			},
 			name: "",
 			summary: "",
@@ -456,21 +556,21 @@ async function createEvent(owner: User, startAt: Date | undefined, discordClient
 					name: "I am interested",
 					emoji: "white_check_mark",
 					emojiId: "white_check_mark",
-					limit: 0,
-				},
+					limit: 0
+				}
 			},
 			discordMentions: [guild.roles.everyone.id],
 			settings: {
 				create: {
 					hideLocation: false,
 					inviteOnly: false,
-					openToJoinRequests: true,
-				},
+					openToJoinRequests: true
+				}
 			},
 			accessType: EventAccessType.Channel,
 			posted: false,
 			startAt
-		},
+		}
 	});
 
 	return event;
@@ -485,8 +585,8 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 			channel: data.channel
 				? {
 						connect: {
-							id: data.channel,
-						},
+							id: data.channel
+						}
 				  }
 				: undefined,
 			name: data.name != null ? data.name : undefined,
@@ -507,8 +607,8 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 									name: r.name,
 									emoji: r.emoji,
 									emojiId: r.emojiId,
-									limit: r.limit,
-								})),
+									limit: r.limit
+								}))
 						},
 						updateMany: data.roles
 							.filter((r) => !!roles.find((r1) => r1.id === r.id))
@@ -518,12 +618,14 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 									name: r.name,
 									emoji: r.emoji,
 									emojiId: r.emojiId,
-									limit: r.limit,
-								},
+									limit: r.limit
+								}
 							})),
-					deleteMany: roles.filter(r => !data.roles!.find(r1 => r1.id === r.id)).map(r => ({
-							id: r.id
-						}))
+						deleteMany: roles
+							.filter((r) => !data.roles!.find((r1) => r1.id === r.id))
+							.map((r) => ({
+								id: r.id
+							}))
 				  }
 				: undefined,
 			discordMentions: data.mentions ? data.mentions : undefined,
@@ -533,8 +635,8 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 							createEventThread: data.settings.createEventThread ?? undefined,
 							hideLocation: data.settings.hideLocation ?? undefined,
 							inviteOnly: data.settings.inviteOnly ?? undefined,
-							openToJoinRequests: data.settings.openToJoinRequests ?? undefined,
-						},
+							openToJoinRequests: data.settings.openToJoinRequests ?? undefined
+						}
 				  }
 				: undefined,
 			accessType: data.accessType ? data.accessType : undefined,
@@ -544,15 +646,15 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 						connectOrCreate: data.accessRoles.map((roleId) => ({
 							where: { roleId_eventId: { eventId: event.id, roleId } },
 							create: {
-								roleId,
-							},
-						})),
+								roleId
+							}
+						}))
 				  }
-				: undefined,
+				: undefined
 		},
 		include: {
-			channel: true,
-		},
+			channel: true
+		}
 	});
 
 	await updateEventMessage(discordClient, updatedEvent);
@@ -572,7 +674,7 @@ async function postEvent(event: Event, discordClient: DiscordClient) {
 		data: {
 			discordEventMessageId: messageId,
 			discordThreadId: threadId,
-			posted: true,
+			posted: true
 		},
 		include: {
 			channel: true
@@ -592,7 +694,7 @@ async function unpostEvent(event: Event, discordClient: DiscordClient) {
 		data: {
 			discordEventMessageId: null,
 			discordThreadId: null,
-			posted: false,
+			posted: false
 		},
 		include: {
 			channel: true
@@ -638,7 +740,7 @@ async function endEvent(event: Event, discordClient: DiscordClient, postMessage 
 		await updateEventChannelCalendarMessage(discordClient, endedEvent.channel);
 	}
 
-	const legionEventId = endedEvent.name.trim().match(/^FRCN\d+/);
+	const legionEventId = endedEvent.name.trim().match(/^LGN\d+/);
 	if (legionEventId) {
 		try {
 			await insertEventIntoLegionCoda(legionEventId[0], endedEvent);
@@ -701,41 +803,54 @@ async function canJoinRsvp(rsvp: EventRsvpRole) {
 	const members = await getRSVPMembers(rsvp.id, {
 		select: { id: true }
 	});
-	return members.length < rsvp.limit; 
+	return members.length < rsvp.limit;
 }
 
-async function rsvpForEvent(event: Event, rsvp: EventRsvpRole, user: User, currentRsvp: EventUser | null, discordClient: DiscordClient) {
+async function rsvpForEvent(
+	event: Event,
+	rsvp: EventRsvpRole,
+	user: User,
+	currentRsvp: EventUser | null,
+	discordClient: DiscordClient
+) {
 	const canRsvp = await canJoinRsvp(rsvp);
 	if (!canRsvp) throw new Error(`Cannot rsvp to ${rsvp.name}, role is full`);
-	
+
 	const updatedEvent = await database.event.update({
 		where: { id: event.id },
 		data: {
 			members: {
-				create: !currentRsvp ? {
-					pending: false,
-					rsvp: {
-						connect: {
-							id: rsvp.id
-						}
-					},
-					user: {
-						connect: {
-							id: user.id
-						}
-					}
-				} : undefined,
-				update: currentRsvp ? {
-					where: { id: currentRsvp.id },
-					data: {
-						rsvp: rsvp.id !== currentRsvp.rsvpId ? {
-							connect: {
-								id: rsvp.id
+				create: !currentRsvp
+					? {
+							pending: false,
+							rsvp: {
+								connect: {
+									id: rsvp.id
+								}
+							},
+							user: {
+								connect: {
+									id: user.id
+								}
 							}
-						} : undefined,
-						pending: false
-					}
-				} : undefined
+					  }
+					: undefined,
+				update: currentRsvp
+					? {
+							where: { id: currentRsvp.id },
+							data: {
+								rsvp:
+									rsvp.id !== currentRsvp.rsvpId
+										? {
+												connect: {
+													id: rsvp.id
+												}
+										  }
+										: undefined,
+								pending: false
+							}
+					  }
+					: undefined
 			}
 		}
 	});
@@ -791,19 +906,27 @@ async function canSeeEvent(event: Event, user: User | undefined, discordClient: 
 					role: true
 				}
 			});
-			return await $roles.hasOneOfRoles(accessRoles.map(ar => ar.role), user);
+			return await $roles.hasOneOfRoles(
+				accessRoles.map((ar) => ar.role),
+				user
+			);
 		}
 		case EventAccessType.Channel: {
 			const channel = await getEventEventChannel(event.id);
 			if (!channel) return false;
-			return await $discord.canUserViewChannel(discordClient, user, channel.discordId, channel.discordGuildId ?? undefined);
+			return await $discord.canUserViewChannel(
+				discordClient,
+				user,
+				channel.discordId,
+				channel.discordGuildId ?? undefined
+			);
 		}
 	}
 }
 
 async function eventChannelExists(discordId: string) {
 	const channel = await database.eventChannel.findUnique({
-		where: { discordId },
+		where: { discordId }
 	});
 	return !!channel;
 }
@@ -814,7 +937,7 @@ async function getAllEventChannels() {
 
 async function getEventChannel(id: number) {
 	return await database.eventChannel.findUnique({
-		where: { id },
+		where: { id }
 	});
 }
 
@@ -832,14 +955,22 @@ async function getEventChannelReadyRoom(id: number) {
 }
 
 async function getEventChannelVoiceChannels(id: number) {
-	const result = await database.eventChannel.findUnique({
-		where: { id },
-	}).voiceChannels();
+	const result = await database.eventChannel
+		.findUnique({
+			where: { id }
+		})
+		.voiceChannels();
 	return result ?? [];
 }
 
-async function createEventChannel(guild: Guild, channel: GuildBasedChannel, category: GuildBasedChannel, readyRoom?: GuildBasedChannel) {
-	if (!(await $discord.canManageChannelsInCategory(category))) throw new Error("Cannot manage channels in event channel category");
+async function createEventChannel(
+	guild: Guild,
+	channel: GuildBasedChannel,
+	category: GuildBasedChannel,
+	readyRoom?: GuildBasedChannel
+) {
+	if (!(await $discord.canManageChannelsInCategory(category)))
+		throw new Error("Cannot manage channels in event channel category");
 
 	if (!readyRoom) {
 		// Currently inherits permissions of category - this should be ok?
@@ -849,7 +980,7 @@ async function createEventChannel(guild: Guild, channel: GuildBasedChannel, cate
 			bitrate: 64000,
 			videoQualityMode: VideoQualityMode.Auto,
 			parent: category.id,
-			reason: "Create event ready room for " + channel.name,
+			reason: "Create event ready room for " + channel.name
 		});
 	}
 
@@ -861,7 +992,7 @@ async function createEventChannel(guild: Guild, channel: GuildBasedChannel, cate
 			voiceChannels: {
 				create: {
 					discordId: readyRoom.id,
-					readyRoom: true,
+					readyRoom: true
 				}
 			}
 		}
@@ -881,7 +1012,11 @@ async function editEventChannel(channel: EventChannel, data: EventChannelEditInp
 	});
 }
 
-async function deleteEventChannel(channel: EventChannel, discordClient: DiscordClient, deleteVoiceChannels = false) {
+async function deleteEventChannel(
+	channel: EventChannel,
+	discordClient: DiscordClient,
+	deleteVoiceChannels = false
+) {
 	const events = await database.event.findMany({
 		where: {
 			channelId: channel.id,
@@ -897,7 +1032,11 @@ async function deleteEventChannel(channel: EventChannel, discordClient: DiscordC
 	if (deleteVoiceChannels) {
 		const vcs = await getEventChannelVoiceChannels(channel.id);
 		for (const vc of vcs) {
-			const discordChannel = await $discord.getChannel(discordClient, vc.discordId, channel.discordGuildId ?? undefined);
+			const discordChannel = await $discord.getChannel(
+				discordClient,
+				vc.discordId,
+				channel.discordGuildId ?? undefined
+			);
 			if (discordChannel) {
 				await discordChannel.delete("Deleting voice channels associated to event channel");
 			}
@@ -905,7 +1044,7 @@ async function deleteEventChannel(channel: EventChannel, discordClient: DiscordC
 	}
 
 	await database.eventChannel.delete({
-		where: { id: channel.id },
+		where: { id: channel.id }
 	});
 }
 

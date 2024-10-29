@@ -1,7 +1,17 @@
 import { dates, strings } from "@frcn/shared";
 import { getEmojiByName } from "@frcn/shared/emojis";
 import type { Event } from "@prisma/client";
-import { type BaseMessageOptions, ButtonStyle, ActionRowBuilder, ButtonBuilder, EmbedBuilder, ThreadChannel, escapeMarkdown, StringSelectMenuBuilder, StringSelectMenuOptionBuilder } from "discord.js";
+import {
+	type BaseMessageOptions,
+	ButtonStyle,
+	ActionRowBuilder,
+	ButtonBuilder,
+	EmbedBuilder,
+	ThreadChannel,
+	escapeMarkdown,
+	StringSelectMenuBuilder,
+	StringSelectMenuOptionBuilder
+} from "discord.js";
 
 import type { DiscordClient } from "..";
 import { database } from "../../database";
@@ -23,8 +33,8 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 			},
 			owner: {
 				select: {
-					discordName: true,
-				},
+					discordName: true
+				}
 			},
 			roles: {
 				include: {
@@ -32,26 +42,31 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 						include: {
 							user: {
 								select: {
-									discordName: true,
-								},
-							},
+									discordName: true
+								}
+							}
 						},
 						orderBy: {
-							createdAt: "asc",
+							createdAt: "asc"
 						}
-					},
-				},
+					}
+				}
 			},
 			settings: {
 				select: {
-					hideLocation: true,
-				},
-			},
-		},
+					hideLocation: true
+				}
+			}
+		}
 	});
-	if (!event) throw new Error(`Could not create event message, since an event with id '${id}' could not be found`);
+	if (!event)
+		throw new Error(
+			`Could not create event message, since an event with id '${id}' could not be found`
+		);
 
-	const guild = event.channel?.discordGuildId ? await $discord.getGuild(client, event.channel.discordGuildId) : await $discord.getSystemGuild(client);
+	const guild = event.channel?.discordGuildId
+		? await $discord.getGuild(client, event.channel.discordGuildId)
+		: await $discord.getSystemGuild(client);
 	if (!guild) return null;
 
 	const title = `:calendar_spiral: ${event.name}`;
@@ -64,37 +79,50 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 		.setDescription(description)
 		.addFields({
 			name: "Event Type",
-			value: strings.toTitleCase(event.eventType!)
+			value: strings.toTitleCase(event.eventType!),
+			inline: true
 		});
-	
-	
+
 	if (!event.settings!.hideLocation) {
 		eventEmbed.addFields({
 			name: "Location",
-			value: getLocationBreadcrumbs(event.location)
+			value: getLocationBreadcrumbs(event.location),
+			inline: true
 		});
 	}
 
 	event.roles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
-	
-	const totalMembers = event.roles.reduce((total, role) => total + role.members.filter(m => !!m.user).length, 0);
+
+	const totalMembers = event.roles.reduce(
+		(total, role) => total + role.members.filter((m) => !!m.user).length,
+		0
+	);
 	// This will go negative eventually if the event has a lot of RSVP roles, but let's just hope that never happens :)
-	const remainingCharacterLimit = 5500 - title.length - description.length - 120 * event.roles.length;
+	const remainingCharacterLimit =
+		5500 - title.length - description.length - 120 * event.roles.length;
 
 	threadId ??= event.discordThreadId ?? undefined;
 	eventEmbed
 		.addFields(
+			{ name: "Duration", value: dates.toDuration(event.duration!), inline: true },
+			...(threadId ? [{ name: "Thread", value: `<#${threadId}>`, inline: true }] : []),
 			{
 				name: "Time (Your Timezone)",
-				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`,
+				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`
 			},
-			{ name: "Duration", value: dates.toDuration(event.duration!) },
-			...(threadId ? [{ name: "Thread", value: `<#${threadId}>` }] : []),
 			...event.roles.map((role) => {
-				const members = role.members.filter(m => !!m.user);
-				const roleEmoji = role.emoji === role.emojiId ? `:${role.emoji}:` : `<:${role.emoji}:${role.emojiId}>`;
+				const members = role.members.filter((m) => !!m.user);
+				const roleEmoji =
+					role.emoji === role.emojiId
+						? `:${role.emoji}:`
+						: `<:${role.emoji}:${role.emojiId}>`;
 
-				const valueLimit = 120 + Math.min(880, Math.floor((members.length / totalMembers) * remainingCharacterLimit));
+				const valueLimit =
+					120 +
+					Math.min(
+						880,
+						Math.floor((members.length / totalMembers) * remainingCharacterLimit)
+					);
 				let value = " ";
 				if (members.length > 0) {
 					for (const [i, member] of members.entries()) {
@@ -111,14 +139,16 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 				}
 
 				return {
-					name: `${roleEmoji} ${escapeMarkdown(role.name)} (${members.length}${role.limit > 0 ? `/${role.limit}` : ""})`,
+					name: `${roleEmoji} ${escapeMarkdown(role.name)} (${members.length}${
+						role.limit > 0 ? `/${role.limit}` : ""
+					})`,
 					value,
-					inline: true,
+					inline: true
 				};
 			})
 		)
 		.setFooter({
-			text: `Created by ${event.owner?.discordName ?? "[DELETED USER]"}`,
+			text: `Created by ${event.owner?.discordName ?? "[DELETED USER]"}`
 		});
 
 	if (event.imageUrl) eventEmbed.setImage(event.imageUrl);
@@ -126,15 +156,19 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 	const rsvpSelect = new StringSelectMenuBuilder()
 		.setCustomId("select-rsvp")
 		.setPlaceholder("Select RSVP");
-	
+
 	for (const role of event.roles) {
 		const option = new StringSelectMenuOptionBuilder()
 			.setLabel(role.name)
 			.setValue(role.id)
-			.setEmoji(role.emoji === role.emojiId ? getEmojiByName(role.emoji).surrogate : {
-				id: role.emojiId,
-				name: role.emoji,
-			});
+			.setEmoji(
+				role.emoji === role.emojiId
+					? getEmojiByName(role.emoji).surrogate
+					: {
+							id: role.emojiId,
+							name: role.emoji
+					  }
+			);
 
 		rsvpSelect.addOptions(option);
 	}
@@ -148,17 +182,21 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 		.setLabel("View")
 		.setURL(getWebURL(`/event/${event.id}`).href)
 		.setStyle(ButtonStyle.Link);
-	
+
 	const selectRow = new ActionRowBuilder<StringSelectMenuBuilder>();
 	selectRow.addComponents(rsvpSelect);
-	
+
 	const buttonRow = new ActionRowBuilder<ButtonBuilder>();
 	buttonRow.addComponents(unrsvpButton, weblinkButton);
 
 	return {
-		content: event.discordMentions.map(mention => mention === guild.roles.everyone.id ? "@everyone" : `<@&${mention}>`).join(" "),
+		content: event.discordMentions
+			.map((mention) =>
+				mention === guild.roles.everyone.id ? "@everyone" : `<@&${mention}>`
+			)
+			.join(" "),
 		embeds: [eventEmbed],
-		components: [selectRow, buttonRow],
+		components: [selectRow, buttonRow]
 	} satisfies BaseMessageOptions;
 }
 
@@ -196,26 +234,26 @@ export async function postEventMessage(client: DiscordClient, event: Event) {
 	const payload = await buildEventMessage(event.id, client, threadId ?? undefined);
 	if (!payload) throw new Error("Failed to build event message");
 	const eventMessage = await channel.send(payload);
-	
+
 	if (createThread && thread) {
 		const postLinkEmbed = new EmbedBuilder()
 			.setColor(PRIMARY_COLOR)
 			.setTitle(`:calendar_spiral: ${event.name}`)
 			.setDescription(`This is the **${event.name}** event thread`);
-		
+
 		const postButton = new ButtonBuilder()
 			.setLabel("See Details")
 			.setURL(eventMessage.url)
 			.setStyle(ButtonStyle.Link);
-			
+
 		const weblinkButton = new ButtonBuilder()
 			.setLabel("View")
 			.setURL(getWebURL(`/event/${event.id}`).href)
 			.setStyle(ButtonStyle.Link);
-			
+
 		const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
 		buttonsRow.addComponents(postButton, weblinkButton);
-		
+
 		await thread.send({
 			embeds: [postLinkEmbed],
 			components: [buttonsRow]
