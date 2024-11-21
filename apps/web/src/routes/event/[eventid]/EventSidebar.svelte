@@ -30,12 +30,6 @@
 
 		const csv = [];
 
-		if (allData) {
-			csv.push(["Display Name", "Discord Nickname", "Discord Username", "RSVP"]);
-		} else {
-			csv.push(["Name"]);
-		}
-
 		for (const member of data.members) {
 			if (!member.user) continue;
 
@@ -53,6 +47,12 @@
 		}
 
 		csv.sort((a, b) => a[0].localeCompare(b[0]));
+
+		if (allData) {
+			csv.unshift(["Display Name", "Discord Nickname", "Discord Username", "RSVP"]);
+		} else {
+			csv.unshift(["Name"]);
+		}
 
 		const csvContent = csv
 			.map((row) => row.map((value) => JSON.stringify(value)).join(","))
