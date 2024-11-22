@@ -126,12 +126,12 @@
 <section class="w-full bg-white dark:bg-slate-950 bg-triangle-pattern px-4 py-16">
 	<div class="mx-auto w-full max-w-5xl flex flex-col md:flex-row gap-2 md:gap-8">
 		<div
-			class="shrink-0 overflow-hidden rounded clip-opposite-12 h-[500px] md:self-stretch w-full md:w-[350px] lg:w-[400px] p-px dark:bg-gray-700"
+			class="shrink-0 overflow-hidden rounded clip-tl-br-12 h-[500px] md:self-stretch w-full md:w-[350px] lg:w-[400px] p-px dark:bg-gray-700"
 		>
 			<img
 				src={welcomeSection?.getFiles()[0]?.getSrc() ?? placeholder}
 				alt="welcome to the frontier"
-				class="h-full w-full object-cover clip-opposite-12"
+				class="h-full w-full object-cover clip-tl-br-12"
 			/>
 		</div>
 		<div class="self-stretch flex flex-col p-6">

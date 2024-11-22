@@ -79,7 +79,7 @@
 		| "primary"
 		| "none"
 		| "alternative" = group ? (outline ? "dark" : "alternative") : "primary";
-	export let clip: string | false = "clip-opposite-4";
+	export let clip: string | false = "clip-tl-br-4";
 	export let outlineBgColor: string = "bg-neutral-200 dark:bg-gray-950";
 
 	export let classInner = "";

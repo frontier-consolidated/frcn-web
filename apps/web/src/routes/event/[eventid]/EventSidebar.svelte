@@ -85,7 +85,7 @@
 		<ul
 			class="flex flex-wrap [&>li]:flex-1 [&>li]:min-w-48 lg:[&>li]:min-w-0 [&>li]:w-full gap-2 lg:block lg:space-y-2"
 		>
-			<SidebarItem class="rounded clip-opposite-4" href="/events" label="Back To Events">
+			<SidebarItem class="rounded clip-tl-br-4" href="/events" label="Back To Events">
 				<svelte:fragment slot="icon">
 					<ArrowLeftSolid tabindex="-1" />
 				</svelte:fragment>
@@ -93,7 +93,7 @@
 			{#if data.canEdit && !data.endedAt && data.startAt && new Date(data.startAt) <= new Date()}
 				<SidebarItem
 					label="End Event"
-					class="rounded clip-opposite-4 dark:hover:bg-red-500"
+					class="rounded clip-tl-br-4 dark:hover:bg-red-500"
 					on:click={async () => {
 						const { data: endData, errors } = await getApollo().mutate({
 							mutation: Mutations.END_EVENT,
@@ -122,7 +122,7 @@
 			{#if !data.endedAt}
 				{#if data.rsvp}
 					<SidebarItem
-						class="rounded clip-opposite-4"
+						class="rounded clip-tl-br-4"
 						nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:text-white hover:bg-red-500"
 						label="Leave Event"
 						on:click={async () => {
@@ -154,7 +154,7 @@
 					</SidebarItem>
 				{:else}
 					<SidebarItem
-						class="rounded clip-opposite-4"
+						class="rounded clip-tl-br-4"
 						nonActiveClass="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white dark:hover:bg-primary-500"
 						label="Join Event"
 						on:click={() => (rsvpModal = true)}
