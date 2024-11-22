@@ -1,6 +1,4 @@
 const plugin = require("tailwindcss/plugin");
-const flattenColorPalette = require("tailwindcss/lib/util/flattenColorPalette").default;
-const { parseColor } = require("tailwindcss/lib/util/color");
 
 const fallbackFonts = [
 	"ui-sans-serif",
