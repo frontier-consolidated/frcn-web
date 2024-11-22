@@ -4,7 +4,9 @@ export type MutableData = ReturnType<typeof cloneEventSettingsData>;
 
 export function cloneEventSettingsData(data: PageData) {
 	return {
-		channel: data.channel ? structuredClone(data.channel) : { id: null, discord: { name: "!ERROR" }, discordGuild: { name: "!ERROR" } },
+		channel: data.channel
+			? structuredClone(data.channel)
+			: { id: null, discord: { name: "!ERROR" }, discordGuild: { name: "!ERROR" } },
 		name: data.name,
 		summary: data.summary,
 		description: data.description,
@@ -17,7 +19,7 @@ export function cloneEventSettingsData(data: PageData) {
 		mentions: data.mentions ? [...data.mentions] : [],
 		settings: structuredClone(data.settings)!,
 		accessType: data.accessType!,
-		accessRoles: data.accessRoles ? data.accessRoles.map((r) => structuredClone(r)) : [],
+		accessRoles: data.accessRoles ? data.accessRoles.map((r) => structuredClone(r)) : []
 	};
 }
 
@@ -37,8 +39,8 @@ export function checkIfDirty(source: PageData, mutable: MutableData) {
 				break;
 			case "location":
 				{
-					if (!mutable.location.some(loc => !loc)) {
-						const mutableLocation = mutable.location.map((loc) => loc.name).join("/");
+					if (!mutable.location?.some((loc) => !loc)) {
+						const mutableLocation = mutable.location?.map((loc) => loc.name).join("/");
 						const sourceLocation = source.location?.map((loc) => loc.name).join("/");
 						const valueClean = mutableLocation === sourceLocation;
 						if (!valueClean) diff.push(key);
