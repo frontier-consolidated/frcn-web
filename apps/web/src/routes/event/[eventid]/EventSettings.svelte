@@ -28,9 +28,6 @@
 	import DurationSelect from "$lib/components/datetime/DurationSelect.svelte";
 	import LocationInput from "$lib/components/location/LocationInput.svelte";
 
-	const urlPattern =
-		"[Hh][Tt][Tt][Pp][Ss]?://(?:(?:[a-zA-Z\u00a1-\uffff0-9]+-?)*[a-zA-Z\u00a1-\uffff0-9]+)(?:.(?:[a-zA-Z\u00a1-\uffff0-9]+-?)*[a-zA-Z\u00a1-\uffff0-9]+)*(?:.(?:[a-zA-Z\u00a1-\uffff]{2,}))(?::d{2,5})?(?:/[^s]*)?";
-
 	export let data: PageData;
 	let editData = cloneEventSettingsData(data);
 
@@ -241,7 +238,6 @@
 						placeholder="Event name"
 						required
 						maxlength="255"
-						autocomplete="new-password"
 						class="rounded"
 						disabled={!canEdit}
 						bind:value={editData.name}
@@ -256,7 +252,6 @@
 						placeholder="Event summary"
 						required
 						maxlength="255"
-						autocomplete="new-password"
 						class="rounded"
 						disabled={!canEdit}
 						bind:value={editData.summary}
@@ -287,10 +282,8 @@
 						name="event-image"
 						type="text"
 						placeholder="https://example.com/image.png"
-						pattern={urlPattern}
 						required
 						maxlength="2084"
-						autocomplete="new-password"
 						class="rounded"
 						disabled={!canEdit}
 						bind:value={editData.imageUrl}
