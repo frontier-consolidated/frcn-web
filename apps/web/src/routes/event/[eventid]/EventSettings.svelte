@@ -295,8 +295,8 @@
 						disabled={!canEdit}
 						bind:value={editData.imageUrl}
 					/>
-					{#if editData.imageUrl}
-						<div class="mt-2">
+					<div class="mt-2">
+						{#if editData.imageUrl}
 							<img
 								src={editData.imageUrl}
 								alt="Event thumbnail"
@@ -305,18 +305,21 @@
 									imagePlaceholder ? "hidden" : undefined
 								)}
 								on:error={() => {
-									imagePlaceholder = true;
+									setTimeout(() => {
+										imagePlaceholder = true;
+									}, 100);
 								}}
 								on:load={() => {
-									imagePlaceholder = false;
+									setTimeout(() => {
+										imagePlaceholder = false;
+									}, 100);
 								}}
 							/>
+						{/if}
+						{#if editData.imageUrl && imagePlaceholder}
 							<div
 								role="status"
-								class={twMerge(
-									"animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700",
-									imagePlaceholder ? undefined : "hidden"
-								)}
+								class="animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700"
 							>
 								<svg
 									width="48"
@@ -332,8 +335,8 @@
 									/>
 								</svg>
 							</div>
-						</div>
-					{/if}
+						{/if}
+					</div>
 				</Field>
 				<Field {validator} for="event-description" value={editData.description}>
 					<Label for="event-description" class="mb-2">Event Description</Label>
