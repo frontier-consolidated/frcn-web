@@ -516,7 +516,7 @@
 	</div>
 </section>
 <div class="flex flex-wrap justify-end items-center gap-2">
-	{#if startDate && startDate <= new Date()}
+	{#if data.posted && startDate && startDate <= new Date()}
 		<Button
 			disabled={data.archived}
 			color="dark"
