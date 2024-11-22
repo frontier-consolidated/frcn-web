@@ -29,6 +29,10 @@
 			hour ??= 0;
 			minute ??= 0;
 			value = hour * 3600 * 1000 + minute * 60 * 1000;
+		} else if (value !== null) {
+			const seconds = Math.floor(value / 1000);
+			hour = Math.floor(seconds / 3600);
+			minute = Math.floor((seconds / 60) % 60);
 		}
 	}
 </script>
