@@ -136,27 +136,6 @@ const config = {
 					type: "absolute-size"
 				}
 			);
-
-			matchUtilities(
-				{
-					"box-glow": (value) => {
-						const { color } = parseColor(value);
-						return {
-							boxShadow: `0 0 2px 0px currentColor, 0 0 6px 2px rgba(${color})`
-						};
-					},
-					"text-glow": (value) => {
-						const { color } = parseColor(value);
-						return {
-							textShadow: `0 0 10px 10px rgba(${color})`
-						};
-					}
-				},
-				{
-					values: flattenColorPalette(theme("colors")),
-					type: "color"
-				}
-			);
 		})
 	],
 
