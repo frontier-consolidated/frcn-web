@@ -218,7 +218,7 @@ export async function postEventMessage(client: DiscordClient, event: Event) {
 	let createThread = !event.discordThreadId && settings?.createEventThread;
 	if (!createThread && settings?.createEventThread) {
 		try {
-			await $events.getEventThread(event, client);
+			await $events.getEventThread(client, event);
 		} catch (err) {
 			createThread = true;
 		}

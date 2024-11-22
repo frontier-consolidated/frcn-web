@@ -241,7 +241,7 @@ async function getEventDiscordChannel(event: Event, discordClient: DiscordClient
 	return channel;
 }
 
-async function getEventThread(event: Event, discordClient: DiscordClient) {
+async function getEventThread(discordClient: DiscordClient, event: Event) {
 	if (!event.discordThreadId) throw new Error("Event has no thread!");
 
 	const eventChannel = event.channelId ? await getEventChannel(event.channelId) : null;
@@ -295,11 +295,22 @@ async function createEventThread(
 	return thread;
 }
 
+async function renameEventThread(discordClient: DiscordClient, event: Event) {
+	if (!event.posted || !event.discordThreadId) return;
+
+	try {
+		const thread = await getEventThread(discordClient, event);
+		await thread.setName(event.name);
+	} catch (err) {
+		logger.error("Failed to rename event thread", err);
+	}
+}
+
 async function archiveEventThread(event: Event, discordClient: DiscordClient) {
 	if (!event.posted || !event.discordThreadId) return;
 
 	try {
-		const thread = await getEventThread(event, discordClient);
+		const thread = await getEventThread(discordClient, event);
 		await thread.setArchived(true);
 	} catch (err) {
 		logger.error("Failed to archive event thread", err);
@@ -310,7 +321,7 @@ async function deleteEventThread(event: Event, discordClient: DiscordClient) {
 	if (!event.posted || !event.discordThreadId) return;
 
 	try {
-		const thread = await getEventThread(event, discordClient);
+		const thread = await getEventThread(discordClient, event);
 		await thread.delete();
 	} catch (err) {
 		logger.error("Failed to delete event thread", err);
@@ -434,7 +445,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 
 	if (updatedMember.user && updatedMember.event.discordThreadId) {
 		try {
-			const thread = await getEventThread(updatedMember.event, discordClient);
+			const thread = await getEventThread(discordClient, updatedMember.event);
 			await thread.members.remove(
 				updatedMember.user.discordId,
 				"UnRSVPed / Kicked from event"
@@ -658,6 +669,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 	});
 
 	await updateEventMessage(discordClient, updatedEvent);
+	await renameEventThread(discordClient, updatedEvent);
 	await postEventUpdateMessage(discordClient, event, updatedEvent);
 	if (updatedEvent.channel) {
 		await updateEventChannelCalendarMessage(discordClient, updatedEvent.channel);
@@ -861,7 +873,7 @@ async function rsvpForEvent(
 
 	if (updatedEvent.discordThreadId) {
 		try {
-			const thread = await getEventThread(updatedEvent, discordClient);
+			const thread = await getEventThread(discordClient, updatedEvent);
 			await thread.members.add(user.discordId, "RSVPed");
 		} catch (err) {
 			logger.error("Failed to add user to event thread", err);
@@ -1092,6 +1104,7 @@ export const $events = {
 	getEventDiscordChannel,
 	getEventThread,
 	createEventThread,
+	renameEventThread,
 	archiveEventThread,
 	deleteEventThread,
 	getEventOwner,
