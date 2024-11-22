@@ -1,37 +1,37 @@
 import { Stanton } from "./systems/Stanton";
-import type { AnyLocation, Area, Universe } from "./types";
+import type { AnyLocation, Area, Galaxy } from "./types";
 
 export type * from "./types";
 
-export const locations = [Stanton] satisfies Universe;
+export const locations = [Stanton] satisfies Galaxy;
 
 export const areas = {
 	default: [
 		{
 			type: "AREA",
-			name: "Anywhere",
-		},
+			name: "Anywhere"
+		}
 	],
 	PLANET: [
 		{
 			type: "AREA",
-			name: "Surface",
+			name: "Surface"
 		},
 		{
 			type: "AREA",
-			name: "Orbit",
-		},
+			name: "Orbit"
+		}
 	],
 	MOON: [
 		{
 			type: "AREA",
-			name: "Surface",
+			name: "Surface"
 		},
 		{
 			type: "AREA",
-			name: "Orbit",
-		},
-	],
+			name: "Orbit"
+		}
+	]
 } as const satisfies Record<string, Area[]>;
 
 export function getChildren(location: AnyLocation) {

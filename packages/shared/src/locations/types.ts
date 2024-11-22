@@ -96,4 +96,4 @@ export type AnyLocation =
 	| SurfacePoi
 	| SpacePoi
 	| Area;
-export type Universe = System[];
+export type Galaxy = System[];
