@@ -6,7 +6,8 @@
 
 	import type { Option } from "./types";
 
-	const searchClass = "flex-1 bg-transparent border-transparent w-full text-sm focus:outline-none";
+	const searchClass =
+		"flex-1 bg-transparent border-transparent w-full text-sm focus:outline-none";
 
 	// eslint-disable-next-line no-undef
 	type T = $$Generic;
@@ -30,34 +31,42 @@
 	let lastSearchInput: string = searchInput;
 	let dropdownOpen = false;
 
-	type Value = (Multi extends true ? T[] : T | undefined);
+	type Value = Multi extends true ? T[] : T | undefined;
 
 	export let value: Value = (multi ? [] : undefined) as Value;
 
 	function getSelectedOptions(multi: boolean, value: Value, options: Option<T, S>[]) {
 		if (multi) {
 			if (!Array.isArray(value)) return [];
-			const selected = options.filter(option => value.includes(option.value));
-			const indexed = selected.map(option => ({ option, index: value.indexOf(option.value) }));
+			const selected = options.filter((option) => value.includes(option.value));
+			const indexed = selected.map((option) => ({
+				option,
+				index: value.indexOf(option.value)
+			}));
 			indexed.sort((a, b) => a.index - b.index);
-			return indexed.map(idx => idx.option);
+			return indexed.map((idx) => idx.option);
 		} else {
 			if (value === undefined) return [];
-			const option = options.find(opt => opt.value === value);
+			const option = options.find((opt) => opt.value === value);
 			if (!option) return [];
 			return [option];
 		}
 	}
 
 	$: selectedOptions = getSelectedOptions(multi, value, options);
-	$: selectableOptions = (multi ? (!max || selectedOptions.length < max) ? options.filter(option => !(value as T[]).includes(option.value)) : [] : options).filter(option => !searchInput || option.name.toLowerCase().includes(searchInput));
-
+	$: selectableOptions = (
+		multi
+			? !max || selectedOptions.length < max
+				? options.filter((option) => !(value as T[]).includes(option.value))
+				: []
+			: options
+	).filter((option) => !searchInput || option.name.toLowerCase().includes(searchInput));
 
 	let input: HTMLInputElement | null = null;
 	function initInput(el: HTMLInputElement) {
 		input = el;
 	}
-	
+
 	$: {
 		if (searchInput != lastSearchInput) {
 			lastSearchInput = searchInput;
@@ -78,7 +87,7 @@
 			if (!value.includes(option.value)) {
 				value = [...value, option.value] as Value;
 			} else {
-				value = value.filter(v => v !== option.value) as Value;
+				value = value.filter((v) => v !== option.value) as Value;
 			}
 		} else {
 			value = option.value as Value;
@@ -88,7 +97,7 @@
 
 	function removeOption(option: Option<T, S>) {
 		if (!multi || !Array.isArray(value)) return;
-		value = (value as T[]).filter(v => v !== option.value) as Value;
+		value = (value as T[]).filter((v) => v !== option.value) as Value;
 		if (input) input.focus();
 	}
 
@@ -115,7 +124,15 @@
 		aria-disabled={disabled}
 		tabindex="-1"
 		role="listbox"
-		class={twMerge("flex items-center w-full text-gray-900 dark:text-white bg-gray-50 border border-gray-300 rounded text-sm p-2.5 min-h-[3rem]", background ? "dark:bg-gray-600 dark:border-gray-500" : "dark:bg-gray-700 dark:border-gray-600", disabled ? "cursor-not-allowed opacity-50" : "focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500")}
+		class={twMerge(
+			"flex items-center w-full text-gray-900 dark:text-white bg-gray-50 border border-gray-300 rounded text-sm p-2.5 min-h-[3rem]",
+			background
+				? "dark:bg-gray-600 dark:border-gray-500"
+				: "dark:bg-gray-700 dark:border-gray-600",
+			disabled
+				? "cursor-not-allowed opacity-50"
+				: "focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500"
+		)}
 	>
 		<span class="flex flex-wrap gap-1 w-full">
 			{#if selectedOptions.length > 0}
@@ -125,29 +142,46 @@
 							<slot {option}>
 								<span>{option.name}</span>
 							</slot>
-							<button class="focus:outline-none whitespace-normal m-0.5 rounded-sm focus:ring-1 p-0.5 ms-1.5 -me-1.5" on:click={() => removeOption(option)}>
+							<button
+								class="focus:outline-none whitespace-normal m-0.5 rounded-sm focus:ring-1 p-0.5 ms-1.5 -me-1.5"
+								on:click={() => removeOption(option)}
+							>
 								<span class="sr-only">Remove {option.name}</span>
 								<CloseSolid class="w-2.5 h-2.5" tabindex="-1" />
 							</button>
 						</Badge>
 					{/each}
 					{#if !disabled && search}
-						<input class={searchClass} use:initInput bind:value={searchInput} on:keydown={onInputKeydown} />
+						<input
+							class={searchClass}
+							use:initInput
+							bind:value={searchInput}
+							on:keydown={onInputKeydown}
+						/>
 					{/if}
 				{:else}
 					<slot option={selectedOptions[0]}>
 						<span>{selectedOptions[0].name}</span>
 					</slot>
 					{#if !disabled && search}
-						<input class={searchClass} use:initInput bind:value={searchInput} on:keydown={onInputKeydown} />
+						<input
+							class={searchClass}
+							use:initInput
+							bind:value={searchInput}
+							on:keydown={onInputKeydown}
+						/>
 					{/if}
 				{/if}
+			{:else if !disabled && search}
+				<input
+					{placeholder}
+					class={searchClass}
+					use:initInput
+					bind:value={searchInput}
+					on:keydown={onInputKeydown}
+				/>
 			{:else}
-				{#if !disabled && search}
-					<input {placeholder} class={searchClass} use:initInput bind:value={searchInput} on:keydown={onInputKeydown} />
-				{:else}
-					<span>{placeholder}</span>
-				{/if}
+				<span class="text-gray-400">{placeholder}</span>
 			{/if}
 		</span>
 		<div class="flex ms-auto items-center">
