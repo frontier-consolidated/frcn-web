@@ -49,13 +49,13 @@ export async function buildEventStartMessage(
 		if (readyRoomChannel) vcLink = readyRoomChannel.url;
 	}
 
-	const weblinkButton = new ButtonBuilder()
+	const messageButton = new ButtonBuilder()
 		.setLabel("See Details")
 		.setURL(eventMessageLink)
 		.setStyle(ButtonStyle.Link);
 
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
-	buttonsRow.addComponents(weblinkButton);
+	buttonsRow.addComponents(messageButton);
 
 	return {
 		content: `@everyone ${vcLink}`,

@@ -1,5 +1,11 @@
 import type { Event } from "@prisma/client";
-import { type BaseMessageOptions, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
+import {
+	type BaseMessageOptions,
+	EmbedBuilder,
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle
+} from "discord.js";
 
 import { getWebURL } from "../../env";
 import { EventReminder } from "../../services/events";
@@ -33,10 +39,10 @@ const reminderText = {
 
 export const reminderTimes = {
 	[EventReminder.OnStart]: 0,
-    [EventReminder.TenMinutesBefore]: 10 * 60 * 1000,
-    [EventReminder.OneHourBefore]: 60 * 60 * 1000,
-    [EventReminder.OneDayBefore]: 24 * 60 * 60 * 1000,
-    [EventReminder.OneWeekBefore]: 7 * 24 * 60 * 60 * 1000,
+	[EventReminder.TenMinutesBefore]: 10 * 60 * 1000,
+	[EventReminder.OneHourBefore]: 60 * 60 * 1000,
+	[EventReminder.OneDayBefore]: 24 * 60 * 60 * 1000,
+	[EventReminder.OneWeekBefore]: 7 * 24 * 60 * 60 * 1000
 } satisfies Record<SelectableEventReminder, number>;
 
 export function buildRemindersMessage(event: Event, reminders: EventReminder[]) {
@@ -46,42 +52,52 @@ export function buildRemindersMessage(event: Event, reminders: EventReminder[]) 
 		.setDescription("Choose when you would like to receive reminders about this event");
 
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
-	buttonsRow.addComponents(selectableReminders.map(reminder => {
-		const button = new ButtonBuilder()
-			.setCustomId(`set-reminder-${event.id}:${reminder}`)
-			.setLabel(reminderButtonText[reminder]);
-		
-		if (reminders.includes(reminder)) {
-			button.setEmoji("🔔");
-			button.setStyle(ButtonStyle.Primary);
-		} else {
-			button.setStyle(ButtonStyle.Secondary);
-		}
+	buttonsRow.addComponents(
+		selectableReminders.map((reminder) => {
+			const button = new ButtonBuilder()
+				.setCustomId(`set-reminder-${event.id}:${reminder}`)
+				.setLabel(reminderButtonText[reminder]);
 
-		if (!event.startAt || event.startAt < new Date(Date.now() + reminderTimes[reminder])) {
-			button.setDisabled(true);
-		}
-		
-		return button;
-	}));
-	
+			if (reminders.includes(reminder)) {
+				button.setEmoji("🔔");
+				button.setStyle(ButtonStyle.Primary);
+			} else {
+				button.setStyle(ButtonStyle.Secondary);
+			}
+
+			if (!event.startAt || event.startAt < new Date(Date.now() + reminderTimes[reminder])) {
+				button.setDisabled(true);
+			}
+
+			return button;
+		})
+	);
+
 	return {
 		embeds: [embed],
 		components: [buttonsRow]
 	} satisfies BaseMessageOptions;
 }
 
-export function buildReminderDmMessage(event: Event, reminder: EventReminder, eventMessageLink: string) {
-	const embed = new EmbedBuilder()
-		.setColor(PRIMARY_COLOR)
-		.setTitle("🔔 RSVP Reminder");
+export function buildReminderDmMessage(
+	event: Event,
+	reminder: EventReminder,
+	eventMessageLink: string
+) {
+	const embed = new EmbedBuilder().setColor(PRIMARY_COLOR).setTitle("🔔 RSVP Reminder");
 
 	if (reminder === EventReminder.OnStart) {
-		embed.setDescription(`This is your reminder that the **[${event.name}](${eventMessageLink})** event is starting now!`);
+		embed.setDescription(
+			`This is your reminder that the **[${event.name}](${eventMessageLink})** event is starting now!`
+		);
 	} else {
-		embed.setDescription(`This is your ${reminderText[reminder as SelectableEventReminder]} reminder for the **[${event.name}](${eventMessageLink})** event`);
+		embed.setDescription(
+			`This is your ${
+				reminderText[reminder as SelectableEventReminder]
+			} reminder for the **[${event.name}](${eventMessageLink})** event`
+		);
 	}
-	
+
 	const remindersButton = new ButtonBuilder()
 		.setCustomId(`reminders-${event.id}`)
 		.setEmoji("🔔")
@@ -89,10 +105,10 @@ export function buildReminderDmMessage(event: Event, reminder: EventReminder, ev
 		.setStyle(ButtonStyle.Secondary);
 
 	const weblinkButton = new ButtonBuilder()
-		.setLabel("View")
+		.setLabel("Website")
 		.setURL(getWebURL(`/event/${event.id}`).href)
 		.setStyle(ButtonStyle.Link);
-		
+
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
 	buttonsRow.addComponents(remindersButton, weblinkButton);
 

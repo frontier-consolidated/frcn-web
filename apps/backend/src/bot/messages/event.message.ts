@@ -179,7 +179,7 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 		.setStyle(ButtonStyle.Danger);
 
 	const weblinkButton = new ButtonBuilder()
-		.setLabel("View")
+		.setLabel("Website")
 		.setURL(getWebURL(`/event/${event.id}`).href)
 		.setStyle(ButtonStyle.Link);
 
