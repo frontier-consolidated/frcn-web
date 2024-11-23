@@ -10,7 +10,8 @@ import {
 	ThreadChannel,
 	escapeMarkdown,
 	StringSelectMenuBuilder,
-	StringSelectMenuOptionBuilder
+	StringSelectMenuOptionBuilder,
+	TextChannel
 } from "discord.js";
 
 import type { DiscordClient } from "..";
@@ -83,14 +84,6 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 			inline: true
 		});
 
-	if (!event.settings!.hideLocation) {
-		eventEmbed.addFields({
-			name: "Location",
-			value: getLocationBreadcrumbs(event.location),
-			inline: true
-		});
-	}
-
 	event.roles.sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
 
 	const totalMembers = event.roles.reduce(
@@ -104,52 +97,67 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 	threadId ??= event.discordThreadId ?? undefined;
 	eventEmbed
 		.addFields(
-			{ name: "Duration", value: dates.toDuration(event.duration!), inline: true },
 			...(threadId ? [{ name: "Thread", value: `<#${threadId}>`, inline: true }] : []),
 			{
-				name: "Time (Your Timezone)",
-				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`
+				name: " ",
+				value: " "
 			},
-			...event.roles.map((role) => {
-				const members = role.members.filter((m) => !!m.user);
-				const roleEmoji =
-					role.emoji === role.emojiId
-						? `:${role.emoji}:`
-						: `<:${role.emoji}:${role.emojiId}>`;
-
-				const valueLimit =
-					120 +
-					Math.min(
-						880,
-						Math.floor((members.length / totalMembers) * remainingCharacterLimit)
-					);
-				let value = " ";
-				if (members.length > 0) {
-					for (const [i, member] of members.entries()) {
-						const prefix = i === 0 ? ">>> " : "\n";
-						const memberName = escapeMarkdown(member.user!.discordName);
-
-						if (value.length + memberName.length > valueLimit) {
-							value += `${prefix}**+${members.length - i} more**`;
-							break;
-						}
-
-						value += `${prefix}${memberName}`;
-					}
-				}
-
-				return {
-					name: `${roleEmoji} ${escapeMarkdown(role.name)} (${members.length}${
-						role.limit > 0 ? `/${role.limit}` : ""
-					})`,
-					value,
-					inline: true
-				};
-			})
+			{
+				name: "Time (Your Timezone)",
+				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`,
+				inline: true
+			},
+			{ name: "Duration", value: dates.toDuration(event.duration!), inline: true }
 		)
 		.setFooter({
 			text: `Created by ${event.owner?.discordName ?? "[DELETED USER]"}`
 		});
+
+	if (!event.settings!.hideLocation || (event.startAt && new Date() >= event.startAt)) {
+		eventEmbed.addFields({
+			name: "Location",
+			value: getLocationBreadcrumbs(event.location)
+		});
+	}
+
+	eventEmbed.addFields(
+		...event.roles.map((role) => {
+			const members = role.members.filter((m) => !!m.user);
+			const roleEmoji =
+				role.emoji === role.emojiId
+					? `:${role.emoji}:`
+					: `<:${role.emoji}:${role.emojiId}>`;
+
+			const valueLimit =
+				120 +
+				Math.min(
+					880,
+					Math.floor((members.length / totalMembers) * remainingCharacterLimit)
+				);
+			let value = " ";
+			if (members.length > 0) {
+				for (const [i, member] of members.entries()) {
+					const prefix = i === 0 ? ">>> " : "\n";
+					const memberName = escapeMarkdown(member.user!.discordName);
+
+					if (value.length + memberName.length > valueLimit) {
+						value += `${prefix}**+${members.length - i} more**`;
+						break;
+					}
+
+					value += `${prefix}${memberName}`;
+				}
+			}
+
+			return {
+				name: `${roleEmoji} ${escapeMarkdown(role.name)} (${members.length}${
+					role.limit > 0 ? `/${role.limit}` : ""
+				})`,
+				value,
+				inline: true
+			};
+		})
+	);
 
 	if (event.imageUrl) eventEmbed.setImage(event.imageUrl);
 
@@ -211,8 +219,12 @@ export async function getEventMessage(client: DiscordClient, event: Event) {
 	}
 }
 
-export async function postEventMessage(client: DiscordClient, event: Event) {
-	const channel = await $events.getEventDiscordChannel(event, client);
+export async function postEventMessage(
+	client: DiscordClient,
+	event: Event,
+	_channel?: TextChannel
+) {
+	const channel = _channel ?? (await $events.getEventDiscordChannel(event, client));
 	const settings = await $events.getEventSettings(event.id);
 
 	let createThread = !event.discordThreadId && settings?.createEventThread;
