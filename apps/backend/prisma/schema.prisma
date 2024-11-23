@@ -139,16 +139,17 @@ model UsersInUserRoles {
 // Events
 
 model EventRsvpRole {
-  id        String      @id @default(uuid())
-  name      String
-  emoji     String
-  emojiId   String      @map("emoji_id")
-  limit     Int         @default(0)
-  members   EventUser[]
-  event     Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId   String      @map("event_id")
-  updatedAt DateTime    @updatedAt @map("updated_at")
-  createdAt DateTime    @default(now()) @map("created_at")
+  id              String      @id @default(uuid())
+  name            String
+  emoji           String
+  emojiId         String      @map("emoji_id")
+  limit           Int         @default(0)
+  discordThreadId String?     @map("discord_thread_id")
+  members         EventUser[]
+  event           Event       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId         String      @map("event_id")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+  createdAt       DateTime    @default(now()) @map("created_at")
 
   @@map("rsvp_roles")
   @@schema("events")
@@ -169,6 +170,7 @@ model EventUser {
   updatedAt DateTime       @updatedAt @map("updated_at")
   createdAt DateTime       @default(now()) @map("created_at")
 
+  @@unique([eventId, userId])
   @@map("users")
   @@schema("events")
 }
@@ -187,15 +189,16 @@ model EventTeam {
 }
 
 model EventSettings {
-  id                 Int      @id @default(autoincrement())
-  createEventThread  Boolean  @default(true) @map("create_event_thread")
-  hideLocation       Boolean  @map("hide_location")
-  inviteOnly         Boolean  @map("invite_only")
-  openToJoinRequests Boolean  @map("open_to_join_requests")
-  event              Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId            String   @unique @map("event_id")
-  updatedAt          DateTime @updatedAt @map("updated_at")
-  createdAt          DateTime @default(now()) @map("created_at")
+  id                    Int      @id @default(autoincrement())
+  createEventThread     Boolean  @default(true) @map("create_event_thread")
+  createThreadsForRoles Boolean  @default(false) @map("create_threads_for_roles")
+  hideLocation          Boolean  @map("hide_location")
+  inviteOnly            Boolean  @map("invite_only")
+  openToJoinRequests    Boolean  @map("open_to_join_requests")
+  event                 Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId               String   @unique @map("event_id")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+  createdAt             DateTime @default(now()) @map("created_at")
 
   @@map("settings")
   @@schema("events")

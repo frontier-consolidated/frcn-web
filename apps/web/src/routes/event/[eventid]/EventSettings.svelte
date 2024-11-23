@@ -92,6 +92,7 @@
 					mentions: editData.mentions,
 					settings: {
 						createEventThread: editData.settings.createEventThread,
+						createThreadsForRoles: editData.settings.createThreadsForRoles,
 						hideLocation: editData.settings.hideLocation,
 						inviteOnly: editData.settings.inviteOnly,
 						openToJoinRequests: editData.settings.openToJoinRequests
@@ -497,7 +498,19 @@
 					>
 						Create Event Thread
 					</Toggle>
-					<Helper class="mt-1">No discord thread will be created if disabled</Helper>
+				</Field>
+				<Field
+					{validator}
+					for="event-create-threads-for-roles"
+					value={editData.settings.createThreadsForRoles}
+				>
+					<Toggle
+						id="event-create-threads-for-roles"
+						disabled={!canEdit || data.posted}
+						bind:checked={editData.settings.createThreadsForRoles}
+					>
+						Create Threads for RSVP Roles
+					</Toggle>
 				</Field>
 			</div>
 		</section>
