@@ -526,6 +526,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 		include: {
 			user: {
 				select: {
+					id: true,
 					discordId: true
 				}
 			},
@@ -536,7 +537,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 	if (!updatedMember.event.posted) return;
 	await updateEventMessage(discordClient, updatedMember.event);
 
-	if (updatedMember.user && updatedMember.user.discordId !== updatedMember.event.ownerId) {
+	if (updatedMember.user && updatedMember.user.id !== updatedMember.event.ownerId) {
 		if (updatedMember.event.discordThreadId) {
 			try {
 				const thread = await getEventThread(discordClient, updatedMember.event);
