@@ -14,6 +14,7 @@
 
 <div class={twMerge("flex gap-2", $$restProps.class)}>
 	<Input
+		{disabled}
 		readonly
 		value={value.length ? value.map((loc) => loc.name).join(" > ") : null}
 		{id}
@@ -21,10 +22,12 @@
 		{...$$restProps}
 		class="flex-1 rounded overflow-x-hidden text-ellipsis"
 		on:click={() => {
+			if (disabled) return;
 			modalOpen = true;
 		}}
 	/>
 	<Button
+		{disabled}
 		color="dark"
 		on:click={() => {
 			value = [];
