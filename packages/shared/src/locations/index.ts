@@ -1,38 +1,60 @@
+import { Pyro } from "./systems/Pyro";
 import { Stanton } from "./systems/Stanton";
-import type { AnyLocation, Area, Universe } from "./types";
+import type { AnyFlatLocation, AnyLocation, Area, Galaxy } from "./types";
 
 export type * from "./types";
 
-export const locations = [Stanton] satisfies Universe;
+export const locations = [Stanton, Pyro] satisfies Galaxy;
 
 export const areas = {
 	default: [
 		{
 			type: "AREA",
-			name: "Anywhere",
-		},
+			name: "Anywhere"
+		}
 	],
 	PLANET: [
 		{
 			type: "AREA",
-			name: "Surface",
+			name: "Surface"
 		},
 		{
 			type: "AREA",
-			name: "Orbit",
-		},
+			name: "Orbit"
+		}
 	],
 	MOON: [
 		{
 			type: "AREA",
-			name: "Surface",
+			name: "Surface"
 		},
 		{
 			type: "AREA",
-			name: "Orbit",
-		},
-	],
+			name: "Orbit"
+		}
+	]
 } as const satisfies Record<string, Area[]>;
+
+const locationsFlat = [] as AnyFlatLocation[];
+function unpackLocations(locations: AnyLocation[], path: AnyLocation[] = []) {
+	for (const location of locations) {
+		const locationPath = [...path, location];
+		locationsFlat.push({
+			...location,
+			path: locationPath
+		});
+		if ("children" in location) {
+			unpackLocations(location.children, locationPath);
+		}
+	}
+}
+unpackLocations(locations);
+
+export function searchLocations(query: string) {
+	return locationsFlat.filter((location) => {
+		return location.name.toLowerCase().includes(query.toLowerCase());
+	});
+}
 
 export function getChildren(location: AnyLocation) {
 	if ("children" in location) {

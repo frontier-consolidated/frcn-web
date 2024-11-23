@@ -122,6 +122,7 @@ type EventMember {
 
 type EventSettings {
 	createEventThread: Boolean!
+	createThreadsForRoles: Boolean!
 	hideLocation: Boolean!
 	inviteOnly: Boolean!
 	openToJoinRequests: Boolean!
@@ -257,6 +258,7 @@ input EventFilterInput {
 
 input EventSettingsInput {
 	createEventThread: Boolean
+	createThreadsForRoles: Boolean
 	hideLocation: Boolean
 	inviteOnly: Boolean
 	openToJoinRequests: Boolean

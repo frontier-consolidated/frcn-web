@@ -5,6 +5,7 @@ export const EVENT_SETTINGS_FRAGMENT = gql(`
         mentions
         settings {
             createEventThread
+            createThreadsForRoles
             hideLocation
             inviteOnly
             openToJoinRequests

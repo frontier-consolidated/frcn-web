@@ -1,14 +1,23 @@
 import { randomUUID } from "crypto";
 
 import type { EventType } from "@frcn/shared";
-import type { Event, EventChannel, EventRsvpRole, EventUser, Prisma, User } from "@prisma/client";
+import type {
+	Event,
+	EventChannel,
+	EventRsvpRole,
+	EventSettings,
+	EventUser,
+	Prisma,
+	User
+} from "@prisma/client";
 import {
 	ChannelType,
 	TextChannel,
 	type GuildBasedChannel,
 	ThreadAutoArchiveDuration,
 	VideoQualityMode,
-	Guild
+	Guild,
+	ThreadChannel
 } from "discord.js";
 
 import { $discord } from "./discord";
@@ -228,7 +237,7 @@ async function getEventEventChannel<T extends Prisma.Event$channelArgs>(
 }
 
 async function getEventDiscordChannel(event: Event, discordClient: DiscordClient) {
-	const eventChannel = await $events.getEventEventChannel(event.id);
+	const eventChannel = await getEventEventChannel(event.id);
 	if (!eventChannel) throw new Error("Event has no event channel");
 
 	const channel = await $discord.getChannel(
@@ -241,14 +250,15 @@ async function getEventDiscordChannel(event: Event, discordClient: DiscordClient
 	return channel;
 }
 
-async function getEventThread(event: Event, discordClient: DiscordClient) {
-	if (!event.discordThreadId) throw new Error("Event has no thread!");
+async function getEventThread(discordClient: DiscordClient, event: Event, role?: EventRsvpRole) {
+	if ((role && !role.discordThreadId) || (!role && !event.discordThreadId))
+		throw new Error("Event has no thread!");
 
 	const eventChannel = event.channelId ? await getEventChannel(event.channelId) : null;
 
 	const thread = await $discord.getChannel(
 		discordClient,
-		event.discordThreadId,
+		role ? role.discordThreadId! : event.discordThreadId!,
 		eventChannel?.discordGuildId ?? undefined
 	);
 	if (!thread?.isThread()) throw new Error("Could not find thread or channel is not a thread");
@@ -259,32 +269,55 @@ async function getEventThread(event: Event, discordClient: DiscordClient) {
 async function createEventThread(
 	event: Event,
 	discordClient: DiscordClient,
-	channel?: TextChannel
+	channel?: TextChannel,
+	role?: EventRsvpRole
 ) {
 	channel ??= await getEventDiscordChannel(event, discordClient);
 	const settings = await getEventSettings(event.id);
-	if (!settings?.createEventThread) return null;
+	if ((role && !settings?.createThreadsForRoles) || (!role && !settings?.createEventThread))
+		return null;
 
+	let threadName = role ? `${event.name.slice(0, 11)}.. | ${role.name}` : event.name;
 	const thread = await channel!.threads.create({
-		name: event.name,
+		name: threadName,
 		type: ChannelType.PrivateThread,
-		reason: "Create thread for event: " + event.name,
+		reason:
+			"Create thread for event: " + event.name + (role ? ` for RSVP role ${role.name}` : ""),
 		autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
 		invitable: false
 	});
 
-	const rsvps = await $events.getEventMembers(event.id, {
-		include: {
-			user: {
-				select: {
-					discordId: true
-				}
-			}
+	const owner = await getEventOwner(event.id);
+	if (owner) {
+		try {
+			await thread.members.add(owner.discordId, "Is event owner");
+		} catch (err) {
+			logger.error("Failed to add event owner to event thread", err);
 		}
-	});
+	}
+
+	const rsvps = role
+		? await getRSVPMembers(role.id, {
+				include: {
+					user: {
+						select: {
+							discordId: true
+						}
+					}
+				}
+		  })
+		: await getEventMembers(event.id, {
+				include: {
+					user: {
+						select: {
+							discordId: true
+						}
+					}
+				}
+		  });
 
 	for (const rsvp of rsvps) {
-		if (!rsvp.user) continue;
+		if (!rsvp.user || thread.members.cache.has(rsvp.user.discordId)) continue;
 		try {
 			await thread.members.add(rsvp.user.discordId, "RSVPed");
 		} catch (err) {
@@ -295,25 +328,95 @@ async function createEventThread(
 	return thread;
 }
 
-async function archiveEventThread(event: Event, discordClient: DiscordClient) {
+async function tryCreateEventThread(
+	discordClient: DiscordClient,
+	event: Event & { settings?: EventSettings | null },
+	channel: TextChannel,
+	role?: EventRsvpRole
+) {
+	const flag = role ? event.settings?.createThreadsForRoles : event.settings?.createEventThread;
+
+	let createThread = (role ? !role.discordThreadId : !event.discordThreadId) && flag;
+
+	let thread: ThreadChannel | null = null;
+	if (!createThread && flag) {
+		try {
+			thread = await getEventThread(discordClient, event, role);
+		} catch (err) {
+			createThread = true;
+		}
+	}
+
+	if (createThread) {
+		thread = await createEventThread(event, discordClient, channel, role);
+	}
+
+	return { thread, created: createThread };
+}
+
+async function renameEventThread(discordClient: DiscordClient, event: Event) {
 	if (!event.posted || !event.discordThreadId) return;
 
 	try {
-		const thread = await getEventThread(event, discordClient);
+		const thread = await getEventThread(discordClient, event);
+		await thread.setName(event.name);
+	} catch (err) {
+		logger.error("Failed to rename event thread", err);
+	}
+
+	const roles = await getRSVPRoles(event.id);
+	for (const role of roles) {
+		if (!role.discordThreadId) continue;
+		try {
+			const thread = await getEventThread(discordClient, event, role);
+			await thread.setName(`${event.name.slice(0, 11)}.. | ${role.name}`);
+		} catch (err) {
+			logger.error("Failed to rename event role thread", err);
+		}
+	}
+}
+
+async function archiveEventThreads(discordClient: DiscordClient, event: Event) {
+	if (!event.posted || !event.discordThreadId) return;
+
+	try {
+		const thread = await getEventThread(discordClient, event);
 		await thread.setArchived(true);
 	} catch (err) {
 		logger.error("Failed to archive event thread", err);
 	}
+
+	const roles = await getRSVPRoles(event.id);
+	for (const role of roles) {
+		if (!role.discordThreadId) continue;
+		try {
+			const thread = await getEventThread(discordClient, event, role);
+			await thread.setArchived(true);
+		} catch (err) {
+			logger.error("Failed to archive event role thread", err);
+		}
+	}
 }
 
-async function deleteEventThread(event: Event, discordClient: DiscordClient) {
+async function deleteEventThreads(discordClient: DiscordClient, event: Event) {
 	if (!event.posted || !event.discordThreadId) return;
 
 	try {
-		const thread = await getEventThread(event, discordClient);
+		const thread = await getEventThread(discordClient, event);
 		await thread.delete();
 	} catch (err) {
 		logger.error("Failed to delete event thread", err);
+	}
+
+	const roles = await getRSVPRoles(event.id);
+	for (const role of roles) {
+		if (!role.discordThreadId) continue;
+		try {
+			const thread = await getEventThread(discordClient, event, role);
+			await thread.delete();
+		} catch (err) {
+			logger.error("Failed to delete event role thread", err);
+		}
 	}
 }
 
@@ -412,6 +515,7 @@ async function getEventMemberRsvp<T extends Prisma.EventUser$rsvpArgs>(
 }
 
 async function kickEventMember(member: EventUser, discordClient: DiscordClient) {
+	const rsvp = await getEventMemberRsvp(member.id);
 	const updatedMember = await database.eventUser.update({
 		where: { id: member.id },
 		data: {
@@ -422,6 +526,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 		include: {
 			user: {
 				select: {
+					id: true,
 					discordId: true
 				}
 			},
@@ -432,15 +537,29 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 	if (!updatedMember.event.posted) return;
 	await updateEventMessage(discordClient, updatedMember.event);
 
-	if (updatedMember.user && updatedMember.event.discordThreadId) {
-		try {
-			const thread = await getEventThread(updatedMember.event, discordClient);
-			await thread.members.remove(
-				updatedMember.user.discordId,
-				"UnRSVPed / Kicked from event"
-			);
-		} catch (err) {
-			logger.error("Failed to remove user to event thread", err);
+	if (updatedMember.user && updatedMember.user.id !== updatedMember.event.ownerId) {
+		if (updatedMember.event.discordThreadId) {
+			try {
+				const thread = await getEventThread(discordClient, updatedMember.event);
+				await thread.members.remove(
+					updatedMember.user.discordId,
+					"UnRSVPed / Kicked from event"
+				);
+			} catch (err) {
+				logger.error("Failed to remove user to event thread", err);
+			}
+		}
+
+		if (rsvp?.discordThreadId) {
+			try {
+				const thread = await getEventThread(discordClient, updatedMember.event, rsvp);
+				await thread.members.remove(
+					updatedMember.user.discordId,
+					"UnRSVPed / Kicked from event"
+				);
+			} catch (err) {
+				logger.error("Failed to remove user to event role thread", err);
+			}
 		}
 	}
 }
@@ -579,6 +698,20 @@ async function createEvent(owner: User, startAt: Date | undefined, discordClient
 async function editEvent(event: Event, data: EventEditInput, discordClient: DiscordClient) {
 	const roles = await getRSVPRoles(event.id);
 
+	const rolesToCreate = (data.roles ?? [])
+		.filter((r) => !roles.find((r1) => r1.id === r.id))
+		.map((r) => ({
+			id: randomUUID(),
+			name: r.name,
+			emoji: r.emoji,
+			emojiId: r.emojiId,
+			limit: r.limit
+		}));
+	const rolesToUpdate = (data.roles ?? []).filter((r) => !!roles.find((r1) => r1.id === r.id));
+	const rolesToDelete = data.roles
+		? roles.filter((r) => !data.roles!.find((r1) => r1.id === r.id))
+		: [];
+
 	const updatedEvent = await database.event.update({
 		where: { id: event.id },
 		data: {
@@ -600,32 +733,20 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 			roles: data.roles
 				? {
 						createMany: {
-							data: data.roles
-								.filter((r) => !roles.find((r1) => r1.id === r.id))
-								.map((r) => ({
-									id: randomUUID(),
-									name: r.name,
-									emoji: r.emoji,
-									emojiId: r.emojiId,
-									limit: r.limit
-								}))
+							data: rolesToCreate
 						},
-						updateMany: data.roles
-							.filter((r) => !!roles.find((r1) => r1.id === r.id))
-							.map((r) => ({
-								where: { id: r.id },
-								data: {
-									name: r.name,
-									emoji: r.emoji,
-									emojiId: r.emojiId,
-									limit: r.limit
-								}
-							})),
-						deleteMany: roles
-							.filter((r) => !data.roles!.find((r1) => r1.id === r.id))
-							.map((r) => ({
-								id: r.id
-							}))
+						updateMany: rolesToUpdate.map((r) => ({
+							where: { id: r.id },
+							data: {
+								name: r.name,
+								emoji: r.emoji,
+								emojiId: r.emojiId,
+								limit: r.limit
+							}
+						})),
+						deleteMany: rolesToDelete.map((r) => ({
+							id: r.id
+						}))
 				  }
 				: undefined,
 			discordMentions: data.mentions ? data.mentions : undefined,
@@ -633,6 +754,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 				? {
 						update: {
 							createEventThread: data.settings.createEventThread ?? undefined,
+							createThreadsForRoles: data.settings.createThreadsForRoles ?? undefined,
 							hideLocation: data.settings.hideLocation ?? undefined,
 							inviteOnly: data.settings.inviteOnly ?? undefined,
 							openToJoinRequests: data.settings.openToJoinRequests ?? undefined
@@ -653,21 +775,76 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 				: undefined
 		},
 		include: {
-			channel: true
+			channel: true,
+			settings: true,
+			roles: true
 		}
 	});
 
 	await updateEventMessage(discordClient, updatedEvent);
+	await renameEventThread(discordClient, updatedEvent);
 	await postEventUpdateMessage(discordClient, event, updatedEvent);
 	if (updatedEvent.channel) {
 		await updateEventChannelCalendarMessage(discordClient, updatedEvent.channel);
+	}
+
+	let discordChannel;
+	try {
+		discordChannel = await getEventDiscordChannel(updatedEvent, discordClient);
+	} catch (err) {
+		logger.error("Failed to get event discord channel to update threads", err);
+	}
+
+	if (discordChannel) {
+		for (const dataRole of [
+			...rolesToCreate,
+			...rolesToUpdate.map((r) => ({ ...r, updated: true }))
+		]) {
+			const role = updatedEvent.roles.find((r) => r.id === dataRole.id);
+			if (!role) continue;
+
+			const { thread, created } = await tryCreateEventThread(
+				discordClient,
+				updatedEvent,
+				discordChannel,
+				role
+			);
+			if (thread && created) {
+				await database.eventRsvpRole.update({
+					where: { id: role.id },
+					data: {
+						discordThreadId: thread.id
+					}
+				});
+			}
+
+			if (thread && "updated" in dataRole && !created && dataRole.name !== role.name) {
+				try {
+					const thread = await getEventThread(discordClient, updatedEvent, role);
+					await thread.setName(`${updatedEvent.name.slice(0, 11)}.. | ${dataRole.name}`);
+				} catch (err) {
+					logger.error("Failed to rename event role thread", err);
+				}
+			}
+		}
+	}
+
+	for (const role of rolesToDelete) {
+		if (!role.discordThreadId) continue;
+		try {
+			const thread = await getEventThread(discordClient, updatedEvent, role);
+			await thread.delete();
+		} catch (err) {
+			logger.error("Failed to delete event role thread", err);
+		}
 	}
 
 	return updatedEvent;
 }
 
 async function postEvent(event: Event, discordClient: DiscordClient) {
-	const { messageId, threadId } = await postEventMessage(discordClient, event);
+	const channel = await getEventDiscordChannel(event, discordClient);
+	const { messageId, threadId } = await postEventMessage(discordClient, event, channel);
 
 	const updatedEvent = await database.event.update({
 		where: { id: event.id },
@@ -677,17 +854,38 @@ async function postEvent(event: Event, discordClient: DiscordClient) {
 			posted: true
 		},
 		include: {
-			channel: true
+			channel: true,
+			roles: true,
+			settings: true
 		}
 	});
 
 	if (updatedEvent.channel) {
 		await updateEventChannelCalendarMessage(discordClient, updatedEvent.channel, true);
 	}
+
+	if (updatedEvent.settings?.createThreadsForRoles) {
+		for (const role of updatedEvent.roles) {
+			const { thread, created } = await tryCreateEventThread(
+				discordClient,
+				updatedEvent,
+				channel,
+				role
+			);
+			if (thread && created) {
+				await database.eventRsvpRole.update({
+					where: { id: role.id },
+					data: {
+						discordThreadId: thread.id
+					}
+				});
+			}
+		}
+	}
 }
 
 async function unpostEvent(event: Event, discordClient: DiscordClient) {
-	await deleteEventThread(event, discordClient);
+	await deleteEventThreads(discordClient, event);
 	await deleteEventMessage(discordClient, event);
 	const unpostedEvent = await database.event.update({
 		where: { id: event.id },
@@ -770,7 +968,7 @@ async function archiveEvent(event: Event, discordClient: DiscordClient) {
 		await endEvent(event, discordClient, false);
 	}
 
-	await archiveEventThread(event, discordClient);
+	await archiveEventThreads(discordClient, event);
 	return await database.event.update({
 		where: { id: event.id },
 		data: {
@@ -783,7 +981,7 @@ async function archiveEvent(event: Event, discordClient: DiscordClient) {
 async function deleteEvent(event: Event, discordClient: DiscordClient) {
 	if (event.endedAt) return;
 
-	await deleteEventThread(event, discordClient);
+	await deleteEventThreads(discordClient, event);
 	await deleteEventMessage(discordClient, event);
 	const deletedEvent = await database.event.delete({
 		where: { id: event.id },
@@ -816,55 +1014,74 @@ async function rsvpForEvent(
 	const canRsvp = await canJoinRsvp(rsvp);
 	if (!canRsvp) throw new Error(`Cannot rsvp to ${rsvp.name}, role is full`);
 
-	const updatedEvent = await database.event.update({
-		where: { id: event.id },
-		data: {
-			members: {
-				create: !currentRsvp
+	const currentRsvpRole = currentRsvp ? await getEventMemberRsvp(currentRsvp.id) : null;
+
+	await database.eventUser.upsert({
+		where: {
+			eventId_userId: {
+				eventId: event.id,
+				userId: user.id
+			}
+		},
+		create: {
+			event: {
+				connect: {
+					id: event.id
+				}
+			},
+			pending: false,
+			rsvp: {
+				connect: {
+					id: rsvp.id
+				}
+			},
+			user: {
+				connect: {
+					id: user.id
+				}
+			}
+		},
+		update: {
+			pending: false,
+			rsvp:
+				rsvp.id !== currentRsvp?.rsvpId
 					? {
-							pending: false,
-							rsvp: {
-								connect: {
-									id: rsvp.id
-								}
-							},
-							user: {
-								connect: {
-									id: user.id
-								}
-							}
-					  }
-					: undefined,
-				update: currentRsvp
-					? {
-							where: { id: currentRsvp.id },
-							data: {
-								rsvp:
-									rsvp.id !== currentRsvp.rsvpId
-										? {
-												connect: {
-													id: rsvp.id
-												}
-										  }
-										: undefined,
-								pending: false
+							connect: {
+								id: rsvp.id
 							}
 					  }
 					: undefined
-			}
 		}
 	});
 
 	if (!event.posted) return;
 
-	await updateEventMessage(discordClient, updatedEvent);
+	await updateEventMessage(discordClient, event);
 
-	if (updatedEvent.discordThreadId) {
+	if (event.discordThreadId) {
 		try {
-			const thread = await getEventThread(updatedEvent, discordClient);
+			const thread = await getEventThread(discordClient, event);
 			await thread.members.add(user.discordId, "RSVPed");
 		} catch (err) {
 			logger.error("Failed to add user to event thread", err);
+		}
+	}
+
+	if (currentRsvpRole?.discordThreadId) {
+		try {
+			const thread = await getEventThread(discordClient, event, currentRsvpRole);
+			await thread.members.remove(user.discordId, "Changed role");
+		} catch (err) {
+			logger.error("Failed to remove user from event role thread", err);
+		}
+	}
+
+	if (rsvp.discordThreadId) {
+		try {
+			const thread = await getEventThread(discordClient, event, rsvp);
+			await thread.members.add(user.discordId, "RSVPed / Changed role");
+		} catch (err) {
+			logger.error("Failed to add user to event role thread", err);
 		}
 	}
 }
@@ -1092,8 +1309,9 @@ export const $events = {
 	getEventDiscordChannel,
 	getEventThread,
 	createEventThread,
-	archiveEventThread,
-	deleteEventThread,
+	renameEventThread,
+	archiveEventThreads,
+	deleteEventThreads,
 	getEventOwner,
 	getEventSettings,
 	getEventMember,

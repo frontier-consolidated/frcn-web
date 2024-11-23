@@ -32,7 +32,7 @@
 			}
 		}
 	},
-	"ignorePatterns": ["/docs", "dist", "node_modules"],
+	"ignorePatterns": ["dist", "node_modules"],
 	"rules": {
 		"import/order": [
 			"warn",

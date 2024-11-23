@@ -1,6 +1,12 @@
 import { dates } from "@frcn/shared";
 import type { Event, EventRsvpRole } from "@prisma/client";
-import { type BaseMessageOptions, ButtonStyle, ButtonBuilder, ActionRowBuilder, EmbedBuilder } from "discord.js";
+import {
+	type BaseMessageOptions,
+	ButtonStyle,
+	ButtonBuilder,
+	ActionRowBuilder,
+	EmbedBuilder
+} from "discord.js";
 
 import { getWebURL } from "../../env";
 import { PRIMARY_COLOR } from "../constants";
@@ -8,32 +14,34 @@ import { PRIMARY_COLOR } from "../constants";
 export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | null) {
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
-		.setTitle(`${rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`} RSVP Confirmed`)
-		.setDescription(`You must allow messages from <@${process.env.DISCORD_CLIENTID}> to set reminders.`);
+		.setTitle(
+			`${
+				rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`
+			} RSVP Confirmed`
+		)
+		.setDescription(
+			`You must allow messages from <@${process.env.DISCORD_CLIENTID}> to set reminders.`
+		);
 
-	const remindersButton = new ButtonBuilder()
-		.setEmoji("🔔")
-		.setLabel("Reminders");
-	
+	const remindersButton = new ButtonBuilder().setEmoji("🔔").setLabel("Reminders");
+
 	if (dmMessageLink) {
-		remindersButton
-			.setURL(dmMessageLink)
-			.setStyle(ButtonStyle.Link);
+		remindersButton.setURL(dmMessageLink).setStyle(ButtonStyle.Link);
 	} else {
 		remindersButton
 			.setCustomId("disabled-reminders")
 			.setDisabled(true)
 			.setStyle(ButtonStyle.Secondary);
 	}
-		
+
 	const weblinkButton = new ButtonBuilder()
-		.setLabel("View")
+		.setLabel("Website")
 		.setURL(getWebURL(`/event/${rsvp.eventId}`).href)
 		.setStyle(ButtonStyle.Link);
-		
+
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
 	buttonsRow.addComponents(remindersButton, weblinkButton);
-	
+
 	return {
 		embeds: [embed],
 		components: [buttonsRow]
@@ -43,17 +51,25 @@ export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | nu
 export function buildRsvpSwitchMessage(rsvp: EventRsvpRole) {
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
-		.setTitle(`${rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`} RSVP Change Confirmed`)
-		.setDescription(`Successfully changed RSVP to __${rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`} ${rsvp.name}__`);
-		
+		.setTitle(
+			`${
+				rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`
+			} RSVP Change Confirmed`
+		)
+		.setDescription(
+			`Successfully changed RSVP to __${
+				rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`
+			} ${rsvp.name}__`
+		);
+
 	const weblinkButton = new ButtonBuilder()
-		.setLabel("View")
+		.setLabel("Website")
 		.setURL(getWebURL(`/event/${rsvp.eventId}`).href)
 		.setStyle(ButtonStyle.Link);
-		
+
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
 	buttonsRow.addComponents(weblinkButton);
-	
+
 	return {
 		embeds: [embed],
 		components: [buttonsRow]
@@ -66,34 +82,38 @@ export function buildRsvpDmMessage(event: Event, rsvp: EventRsvpRole, eventMessa
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
 		.setTitle("RSVP Confirmation")
-		.setDescription(`You have RSVPed as __${rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`} ${rsvp.name}__ for **[${event.name}](${eventMessageLink})**`)
+		.setDescription(
+			`You have RSVPed as __${
+				rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`
+			} ${rsvp.name}__ for **[${event.name}](${eventMessageLink})**`
+		)
 		.addFields(
 			{
 				name: "Event Time (Your Timezone)",
-				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`,
+				value: `<t:${startAtSeconds}:F> (<t:${startAtSeconds}:R>)`
 			},
-			{ name: "Duration", value: dates.toDuration(event.duration!) },
+			{ name: "Duration", value: dates.toDuration(event.duration!) }
 		);
-	
+
 	const remindersButton = new ButtonBuilder()
 		.setCustomId(`reminders-${event.id}`)
 		.setEmoji("🔔")
 		.setLabel("Reminders")
 		.setStyle(ButtonStyle.Secondary);
-	
+
 	const unrsvpButton = new ButtonBuilder()
 		.setCustomId(`unrsvp-${event.id}`)
 		.setLabel("UnRSVP")
 		.setStyle(ButtonStyle.Danger);
-		
+
 	const weblinkButton = new ButtonBuilder()
-		.setLabel("View")
+		.setLabel("Website")
 		.setURL(getWebURL(`/event/${event.id}`).href)
 		.setStyle(ButtonStyle.Link);
-		
+
 	const buttonsRow = new ActionRowBuilder<ButtonBuilder>();
 	buttonsRow.addComponents(remindersButton, unrsvpButton, weblinkButton);
-	
+
 	return {
 		embeds: [embed],
 		components: [buttonsRow]
