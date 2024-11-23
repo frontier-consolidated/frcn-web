@@ -2,6 +2,7 @@ import type { DiscordClient } from "..";
 import { logger } from "../../logger";
 import { $discord } from "../../services/discord";
 import { $events, EventReminder } from "../../services/events";
+import { updateEventMessage } from "../messages/event.message";
 import { updateEventChannelCalendarMessage } from "../messages/eventChannelCalendar.message";
 import {
 	buildEventStartMessage,
@@ -90,8 +91,11 @@ async function updateEvents(client: DiscordClient) {
 			event.endedAt ||
 			event.startAt > new Date(now + EVENT_START_SOON_TIME) ||
 			event.remindersSent.includes(EventReminder.StartSoon)
-		)
+		) {
 			continue;
+		}
+
+		await updateEventMessage(client, event);
 
 		if (event.discordThreadId) {
 			try {
