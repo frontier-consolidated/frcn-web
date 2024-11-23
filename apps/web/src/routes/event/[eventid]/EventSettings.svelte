@@ -385,7 +385,11 @@
 					</Helper>
 				</Field>
 				<Field {validator} for="event-location" value={editData.location}>
-					<LocationSelectInput id="event-location" disabled={!canEdit} bind:value={editData.location} />
+					<LocationInput
+						id="event-location"
+						disabled={!canEdit}
+						bind:value={editData.location}
+					/>
 				</Field>
 			</div>
 		</section>

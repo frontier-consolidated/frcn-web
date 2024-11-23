@@ -85,6 +85,8 @@ export type System = Location & {
 	children: (Star | Planet | LagrangePoint | JumpPoint | Area)[];
 };
 
+export type Galaxy = System[];
+
 export type AnyLocation =
 	| System
 	| Star
@@ -96,4 +98,7 @@ export type AnyLocation =
 	| SurfacePoi
 	| SpacePoi
 	| Area;
-export type Galaxy = System[];
+
+export type AnyFlatLocation = AnyLocation & {
+	path: AnyLocation[];
+};

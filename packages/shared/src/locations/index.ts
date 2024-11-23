@@ -1,6 +1,6 @@
 import { Pyro } from "./systems/Pyro";
 import { Stanton } from "./systems/Stanton";
-import type { AnyLocation, Area, Galaxy } from "./types";
+import type { AnyFlatLocation, AnyLocation, Area, Galaxy } from "./types";
 
 export type * from "./types";
 
@@ -34,6 +34,27 @@ export const areas = {
 		}
 	]
 } as const satisfies Record<string, Area[]>;
+
+const locationsFlat = [] as AnyFlatLocation[];
+function unpackLocations(locations: AnyLocation[], path: AnyLocation[] = []) {
+	for (const location of locations) {
+		const locationPath = [...path, location];
+		locationsFlat.push({
+			...location,
+			path: locationPath
+		});
+		if ("children" in location) {
+			unpackLocations(location.children, locationPath);
+		}
+	}
+}
+unpackLocations(locations);
+
+export function searchLocations(query: string) {
+	return locationsFlat.filter((location) => {
+		return location.name.toLowerCase().includes(query.toLowerCase());
+	});
+}
 
 export function getChildren(location: AnyLocation) {
 	if ("children" in location) {
