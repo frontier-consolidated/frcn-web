@@ -1269,7 +1269,7 @@ async function $init(context: Context) {
 	const channels = await database.eventChannel.findMany();
 
 	for (const channel of channels) {
-		await updateEventChannelCalendarMessage(context.discordClient, channel, true);
+		await updateEventChannelCalendarMessage(context.discordClient, channel);
 	}
 }
 

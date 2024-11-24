@@ -176,8 +176,8 @@ export async function updateEventChannelCalendarMessage(
 		const discordChannel = await getDiscordChannel(client, channel);
 		let message = await getEventChannelCalendarMessage(client, channel);
 
-		if (repost && message && discordChannel.lastMessageId !== message.id) {
-			await message.delete();
+		if (repost || (message && discordChannel.lastMessageId !== message.id)) {
+			if (message) await message.delete();
 			message = null;
 		}
 
