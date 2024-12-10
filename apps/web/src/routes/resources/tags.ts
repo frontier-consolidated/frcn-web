@@ -6,6 +6,7 @@ export const tags = [
     "Racing",
     "Illegal",
     "Misc",
+    "Roleplay",
     "Medical",
     "Support",
     "Trading",
