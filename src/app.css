@@ -1,0 +1,67 @@
+@import "./css/fractul.module.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	body {
+		@apply bg-background text-text;
+	}
+
+	::-webkit-scrollbar {
+		width: 12px;
+		height: 12px;
+	}
+
+	::-webkit-scrollbar-track {
+		background-color: #1d1c1b;
+	}
+
+	::-webkit-scrollbar-thumb {
+		border-radius: 0;
+		background-color: #949494;
+	}
+}
+
+@layer utilities {
+	.floating-scrollbar::-webkit-scrollbar {
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+
+	.hover-scrollbar::-webkit-scrollbar {
+		opacity: 0;
+	}
+
+	.hover-scrollbar:hover::-webkit-scrollbar {
+		opacity: 1;
+	}
+
+	/* Hide scrollbar for Chrome, Safari and Opera */
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+	/* Hide scrollbar for IE, Edge and Firefox */
+	.no-scrollbar {
+		-ms-overflow-style: none; /* IE and Edge */
+		scrollbar-width: none; /* Firefox */
+	}
+
+	/* Hide number inner spin button for Chrome, Safari and Opera */
+	.no-number-buttons::-webkit-inner-spin-button {
+		display: none;
+	}
+
+	/* Hide number inner spin button for IE, Edge and Firefox */
+	.no-number-buttons {
+		appearance: textfield;
+		-moz-appearance: textfield;
+	}
+
+	.no-reveal::-ms-reveal,
+	.no-reveal::-ms-clear {
+		display: none;
+	}
+}
