@@ -1,6 +1,16 @@
 type Location = {
 	name: string;
-	coordinates?: string;
+	coordinates?: SphericalCoordinates;
+};
+
+export type SphericalCoordinates = {
+	distance: number;
+	azimuthal: number;
+	polar?: number;
+};
+
+type LocationWithCoordinates = Location & {
+	coordinates: SphericalCoordinates;
 };
 
 type SurfaceSpaceLocation = Location & {
@@ -11,9 +21,10 @@ type Surface<Location extends SurfaceSpaceLocation> = Location & {
 	inSpace: false;
 };
 
-type Space<Location extends SurfaceSpaceLocation> = Location & {
-	inSpace: true;
-};
+type Space<Location extends SurfaceSpaceLocation> = Location &
+	LocationWithCoordinates & {
+		inSpace: true;
+	};
 
 //
 
@@ -33,11 +44,11 @@ export type Prison = Location & {
 	type: "PRISON";
 };
 
-export type Station = Location & {
+export type Station = LocationWithCoordinates & {
 	type: "STATION";
 };
 
-export type CommArray = Location & {
+export type CommArray = LocationWithCoordinates & {
 	type: "COMM_ARRAY";
 };
 
@@ -52,37 +63,36 @@ export type RaceTrack = SurfaceSpaceLocation & {
 export type SurfacePoi = Outpost | City | Prison | Surface<SecurityPost> | Surface<RaceTrack>;
 export type SpacePoi = Station | CommArray | Space<SecurityPost> | Space<RaceTrack>;
 
-export type LagrangePoint = Location & {
+export type LagrangePoint = LocationWithCoordinates & {
 	type: "LAGRANGE_POINT";
 	children: (AstroidField | SpacePoi | Area)[];
 };
 
-export type JumpPoint = Location & {
+export type JumpPoint = LocationWithCoordinates & {
 	type: "JUMP_POINT";
-	children: (SpacePoi | Area)[];
 };
 
-export type AstroidField = Location & {
+export type AstroidField = LocationWithCoordinates & {
 	type: "ASTROID_FIELD";
 };
 
-export type Moon = Location & {
+export type Moon = LocationWithCoordinates & {
 	type: "MOON";
 	children: (SurfacePoi | SpacePoi | Area)[];
 };
 
-export type Planet = Location & {
+export type Planet = LocationWithCoordinates & {
 	type: "PLANET";
-	children: (Moon | SpacePoi | SurfacePoi | Area)[];
+	children: (Planet | Moon | SpacePoi | SurfacePoi | Area)[];
 };
 
-export type Star = Location & {
+export type Star = LocationWithCoordinates & {
 	type: "STAR";
 };
 
 export type System = Location & {
 	type: "SYSTEM";
-	children: (Star | Planet | LagrangePoint | JumpPoint | Area)[];
+	children: (Star | Planet | LagrangePoint | JumpPoint | Station | AstroidField | Area)[];
 };
 
 export type Galaxy = System[];
