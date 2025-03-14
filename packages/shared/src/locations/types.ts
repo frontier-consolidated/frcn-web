@@ -83,7 +83,7 @@ export type Moon = LocationWithCoordinates & {
 
 export type Planet = LocationWithCoordinates & {
 	type: "PLANET";
-	children: (Planet | Moon | SpacePoi | SurfacePoi | Area)[];
+	children: (Planet | Moon | AstroidField | SpacePoi | SurfacePoi | Area)[];
 };
 
 export type Star = LocationWithCoordinates & {
