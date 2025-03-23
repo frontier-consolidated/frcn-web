@@ -46,6 +46,7 @@ export const Stanton = system("Stanton", [
 		outpost("HDMS-Pinewood"),
 		outpost("HDES-Calthrope (NA)"),
 		station("Everus Harbor", { coordinates: { azimuthal: 0, distance: 12.85 } }),
+		station("Wikelo Emporium Dasi Station", { coordinates: { azimuthal: 0, distance: 12.85 } }),
 		commArray("Comm Array ST1-61", { coordinates: { azimuthal: 0, distance: 12.85 } }),
 		moon("Arial", { coordinates: { azimuthal: -0.13, distance: 12.89 } }, [
 			outpost("HDMS-Bezdek"),
@@ -142,6 +143,9 @@ export const Stanton = system("Stanton", [
 				coordinates: { azimuthal: -172.17, distance: 19.2 }
 			}),
 			station("Grim HEX", { coordinates: { azimuthal: -172.17, distance: 19.2 } }),
+			station("Wikelo Emporium Selo Station", {
+				coordinates: { azimuthal: -172.17, distance: 19.2 }
+			}),
 			commArray("Comm Array ST2-76", { coordinates: { azimuthal: -172.17, distance: 19.2 } })
 		])
 	]),
@@ -221,6 +225,9 @@ export const Stanton = system("Stanton", [
 		outpost("MT DataCenter L8P-JUC-8 (Offline)"),
 		outpost("MT DataCenter 8FK-Q2X-K"),
 		station("Port Tressler", { coordinates: { azimuthal: 58.86, distance: 43.44 } }),
+		station("Wikelo Emporium Kinga Station", {
+			coordinates: { azimuthal: 58.86, distance: 43.45 }
+		}),
 		commArray("Comm Array ST4-22", { coordinates: { azimuthal: 58.86, distance: 43.44 } }),
 		moon("Calliope", { coordinates: { azimuthal: 58.92, distance: 43.39 } }, [
 			outpost("Rayar Kaltag Research Outpost"),
