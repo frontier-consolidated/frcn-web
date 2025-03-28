@@ -11,17 +11,19 @@ import {
 import { getWebURL } from "../../env";
 import { PRIMARY_COLOR } from "../constants";
 
-export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | null) {
-	const embed = new EmbedBuilder()
-		.setColor(PRIMARY_COLOR)
-		.setTitle(
-			`${
-				rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`
-			} RSVP Confirmed`
-		)
-		.setDescription(
-			`You must allow messages from <@${process.env.DISCORD_CLIENTID}> to set reminders.`
-		);
+export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | null, threadUrl?: string) {
+    const embed = new EmbedBuilder()
+        .setColor(PRIMARY_COLOR)
+        .setTitle(
+            `${
+                rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`
+            } RSVP Confirmed`
+        )
+        .setDescription(
+            `Successfully RSVPed as __${
+                rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`
+            } ${rsvp.name}__${threadUrl ? `\n\nJoin the discussion in the [thread](${threadUrl})!` : ''}\n\nYou must allow messages from <@${process.env.DISCORD_CLIENTID}> to set reminders.`
+        );
 
 	const remindersButton = new ButtonBuilder().setEmoji("🔔").setLabel("Reminders");
 
