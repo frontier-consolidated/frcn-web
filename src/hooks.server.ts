@@ -1,17 +1,8 @@
 import { type Handle } from "@sveltejs/kit";
 
 import { building } from "$app/environment";
-import { csrf_handler } from "$server/csrf-handler.server";
-import { cleanup_sessions, get_session_and_user } from "$server/sessions";
+import { csrfHandler } from "$server/csrf-handler";
 import { logger } from "$server/utils/logger";
-
-// ----- Startup ----- //
-if (!building) {
-	await cleanup_sessions();
-	setInterval(() => {
-		cleanup_sessions().catch(console.error);
-	}, 3600 * 1000);
-}
 
 export const handle: Handle = async ({ event, resolve }) => {
 	if (import.meta.env.PROD) {
@@ -22,13 +13,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 	// locale.set(lang ? lang : null);
 
 	if (!building) {
-		const { session, user } = await get_session_and_user(event);
-		event.locals.session = session;
-		event.locals.user = user;
+		// const { session, user } = await getSessionAndUser(event);
+		// event.locals.session = session;
+		// event.locals.user = user;
 	}
 
 	// Handle CSRF
-	let response: Promise<Response> | Response | null = csrf_handler(event);
+	let response: Promise<Response> | Response | null = csrfHandler(event);
 
 	if (!response) {
 		response = resolve(event);

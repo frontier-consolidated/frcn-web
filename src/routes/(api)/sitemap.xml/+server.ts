@@ -8,7 +8,6 @@ export const GET: RequestHandler = async () => {
 	const origin = `https://${config.domain}`;
 
 	return await sitemap.response({
-		origin,
-		excludeRoutePatterns: [".*\\(api\\).*", ".*\\(private\\).*", ".*/edit$"]
+		origin
 	});
 };

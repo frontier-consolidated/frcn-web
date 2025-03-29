@@ -7,6 +7,9 @@ import tseslint from "typescript-eslint";
 import "eslint-import-resolver-typescript";
 
 export default tseslint.config(
+	{
+		ignores: ["eslint.config.js", "vite.config.ts", "build/", ".svelte-kit/", "dist/"]
+	},
 	eslint.configs.recommended,
 	...tseslint.configs.recommended,
 	...svelte.configs["flat/recommended"],
@@ -26,21 +29,19 @@ export default tseslint.config(
 		files: ["**/*.svelte"],
 		languageOptions: {
 			parserOptions: {
-				parser: tseslint.parser
+				parser: tseslint.parser,
+				tsconfigRootDir: import.meta.dirname
 			}
 		}
 	},
 	{
-		ignores: ["eslint.config.js", "build/", ".svelte-kit/", "dist/"]
-	},
-	{
 		settings: {
 			"import/parsers": {
-				"@typescript-eslint/parser": [".ts", ".tsx"]
+				"@typescript-eslint/parser": [".ts"]
 			},
 			"import/resolver": {
 				typescript: {
-					project: "./tsconfig.json"
+					project: import.meta.dirname + "/tsconfig.json"
 				},
 				node: {
 					extensions: [".js", ".jsx", ".ts", ".tsx", ".svelte"]

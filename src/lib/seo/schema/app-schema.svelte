@@ -12,7 +12,7 @@
 		description: config.meta.description,
 		url: `https://${config.domain}/`,
 		author: config.creator,
-		datePublished: config.meta.publish_date,
-		applicationCategory: config.meta.app_category
+		datePublished: config.meta.publishDate,
+		applicationCategory: config.meta.appCategory
 	}}
 />

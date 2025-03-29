@@ -1,17 +1,11 @@
-<script lang="ts">
+<script lang="ts" generics="T extends Thing">
 	import type { Thing, WithContext } from "schema-dts";
 
-	// eslint-disable-next-line no-undef
-	type T = $$Generic<Thing>;
-	export let data: WithContext<T>;
-	$: scriptValue =
-		`<TAG_PLACEHOLDER type="application/ld+json">${JSON.stringify(data)}</TAG_PLACEHOLDER>`.replaceAll(
-			"TAG_PLACEHOLDER",
-			"script"
-		);
+	import InlineScript from "$lib/components/inline-script.svelte";
+
+	let { data }: { data: WithContext<T> } = $props();
 </script>
 
 <svelte:head>
-	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-	{@html scriptValue}
+	<InlineScript type="application/ld+json" source={JSON.stringify(data)} />
 </svelte:head>

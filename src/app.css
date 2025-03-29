@@ -1,8 +1,124 @@
-@import "./css/fractul.module.css";
+@import "./css/fractul.module.css" layer(base);
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+	--breakpoint-xs: 420px;
+
+	--text-xxs: 0.625rem;
+	--text-xxs--line-height: 1.25;
+
+	--color-background: #0d0a15;
+	--color-background-secondary: #130e1f;
+
+	--color-text: #ffffff;
+	--color-text-80: #ffffffcc;
+	--color-text-60: #ffffff99;
+	--color-text-40: #ffffff66;
+
+	--color-scrollbar: #ffffff66;
+
+	--color-card: #0d0a15;
+
+	--color-input: #0d0a15;
+	--color-input-border: #1e1b26;
+	--color-input-placeholder: #ffffff66;
+
+	--color-border: #1e1b26;
+
+	--color-button: #238cde;
+	--color-button-secondary: #167de4;
+	--color-button-destructive: #de2342;
+
+	--color-discord: #5e6dee;
+	--color-youtube: #e52828;
+	--color-patreon: #f2614b;
+	--color-erkul: #ffa537;
+	--color-tradetools: #df691a;
+	--color-cstone: #dddddd;
+	--color-ccugame: #ea7187;
+	--color-sc: #00e7ff;
+	--color-scorgtools: #8fdf14;
+	--color-hangarlink: #97cbf8;
+	--color-verseguide: #46a0d0;
+
+	--font-sans:
+		Fractul, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+		"Segoe UI Symbol", "Noto Color Emoji";
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+/* @layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+} */
+
+@utility visually-hidden {
+	&[data-show-on-focus]:not(:focus, :active) {
+		clip: rect(0 0 0 0);
+		clip-path: inset(50%);
+		height: 1px;
+		overflow: hidden;
+		position: absolute;
+		white-space: nowrap;
+		width: 1px;
+	}
+
+	&:not([data-show-on-focus]) {
+		clip: rect(0 0 0 0);
+		clip-path: inset(50%);
+		height: 1px;
+		overflow: hidden;
+		position: absolute;
+		white-space: nowrap;
+		width: 1px;
+	}
+}
+
+@utility scrollbar-hidden {
+	/* Hide scrollbar for Chrome, Safari and Opera */
+	&::-webkit-scrollbar {
+		display: none;
+	}
+	/* Hide scrollbar for IE, Edge and Firefox */
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* Firefox */
+}
+
+@utility no-number-buttons {
+	/* Hide number inner spin button for Chrome, Safari and Opera */
+	&::-webkit-inner-spin-button {
+		display: none;
+	}
+
+	/* Hide number inner spin button for IE, Edge and Firefox */
+	appearance: textfield;
+	-moz-appearance: textfield;
+}
+
+@utility reveal-hidden {
+	&::-ms-reveal {
+		display: none;
+	}
+}
+
+@utility clear-hidden {
+	&::-ms-clear {
+		display: none;
+	}
+}
 
 @layer base {
 	body {
@@ -10,58 +126,14 @@
 	}
 
 	::-webkit-scrollbar {
-		width: 12px;
-		height: 12px;
+		@apply w-2 h-2;
 	}
 
 	::-webkit-scrollbar-track {
-		background-color: #1d1c1b;
+		@apply bg-transparent;
 	}
 
 	::-webkit-scrollbar-thumb {
-		border-radius: 0;
-		background-color: #949494;
-	}
-}
-
-@layer utilities {
-	.floating-scrollbar::-webkit-scrollbar {
-		position: absolute;
-		left: 0;
-		top: 0;
-	}
-
-	.hover-scrollbar::-webkit-scrollbar {
-		opacity: 0;
-	}
-
-	.hover-scrollbar:hover::-webkit-scrollbar {
-		opacity: 1;
-	}
-
-	/* Hide scrollbar for Chrome, Safari and Opera */
-	.no-scrollbar::-webkit-scrollbar {
-		display: none;
-	}
-	/* Hide scrollbar for IE, Edge and Firefox */
-	.no-scrollbar {
-		-ms-overflow-style: none; /* IE and Edge */
-		scrollbar-width: none; /* Firefox */
-	}
-
-	/* Hide number inner spin button for Chrome, Safari and Opera */
-	.no-number-buttons::-webkit-inner-spin-button {
-		display: none;
-	}
-
-	/* Hide number inner spin button for IE, Edge and Firefox */
-	.no-number-buttons {
-		appearance: textfield;
-		-moz-appearance: textfield;
-	}
-
-	.no-reveal::-ms-reveal,
-	.no-reveal::-ms-clear {
-		display: none;
+		@apply bg-scrollbar rounded-full;
 	}
 }

@@ -1,7 +1,7 @@
-const seconds_divisor = 1000;
-const minutes_divisor = 60 * seconds_divisor;
-const hour_divisor = 60 * minutes_divisor;
-const days_divisor = 24 * hour_divisor;
+const secondsDivisor = 1000;
+const minutesDivisor = 60 * secondsDivisor;
+const hoursDivisor = 60 * minutesDivisor;
+const daysDivisor = 24 * hoursDivisor;
 
 const formatter = new Intl.DateTimeFormat(
 	typeof navigator !== "undefined" ? navigator.language : "en",
@@ -21,25 +21,25 @@ Date.prototype.toRelativeString = function (this: Date, relativeTo?: Date) {
 
 	const template = future ? "in %s" : "%s ago";
 
-	const total_seconds = Math.floor(diff / seconds_divisor);
-	if (total_seconds < 5) {
+	const totalSeconds = Math.floor(diff / secondsDivisor);
+	if (totalSeconds < 5) {
 		return "Just now";
 	}
 
-	const seconds = total_seconds % 60;
-	const total_minutes = Math.floor(diff / minutes_divisor);
-	if (total_minutes === 0) {
+	const seconds = totalSeconds % 60;
+	const totalMinutes = Math.floor(diff / minutesDivisor);
+	if (totalMinutes === 0) {
 		return template.replace("%s", `${seconds} sec${seconds > 1 ? "s" : ""}`);
 	}
 
-	const minutes = total_minutes % 60;
-	const total_hours = Math.floor(diff / hour_divisor);
-	if (total_hours === 0) {
+	const minutes = totalMinutes % 60;
+	const totalHours = Math.floor(diff / hoursDivisor);
+	if (totalHours === 0) {
 		return template.replace("%s", `${minutes} min${minutes > 1 ? "s" : ""}`);
 	}
 
-	const hours = total_hours % 24;
-	const days = Math.floor(diff / days_divisor);
+	const hours = totalHours % 24;
+	const days = Math.floor(diff / daysDivisor);
 	if (days === 0) {
 		return template.replace("%s", `${hours} hour${hours > 1 ? "s" : ""}`);
 	}

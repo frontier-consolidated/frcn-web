@@ -1,6 +1,7 @@
-// import icon from "$lib/assets/logo-icon.png";
-// import image from "$lib/assets/share-image.png";
 import type { SoftwareApplication } from "schema-dts";
+
+import icon from "$lib/assets/emblem.png";
+// import image from "$lib/assets/share-image.png";
 
 type CreatorType<T = SoftwareApplication["author"]> = T extends { "@type": string } ? T : never;
 
@@ -14,18 +15,19 @@ export const config = {
 	} satisfies CreatorType,
 	socials: {
 		discord: "https://discord.gg/frcn",
-		youtube: "https://www.youtube.com/@LoudGuns",
+		loudgunsYoutube: "https://www.youtube.com/@LoudGuns",
+		frcnYoutube: "https://www.youtube.com/@frontierconsolidated",
 		github: "https://github.com/frontier-consolidated",
 		merch: "https://loudguns.teemill.com"
 	},
 	meta: {
-		icon: null,
+		icon,
 		image: null,
 		color: "#2DB24A",
-		twitter_handle: "@LoudGunsGaming",
-		publish_date: "2024-03-04",
+		twitterHandle: "@LoudGunsGaming",
+		publishDate: "2024-03-04",
 		// https://developers.google.com/search/docs/appearance/structured-data/software-app#softwareapplication
-		app_category: "UtilitiesApplication",
+		appCategory: "UtilitiesApplication",
 		description:
 			"The official website of the Frontier Consolidated Star Citizen community and organisation.",
 		keywords: [

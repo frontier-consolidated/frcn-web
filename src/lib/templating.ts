@@ -1,4 +1,4 @@
-export function insert_template_data(template: string, data: Record<string, any>) {
+export function insertTemplateData(template: string, data: Record<string, any>) {
 	const matches = template.matchAll(/{%\s*(?<path>.+?)\s*%}/g);
 	const completed = new Set<string>();
 

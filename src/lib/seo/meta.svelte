@@ -1,25 +1,42 @@
 <script lang="ts">
+	import type { Snippet } from "svelte";
+
 	import { config } from "$lib/config";
 
-	export let sitename = config.name;
-	export let title: string | undefined = undefined;
-	export let description: string | undefined = undefined;
-	export let image: string | undefined = undefined;
-	export let titleSide: "left" | "right" = "left";
-	export let imageSize: "small" | "large" = !image && config.meta.image ? "large" : "small";
-	export let type: "website" | "article" = "website";
+	let {
+		sitename = config.name,
+		title,
+		description,
+		favicon = "/favicon.png",
+		image,
+		titleSide = "left",
+		imageSize = !image && config.meta.image ? "large" : "small",
+		type = "website",
+		children
+	}: {
+		sitename?: string;
+		title?: string;
+		description?: string;
+		favicon?: string;
+		image?: string;
+		titleSide?: "left" | "right";
+		imageSize?: "small" | "large";
+		type?: "website" | "article";
+		children?: Snippet;
+	} = $props();
 
-	let titleWithSiteName = title
-		? titleSide === "left"
-			? `${title} | ${sitename}`
-			: `${sitename} | ${title}`
-		: sitename;
-	let descriptionOrDefault = description ? description : config.meta.description;
-	let imageOrDefault = image ? image : (config.meta.image ?? config.meta.icon);
+	const titleWithSiteName = $derived(
+		title ? (titleSide === "left" ? `${title} | ${sitename}` : `${sitename} | ${title}`) : sitename
+	);
+	const descriptionOrDefault = $derived(description ? description : config.meta.description);
+	const imageOrDefault = $derived(image ? image : (config.meta.image ?? config.meta.icon));
 </script>
 
 <svelte:head>
 	<title>{titleWithSiteName}</title>
+	{#if favicon}
+		<link rel="icon" href={favicon} />
+	{/if}
 	<meta name="application-name" content={sitename} />
 	<meta name="theme-color" content={config.meta.color} />
 	<meta name="msapplication-TileColor" content={config.meta.color} />
@@ -34,8 +51,10 @@
 	{#if imageSize === "large"}
 		<meta name="twitter:card" content="summary_large_image" />
 	{/if}
-	{#if config.meta.twitter_handle}
-		<meta name="twitter:creator" content={config.meta.twitter_handle} />
+	{#if config.meta.twitterHandle}
+		<meta name="twitter:creator" content={config.meta.twitterHandle} />
 	{/if}
-	<slot />
+	{#if children}
+		{@render children()}
+	{/if}
 </svelte:head>
