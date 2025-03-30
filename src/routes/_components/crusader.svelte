@@ -29,12 +29,14 @@
 	});
 </script>
 
-<div class="absolute top-[calc((64rem-100vw)*0.2-2rem)] lg:-top-8 left-0 lg:-translate-x-1/2">
+<div
+	class="absolute top-[calc((64rem-100vw)*0.2)] sm:top-[calc((64rem-100vw)*0.2+2rem)] lg:top-8 left-0 lg:-translate-x-1/2"
+>
 	<div
-		class="absolute top-0 left-0 aspect-square w-[94%] bg-radial from-background from-60% to-transparent to-71%"
+		class="absolute top-0 left-0 aspect-square w-[94%] bg-radial from-background from-60% to-transparent to-75%"
 	></div>
 	<svg
-		class="absolute bottom-3/7 right-1/2 translate-x-1/2 translate-y-1/2 w-[91%] brightness-40 lg:brightness-100"
+		class="absolute bottom-3/7 right-1/2 translate-x-1/2 translate-y-1/2 w-[91%] brightness-40 lg:brightness-100 mask-ring"
 		width="1467"
 		height="1243"
 		viewBox="0 0 1467 1243"
@@ -54,7 +56,7 @@
 		width="1619"
 		height="1619"
 		alt="Crusader"
-		class="relative size-[94%] brightness-40 lg:brightness-100"
+		class="relative size-[94%] brightness-40 lg:brightness-100 mask-planet"
 	/>
 	<div class="absolute bottom-0 right-[10%] w-1/2 h-1/2 overflow-hidden">
 		<svg
@@ -75,3 +77,15 @@
 		</svg>
 	</div>
 </div>
+
+<style>
+	@media (min-width: 1728px) {
+		.mask-planet {
+			mask-image: radial-gradient(circle at right center, white 50%, transparent 70%);
+		}
+
+		.mask-ring {
+			mask-image: radial-gradient(circle at 40% 40%, transparent 55%, white 60%);
+		}
+	}
+</style>
