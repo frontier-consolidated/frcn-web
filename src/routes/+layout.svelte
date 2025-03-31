@@ -86,6 +86,7 @@
 		data-domain={config.domain}
 		src="https://plausible.io/js/script.tagged-events.js"
 	></script> -->
+	<meta name="robots" content="noindex" />
 </svelte:head>
 <AppSchema />
 
