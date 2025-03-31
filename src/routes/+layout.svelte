@@ -87,8 +87,8 @@
 		src="https://plausible.io/js/script.tagged-events.js"
 	></script> -->
 	<meta name="robots" content="noindex" />
+	<AppSchema />
 </svelte:head>
-<AppSchema />
 
 <div class="flex flex-col h-full min-h-screen tracking-[0.07em]">
 	<header

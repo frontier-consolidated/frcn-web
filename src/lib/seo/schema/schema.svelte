@@ -6,6 +6,4 @@
 	let { data }: { data: WithContext<T> } = $props();
 </script>
 
-<svelte:head>
-	<InlineScript type="application/ld+json" source={JSON.stringify(data)} />
-</svelte:head>
+<InlineScript type="application/ld+json" source={JSON.stringify(data)} />
