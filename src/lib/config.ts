@@ -23,7 +23,7 @@ export const config = {
 	meta: {
 		icon,
 		image: null,
-		color: "#2DB24A",
+		color: "#238cde",
 		twitterHandle: "@LoudGunsGaming",
 		publishDate: "2024-03-04",
 		// https://developers.google.com/search/docs/appearance/structured-data/software-app#softwareapplication

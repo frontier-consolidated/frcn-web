@@ -3,8 +3,8 @@
 	"short_name": "FRCN",
 	"start_url": ".",
 	"display": "minimal-ui",
-	"theme_color": "#BF6F4A",
-	"background_color": "#171615",
+	"theme_color": "#238cde",
+	"background_color": "#0d0a15",
 	"description": "The official website of the Frontier Consolidated Star Citizen community and organisation.",
 	"orientation": "landscape-primary",
 	"icons": [
