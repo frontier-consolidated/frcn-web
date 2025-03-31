@@ -14,6 +14,26 @@ const repositoryName = config.require("repositoryName");
 
 const repository = new aws.ecr.Repository(repositoryName);
 
+const _repoLifecyclePolicy = new aws.ecr.LifecyclePolicy(`${repositoryName}-lifecycle-policy`, {
+	repository: repository.name,
+	policy: {
+		rules: [
+			{
+				rulePriority: 1,
+				description: "Remove untagged images",
+				selection: {
+					tagStatus: "untagged",
+					countType: "imageCountMoreThan",
+					countNumber: 1
+				},
+				action: {
+					type: "expire"
+				}
+			}
+		]
+	}
+});
+
 const imageName = repository.repositoryUrl;
 const registry = repository.registryId.apply(async (id) => {
 	const credentials = await aws.ecr.getCredentials({ registryId: id });
@@ -48,7 +68,7 @@ const namespace = new k8s.core.v1.Namespace(appName, {
 	}
 });
 
-const app = new k8s.apps.v1.Deployment(appName, {
+const _app = new k8s.apps.v1.Deployment(appName, {
 	metadata: {
 		namespace: namespace.metadata.name
 	},
