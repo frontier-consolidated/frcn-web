@@ -26,7 +26,7 @@ export default tseslint.config(
 		}
 	},
 	{
-		files: ["**/*.svelte"],
+		files: ["**/*.svelte", "**/*.svelte.ts"],
 		languageOptions: {
 			parserOptions: {
 				parser: tseslint.parser,
@@ -44,7 +44,7 @@ export default tseslint.config(
 					project: import.meta.dirname + "/tsconfig.json"
 				},
 				node: {
-					extensions: [".js", ".jsx", ".ts", ".tsx", ".svelte"]
+					extensions: [".js", ".jsx", ".ts", ".tsx", ".svelte", ".svelte.js", ".svelte.ts"]
 				}
 			}
 		}

@@ -3,28 +3,14 @@
 
 	import crusaderImage from "../_assets/crusader.png";
 
-	let dashoffset = $state(0);
-	let animate = $state(true);
+	import { createDashAnimation } from "$lib/state/dashAnimation.svelte";
 
-	// eslint-disable-next-line no-undef
-	let lastTime: DOMHighResTimeStamp | null = null;
-	// eslint-disable-next-line no-undef
-	function render(time: DOMHighResTimeStamp) {
-		const deltaMs = lastTime ? time - lastTime : 0;
-		lastTime = time;
-		const delta = deltaMs / 1000;
-
-		dashoffset -= 25 * delta;
-
-		if (animate) {
-			requestAnimationFrame(render);
-		}
-	}
+	let dashAnimation = createDashAnimation(8);
 
 	onMount(() => {
-		requestAnimationFrame(render);
+		dashAnimation.start();
 		return () => {
-			animate = false;
+			dashAnimation.stop();
 		};
 	});
 </script>
@@ -48,7 +34,7 @@
 			stroke="white"
 			stroke-width="3"
 			stroke-dasharray="8 8"
-			stroke-dashoffset={dashoffset}
+			stroke-dashoffset={dashAnimation.dashoffset}
 		/>
 	</svg>
 	<img
@@ -72,14 +58,14 @@
 				stroke="white"
 				stroke-width="3"
 				stroke-dasharray="8 8"
-				stroke-dashoffset={dashoffset}
+				stroke-dashoffset={dashAnimation.dashoffset}
 			/>
 		</svg>
 	</div>
 </div>
 
-<style>
-	@media (min-width: 1728px) {
+<style lang="postcss">
+	@media (min-width: 108rem) {
 		.mask-planet {
 			mask-image: radial-gradient(circle at right center, white 50%, transparent 70%);
 		}
