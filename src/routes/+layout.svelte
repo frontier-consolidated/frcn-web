@@ -2,10 +2,12 @@
 	import "../app.css";
 
 	import { LogInIcon } from "lucide-svelte";
-	import { type Component, type Snippet } from "svelte";
+	import { onMount, type Component, type Snippet } from "svelte";
 
 	import type { PageData } from "./$types";
 
+	import { afterNavigate, pushState } from "$app/navigation";
+	import { page } from "$app/state";
 	import logoEmblem from "$lib/assets/emblem.png";
 	import footerBackground from "$lib/assets/footer-background.png";
 	import gridTile from "$lib/assets/grid-rotated.png";
@@ -48,6 +50,34 @@
 			]
 		}
 	];
+
+	function smoothScrollToHash(url: URL) {
+		if (!url.hash || url.hash.length < 2) {
+			return;
+		}
+
+		const id = url.hash.slice(1);
+		const element = document.getElementById(id);
+		if (element) {
+			element.scrollIntoView({ behavior: "smooth", block: "start" });
+		}
+	}
+
+	afterNavigate(({ to }) => {
+		if (to) {
+			smoothScrollToHash(to?.url);
+		}
+	});
+
+	onMount(() => {
+		for (const a of document.querySelectorAll<HTMLAnchorElement>("a[href^='#'], a[href^='/#']")) {
+			a.addEventListener("click", (e) => {
+				e.preventDefault();
+				pushState(a.href, page.state);
+				smoothScrollToHash(new URL(a.href));
+			});
+		}
+	});
 </script>
 
 <svelte:head>
