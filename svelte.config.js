@@ -1,12 +1,22 @@
 import adapter from "@sveltejs/adapter-node";
 import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { mdsvex } from "mdsvex";
+import remarkCustomHeaderId from "remark-custom-header-id";
+import remarkSectionize from "remark-sectionize";
 
 /** @type {import('@sveltejs/kit').Config}*/
 const config = {
 	// Consult https://kit.svelte.dev/docs/integrations#preprocessors
 	// for more information about preprocessors
-	preprocess: [vitePreprocess(), mdsvex()],
+	preprocess: [
+		vitePreprocess(),
+		mdsvex({
+			layout: {
+				legal: "./src/routes/(legal)/svx-layout.svelte"
+			},
+			remarkPlugins: [remarkCustomHeaderId, remarkSectionize]
+		})
+	],
 	extensions: [".svelte", ".svx"],
 
 	kit: {

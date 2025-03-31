@@ -206,12 +206,14 @@
 					</span>
 				</div>
 				<div
-					class="flex-1 flex justify-center min-[920px]:justify-end gap-8 sm:gap-16 pt-8 min-[920px]:pt-16"
+					class="flex-1 flex flex-col min-[440px]:flex-row justify-center min-[920px]:justify-end gap-8 sm:gap-16 pt-8 min-[920px]:pt-16"
 				>
 					{#each footerSections as section (section.title)}
 						<section>
 							<h2 class="text-lg font-semibold whitespace-nowrap">{section.title}</h2>
-							<ul class="flex flex-wrap sm:max-[921px]:flex-row flex-col gap-x-8 gap-y-3 mt-4">
+							<ul
+								class="flex flex-wrap sm:max-[921px]:flex-row min-[440px]:flex-col gap-x-8 gap-y-3 mt-4"
+							>
 								{#each section.items as item (item.href)}
 									<li>
 										<a
@@ -249,10 +251,6 @@
 					</span>
 				</section>
 				<section class="flex gap-2 text-xs font-medium">
-					<a href="/terms-and-conditions" class="text-text-60 hover:text-text-80 transition-colors">
-						Terms and conditions
-					</a>
-					<div class="w-px h-3.5 bg-text-60"></div>
 					<a href="/privacy-policy" class="text-text-60 hover:text-text-80 transition-colors">
 						Privacy policy
 					</a>

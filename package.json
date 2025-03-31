@@ -38,6 +38,8 @@
     "melt": "^0.23.1",
     "prettier": "^3.5.3",
     "prettier-plugin-svelte": "^3.3.3",
+    "remark-custom-header-id": "^1.0.0",
+    "remark-sectionize": "^2.1.0",
     "schema-dts": "^1.1.5",
     "super-sitemap": "^1.0.3",
     "svelte": "^5.0.0",

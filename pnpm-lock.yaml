@@ -74,6 +74,12 @@ importers:
       prettier-plugin-svelte:
         specifier: ^3.3.3
         version: 3.3.3(prettier@3.5.3)(svelte@5.25.3)
+      remark-custom-header-id:
+        specifier: ^1.0.0
+        version: 1.0.0
+      remark-sectionize:
+        specifier: ^2.1.0
+        version: 2.1.0
       schema-dts:
         specifier: ^1.1.5
         version: 1.1.5
@@ -1142,6 +1148,9 @@ packages:
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
+
+  '@types/unist@3.0.3':
+    resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
   '@types/validator@13.12.3':
     resolution: {integrity: sha512-2ipwZ2NydGQJImne+FhNdhgRM37e9lCev99KnqkbFHd94Xn/mErARWI1RSLem1QA19ch5kOhzIZd7e8CA2FI8g==}
@@ -2904,6 +2913,13 @@ packages:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
     engines: {node: '>= 0.4'}
 
+  remark-custom-header-id@1.0.0:
+    resolution: {integrity: sha512-xs1MAgCg1HoiIfqSVV5BPydB4/sc1tT8OHDoqt8Lnf1JHPMUDVumY2Szm/P9MIxIzOT9+tu4IYJTql0vCzldoA==}
+    engines: {node: '>=18'}
+
+  remark-sectionize@2.1.0:
+    resolution: {integrity: sha512-R/pHt1RLYrEqrbwOVXx8HnvvwOg+mxg8pE4kIWpIYE3/CuZhU8/PAx/0y1BbHWUA0jmTLTeWpUlDrS/B0pyd0g==}
+
   require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
     engines: {node: '>=0.10.0'}
@@ -3366,8 +3382,29 @@ packages:
     resolution: {integrity: sha512-WrcA6AyEfqDX5bWige/4NQfPZMtASNVxdmWR76WESYQVAACSgWcR6e9i0mofqqBxYFtL4oAxPIptY73/0YE1DQ==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
+  unist-util-find-after@4.0.1:
+    resolution: {integrity: sha512-QO/PuPMm2ERxC6vFXEPtmAutOopy5PknD+Oq64gGwxKtk4xwo9Z97t9Av1obPmGU0IyTa6EKYUfTrK2QJS3Ozw==}
+
+  unist-util-is@5.2.1:
+    resolution: {integrity: sha512-u9njyyfEh43npf1M+yGKDGVPbY/JWEemg5nH05ncKPfi+kBbKBJoTdsogMu33uhytuLlv9y0O7GH7fEdwLdLQw==}
+
+  unist-util-is@6.0.0:
+    resolution: {integrity: sha512-2qCTHimwdxLfz+YzdGfkqNlH0tLi9xjTnHddPmJwtIG9MGsdbutfTc4P+haPD7l7Cjxf/WZj+we5qfVPvvxfYw==}
+
   unist-util-stringify-position@2.0.3:
     resolution: {integrity: sha512-3faScn5I+hy9VleOq/qNbAd6pAx7iH5jYBMS9I1HgQVijz/4mv5Bvw5iw1sC/90CODiKo81G/ps8AJrISn687g==}
+
+  unist-util-visit-parents@5.1.3:
+    resolution: {integrity: sha512-x6+y8g7wWMyQhL1iZfhIPhDAs7Xwbn9nRosDXl7qoPTSCy0yNxnKc+hWokFifWQIDGi154rdUqKvbCa4+1kLhg==}
+
+  unist-util-visit-parents@6.0.1:
+    resolution: {integrity: sha512-L/PqWzfTP9lzzEa6CKs0k2nARxTdZduw3zyh8d2NVBnsyvHjSX4TWse388YrrQKbvI8w20fGjGlhgT96WwKykw==}
+
+  unist-util-visit@4.1.2:
+    resolution: {integrity: sha512-MSd8OUGISqHdVvfY9TPhyK2VdUrPgxkUtWSuMHF6XAAFuL4LokseigBnZtPnJMu+FbynTkFNnFlyjxpVKujMRg==}
+
+  unist-util-visit@5.0.0:
+    resolution: {integrity: sha512-MR04uvD+07cwl/yhVuVWAtw+3GOR/knlL55Nd/wAdblk27GCVt3lqpTivy/tkJcZoNPzTwS1Y+KMojlLDhoTzg==}
 
   unrs-resolver@1.3.2:
     resolution: {integrity: sha512-ZKQBC351Ubw0PY8xWhneIfb6dygTQeUHtCcNGd0QB618zabD/WbFMYdRyJ7xeVT+6G82K5v/oyZO0QSHFtbIuw==}
@@ -4586,6 +4623,8 @@ snapshots:
   '@types/tmp@0.2.6': {}
 
   '@types/unist@2.0.11': {}
+
+  '@types/unist@3.0.3': {}
 
   '@types/validator@13.12.3':
     optional: true
@@ -6499,6 +6538,16 @@ snapshots:
       gopd: 1.2.0
       set-function-name: 2.0.2
 
+  remark-custom-header-id@1.0.0:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-visit: 5.0.0
+
+  remark-sectionize@2.1.0:
+    dependencies:
+      unist-util-find-after: 4.0.1
+      unist-util-visit: 4.1.2
+
   require-directory@2.1.1: {}
 
   require-from-string@2.0.2: {}
@@ -7089,9 +7138,44 @@ snapshots:
     dependencies:
       imurmurhash: 0.1.4
 
+  unist-util-find-after@4.0.1:
+    dependencies:
+      '@types/unist': 2.0.11
+      unist-util-is: 5.2.1
+
+  unist-util-is@5.2.1:
+    dependencies:
+      '@types/unist': 2.0.11
+
+  unist-util-is@6.0.0:
+    dependencies:
+      '@types/unist': 3.0.3
+
   unist-util-stringify-position@2.0.3:
     dependencies:
       '@types/unist': 2.0.11
+
+  unist-util-visit-parents@5.1.3:
+    dependencies:
+      '@types/unist': 2.0.11
+      unist-util-is: 5.2.1
+
+  unist-util-visit-parents@6.0.1:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.0
+
+  unist-util-visit@4.1.2:
+    dependencies:
+      '@types/unist': 2.0.11
+      unist-util-is: 5.2.1
+      unist-util-visit-parents: 5.1.3
+
+  unist-util-visit@5.0.0:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.0
+      unist-util-visit-parents: 6.0.1
 
   unrs-resolver@1.3.2:
     optionalDependencies:

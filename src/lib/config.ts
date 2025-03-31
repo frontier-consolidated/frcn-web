@@ -8,6 +8,7 @@ type CreatorType<T = SoftwareApplication["author"]> = T extends { "@type": strin
 export const config = {
 	name: "Frontier Consolidated",
 	domain: "frontierconsolidated.com",
+	contactEmail: "loudguns@frontierconsolidated.com",
 	creator: {
 		"@type": "Person",
 		name: "@l3dotdev",
