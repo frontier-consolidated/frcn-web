@@ -1,14 +1,16 @@
 <script lang="ts">
 	import "../app.css";
 
-	import posthog from "posthog-js";
 	import { LogInIcon } from "lucide-svelte";
+	import posthogjs from "posthog-js";
 	import { onMount, type Component, type Snippet } from "svelte";
 
 	import type { PageData } from "./$types";
 
+	import { browser } from "$app/environment";
 	import { afterNavigate, pushState } from "$app/navigation";
 	import { page } from "$app/state";
+	import { PUBLIC_POSTHOG_KEY } from "$env/static/public";
 	import logoEmblem from "$lib/assets/emblem.png";
 	import footerBackground from "$lib/assets/footer-background.png";
 	import gridTile from "$lib/assets/grid-rotated.png";
@@ -20,8 +22,6 @@
 	import Button from "$lib/components/ui/button.svelte";
 	import { config } from "$lib/config";
 	import { AppSchema } from "$lib/seo/schema";
-	import { browser } from "$app/environment";
-	import { PUBLIC_POSTHOG_KEY } from "$env/static/public";
 
 	let { data, children }: { data: PageData; children: Snippet } = $props();
 
@@ -87,7 +87,7 @@
 		}
 
 		if (browser) {
-			posthog.init(PUBLIC_POSTHOG_KEY, {
+			posthogjs.init(PUBLIC_POSTHOG_KEY, {
 				api_host: "https://eu.i.posthog.com",
 				person_profiles: "always"
 			});
