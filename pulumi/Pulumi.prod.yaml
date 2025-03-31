@@ -1,5 +1,5 @@
 config:
   frcn-web:repositoryName: pkube/frcn-web
-  frcn-web:public:posthogKey: phc_NCZQdAbckf4jszqh5ZgV25ZzW3fWMrqys5XVD6H0gjs
+  frcn-web:publicPosthogKey: phc_NCZQdAbckf4jszqh5ZgV25ZzW3fWMrqys5XVD6H0gjs
   aws:region: eu-central-1
   aws:profile: pulumi-local
