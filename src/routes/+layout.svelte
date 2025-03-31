@@ -81,11 +81,11 @@
 </script>
 
 <svelte:head>
-	<script
+	<!-- <script
 		defer
 		data-domain={config.domain}
 		src="https://plausible.io/js/script.tagged-events.js"
-	></script>
+	></script> -->
 </svelte:head>
 <AppSchema />
 
