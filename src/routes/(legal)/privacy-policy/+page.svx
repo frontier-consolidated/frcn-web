@@ -4,7 +4,7 @@ layout: legal
 
 <script lang="ts">
 	import Meta from "$lib/seo/meta.svelte";
-    import { config } from "$lib/config";
+  import { config } from "$lib/config";
 </script>
 
 <Meta title="Privacy Policy" />
