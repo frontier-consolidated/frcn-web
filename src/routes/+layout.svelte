@@ -1,6 +1,7 @@
 <script lang="ts">
 	import "../app.css";
 
+	import posthog from "posthog-js";
 	import { LogInIcon } from "lucide-svelte";
 	import { onMount, type Component, type Snippet } from "svelte";
 
@@ -19,6 +20,8 @@
 	import Button from "$lib/components/ui/button.svelte";
 	import { config } from "$lib/config";
 	import { AppSchema } from "$lib/seo/schema";
+	import { browser } from "$app/environment";
+	import { PUBLIC_POSTHOG_KEY } from "$env/static/public";
 
 	let { data, children }: { data: PageData; children: Snippet } = $props();
 
@@ -82,15 +85,17 @@
 				smoothScrollToHash(url);
 			});
 		}
+
+		if (browser) {
+			posthog.init(PUBLIC_POSTHOG_KEY, {
+				api_host: "https://eu.i.posthog.com",
+				person_profiles: "always"
+			});
+		}
 	});
 </script>
 
 <svelte:head>
-	<!-- <script
-		defer
-		data-domain={config.domain}
-		src="https://plausible.io/js/script.tagged-events.js"
-	></script> -->
 	<meta name="robots" content="noindex" />
 	<AppSchema />
 </svelte:head>

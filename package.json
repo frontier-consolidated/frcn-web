@@ -36,6 +36,7 @@
     "marked": "^15.0.5",
     "mdsvex": "^0.12.3",
     "melt": "^0.23.1",
+    "posthog-js": "^1.234.4",
     "prettier": "^3.5.3",
     "prettier-plugin-svelte": "^3.3.3",
     "remark-custom-header-id": "^1.0.0",

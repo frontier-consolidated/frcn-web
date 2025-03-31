@@ -53,7 +53,10 @@ const image = new docker.Image(`${appName}-image`, {
 	build: {
 		context: "../",
 		dockerfile: "../Dockerfile",
-		platform: "linux/amd64"
+		platform: "linux/amd64",
+		args: {
+			PUBLIC_POSTHOG_KEY: config.require("public:posthogKey")
+		}
 	},
 	imageName,
 	registry
