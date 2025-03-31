@@ -72,9 +72,14 @@
 	onMount(() => {
 		for (const a of document.querySelectorAll<HTMLAnchorElement>("a[href^='#'], a[href^='/#']")) {
 			a.addEventListener("click", (e) => {
+				const url = new URL(a.href);
+				if (page.url.pathname !== url.pathname) {
+					return;
+				}
+
 				e.preventDefault();
 				pushState(a.href, page.state);
-				smoothScrollToHash(new URL(a.href));
+				smoothScrollToHash(url);
 			});
 		}
 	});
