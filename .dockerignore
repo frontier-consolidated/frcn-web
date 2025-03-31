@@ -1,0 +1,14 @@
+node_modules
+build
+pulumi
+
+.vscode
+.idea
+
+.git
+.gitignore
+.github
+*.md
+
+.env
+.env.*
