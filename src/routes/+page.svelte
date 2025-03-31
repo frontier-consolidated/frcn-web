@@ -21,13 +21,13 @@
 <Meta />
 
 <div class="absolute left-0 top-30 w-[99vw] h-screen overflow-hidden z-[-1] hidden lg:block">
-	<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-[1728px] h-full">
+	<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-page h-full">
 		<div
 			class="absolute top-4 right-100 translate-x-1/2 -rotate-12 w-[1080px] h-[600px] bg-red-500/50 hero-gradient"
 		></div>
 	</div>
 </div>
-<div class="relative flex flex-col mx-auto max-w-[1728px] pt-30 sm:pt-55">
+<div class="relative flex flex-col mx-auto max-w-page pt-30 sm:pt-55">
 	<Crusader />
 	<div class="px-8">
 		<div class="flex justify-center lg:justify-end lg:pr-[5%] xl:pr-[7%] min-[1440px]:pr-[9%]">
@@ -257,26 +257,35 @@
 		<div class="flex flex-col gap-4 font-medium text-text-80 max-w-[500px] md:mr-20">
 			<h2 class="text-3xl md:text-4xl text-text mb-8">Events and activities</h2>
 			<p>
-				Frontier Consolidated is our Star Citizen organisation and we are actively recruiting new
-				members. We cover nearly all areas of the game and are open to everyone once they have got
-				the basics of the game down. And if you're not quite there yet, the community is here to
-				help you get to that point.
+				The 'verse is dark and full of dangers, but also full of fun to be had with a group of
+				players, large or small. Star Citizen is made to be played with others and has a vast scope
+				of opportunities for gameplay beyond the solo player.
 			</p>
 			<p>
-				While we have grown to a decent size, our goal has always been to keep a small org feel. The
-				most important thing for us is that our members actually know each other and play together.
+				While it's easy to gather a friend or two for some quality time exploring the 'verse,
+				crewing up for a larger ship or complex operation can be more demanding and requires skills
+				in coordination, logistics and all types of combat. That's why we run weekly community and
+				org events for all areas of the game, to open up the large gameplay opportunities to
+				everyone!
 			</p>
-			<p>
-				Any Frontier Community member can join us, all you need is two references from known and
-				have played with. You can hop into a Discord voice channel and say hi at any time, but we
-				have plenty of events where we pair up prospects with org members to help you get to know
-				people.
-			</p>
+			<div class="flex justify-center md:justify-end items-center md:pr-6 mt-8">
+				<Button
+					href="https://portal.frontierconsolidated.com/events"
+					color="text"
+					size="lg"
+					Icon={ArrowRightIcon}
+					icon-align="right"
+					icon-class="size-9"
+					nobackground
+				>
+					Browse upcoming events
+				</Button>
+			</div>
 		</div>
 	</section>
 </div>
 
-<style>
+<style lang="postcss">
 	.hero-gradient {
 		background: linear-gradient(to right, #008fff 48%, #0024da 63%);
 		mask-image: radial-gradient(at center, rgba(255, 255, 255, 0.16) 0%, transparent 70%);
@@ -290,7 +299,7 @@
 		mask-composite: intersect;
 	}
 
-	@media (min-width: theme("screens.md")) {
+	@media (min-width: theme("screens.lg")) {
 		.mask-community {
 			opacity: 1;
 			mask-image:
@@ -311,7 +320,7 @@
 		}
 	}
 
-	@media (min-width: 1728px) {
+	@media (min-width: 108rem) {
 		.mask-community {
 			opacity: 1;
 			mask-image:

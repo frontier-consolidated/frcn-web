@@ -3,7 +3,9 @@
 @import "tailwindcss";
 
 @theme {
-	--breakpoint-xs: 420px;
+	--breakpoint-page: 108rem;
+
+	--container-page: 108rem;
 
 	--text-xxs: 0.625rem;
 	--text-xxs--line-height: 1.25;
