@@ -3,6 +3,8 @@ FROM node:23-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
+ARG PUBLIC_POSTHOG_KEY
+
 WORKDIR /app
 COPY . /app
 
@@ -12,7 +14,7 @@ FROM base AS prod-deps
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
 
 FROM base AS build
-ENV PUBLIC_POSTHOG_KEY=${PUBLIC_POSTHOG_KEY}
+ENV PUBLIC_POSTHOG_KEY=$PUBLIC_POSTHOG_KEY
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm build
