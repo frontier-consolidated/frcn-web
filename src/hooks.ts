@@ -1,1 +1,1 @@
-import "./mixins";
+import "@l3dev/mixins";

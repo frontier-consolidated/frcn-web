@@ -31,7 +31,7 @@
 		? `var(${border})`
 		: border};"
 	class={twMerge(
-		"grid fill-(--s-bg) border-(--s-border) stroke-0 grid-rows-[1fr]",
+		"grid grid-rows-[1fr] border-(--s-border) fill-(--s-bg) stroke-0",
 		topLeft !== "none" || bottomRight !== "none" ? "grid-cols-2" : "grid-cols-1",
 		className
 	)}
@@ -41,14 +41,14 @@
 			class={twMerge(
 				"grid border-inherit",
 				topLeft === "small"
-					? "grid-rows-[20px_minmax(3px,1fr)] grid-cols-[20px_minmax(3px,1fr)]"
-					: "grid-rows-[30px_minmax(3px,1fr)] grid-cols-[30px_minmax(3px,1fr)]"
+					? "grid-cols-[20px_minmax(3px,1fr)] grid-rows-[20px_minmax(3px,1fr)]"
+					: "grid-cols-[30px_minmax(3px,1fr)] grid-rows-[30px_minmax(3px,1fr)]"
 			)}
 		>
 			<div class="relative">
 				{#if topLeft === "small"}
 					<svg
-						class="absolute top-0 left-0 w-full h-full"
+						class="absolute top-0 left-0 h-full w-full"
 						viewBox="0 0 20 20"
 						xmlns="http://www.w3.org/2000/svg"
 					>
@@ -57,7 +57,7 @@
 						/>
 					</svg>
 					<svg
-						class="absolute top-0 left-0 w-full h-full fill-(--s-border)"
+						class="absolute top-0 left-0 h-full w-full fill-(--s-border)"
 						viewBox="0 0 20 20"
 						xmlns="http://www.w3.org/2000/svg"
 					>
@@ -67,7 +67,7 @@
 					</svg>
 				{:else if topLeft === "large"}
 					<svg
-						class="absolute top-0 left-0 w-full h-full"
+						class="absolute top-0 left-0 h-full w-full"
 						viewBox="0 0 30 30"
 						xmlns="http://www.w3.org/2000/svg"
 					>
@@ -76,7 +76,7 @@
 						/>
 					</svg>
 					<svg
-						class="absolute top-0 left-0 w-full h-full fill-(--s-border)"
+						class="absolute top-0 left-0 h-full w-full fill-(--s-border)"
 						viewBox="0 0 30 30"
 						xmlns="http://www.w3.org/2000/svg"
 					>
@@ -86,18 +86,18 @@
 					</svg>
 				{/if}
 			</div>
-			<div class="bg-(--s-bg) border-inherit border-t-1"></div>
+			<div class="border-t-1 border-inherit bg-(--s-bg)"></div>
 			<div
-				class="bg-(--s-bg) border-inherit rounded-bl-[3px] border-b-1 border-l-1 col-span-2"
+				class="col-span-2 rounded-bl-[3px] border-b-1 border-l-1 border-inherit bg-(--s-bg)"
 			></div>
 		</div>
 	{/if}
 	{#if topLeft === "none" || bottomRight === "none"}
 		<div
 			class={twMerge(
-				"bg-(--s-bg) border-inherit border-t-1 border-b-1",
-				topLeft === "none" && "border-l-1 rounded-l-[3px]",
-				bottomRight === "none" && "border-r-1 rounded-r-[3px]"
+				"border-t-1 border-b-1 border-inherit bg-(--s-bg)",
+				topLeft === "none" && "rounded-l-[3px] border-l-1",
+				bottomRight === "none" && "rounded-r-[3px] border-r-1"
 			)}
 		></div>
 	{/if}
@@ -106,18 +106,18 @@
 			class={twMerge(
 				"grid border-inherit",
 				bottomRight === "small"
-					? "grid-rows-[minmax(3px,1fr)_20px] grid-cols-[minmax(3px,1fr)_20px]"
-					: "grid-rows-[minmax(3px,1fr)_30px] grid-cols-[minmax(3px,1fr)_30px]"
+					? "grid-cols-[minmax(3px,1fr)_20px] grid-rows-[minmax(3px,1fr)_20px]"
+					: "grid-cols-[minmax(3px,1fr)_30px] grid-rows-[minmax(3px,1fr)_30px]"
 			)}
 		>
 			<div
-				class="bg-(--s-bg) border-inherit rounded-tr-[3px] border-t-1 border-r-1 col-span-2"
+				class="col-span-2 rounded-tr-[3px] border-t-1 border-r-1 border-inherit bg-(--s-bg)"
 			></div>
-			<div class="bg-(--s-bg) border-inherit border-b-1"></div>
+			<div class="border-b-1 border-inherit bg-(--s-bg)"></div>
 			<div class="relative">
 				{#if bottomRight === "small"}
 					<svg
-						class="absolute top-0 left-0 w-full h-full"
+						class="absolute top-0 left-0 h-full w-full"
 						viewBox="0 0 20 20"
 						xmlns="http://www.w3.org/2000/svg"
 					>
@@ -126,7 +126,7 @@
 						/>
 					</svg>
 					<svg
-						class="absolute top-0 left-0 w-full h-full fill-(--s-border)"
+						class="absolute top-0 left-0 h-full w-full fill-(--s-border)"
 						viewBox="0 0 20 20"
 						xmlns="http://www.w3.org/2000/svg"
 					>
@@ -136,7 +136,7 @@
 					</svg>
 				{:else if bottomRight === "large"}
 					<svg
-						class="absolute top-0 left-0 w-full h-full"
+						class="absolute top-0 left-0 h-full w-full"
 						viewBox="0 0 30 30"
 						xmlns="http://www.w3.org/2000/svg"
 					>
@@ -145,7 +145,7 @@
 						/>
 					</svg>
 					<svg
-						class="absolute top-0 left-0 w-full h-full fill-(--s-border)"
+						class="absolute top-0 left-0 h-full w-full fill-(--s-border)"
 						viewBox="0 0 30 30"
 						xmlns="http://www.w3.org/2000/svg"
 					>

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import Schema from "./schema.svelte";
-
 	import { config } from "$lib/config";
+
+	import Schema from "./schema.svelte";
 </script>
 
 <Schema

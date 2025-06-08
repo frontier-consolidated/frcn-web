@@ -61,12 +61,26 @@ export default tseslint.config(
 			"import/order": [
 				"warn",
 				{
-					groups: ["builtin", "external", ["sibling", "parent"], "index"],
+					groups: ["builtin", "external", "internal", ["sibling", "parent"], "index"],
 					alphabetize: {
 						order: "asc",
 						caseInsensitive: true
 					},
-					"newlines-between": "always"
+					"newlines-between": "always",
+					pathGroups: [
+						{
+							pattern: "\$**",
+							group: "internal"
+						},
+						{
+							pattern: "$env/**",
+							group: "internal"
+						},
+						{
+							pattern: "$app/**",
+							group: "internal"
+						}
+					]
 				}
 			],
 			"@typescript-eslint/no-explicit-any": "off",

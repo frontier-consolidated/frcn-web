@@ -32,4 +32,4 @@ RUN rm -rf \
 RUN rm -rf .[!.]* ..?*
 
 EXPOSE 3000
-CMD [ "pnpm", "start" ]
+ENTRYPOINT [ "/app/entrypoint.sh" ]

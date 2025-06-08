@@ -197,7 +197,7 @@
 		<div
 			use:initTrack={"X"}
 			class={twMerge(
-				"scrollbar-track absolute right-0 top-0 w-full h-2 overflow-hidden z-1",
+				"scrollbar-track absolute top-0 right-0 z-1 h-2 w-full overflow-hidden",
 				trackXClass
 			)}
 		>
@@ -210,7 +210,7 @@
 				tabindex="-1"
 				data-dragging={dragging === "X"}
 				class={twMerge(
-					"scrollbar-thumb absolute left-0 right-0 w-full rounded-full bg-scrollbar opacity-0 group-hover/scroll-area:opacity-100 data-[dragging='true']:opacity-100 transition-opacity",
+					"scrollbar-thumb bg-scrollbar absolute right-0 left-0 w-full rounded-full opacity-0 transition-opacity group-hover/scroll-area:opacity-100 data-[dragging='true']:opacity-100",
 					thumbXClass
 				)}
 				onmousedown={(e) => onDragStart(e, "X")}
@@ -221,7 +221,7 @@
 		<div
 			use:initTrack={"Y"}
 			class={twMerge(
-				"scrollbar-track absolute right-0 top-0 w-2 h-full overflow-hidden z-1",
+				"scrollbar-track absolute top-0 right-0 z-1 h-full w-2 overflow-hidden",
 				trackYClass
 			)}
 		>
@@ -234,7 +234,7 @@
 				tabindex="-1"
 				data-dragging={dragging === "Y"}
 				class={twMerge(
-					"scrollbar-thumb absolute left-0 right-0 w-full rounded-full bg-scrollbar opacity-0 group-hover/scroll-area:opacity-100 data-[dragging='true']:opacity-100 transition-opacity",
+					"scrollbar-thumb bg-scrollbar absolute right-0 left-0 w-full rounded-full opacity-0 transition-opacity group-hover/scroll-area:opacity-100 data-[dragging='true']:opacity-100",
 					thumbYClass
 				)}
 				onmousedown={(e) => onDragStart(e, "Y")}

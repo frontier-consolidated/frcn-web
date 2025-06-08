@@ -36,7 +36,8 @@
 	--color-table-head: #1e1b26;
 	--color-table-body: #0d0a15;
 
-	--color-discord: #5e6dee;
+	--color-discord: #5a70bd;
+	--color-discord-light: #6785f1;
 	--color-youtube: #e52828;
 	--color-patreon: #f2614b;
 	--color-erkul: #ffa537;
@@ -132,7 +133,7 @@
 	}
 
 	::-webkit-scrollbar {
-		@apply w-2 h-2;
+		@apply h-2 w-2;
 	}
 
 	::-webkit-scrollbar-track {

@@ -1,6 +1,6 @@
 import type { RequestEvent } from "@sveltejs/kit";
 
-import { config } from "./config";
+import { config } from "$server/config";
 
 // :: Copy from https://github.com/sveltejs/kit/blob/f67898d25ee32e9377221979d2a9e6b792786f4e/packages/kit/src/utils/http.js#L57-L79
 function isContentType(request: Request, ...types: string[]) {

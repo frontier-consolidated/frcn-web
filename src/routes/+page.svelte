@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { ArrowDownIcon, ArrowRightIcon, NotebookPenIcon } from "lucide-svelte";
 
+	import { DiscordIcon, YoutubeIcon } from "$lib/components/icons";
+	import Button from "$lib/components/ui/button.svelte";
+	import { config } from "$lib/config";
+	import Meta from "$lib/seo/meta.svelte";
+
 	import type { PageData } from "./$types";
 	import activitiesImage from "./_assets/activities.png";
 	import communityImage from "./_assets/community.png";
@@ -10,32 +15,27 @@
 	import tobiiLogo from "./_assets/tobii-logo.png";
 	import Crusader from "./_components/crusader.svelte";
 
-	import { DiscordIcon, YoutubeIcon } from "$lib/components/icons";
-	import Button from "$lib/components/ui/button.svelte";
-	import { config } from "$lib/config";
-	import Meta from "$lib/seo/meta.svelte";
-
 	let { data }: { data: PageData } = $props();
 </script>
 
 <Meta />
 
-<div class="absolute left-0 top-30 w-[99vw] h-screen overflow-hidden z-[-1] hidden lg:block">
-	<div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-page h-full">
+<div class="absolute top-30 left-0 z-[-1] hidden h-screen w-[99vw] overflow-hidden lg:block">
+	<div class="max-w-page absolute top-0 left-1/2 h-full w-full -translate-x-1/2">
 		<div
-			class="absolute top-4 right-100 translate-x-1/2 -rotate-12 w-[1080px] h-[600px] bg-red-500/50 hero-gradient"
+			class="hero-gradient absolute top-4 right-100 h-[600px] w-[1080px] translate-x-1/2 -rotate-12 bg-red-500/50"
 		></div>
 	</div>
 </div>
-<div class="relative flex flex-col mx-auto max-w-page pt-30 sm:pt-55">
+<div class="max-w-page relative mx-auto flex flex-col pt-30 sm:pt-55">
 	<Crusader />
 	<div class="px-8">
-		<div class="flex justify-center lg:justify-end lg:pr-[5%] xl:pr-[7%] min-[1440px]:pr-[9%]">
+		<div class="flex justify-center min-[1440px]:pr-[9%] lg:justify-end lg:pr-[5%] xl:pr-[7%]">
 			<div class="flex flex-col items-center">
 				<section id="hero" class="relative flex flex-col items-center lg:items-start">
-					<div class="relative flex flex-col items-end w-fit sm:mr-[118px]">
+					<div class="relative flex w-fit flex-col items-end sm:mr-[118px]">
 						<svg
-							class="absolute top-1/2 left-[calc(100%-28px)] xl:left-[calc(100%-38px)] w-[128px] xl:w-[158px] -translate-y-1/2 hidden sm:block"
+							class="absolute top-1/2 left-[calc(100%-28px)] hidden w-[128px] -translate-y-1/2 sm:block xl:left-[calc(100%-38px)] xl:w-[158px]"
 							width="158"
 							height="308"
 							viewBox="0 0 158 308"
@@ -61,24 +61,24 @@
 						</svg>
 						<h1 class="flex flex-col items-end">
 							<span
-								class="text-7xl xl:text-8xl tracking-[0.15em] leading-15 xl:leading-20 font-bold"
+								class="text-7xl leading-15 font-bold tracking-[0.15em] xl:text-8xl xl:leading-20"
 							>
 								Frontier
 							</span>
-							<span class="text-2xl xl:text-[2rem] tracking-[0.43em] font-medium">Consolidated</span
+							<span class="text-2xl font-medium tracking-[0.43em] xl:text-[2rem]">Consolidated</span
 							>
 						</h1>
-						<span class="text-sm font-medium text-text-40 mt-4 pr-2 xl:pr-3">
+						<span class="text-text-40 mt-4 pr-2 text-sm font-medium xl:pr-3">
 							A Star Citizen Organization</span
 						>
 					</div>
-					<div class="flex flex-col gap-13 max-w-[582px] lg:max-xl:max-w-[466px] mt-20 sm:mt-32">
-						<span class="font-semibold text-text-60 text-wrap">
+					<div class="mt-20 flex max-w-[582px] flex-col gap-13 sm:mt-32 lg:max-xl:max-w-[466px]">
+						<span class="text-text-60 font-semibold text-wrap">
 							The 'verse is dark and full of dangers, but you don't have to face the void alone.
 							Come with us and explore the possibilities!
 						</span>
 						<div
-							class="flex justify-center items-center gap-x-8 gap-y-4 max-[520px]:flex-col xl:gap-12"
+							class="flex items-center justify-center gap-x-8 gap-y-4 max-[520px]:flex-col xl:gap-12"
 						>
 							<Button
 								href={config.socials.discord}
@@ -99,11 +99,11 @@
 								Find out more
 							</Button>
 						</div>
-						<div class="flex justify-center items-center gap-12 text-xs">
+						<div class="flex items-center justify-center gap-12 text-xs">
 							<a
 								href={config.socials.loudgunsYoutube}
 								target="_blank"
-								class="flex items-center gap-1.5 text-text-40 hover:text-text-80 transition-colors"
+								class="text-text-40 hover:text-text-80 flex items-center gap-1.5 transition-colors"
 							>
 								<YoutubeIcon class="size-5" />
 								<span>loudguns</span>
@@ -111,7 +111,7 @@
 							<a
 								href={config.socials.frcnYoutube}
 								target="_blank"
-								class="flex items-center gap-1.5 text-text-40 hover:text-text-80 transition-colors"
+								class="text-text-40 hover:text-text-80 flex items-center gap-1.5 transition-colors"
 							>
 								<YoutubeIcon class="size-5" />
 								<span>frontierconsolidated</span>
@@ -121,43 +121,43 @@
 				</section>
 				<section
 					id="sponsors"
-					class="relative flex flex-col items-center gap-8 w-full max-w-[582px] lg:max-xl:max-w-[466px] mt-48 md:mt-60"
+					class="relative mt-48 flex w-full max-w-[582px] flex-col items-center gap-8 md:mt-60 lg:max-xl:max-w-[466px]"
 				>
-					<span class="text-sm font-medium text-text-80">Proudly sponsored by</span>
+					<span class="text-text-80 text-sm font-medium">Proudly sponsored by</span>
 					<div class="flex justify-center gap-16 sm:gap-30">
 						<img
 							src={tobiiLogo}
 							width="102"
 							height="42"
 							alt="Tobii logo"
-							class="w-[102px] h-[42px]"
+							class="h-[42px] w-[102px]"
 						/>
 						<img
 							src={teamspeakLogo}
 							width="195"
 							height="52"
 							alt="Tobii logo"
-							class="w-[195px] h-[52px]"
+							class="h-[52px] w-[195px]"
 						/>
 					</div>
 					<img
 						src={sponsorsGradient}
 						alt=""
-						class="absolute top-full left-1/2 -translate-x-1/2 -translate-y-1/2 w-[102%] md:w-[128%] xl:w-[137%] max-w-none"
+						class="absolute top-full left-1/2 w-[102%] max-w-none -translate-x-1/2 -translate-y-1/2 md:w-[128%] xl:w-[137%]"
 					/>
 				</section>
 			</div>
 		</div>
 	</div>
 	<div id="about-us" class="mt-24 sm:mt-36"></div>
-	<section id="community" class="relative flex justify-center pt-12 px-8">
+	<section id="community" class="relative flex justify-center px-8 pt-12">
 		<img
 			src={communityImage}
 			alt=""
-			class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[130%] object-cover max-w-none z-[-1] mask-community"
+			class="mask-community absolute top-0 left-1/2 z-[-1] h-[130%] w-full max-w-none -translate-x-1/2 object-cover"
 		/>
-		<div class="flex flex-col gap-4 font-medium text-text-80 max-w-[500px]">
-			<h2 class="text-3xl md:text-4xl text-text mb-8">The community</h2>
+		<div class="text-text-80 flex max-w-[500px] flex-col gap-4 font-medium">
+			<h2 class="text-text mb-8 text-3xl md:text-4xl">The community</h2>
 			<p>
 				Star Citizen in its current form is a fantastic game that can deliver hours of gameplay for
 				a solo player. Where it really shines right now, though, is as a sandbox to allow people to
@@ -171,7 +171,7 @@
 				comms, if one is ongoing.
 			</p>
 			<div
-				class="flex justify-center items-center max-[520px]:flex-col gap-x-8 gap-y-4 xl:gap-12 mt-12"
+				class="mt-12 flex items-center justify-center gap-x-8 gap-y-4 max-[520px]:flex-col xl:gap-12"
 			>
 				<Button
 					href={config.socials.discord}
@@ -195,15 +195,15 @@
 	</section>
 	<section
 		id="organisation"
-		class="relative flex justify-center md:justify-start pt-12 px-8 mt-16 md:mt-26"
+		class="relative mt-16 flex justify-center px-8 pt-12 md:mt-26 md:justify-start"
 	>
 		<img
 			src={organisationImage}
 			alt=""
-			class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[130%] object-cover max-w-none z-[-1] mask-organisation"
+			class="mask-organisation absolute top-0 left-1/2 z-[-1] h-[130%] w-full max-w-none -translate-x-1/2 object-cover"
 		/>
-		<div class="flex flex-col gap-4 font-medium text-text-80 max-w-[500px] md:ml-20">
-			<h2 class="text-3xl md:text-4xl text-text mb-8">Our organisation</h2>
+		<div class="text-text-80 flex max-w-[500px] flex-col gap-4 font-medium md:ml-20">
+			<h2 class="text-text mb-8 text-3xl md:text-4xl">Our organisation</h2>
 			<p>
 				Frontier Consolidated is our Star Citizen organisation and we are actively recruiting new
 				members. We cover nearly all areas of the game and are open to everyone once they have got
@@ -221,10 +221,10 @@
 				people.
 			</p>
 			<div
-				class="flex justify-center items-center max-[520px]:flex-col gap-x-8 gap-y-4 xl:gap-12 mt-12"
+				class="mt-12 flex items-center justify-center gap-x-8 gap-y-4 max-[520px]:flex-col xl:gap-12"
 			>
 				<Button
-					href="https://portal.frontierconsolidated.com/applications?id=demo"
+					href="{config.portal}/applications?id=demo"
 					target="_blank"
 					size="lg"
 					Icon={NotebookPenIcon}
@@ -247,15 +247,15 @@
 	</section>
 	<section
 		id="activities"
-		class="relative flex justify-center md:justify-end pt-12 px-8 mt-16 md:mt-26 mb-50"
+		class="relative mt-16 mb-50 flex justify-center px-8 pt-12 md:mt-26 md:justify-end"
 	>
 		<img
 			src={activitiesImage}
 			alt=""
-			class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[130%] object-cover max-w-none z-[-1] mask-activities"
+			class="mask-activities absolute top-0 left-1/2 z-[-1] h-[130%] w-full max-w-none -translate-x-1/2 object-cover"
 		/>
-		<div class="flex flex-col gap-4 font-medium text-text-80 max-w-[500px] md:mr-20">
-			<h2 class="text-3xl md:text-4xl text-text mb-8">Events and activities</h2>
+		<div class="text-text-80 flex max-w-[500px] flex-col gap-4 font-medium md:mr-20">
+			<h2 class="text-text mb-8 text-3xl md:text-4xl">Events and activities</h2>
 			<p>
 				The 'verse is dark and full of dangers, but also full of fun to be had with a group of
 				players, large or small. Star Citizen is made to be played with others and has a vast scope
@@ -268,9 +268,9 @@
 				org events for all areas of the game, to open up the large gameplay opportunities to
 				everyone!
 			</p>
-			<div class="flex justify-center md:justify-end items-center md:pr-6 mt-8">
+			<div class="mt-8 flex items-center justify-center md:justify-end md:pr-6">
 				<Button
-					href="https://portal.frontierconsolidated.com/events"
+					href="{config.portal}/events"
 					color="text"
 					size="lg"
 					Icon={ArrowRightIcon}

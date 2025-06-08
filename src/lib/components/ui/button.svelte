@@ -10,12 +10,12 @@
 		base: "group/button relative cursor-pointer disabled:cursor-not-allowed",
 		variants: {
 			color: {
-				primary: "[--s-button-bg:var(--color-button)] text-text",
-				secondary: "[--s-button-bg:var(--color-button-secondary)] text-text",
-				ghost: "[--s-button-bg:var(--color-text)] text-text",
+				primary: "text-text [--s-button-bg:var(--color-button)]",
+				secondary: "text-text [--s-button-bg:var(--color-button-secondary)]",
+				ghost: "text-text [--s-button-bg:var(--color-text)]",
 				text: "text-text-80 hover:text-text transition-colors",
-				destructive: "[--s-button-bg:var(--color-button-destructive)] text-text",
-				discord: "[--s-button-bg:var(--color-discord)] text-text"
+				destructive: "text-text [--s-button-bg:var(--color-button-destructive)]",
+				discord: "text-text [--s-button-bg:var(--color-discord)]"
 			},
 			size: {
 				sm: "text-sm font-medium",
@@ -26,13 +26,13 @@
 				none: "p-2",
 				small: "px-[14px] py-2",
 				large: "px-24px py-2",
-				"small none": "pl-[14px] pr-2 py-2",
-				"none small": "pl-2 pr-[14px] py-2",
+				"small none": "py-2 pr-2 pl-[14px]",
+				"none small": "py-2 pr-[14px] pl-2",
 				"small small": "px-[14px] py-2",
-				"small large": "pl-[14px] pr-[24px] py-2",
-				"large none": "pl-[24px] pr-2 py-2",
-				"none large": "pl-2 pr-[24px] py-2",
-				"large small": "pl-[24px] pr-[14px] py-2",
+				"small large": "py-2 pr-[24px] pl-[14px]",
+				"large none": "py-2 pr-2 pl-[24px]",
+				"none large": "py-2 pr-[24px] pl-2",
+				"large small": "py-2 pr-[14px] pl-[24px]",
 				"large large": "px-[24px] py-2"
 			} satisfies Record<CornersConfig, string>
 		},
@@ -48,15 +48,15 @@
 	type Variant = VariantProps<typeof variants>;
 
 	const backgroundVariants = tv({
-		base: "absolute top-0 left-0 w-full h-full group-hover/button:transition-opacity",
+		base: "absolute top-0 left-0 h-full w-full group-hover/button:transition-opacity",
 		variants: {
 			color: {
-				primary: "group-hover/button:opacity-50",
+				primary: "group-hover/button:opacity-80",
 				secondary: "opacity-60 group-hover/button:opacity-70",
 				ghost: "opacity-0 group-hover/button:opacity-5",
 				text: "",
-				destructive: "group-hover/button:opacity-50",
-				discord: "group-hover/button:opacity-50"
+				destructive: "group-hover/button:opacity-80",
+				discord: "group-hover/button:opacity-80"
 			} satisfies typeof variants.variants.color
 		}
 	});

@@ -1,8 +1,9 @@
+import { logger } from "@l3dev/logger";
 import { type Handle } from "@sveltejs/kit";
 
 import { building } from "$app/environment";
-import { csrfHandler } from "$server/csrf-handler";
-import { logger } from "$server/utils/logger";
+
+import { csrfHandler } from "./csrf-handler.server";
 
 export const handle: Handle = async ({ event, resolve }) => {
 	if (import.meta.env.PROD) {

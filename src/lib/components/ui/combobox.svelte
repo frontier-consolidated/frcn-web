@@ -10,7 +10,7 @@
 	import ScrollArea from "./scroll-area.svelte";
 
 	const variants = tv({
-		base: "relative flex w-full pl-4 pr-8 py-3 outline-hidden placeholder:text-input-placeholder",
+		base: "placeholder:text-input-placeholder relative flex w-full py-3 pr-8 pl-4 outline-hidden",
 		variants: {
 			size: {
 				base: "text-[14px] font-medium placeholder:text-[14px]",
@@ -20,7 +20,7 @@
 	});
 
 	const optionVariants = tv({
-		base: "p-2 bg-white/0 hover:bg-white/5 data-[highlighted='true']:bg-white/5 transition-colors cursor-pointer",
+		base: "cursor-pointer bg-white/0 p-2 transition-colors hover:bg-white/5 data-[highlighted='true']:bg-white/5",
 		variants: {
 			size: {
 				base: "text-[14px] font-medium",
@@ -68,7 +68,7 @@
 
 <div class={twMerge("relative h-fit", outerClass)}>
 	<ClippedShape
-		class="absolute top-0 left-0 w-full h-full"
+		class="absolute top-0 left-0 h-full w-full"
 		corners="none small"
 		bg="--color-input"
 		border="--color-input-border"
@@ -83,12 +83,12 @@
 	/>
 	<ChevronDownIcon
 		{...combobox.trigger}
-		class="absolute top-0 bottom-0 right-2 my-auto size-5 cursor-pointer transition-opacity hover:opacity-70"
+		class="absolute top-0 right-2 bottom-0 my-auto size-5 cursor-pointer transition-opacity hover:opacity-70"
 	/>
 
-	<div {...combobox.content} class="relative bg-transparent rounded-[3px] overflow-hidden">
+	<div {...combobox.content} class="relative overflow-hidden rounded-[3px] bg-transparent">
 		<ClippedShape
-			class="absolute top-0 left-0 w-full h-full"
+			class="absolute top-0 left-0 h-full w-full"
 			corners="none small"
 			bg="--color-background-secondary"
 			border="--color-input-border"
@@ -96,7 +96,7 @@
 		<ScrollArea
 			id="{resolvedId}-scroll-area"
 			direction="Y"
-			class="relative flex flex-col text-text max-h-64"
+			class="text-text relative flex max-h-64 flex-col"
 		>
 			{#each filteredOptions as option (option.name)}
 				<div {...combobox.getOption(option.name)} class={optionVariants({ size })}>

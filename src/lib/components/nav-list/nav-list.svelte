@@ -2,9 +2,9 @@
 	import { onMount } from "svelte";
 	import { twMerge } from "tailwind-merge";
 
-	import MoreButton from "./more-button.svelte";
-
 	import { page } from "$app/state";
+
+	import MoreButton from "./more-button.svelte";
 
 	export type NavItem = { name: string; href: string; isActive?: (url: URL) => boolean };
 
@@ -64,7 +64,7 @@
 <ul
 	use:initNavList
 	class={twMerge(
-		"flex justify-end items-start flex-wrap gap-x-8 gap-y-1.5 h-[26px] overflow-hidden",
+		"flex h-[26px] flex-wrap items-start justify-end gap-x-8 gap-y-1.5 overflow-hidden",
 		className
 	)}
 >
@@ -74,14 +74,14 @@
 			<a
 				href={item.href}
 				class={twMerge(
-					"group/nav-item hover:opacity-100 transition-opacity",
+					"group/nav-item transition-opacity hover:opacity-100",
 					active ? "opacity-100" : "opacity-90"
 				)}
 			>
 				<span class="font-medium">{item.name}</span>
 				<div
 					class={twMerge(
-						"bg-text/90 h-[2px] group-hover/nav-item:w-full transition-all",
+						"bg-text/90 h-[2px] transition-all group-hover/nav-item:w-full",
 						active ? "w-full" : "w-[14px]"
 					)}
 				></div>

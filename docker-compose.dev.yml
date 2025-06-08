@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: frcn-db
+    restart: always
+    ports:
+      - "5425:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=frcn

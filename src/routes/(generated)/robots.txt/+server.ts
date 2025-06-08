@@ -1,7 +1,7 @@
-import type { RequestHandler } from "./$types";
-
 import { config } from "$lib/config";
 import { createETag } from "$server/utils/etag";
+
+import type { RequestHandler } from "./$types";
 
 export const prerender = true;
 

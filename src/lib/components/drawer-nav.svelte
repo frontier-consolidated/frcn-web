@@ -2,9 +2,9 @@
 	import type { Component, ComponentType, SvelteComponentTyped } from "svelte";
 	import { twMerge } from "tailwind-merge";
 
-	import Button from "./ui/button.svelte";
-
 	import { page } from "$app/state";
+
+	import Button from "./ui/button.svelte";
 
 	export type Item = {
 		name: string;
@@ -24,7 +24,7 @@
 <nav class={twMerge("flex flex-col gap-1.5 px-6", className)}>
 	{#each items as item ("title" in item ? `section:${item.title}` : `${item.name}:${item.href}`)}
 		{#if "title" in item}
-			<span class="text-sm font-medium pt-5">{item.title}</span>
+			<span class="pt-5 text-sm font-medium">{item.title}</span>
 		{:else}
 			{@const active = item.isActive ? item.isActive(page.url) : page.url.pathname === item.href}
 			{#snippet buttonIcon(cls: string)}
@@ -40,7 +40,7 @@
 				color={active ? "secondary" : "ghost"}
 				corners="none small"
 			>
-				<span class="font-medium line-clamp-1">{item.name}</span>
+				<span class="line-clamp-1 font-medium">{item.name}</span>
 			</Button>
 		{/if}
 	{/each}

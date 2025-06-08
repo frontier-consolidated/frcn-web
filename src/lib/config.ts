@@ -1,6 +1,6 @@
 import type { SoftwareApplication } from "schema-dts";
 
-import icon from "$lib/assets/emblem.png";
+import emblem from "$lib/assets/emblem.png";
 // import image from "$lib/assets/share-image.png";
 
 type CreatorType<T = SoftwareApplication["author"]> = T extends { "@type": string } ? T : never;
@@ -8,6 +8,7 @@ type CreatorType<T = SoftwareApplication["author"]> = T extends { "@type": strin
 export const config = {
 	name: "Frontier Consolidated",
 	domain: "frontierconsolidated.com",
+	portal: "https://portal.frontierconsolidated.com",
 	contactEmail: "loudguns@frontierconsolidated.com",
 	creator: {
 		"@type": "Person",
@@ -22,8 +23,8 @@ export const config = {
 		merch: "https://loudguns.teemill.com"
 	},
 	meta: {
-		icon,
-		image: null,
+		emblem,
+		thumbnail: null,
 		color: "#238cde",
 		twitterHandle: "@LoudGunsGaming",
 		publishDate: "2024-03-04",

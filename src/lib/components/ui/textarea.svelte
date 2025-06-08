@@ -6,7 +6,7 @@
 	import ClippedShape from "../clipped-shape.svelte";
 
 	const variants = tv({
-		base: "relative flex w-full px-4 py-3 outline-hidden placeholder:text-input-placeholder",
+		base: "placeholder:text-input-placeholder relative flex w-full px-4 py-3 outline-hidden",
 		variants: {
 			size: {
 				base: "text-[14px] font-medium placeholder:text-[14px]",
@@ -37,7 +37,7 @@
 
 <div class={twMerge("relative", outerClass)}>
 	<ClippedShape
-		class="absolute top-0 left-0 w-full h-full"
+		class="absolute top-0 left-0 h-full w-full"
 		corners="none small"
 		bg="--color-input"
 		border="--color-input-border"

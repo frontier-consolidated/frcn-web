@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 
-	import crusaderImage from "../_assets/crusader.png";
-
 	import { createDashAnimation } from "$lib/state/dashAnimation.svelte";
+
+	import crusaderImage from "../_assets/crusader.png";
 
 	let dashAnimation = createDashAnimation(8);
 
@@ -16,13 +16,13 @@
 </script>
 
 <div
-	class="absolute top-[calc((64rem-100vw)*0.2)] sm:top-[calc((64rem-100vw)*0.2+2rem)] lg:top-8 left-0 lg:-translate-x-1/2"
+	class="absolute top-[calc((64rem-100vw)*0.2)] left-0 sm:top-[calc((64rem-100vw)*0.2+2rem)] lg:top-8 lg:-translate-x-1/2"
 >
 	<div
-		class="absolute top-0 left-0 aspect-square w-[94%] bg-radial from-background from-60% to-transparent to-75%"
+		class="from-background absolute top-0 left-0 aspect-square w-[94%] bg-radial from-60% to-transparent to-75%"
 	></div>
 	<svg
-		class="absolute bottom-3/7 right-1/2 translate-x-1/2 translate-y-1/2 w-[91%] brightness-40 lg:brightness-100 mask-ring"
+		class="mask-ring absolute right-1/2 bottom-3/7 w-[91%] translate-x-1/2 translate-y-1/2 brightness-40 lg:brightness-100"
 		width="1467"
 		height="1243"
 		viewBox="0 0 1467 1243"
@@ -42,11 +42,11 @@
 		width="1619"
 		height="1619"
 		alt="Crusader"
-		class="relative size-[94%] brightness-40 lg:brightness-100 mask-planet"
+		class="mask-planet relative size-[94%] brightness-40 lg:brightness-100"
 	/>
-	<div class="absolute bottom-0 right-[10%] w-1/2 h-1/2 overflow-hidden">
+	<div class="absolute right-[10%] bottom-0 h-1/2 w-1/2 overflow-hidden">
 		<svg
-			class="absolute bottom-6/7 right-[80%] translate-x-1/2 translate-y-1/2 w-[182%] brightness-40 lg:brightness-100"
+			class="absolute right-[80%] bottom-6/7 w-[182%] translate-x-1/2 translate-y-1/2 brightness-40 lg:brightness-100"
 			width="1467"
 			height="1243"
 			viewBox="0 0 1467 1243"
