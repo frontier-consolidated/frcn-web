@@ -102,7 +102,17 @@ new k8s.apps.v1.Deployment(appName, {
 								name: portName
 							}
 						],
-						env: containerEnvVars.map((name) => ({ name, value: process.env[name] }))
+						env: containerEnvVars.map((name) => ({ name, value: process.env[name] })),
+						readinessProbe: {
+							httpGet: {
+								path: "/",
+								port: portName
+							},
+							successThreshold: 2,
+							failureThreshold: 2,
+							periodSeconds: 10,
+							timeoutSeconds: 5
+						}
 					}
 				],
 				imagePullSecrets: [{ name: "ecr-reg-creds" }]
