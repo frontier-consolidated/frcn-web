@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      drizzle-kit:
+        specifier: ^0.30.6
+        version: 0.30.6
     devDependencies:
       '@l3dev/api-result':
         specifier: ^0.2.1
@@ -68,9 +72,6 @@ importers:
       dotenv:
         specifier: ^16.5.0
         version: 16.5.0
-      drizzle-kit:
-        specifier: ^0.30.6
-        version: 0.30.6
       drizzle-orm:
         specifier: ^0.40.1
         version: 0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0)
