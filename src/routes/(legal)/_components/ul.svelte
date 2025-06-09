@@ -5,6 +5,6 @@
 	let { children, ...rest }: { children: Snippet } & HTMLAttributes<HTMLUListElement> = $props();
 </script>
 
-<ul class="list-disc list-outside ml-4 mt-2 mb-6" {...rest}>
+<ul class="mt-2 mb-6 ml-4 list-outside list-disc" {...rest}>
 	{@render children()}
 </ul>

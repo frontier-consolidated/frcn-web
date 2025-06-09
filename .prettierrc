@@ -4,10 +4,8 @@
 	"semi": true,
 	"trailingComma": "none",
 	"printWidth": 100,
-	"plugins": [
-		"prettier-plugin-svelte",
-		"prettier-plugin-tailwindcss"
-	],
+	"endOfLine": "lf",
+	"plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
 	"tailwindAttributes": [
 		"inner-class",
 		"input-class",
@@ -23,10 +21,7 @@
 		"content-class",
 		"error-class"
 	],
-	"tailwindFunctions": [
-		"twMerge",
-		"tv"
-	],
+	"tailwindFunctions": ["twMerge", "tv"],
 	"overrides": [
 		{
 			"files": "*.svelte",

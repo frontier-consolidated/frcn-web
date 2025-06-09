@@ -5,6 +5,6 @@
 	let { children, ...rest }: { children: Snippet } & HTMLOlAttributes = $props();
 </script>
 
-<ol class="list-decimal list-outside ml-6 mt-2 mb-6" {...rest}>
+<ol class="mt-2 mb-6 ml-6 list-outside list-decimal" {...rest}>
 	{@render children()}
 </ol>

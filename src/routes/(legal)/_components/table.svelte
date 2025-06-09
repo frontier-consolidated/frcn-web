@@ -6,7 +6,7 @@
 </script>
 
 <div class="w-full overflow-x-auto">
-	<table class="min-w-full rounded-[3px] text-text overflow-hidden" {...rest}>
+	<table class="text-text min-w-full overflow-hidden rounded-[3px]" {...rest}>
 		{@render children()}
 	</table>
 </div>

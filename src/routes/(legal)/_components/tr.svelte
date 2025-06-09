@@ -5,6 +5,6 @@
 	let { children, ...rest }: { children: Snippet } & HTMLAttributes<HTMLTableRowElement> = $props();
 </script>
 
-<tr class="border-b-1 border-border" {...rest}>
+<tr class="border-border border-b-1" {...rest}>
 	{@render children()}
 </tr>

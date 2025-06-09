@@ -5,6 +5,6 @@
 	let { children, ...rest }: { children: Snippet } & HTMLAttributes<HTMLHeadingElement> = $props();
 </script>
 
-<h4 class="text-text font-medium mt-4 mb-1" {...rest}>
+<h4 class="text-text mt-4 mb-1 font-medium" {...rest}>
 	{@render children()}
 </h4>

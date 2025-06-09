@@ -1,124 +1,124 @@
 name: Build and deploy
 
 on:
-    workflow_call:
-        inputs:
-            environment:
-                type: string
-                required: true
-            hostname:
-                type: string
-                required: true
-            service:
-                type: string
-                required: true
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      hostname:
+        type: string
+        required: true
+      service:
+        type: string
+        required: true
 
 jobs:
-    build-deploy:
-        name: Build and deploy apps
-        environment: ${{ inputs.environment }}
-        runs-on: ubuntu-latest
-        steps:
-            - name: Setup AWS credentials
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-region: ${{ secrets.AWS_REGION }}
+  build-deploy:
+    name: Build and deploy apps
+    environment: ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-            - name: Get runner public ip
-              shell: bash
-              # https://ipinfo.io/ip
-              run: |
-                  echo "PUBLIC_IP=$(curl -s https://api.ipify.org/)" >> $GITHUB_ENV
+      - name: Get runner public ip
+        shell: bash
+        # https://ipinfo.io/ip
+        run: |
+          echo "PUBLIC_IP=$(curl -s https://api.ipify.org/)" >> $GITHUB_ENV
 
-            - name: Add runner ip to AWS security group
-              run: |
-                  aws ec2 authorize-security-group-ingress --group-name $AWS_SECURITY_GROUP --protocol tcp --port 22 --cidr $PUBLIC_IP/32
-              env:
-                  AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP }}
+      - name: Add runner ip to AWS security group
+        run: |
+          aws ec2 authorize-security-group-ingress --group-name $AWS_SECURITY_GROUP --protocol tcp --port 22 --cidr $PUBLIC_IP/32
+        env:
+          AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP }}
 
-            - name: Configure SSH
-              run: |
-                  mkdir -p ~/.ssh/
-                  echo "$SSH_KEY" > ~/.ssh/aws
-                  chmod 600 ~/.ssh/aws
-                  cat >>~/.ssh/config <<END
-                  Host server
-                      HostName $SSH_HOST
-                      User $SSH_USER
-                      Port $SSH_PORT
-                      IdentityFile ~/.ssh/aws
-                      StrictHostKeyChecking no
-                  END
-              env:
-                  SSH_USER: ${{ secrets.SSH_USER }}
-                  SSH_KEY: ${{ secrets.SSH_KEY }}
-                  SSH_HOST: ${{ secrets.SSH_HOST }}
-                  SSH_PORT: ${{ secrets.SSH_PORT }}
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/aws
+          chmod 600 ~/.ssh/aws
+          cat >>~/.ssh/config <<END
+          Host server
+              HostName $SSH_HOST
+              User $SSH_USER
+              Port $SSH_PORT
+              IdentityFile ~/.ssh/aws
+              StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_PORT: ${{ secrets.SSH_PORT }}
 
-            - name: Setup node
-              uses: actions/setup-node@v4
-              with:
-                  node-version: 21
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 21
 
-            - name: Install pnpm
-              uses: pnpm/action-setup@v3
-              with:
-                  version: 9
+      - name: Install pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9
 
-            - name: Get pnpm store
-              shell: bash
-              run: |
-                  echo "PNPM_STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Get pnpm store
+        shell: bash
+        run: |
+          echo "PNPM_STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-            - name: Setup pnpm cache
-              uses: actions/cache@v4
-              with:
-                  path: ${{ env.PNPM_STORE_PATH }}
-                  key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-                  restore-keys: |
-                      ${{ runner.os }}-pnpm-store-
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.PNPM_STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
 
-            - name: Checkout branch
-              uses: actions/checkout@v4
+      - name: Checkout branch
+        uses: actions/checkout@v4
 
-            - name: Run build script
-              shell: bash
-              run: |
-                  ./.github/scripts/ec2-build.sh build ${{ inputs.hostname }}
+      - name: Run build script
+        shell: bash
+        run: |
+          ./.github/scripts/ec2-build.sh build ${{ inputs.hostname }}
 
-            - name: Deploy web
-              uses: burnett01/rsync-deployments@7.0.0
-              with:
-                  switches: -avzH --delete-excluded
-                  path: build/web/
-                  remote_path: /var/www/${{ inputs.hostname }}/web/
-                  remote_host: ${{ secrets.SSH_HOST }}
-                  remote_user: ${{ secrets.SSH_USER }}
-                  remote_key: ${{ secrets.SSH_KEY }}
+      - name: Deploy web
+        uses: burnett01/rsync-deployments@7.0.0
+        with:
+          switches: -avzH --delete-excluded
+          path: build/web/
+          remote_path: /var/www/${{ inputs.hostname }}/web/
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_KEY }}
 
-            - name: Deploy backend
-              uses: burnett01/rsync-deployments@7.0.0
-              with:
-                  switches: -avzH --delete-excluded
-                  path: build/backend/
-                  remote_path: /var/www/${{ inputs.hostname }}/backend/
-                  remote_host: ${{ secrets.SSH_HOST }}
-                  remote_user: ${{ secrets.SSH_USER }}
-                  remote_key: ${{ secrets.SSH_KEY }}
+      - name: Deploy backend
+        uses: burnett01/rsync-deployments@7.0.0
+        with:
+          switches: -avzH --delete-excluded
+          path: build/backend/
+          remote_path: /var/www/${{ inputs.hostname }}/backend/
+          remote_host: ${{ secrets.SSH_HOST }}
+          remote_user: ${{ secrets.SSH_USER }}
+          remote_key: ${{ secrets.SSH_KEY }}
 
-            - name: Set permissions
-              run: |
-                  ssh server "cd /var/www/${{ inputs.hostname }} && chmod -R 774 backend && chmod -R 774 web"
+      - name: Set permissions
+        run: |
+          ssh server "cd /var/www/${{ inputs.hostname }} && chmod -R 774 backend && chmod -R 774 web"
 
-            - name: Restart service
-              run: |
-                  ssh server "cd /var/www/${{ inputs.hostname }} && sudo /bin/systemctl restart ${{ inputs.service }}"
+      - name: Restart service
+        run: |
+          ssh server "cd /var/www/${{ inputs.hostname }} && sudo /bin/systemctl restart ${{ inputs.service }}"
 
-            - name: Remove runner ip from AWS security group
-              run: |
-                  aws ec2 revoke-security-group-ingress --group-name $AWS_SECURITY_GROUP --protocol tcp --port 22 --cidr $PUBLIC_IP/32
-              if: always()
-              env:
-                  AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP }}
+      - name: Remove runner ip from AWS security group
+        run: |
+          aws ec2 revoke-security-group-ingress --group-name $AWS_SECURITY_GROUP --protocol tcp --port 22 --cidr $PUBLIC_IP/32
+        if: always()
+        env:
+          AWS_SECURITY_GROUP: ${{ secrets.AWS_SECURITY_GROUP }}
