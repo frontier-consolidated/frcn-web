@@ -4,4 +4,3 @@ environment:
 config:
   frcn-web:repositoryName: pkube/frcn-web
   aws:region: eu-central-1
-  aws:profile: pulumi-local

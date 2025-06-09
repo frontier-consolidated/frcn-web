@@ -9,7 +9,7 @@ const replicas = 1;
 const port = 3000;
 const portName = `${appName}-port`;
 
-const buildArgs = ["PUBLIC_POSTHOG_KEY", "AWS_ACCESS_KEY", "AWS_SECRET_ACCESS_KEY"];
+const buildArgs = ["PUBLIC_POSTHOG_KEY", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"];
 
 const containerEnvVars = ["DATABASE_URL", "DISCORD_GUILD_ID", "DISCORD_CLIENT_ID", "DISCORD_TOKEN"];
 

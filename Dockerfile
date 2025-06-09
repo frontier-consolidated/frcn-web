@@ -4,7 +4,7 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
 ARG PUBLIC_POSTHOG_KEY
-ARG AWS_ACCESS_KEY
+ARG AWS_ACCESS_KEY_ID
 ARG AWS_SECRET_ACCESS_KEY
 
 WORKDIR /app
@@ -20,7 +20,7 @@ RUN curl --insecure "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -
     unzip awscliv2.zip && \
     ./aws/install
 
-ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY
+ENV AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
 ENV AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
 ENV AWS_DEFAULT_REGION=eu-central-1
 
