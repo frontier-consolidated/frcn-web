@@ -9,12 +9,16 @@ const replicas = 1;
 const port = 3000;
 const portName = `${appName}-port`;
 
+const buildArgs = ["PUBLIC_POSTHOG_KEY", "AWS_ACCESS_KEY", "AWS_SECRET_ACCESS_KEY"];
+
+const containerEnvVars = ["DATABASE_URL", "DISCORD_GUILD_ID", "DISCORD_CLIENT_ID", "DISCORD_TOKEN"];
+
 const config = new pulumi.Config();
 const repositoryName = config.require("repositoryName");
 
 const repository = new aws.ecr.Repository(repositoryName);
 
-const _repoLifecyclePolicy = new aws.ecr.LifecyclePolicy(`${repositoryName}-lifecycle-policy`, {
+new aws.ecr.LifecyclePolicy(`${repositoryName}-lifecycle-policy`, {
 	repository: repository.name,
 	policy: {
 		rules: [
@@ -55,7 +59,7 @@ const image = new docker.Image(`${appName}-image`, {
 		dockerfile: "../Dockerfile",
 		platform: "linux/amd64",
 		args: {
-			PUBLIC_POSTHOG_KEY: config.require("publicPosthogKey")
+			...buildArgs.reduce((args, name) => ({ ...args, [name]: process.env[name] }), {})
 		}
 	},
 	imageName,
@@ -71,7 +75,7 @@ const namespace = new k8s.core.v1.Namespace(appName, {
 	}
 });
 
-const _app = new k8s.apps.v1.Deployment(appName, {
+new k8s.apps.v1.Deployment(appName, {
 	metadata: {
 		namespace: namespace.metadata.name
 	},
@@ -91,7 +95,8 @@ const _app = new k8s.apps.v1.Deployment(appName, {
 								containerPort: port,
 								name: portName
 							}
-						]
+						],
+						env: containerEnvVars.map((name) => ({ name, value: process.env[name] }))
 					}
 				],
 				imagePullSecrets: [{ name: "ecr-reg-creds" }]
