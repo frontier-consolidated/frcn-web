@@ -81,9 +81,10 @@ new k8s.apps.v1.Deployment(appName, {
 	},
 	spec: {
 		strategy: {
+			type: "RollingUpdate",
 			rollingUpdate: {
 				maxSurge: 1,
-				maxUnavailable: 1
+				maxUnavailable: 0
 			}
 		},
 		selector: { matchLabels: appLabels },
