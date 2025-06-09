@@ -23,7 +23,7 @@
 	},
 	"devDependencies": {
 		"@l3dev/api-result": "^0.2.1",
-		"@l3dev/discord-bot-tickets-plugin": "^0.4.4",
+		"@l3dev/discord-bot-tickets-plugin": "^0.4.5",
 		"@l3dev/discord.js-helpers": "^0.8.3",
 		"@l3dev/drizzle-helpers": "^0.2.1",
 		"@l3dev/logger": "^0.2.1",
