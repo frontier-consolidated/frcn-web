@@ -80,6 +80,9 @@ new k8s.apps.v1.Deployment(appName, {
 		namespace: namespace.metadata.name
 	},
 	spec: {
+		strategy: {
+			type: "Recreate"
+		},
 		selector: { matchLabels: appLabels },
 		replicas,
 		template: {
