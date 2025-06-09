@@ -35,7 +35,7 @@ ENV PUBLIC_POSTHOG_KEY=$PUBLIC_POSTHOG_KEY
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm build
 
-FROM base
+FROM base AS prod
 COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=build /app/build /app/build
 
@@ -46,6 +46,8 @@ RUN rm -rf \
     /app/Dockerfile \
     /app/tsconfig.json
 RUN rm -rf .[!.]* ..?*
+
+COPY entrypoint.sh /app/entrypoint.sh
 
 EXPOSE 3000
 ENTRYPOINT [ "/app/entrypoint.sh" ]
