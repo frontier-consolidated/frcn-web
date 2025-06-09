@@ -81,7 +81,10 @@ new k8s.apps.v1.Deployment(appName, {
 	},
 	spec: {
 		strategy: {
-			type: "Recreate"
+			rollingUpdate: {
+				maxSurge: 1,
+				maxUnavailable: 1
+			}
 		},
 		selector: { matchLabels: appLabels },
 		replicas,
