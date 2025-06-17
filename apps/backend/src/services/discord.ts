@@ -12,11 +12,10 @@ import {
 } from "discord.js";
 
 import { $system } from "./system";
-import { $users } from "./users";
 import type { DiscordClient } from "../bot";
 import type { Context } from "../context";
-import { database } from "../database";
 import { logger } from "../logger";
+import { diffCheckUser } from "../bot/events/guildMemberUpdate.event";
 
 const cacheTimestamps = {
 	channels: -1,
@@ -331,23 +330,11 @@ async function $init({ discordClient }: Context) {
 	const batchSize = 100;
 	for (let i = 0; i < Math.ceil(members.length / batchSize); i++) {
 		const batch = members.slice(i * batchSize, (i + 1) * batchSize);
-		setTimeout(
-			async () => {
-				for (const member of batch) {
-					const user = await $users.getUserByDiscordId(member.user.id);
-					if (!user) continue;
-
-					const discordName = member.nickname ?? member.displayName;
-					if (user.discordName !== discordName) {
-						await database.user.update({
-							where: { id: user.id },
-							data: { discordName }
-						});
-					}
-				}
-			},
-			(i + 1) * 10000
-		);
+		setTimeout(async () => {
+			for (const member of batch) {
+				await diffCheckUser(member, null);
+			}
+		}, (i + 1) * 10000);
 	}
 
 	logger.info("Discord client initiated");
