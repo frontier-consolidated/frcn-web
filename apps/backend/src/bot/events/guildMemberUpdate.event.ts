@@ -7,6 +7,7 @@ import { publishRolesUpdated, publishUserRolesUpdated } from "../../graphql/even
 import { $discord } from "../../services/discord";
 import { $roles } from "../../services/roles";
 import { $users } from "../../services/users";
+import { logger } from "../../logger";
 
 export const event = Events.GuildMemberUpdate;
 
@@ -138,40 +139,44 @@ export async function diffCheckUser(
 		return;
 	}
 
-	const updatedUser = await database.user.update({
-		where: { id: user.id },
-		data: {
-			discordName: newName ? newName : undefined,
-			primaryRole: newPrimaryRole
-				? {
-						connect: {
-							id: newPrimaryRole.id
-						}
-				  }
-				: undefined,
-			roles:
-				rolesToGive.length > 0 || rolesToRemove.length > 0
+	try {
+		const updatedUser = await database.user.update({
+			where: { id: user.id },
+			data: {
+				discordName: newName ? newName : undefined,
+				primaryRole: newPrimaryRole
 					? {
-							create:
-								rolesToGive.length > 0
-									? rolesToGive.map((role) => ({
-											roleId: role.id
-									  }))
-									: undefined,
-							deleteMany:
-								rolesToRemove.length > 0
-									? {
-											roleId: {
-												in: rolesToRemove.map((role) => role.id)
-											}
-									  }
-									: undefined
+							connect: {
+								id: newPrimaryRole.id
+							}
 					  }
-					: undefined
-		}
-	});
+					: undefined,
+				roles:
+					rolesToGive.length > 0 || rolesToRemove.length > 0
+						? {
+								create:
+									rolesToGive.length > 0
+										? rolesToGive.map((role) => ({
+												roleId: role.id
+										  }))
+										: undefined,
+								deleteMany:
+									rolesToRemove.length > 0
+										? {
+												roleId: {
+													in: rolesToRemove.map((role) => role.id)
+												}
+										  }
+										: undefined
+						  }
+						: undefined
+			}
+		});
 
-	onUpdate?.(updatedUser);
+		onUpdate?.(updatedUser);
+	} catch (err) {
+		logger.error("Failed to update user", { user, err });
+	}
 }
 
 export const listener: EventListener<"guildMemberUpdate"> = async function (oldMember, newMember) {
