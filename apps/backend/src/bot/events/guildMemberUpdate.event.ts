@@ -15,8 +15,7 @@ export async function diffCheckUser(
 	oldMember: GuildMember | PartialGuildMember | null,
 	onUpdate?: (user: User) => void
 ) {
-	const user = await $users.getUserByDiscordId(newMember.user.id);
-	if (!user) return;
+	const user = await $users.getOrCreateUser(newMember.user, newMember.client);
 
 	let updated = false;
 

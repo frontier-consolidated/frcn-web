@@ -1,6 +1,6 @@
 import { Permission } from "@frcn/shared";
 import type { Prisma, User, UserRole } from "@prisma/client";
-import { type APIUser, CDNRoutes, ImageFormat } from "discord.js";
+import { type APIUser, type User as DiscordUser, CDNRoutes, ImageFormat } from "discord.js";
 
 import { $discord } from "./discord";
 import { $roles } from "./roles";
@@ -18,43 +18,41 @@ type GetUsersFilter = {
 	search?: string;
 };
 
-async function getUsers(
-	filter: GetUsersFilter,
-	page: number = 0,
-	limit: number = -1
-) {
+async function getUsers(filter: GetUsersFilter, page: number = 0, limit: number = -1) {
 	const { search } = filter;
 
 	if (limit === -1) limit = 15;
 	limit = Math.min(100, limit);
 
 	const where: Prisma.UserWhereInput = {
-		OR: search ? [
-			{
-				discordName: {
-					contains: search,
-					mode: "insensitive"
-				}
-			},
-			{
-				discordUsername: {
-					contains: search,
-					mode: "insensitive"
-				}
-			},
-			{
-				scName: {
-					contains: search,
-					mode: "insensitive"
-				}
-			},
-			{
-				id: {
-					equals: search.trim(),
-					mode: "insensitive"
-				}
-			}
-		] : undefined
+		OR: search
+			? [
+					{
+						discordName: {
+							contains: search,
+							mode: "insensitive"
+						}
+					},
+					{
+						discordUsername: {
+							contains: search,
+							mode: "insensitive"
+						}
+					},
+					{
+						scName: {
+							contains: search,
+							mode: "insensitive"
+						}
+					},
+					{
+						id: {
+							equals: search.trim(),
+							mode: "insensitive"
+						}
+					}
+			  ]
+			: undefined
 	};
 
 	const count = await database.user.count({ where });
@@ -62,9 +60,11 @@ async function getUsers(
 		take: limit,
 		skip: page * limit,
 		where,
-		orderBy: [{
-			createdAt: "desc"
-		}]
+		orderBy: [
+			{
+				createdAt: "desc"
+			}
+		]
 	});
 
 	return {
@@ -73,13 +73,13 @@ async function getUsers(
 		itemsPerPage: limit,
 		page,
 		nextPage: (page + 1) * limit < count ? page + 1 : null,
-		prevPage: page > 0 ? page - 1 : null,
+		prevPage: page > 0 ? page - 1 : null
 	};
 }
 
 async function getUser(id: string) {
 	const user = await database.user.findUnique({
-		where: { id },
+		where: { id }
 	});
 	return user;
 }
@@ -91,14 +91,17 @@ async function getUserByDiscordId(id: string) {
 	return user;
 }
 
-async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClient) {
+async function getOrCreateUser(discordUser: DiscordUser | APIUser, discordClient: DiscordClient) {
 	const defaultPrimaryRole = await $roles.getDefaultPrimaryRole();
 
-	const discordUsername = discordUser.discriminator === "0"
-		? `@${discordUser.username}`
-		: `${discordUser.username}#${discordUser.discriminator}`;
-	
-	let discordName = discordUser.global_name ?? discordUsername;
+	const discordUsername =
+		discordUser.discriminator === "0"
+			? `@${discordUser.username}`
+			: `${discordUser.username}#${discordUser.discriminator}`;
+
+	let discordName =
+		("global_name" in discordUser ? discordUser.global_name : discordUser.globalName) ??
+		discordUsername;
 	try {
 		const guild = await $discord.getSystemGuild(discordClient);
 		if (!guild) throw new Error("Could not fetch guild");
@@ -107,14 +110,16 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 	} catch (err) {
 		logger.warn("Failed to fetch user's guild member object", discordUser, err);
 	}
-	
-	const avatarUrl = discordUser.avatar ? "https://cdn.discordapp.com" +
-		CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP) : "";
+
+	const avatarUrl = discordUser.avatar
+		? "https://cdn.discordapp.com" +
+		  CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP)
+		: "";
 
 	const now = new Date();
 	const user = await database.user.upsert({
 		where: {
-			discordId: discordUser.id,
+			discordId: discordUser.id
 		},
 		update: {
 			discordName,
@@ -130,16 +135,16 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 			avatarUrl,
 			primaryRole: {
 				connect: {
-					id: defaultPrimaryRole.id,
-				},
+					id: defaultPrimaryRole.id
+				}
 			},
 			status: {
-				create: {},
+				create: {}
 			},
 			settings: {
-				create: {},
-			},
-		},
+				create: {}
+			}
+		}
 	});
 
 	// New user created, sync their discord roles
@@ -150,24 +155,39 @@ async function getOrCreateUser(discordUser: APIUser, discordClient: DiscordClien
 	return user;
 }
 
-async function getSessions<T extends Prisma.User$sessionsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$sessionsArgs>) {
-	const result = await database.user.findUnique({
-		where: { id }
-	}).sessions<T>(args);
+async function getSessions<T extends Prisma.User$sessionsArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.User$sessionsArgs>
+) {
+	const result = await database.user
+		.findUnique({
+			where: { id }
+		})
+		.sessions<T>(args);
 	return result ?? [];
 }
 
-async function getRoles<T extends Prisma.User$rolesArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rolesArgs>) {
-	const result = await database.user.findUnique({
-		where: { id }
-	}).roles<T>(args);
+async function getRoles<T extends Prisma.User$rolesArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.User$rolesArgs>
+) {
+	const result = await database.user
+		.findUnique({
+			where: { id }
+		})
+		.roles<T>(args);
 	return result ?? [];
 }
 
-async function getPrimaryRole<T extends Prisma.UserRoleDefaultArgs>(id: string, args?: Prisma.Subset<T, Prisma.UserRoleDefaultArgs>) {
-	const result = await database.user.findUnique({
-		where: { id }
-	}).primaryRole<T>(args);
+async function getPrimaryRole<T extends Prisma.UserRoleDefaultArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.UserRoleDefaultArgs>
+) {
+	const result = await database.user
+		.findUnique({
+			where: { id }
+		})
+		.primaryRole<T>(args);
 	return result;
 }
 
@@ -179,7 +199,7 @@ async function getAllRoles(user: User) {
 		}
 	});
 
-	const combinedRoles = [...(primaryRole ? [primaryRole] : []), ...roles.map(r => r.role)];
+	const combinedRoles = [...(primaryRole ? [primaryRole] : []), ...roles.map((r) => r.role)];
 	combinedRoles.sort((a, b) => a.order - b.order);
 	return combinedRoles;
 }
@@ -196,31 +216,51 @@ async function getPermissions(user: User) {
 	return permissions;
 }
 
-async function getRSVPs<T extends Prisma.User$rsvpsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$rsvpsArgs>) {
-	const result = await database.user.findUnique({
-		where: { id }
-	}).rsvps<T>(args);
+async function getRSVPs<T extends Prisma.User$rsvpsArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.User$rsvpsArgs>
+) {
+	const result = await database.user
+		.findUnique({
+			where: { id }
+		})
+		.rsvps<T>(args);
 	return result ?? [];
 }
 
-async function getEvents<T extends Prisma.User$eventsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$eventsArgs>) {
-	const result = await database.user.findUnique({
-		where: { id }
-	}).events<T>(args);
+async function getEvents<T extends Prisma.User$eventsArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.User$eventsArgs>
+) {
+	const result = await database.user
+		.findUnique({
+			where: { id }
+		})
+		.events<T>(args);
 	return result ?? [];
 }
 
-async function getStatus<T extends Prisma.User$statusArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$statusArgs>) {
-	const result = await database.user.findUnique({
-		where: { id }
-	}).status<T>(args);
+async function getStatus<T extends Prisma.User$statusArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.User$statusArgs>
+) {
+	const result = await database.user
+		.findUnique({
+			where: { id }
+		})
+		.status<T>(args);
 	return result;
 }
 
-async function getSettings<T extends Prisma.User$settingsArgs>(id: string, args?: Prisma.Subset<T, Prisma.User$settingsArgs>) {
-	const result = await database.user.findUnique({
-		where: { id }
-	}).settings<T>(args);
+async function getSettings<T extends Prisma.User$settingsArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.User$settingsArgs>
+) {
+	const result = await database.user
+		.findUnique({
+			where: { id }
+		})
+		.settings<T>(args);
 	return result;
 }
 
@@ -229,18 +269,18 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 	if (!member) return;
 
 	const currentUserRoles = await getAllRoles(user);
-	const currentConnectedDiscordRoles = currentUserRoles.filter(role => !!role.discordId);
+	const currentConnectedDiscordRoles = currentUserRoles.filter((role) => !!role.discordId);
 
 	const allMemberRoles = Array.from(member.roles.cache.values());
 	const connectedDiscordRoles = await $roles.getAllRoles({
 		where: {
 			discordId: {
-				in: allMemberRoles.map(role => role.id)
+				in: allMemberRoles.map((role) => role.id)
 			}
 		}
 	});
 
-	const currentPrimaryRole = currentUserRoles.find(role => role.primary);
+	const currentPrimaryRole = currentUserRoles.find((role) => role.primary);
 
 	let fallbackPrimaryRole: UserRole | null = null;
 	let newPrimaryRole: UserRole | null = null;
@@ -248,13 +288,19 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 	const rolesToGive: UserRole[] = [];
 
 	for (const role of connectedDiscordRoles) {
-		const hasRole = !!currentConnectedDiscordRoles.find(r => r.id === role.id);
+		const hasRole = !!currentConnectedDiscordRoles.find((r) => r.id === role.id);
 		if (hasRole) continue;
 
 		if (role.primary) {
-			if (role.order > (currentPrimaryRole?.order ?? -1) && (!newPrimaryRole || role.order > newPrimaryRole.order)) {
+			if (
+				role.order > (currentPrimaryRole?.order ?? -1) &&
+				(!newPrimaryRole || role.order > newPrimaryRole.order)
+			) {
 				newPrimaryRole = role;
-			} else if (role.order < (currentPrimaryRole?.order ?? -1) && role.order > (fallbackPrimaryRole?.order ?? -1)) {
+			} else if (
+				role.order < (currentPrimaryRole?.order ?? -1) &&
+				role.order > (fallbackPrimaryRole?.order ?? -1)
+			) {
 				fallbackPrimaryRole = role;
 			}
 		} else {
@@ -265,12 +311,12 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 	const rolesToRemove: UserRole[] = [];
 
 	for (const role of currentConnectedDiscordRoles) {
-		const hasRole = !!connectedDiscordRoles.find(r => r.id === role.id);
+		const hasRole = !!connectedDiscordRoles.find((r) => r.id === role.id);
 		if (hasRole) continue;
 
 		if (role.primary) {
 			if (!newPrimaryRole && role.id === currentPrimaryRole?.id) {
-				newPrimaryRole = fallbackPrimaryRole ?? await $roles.getDefaultPrimaryRole();
+				newPrimaryRole = fallbackPrimaryRole ?? (await $roles.getDefaultPrimaryRole());
 			}
 		} else {
 			rolesToRemove.push(role);
@@ -281,24 +327,35 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 		await database.user.update({
 			where: { id: user.id },
 			data: {
-				primaryRole: newPrimaryRole ? {
-					connect: {
-						id: newPrimaryRole.id
-					}
-				} : undefined,
-				roles: rolesToGive.length > 0 || rolesToRemove.length > 0 ? {
-					create: rolesToGive.length > 0 ? rolesToGive.map(role => ({
-						roleId: role.id
-					})) : undefined,
-					deleteMany: rolesToRemove.length > 0 ? {
-						roleId: {
-							in: rolesToRemove.map(role => role.id)
-						}
-					} : undefined
-				} : undefined
+				primaryRole: newPrimaryRole
+					? {
+							connect: {
+								id: newPrimaryRole.id
+							}
+					  }
+					: undefined,
+				roles:
+					rolesToGive.length > 0 || rolesToRemove.length > 0
+						? {
+								create:
+									rolesToGive.length > 0
+										? rolesToGive.map((role) => ({
+												roleId: role.id
+										  }))
+										: undefined,
+								deleteMany:
+									rolesToRemove.length > 0
+										? {
+												roleId: {
+													in: rolesToRemove.map((role) => role.id)
+												}
+										  }
+										: undefined
+						  }
+						: undefined
 			}
 		});
-	
+
 		publishUserRolesUpdated([user]);
 		await publishRolesUpdated();
 	}
@@ -315,9 +372,11 @@ async function unauthenticateSessions(user: User) {
 				where: { sid: session.sid },
 				data: {
 					user: {
-						disconnect: session.userId ? {
-							id: session.userId
-						} : undefined
+						disconnect: session.userId
+							? {
+									id: session.userId
+							  }
+							: undefined
 					},
 					data: JSON.stringify(data)
 				}
