@@ -17,6 +17,7 @@ FROM base AS build
 ENV PUBLIC_POSTHOG_KEY=$PUBLIC_POSTHOG_KEY
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm check
 RUN pnpm build
 
 FROM base AS prod
