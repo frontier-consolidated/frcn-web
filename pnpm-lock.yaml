@@ -26,10 +26,10 @@ importers:
         version: 0.2.1
       '@l3dev/discord-bot-tickets-plugin':
         specifier: ^0.4.5
-        version: 0.4.5(@l3dev/discord.js-helpers@0.8.7(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))
+        version: 0.4.5(@l3dev/discord.js-helpers@0.8.9(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))
       '@l3dev/discord.js-helpers':
-        specifier: ^0.8.7
-        version: 0.8.7(discord.js@14.19.3)
+        specifier: ^0.8.9
+        version: 0.8.9(discord.js@14.19.3)
       '@l3dev/drizzle-helpers':
         specifier: ^0.2.1
         version: 0.2.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0)
@@ -1062,8 +1062,8 @@ packages:
       discord.js: '>=14.19.0 <15.0.0'
       drizzle-orm: ^0.40.1
 
-  '@l3dev/discord.js-helpers@0.8.7':
-    resolution: {integrity: sha512-5JsmTNFbpbORPQ0kz0hBUzGKCP7SijS9PDKQHjxN0DiCkUJtpp2VH0kcc1AKB/3KMExkMKVTxnHtAJHSsRj2Wg==}
+  '@l3dev/discord.js-helpers@0.8.9':
+    resolution: {integrity: sha512-LJgZfQJLMSf/jtGiJe2TccmrvW4wnFDWxBawbvEB7qXXxyMmCnUChvp49FBfxO8+B48AASzcFHQNJTSkxC9z/w==}
     peerDependencies:
       discord.js: ^14.19.0
 
@@ -5137,15 +5137,15 @@ snapshots:
     dependencies:
       '@l3dev/result': 0.2.1
 
-  '@l3dev/discord-bot-tickets-plugin@0.4.5(@l3dev/discord.js-helpers@0.8.7(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))':
+  '@l3dev/discord-bot-tickets-plugin@0.4.5(@l3dev/discord.js-helpers@0.8.9(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))':
     dependencies:
-      '@l3dev/discord.js-helpers': 0.8.7(discord.js@14.19.3)
+      '@l3dev/discord.js-helpers': 0.8.9(discord.js@14.19.3)
       '@l3dev/logger': 0.2.1
       '@l3dev/result': 0.2.1
       discord.js: 14.19.3
       drizzle-orm: 0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0)
 
-  '@l3dev/discord.js-helpers@0.8.7(discord.js@14.19.3)':
+  '@l3dev/discord.js-helpers@0.8.9(discord.js@14.19.3)':
     dependencies:
       '@l3dev/result': 0.3.1
       discord.js: 14.19.3
