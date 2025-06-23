@@ -70,8 +70,6 @@ export default defineSubcommand({
 			);
 		}
 
-		console.log("HAS PERMISSION", interaction.guild.members.me!.permissions.has("ManageRoles"));
-
 		const highestAllowedRole = interaction.guild.members.me!.roles.highest;
 		if (role.position >= highestAllowedRole.position) {
 			return await Result.fromPromise(
