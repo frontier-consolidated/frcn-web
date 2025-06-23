@@ -1,4 +1,3 @@
-import { logger } from "@l3dev/logger";
 import { type Handle } from "@sveltejs/kit";
 
 import { building } from "$app/environment";
@@ -9,10 +8,6 @@ import { csrfHandler } from "./csrf-handler.server";
 if (!building) init();
 
 export const handle: Handle = async ({ event, resolve }) => {
-	if (import.meta.env.PROD) {
-		logger.log(`${event.request.method} ${event.request.url.toString()}`);
-	}
-
 	// const lang = event.request.headers.get("accept-language")?.split(",")[0];
 	// locale.set(lang ? lang : null);
 

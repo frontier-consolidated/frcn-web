@@ -34,8 +34,8 @@ importers:
         specifier: ^0.2.1
         version: 0.2.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0)
       '@l3dev/logger':
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.3.0
+        version: 0.3.0
       '@l3dev/mixins':
         specifier: ^0.2.1
         version: 0.2.1
@@ -1070,8 +1070,11 @@ packages:
   '@l3dev/drizzle-helpers@0.2.1':
     resolution: {integrity: sha512-J28NUwCIZFDC3U8Cyx3djkkl76isSE6MsTOnnLctbkMCE4hqM0MN0PHg2HM9o1DZ0pE9Ieb7Dy3G+vH1r4/AFQ==}
 
-  '@l3dev/logger@0.2.1':
-    resolution: {integrity: sha512-VG+9q7DaNMNx3mmj0xz1G9G+OGVDi1gcxI9TjIg1aECR8yDL1xQKReeN6HMo6ceRcqM+hwHqM7lQCvl4cEhL/w==}
+  '@l3dev/logger@0.2.3':
+    resolution: {integrity: sha512-hhknPSVcdPh86Ynp+rYYlcOjDHKMqdi54ENT7ZaoodBqykadBN0k8gf7NzQs4av+6sI/mlq4kFmqSao94+POOg==}
+
+  '@l3dev/logger@0.3.0':
+    resolution: {integrity: sha512-l5F0yfY5iN6lEzo9ooJi458beRML9OHLp87qzD6LpwZKNDX9O8Fe3hwbEzckfNg4a2xe8KX2XrR83Jcz6MUl4A==}
 
   '@l3dev/mixins@0.2.1':
     resolution: {integrity: sha512-8ifAyZJFtzMNVPesl7C5SkE/5Mgds63IARTE7MVSyYbciGs8OpC8DkBn1yrC+hY3DKWkp7irmdrJVOfPec2OXg==}
@@ -5140,7 +5143,7 @@ snapshots:
   '@l3dev/discord-bot-tickets-plugin@0.4.5(@l3dev/discord.js-helpers@0.9.0(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))':
     dependencies:
       '@l3dev/discord.js-helpers': 0.9.0(discord.js@14.19.3)
-      '@l3dev/logger': 0.2.1
+      '@l3dev/logger': 0.2.3
       '@l3dev/result': 0.2.1
       discord.js: 14.19.3
       drizzle-orm: 0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0)
@@ -5153,7 +5156,7 @@ snapshots:
 
   '@l3dev/drizzle-helpers@0.2.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0)':
     dependencies:
-      '@l3dev/logger': 0.2.1
+      '@l3dev/logger': 0.2.3
       '@l3dev/result': 0.2.1
       drizzle-orm: 0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0)
     transitivePeerDependencies:
@@ -5186,7 +5189,9 @@ snapshots:
       - sql.js
       - sqlite3
 
-  '@l3dev/logger@0.2.1': {}
+  '@l3dev/logger@0.2.3': {}
+
+  '@l3dev/logger@0.3.0': {}
 
   '@l3dev/mixins@0.2.1': {}
 
