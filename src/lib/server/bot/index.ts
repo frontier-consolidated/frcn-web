@@ -28,6 +28,7 @@ export async function startDiscordBot() {
 		},
 		commandExecutor,
 		commands,
+		commandsToRemove: ["clearrole"],
 		eventListeners,
 		logger,
 		ignoreCommand(interaction) {

@@ -26,10 +26,10 @@ importers:
         version: 0.2.1
       '@l3dev/discord-bot-tickets-plugin':
         specifier: ^0.4.5
-        version: 0.4.5(@l3dev/discord.js-helpers@0.8.3(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))
+        version: 0.4.5(@l3dev/discord.js-helpers@0.8.7(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))
       '@l3dev/discord.js-helpers':
-        specifier: ^0.8.3
-        version: 0.8.3(discord.js@14.19.3)
+        specifier: ^0.8.7
+        version: 0.8.7(discord.js@14.19.3)
       '@l3dev/drizzle-helpers':
         specifier: ^0.2.1
         version: 0.2.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0)
@@ -1062,8 +1062,8 @@ packages:
       discord.js: '>=14.19.0 <15.0.0'
       drizzle-orm: ^0.40.1
 
-  '@l3dev/discord.js-helpers@0.8.3':
-    resolution: {integrity: sha512-zO/i44t3LD7KVBb82ms4WmsQg37xB9iaPsXm4M/5UO20GK84Yku425boURtdvxouOJxwq3I51hvBRU86xB/4iQ==}
+  '@l3dev/discord.js-helpers@0.8.7':
+    resolution: {integrity: sha512-5JsmTNFbpbORPQ0kz0hBUzGKCP7SijS9PDKQHjxN0DiCkUJtpp2VH0kcc1AKB/3KMExkMKVTxnHtAJHSsRj2Wg==}
     peerDependencies:
       discord.js: ^14.19.0
 
@@ -1078,6 +1078,9 @@ packages:
 
   '@l3dev/result@0.2.1':
     resolution: {integrity: sha512-CceicCLy9nHlI/Wli6rQWTsxGKmiHqux1w4nNU7cMAFkLAvIBfQLvuyLB4Bd1Kfghd5soZMsQNHWPbYGz8JIXw==}
+
+  '@l3dev/result@0.3.1':
+    resolution: {integrity: sha512-qDNlCo0+nOJeiVTYJWJL31p8NZluD4Pjq8KveX48czB0tVgODcb1I4s+Iv5Jy1YRGewMgm4QA+t2UnttK0woCA==}
 
   '@logdna/tail-file@2.2.0':
     resolution: {integrity: sha512-XGSsWDweP80Fks16lwkAUIr54ICyBs6PsI4mpfTLQaWgEJRtY9xEV+PeyDpJ+sJEGZxqINlpmAwe/6tS1pP8Ng==}
@@ -5134,17 +5137,17 @@ snapshots:
     dependencies:
       '@l3dev/result': 0.2.1
 
-  '@l3dev/discord-bot-tickets-plugin@0.4.5(@l3dev/discord.js-helpers@0.8.3(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))':
+  '@l3dev/discord-bot-tickets-plugin@0.4.5(@l3dev/discord.js-helpers@0.8.7(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))':
     dependencies:
-      '@l3dev/discord.js-helpers': 0.8.3(discord.js@14.19.3)
+      '@l3dev/discord.js-helpers': 0.8.7(discord.js@14.19.3)
       '@l3dev/logger': 0.2.1
       '@l3dev/result': 0.2.1
       discord.js: 14.19.3
       drizzle-orm: 0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0)
 
-  '@l3dev/discord.js-helpers@0.8.3(discord.js@14.19.3)':
+  '@l3dev/discord.js-helpers@0.8.7(discord.js@14.19.3)':
     dependencies:
-      '@l3dev/result': 0.2.1
+      '@l3dev/result': 0.3.1
       discord.js: 14.19.3
       zod: 3.25.56
 
@@ -5188,6 +5191,10 @@ snapshots:
   '@l3dev/mixins@0.2.1': {}
 
   '@l3dev/result@0.2.1':
+    dependencies:
+      zod: 3.25.56
+
+  '@l3dev/result@0.3.1':
     dependencies:
       zod: 3.25.56
 
