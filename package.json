@@ -10,8 +10,14 @@
     "lint": "eslint ."
   },
   "devDependencies": {
+    "@pulumi/aws": "^7.6.0",
+    "@pulumi/cloudflare": "^6.8.0",
+    "@pulumi/docker": "^4.8.2",
+    "@pulumi/kubernetes": "^4.23.0",
+    "@pulumi/pulumi": "^3.192.0",
     "@stylistic/eslint-plugin-ts": "^1.7.0",
     "@types/eslint": "8.56.0",
+    "@types/node": "^24.3.0",
     "@typescript-eslint/eslint-plugin": "^7.5.0",
     "@typescript-eslint/parser": "^7.5.0",
     "eslint": "^8.57.0",

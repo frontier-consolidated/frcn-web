@@ -1,0 +1,6 @@
+name: frcn-web-old
+description: Frontier Consolidated website
+runtime:
+    name: nodejs
+    options:
+        packagemanager: pnpm
