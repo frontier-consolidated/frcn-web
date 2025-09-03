@@ -5,13 +5,17 @@ import { Routes, api } from "$lib/api";
 import { Queries, Subscriptions, getApollo, subscribe } from "$lib/graphql";
 import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 import { handleApiError } from "$lib/handleApiError";
+import { env } from "$env/dynamic/public";
 
-type UserData = (NonNullable<GetCurrentUserQuery["user"]> & { __permissions: number }) | null | undefined;
+type UserData =
+	| (NonNullable<GetCurrentUserQuery["user"]> & { __permissions: number })
+	| null
+	| undefined;
 
 async function getCurrentUser(cache = true) {
 	const { data } = await getApollo().query({
 		query: Queries.CURRENT_USER,
-		fetchPolicy: cache ? undefined : "no-cache",
+		fetchPolicy: cache ? undefined : "no-cache"
 	});
 	return data;
 }
@@ -22,19 +26,19 @@ export const user = writable<{ loading: boolean; adminMode: boolean; data: UserD
 	{
 		loading: browser,
 		adminMode: true,
-		data: null,
+		data: null
 	},
 	(set, update) => {
 		if (!browser) return;
 
-		let unsubscriber: () => void = () => { };
+		let unsubscriber: () => void = () => {};
 
 		user.subscribe((data) => {
 			if (data.loading || !data.data) {
 				unsubscriber();
 				return;
 			}
-	
+
 			unsubscriber = subscribe(Subscriptions.CURRENT_USER_ROLES_UPDATED, {
 				variables: {
 					userId: data.data.id
@@ -42,15 +46,17 @@ export const user = writable<{ loading: boolean; adminMode: boolean; data: UserD
 				onNext(data) {
 					update((value) => ({
 						...value,
-						data: value.data ? {
-							...value.data,
-							permissions: value.adminMode ? data.roles.permissions : 0,
-							__permissions: data.roles.permissions,
-							primaryRole: data.roles.primaryRole,
-							roles: data.roles.roles
-						} : null
+						data: value.data
+							? {
+									...value.data,
+									permissions: value.adminMode ? data.roles.permissions : 0,
+									__permissions: data.roles.permissions,
+									primaryRole: data.roles.primaryRole,
+									roles: data.roles.roles
+							  }
+							: null
 					}));
-				},
+				}
 			});
 		});
 
@@ -61,14 +67,16 @@ export const user = writable<{ loading: boolean; adminMode: boolean; data: UserD
 				set({
 					loading: false,
 					adminMode,
-					data: data.user ? {
-						...data.user,
-						permissions: adminMode ? data.user.permissions : 0,
-						__permissions: data.user.permissions
-					} : null
+					data: data.user
+						? {
+								...data.user,
+								permissions: adminMode ? data.user.permissions : 0,
+								__permissions: data.user.permissions
+						  }
+						: null
 				});
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.error("Error fetching user", err);
 				handleApiError(err);
 			});
@@ -82,10 +90,12 @@ export function toggleAdminMode(enabled?: boolean) {
 		return {
 			...value,
 			adminMode,
-			data: value.data ? {
-				...value.data,
-				permissions: adminMode ? value.data.__permissions : 0,
-			} : null
+			data: value.data
+				? {
+						...value.data,
+						permissions: adminMode ? value.data.__permissions : 0
+				  }
+				: null
 		};
 	});
 }
@@ -108,21 +118,23 @@ export async function login() {
 		redirectUri.searchParams.delete("missing_consent");
 
 		const params = new URLSearchParams({
-			redirect_uri: redirectUri.toString(),
+			redirect_uri: redirectUri.toString()
 		});
 
-		window.location.href = `${import.meta.env.VITE_API_BASEURL}/oauth?${params.toString()}`;
+		window.location.href = `${env.PUBLIC_API_BASEURL}/oauth?${params.toString()}`;
 		return;
 	}
 
 	user.update((obj) => ({
 		...obj,
 		loading: false,
-		data: data.user ? {
-			...data.user,
-			permissions: obj.adminMode ? data.user.permissions : 0,
-			__permissions: data.user?.permissions
-		} : null,
+		data: data.user
+			? {
+					...data.user,
+					permissions: obj.adminMode ? data.user.permissions : 0,
+					__permissions: data.user?.permissions
+			  }
+			: null
 	}));
 }
 
@@ -134,7 +146,7 @@ export async function logout() {
 	user.update((obj) => ({
 		...obj,
 		loading: false,
-		data: null,
+		data: null
 	}));
 
 	try {
@@ -147,7 +159,7 @@ export async function logout() {
 		user.update((obj) => ({
 			...obj,
 			loading: false,
-			data: userPendingLogout,
+			data: userPendingLogout
 		}));
 		throw err;
 	} finally {

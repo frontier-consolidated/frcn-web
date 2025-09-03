@@ -1,13 +1,14 @@
 import axios from "axios";
-
-const apiBaseUrl = import.meta.env.VITE_API_BASEURL;
+import { env } from "$env/dynamic/public";
 
 export const api = axios.create({
-	baseURL: apiBaseUrl,
+	baseURL: env.PUBLIC_API_BASEURL,
 	timeout: 20 * 1000,
-	withCredentials: true,
+	withCredentials: true
 });
 
 export function apiUri(route: string, protocol?: string) {
-	return `${protocol ? apiBaseUrl.replace(/.+(?=:\/\/)/g, protocol) : apiBaseUrl}${route}`;
+	return `${
+		protocol ? env.PUBLIC_API_BASEURL.replace(/.+(?=:\/\/)/g, protocol) : env.PUBLIC_API_BASEURL
+	}${route}`;
 }

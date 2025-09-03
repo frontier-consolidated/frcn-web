@@ -6,8 +6,6 @@ declare global {
 			TZ?: string;
 			NODE_ENV?: string;
 
-			SERVE_WEB?: string;
-
 			PORT: string;
 			EXTERNAL_PORT?: string;
 			DOMAIN: string;
@@ -18,11 +16,6 @@ declare global {
 			ORIGINS: string;
 
 			DATABASE_URL: string;
-
-			CMS_BUS_DATABASE_URL?: string;
-			CMS_BUS_SCHEMA: string;
-			/** @deprecated */
-			CMS_ACCESS_KEY?: string;
 
 			LOCAL_ACCESS_TOKEN?: string;
 
