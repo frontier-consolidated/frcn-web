@@ -21,9 +21,6 @@ importers:
         specifier: ^8.14.1
         version: 8.16.0
     devDependencies:
-      '@l3dev/api-result':
-        specifier: ^0.2.1
-        version: 0.2.1
       '@l3dev/discord-bot-tickets-plugin':
         specifier: ^0.4.7
         version: 0.4.7(@l3dev/discord.js-helpers@0.9.1(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))
@@ -37,23 +34,26 @@ importers:
         specifier: ^0.3.0
         version: 0.3.0
       '@l3dev/mixins':
-        specifier: ^0.2.1
-        version: 0.2.1
+        specifier: ^0.2.5
+        version: 0.2.5
       '@l3dev/result':
-        specifier: ^0.3.1
-        version: 0.3.1
+        specifier: ^0.4.0
+        version: 0.4.0
       '@pulumi/aws':
-        specifier: ^6.76.0
-        version: 6.82.1(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
+        specifier: ^7.6.0
+        version: 7.6.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
+      '@pulumi/cloudflare':
+        specifier: ^6.8.0
+        version: 6.8.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
       '@pulumi/docker':
-        specifier: ^4.6.2
-        version: 4.6.2(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
+        specifier: ^4.8.2
+        version: 4.8.2(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
       '@pulumi/kubernetes':
-        specifier: ^4.22.1
-        version: 4.22.1(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
+        specifier: ^4.23.0
+        version: 4.23.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
       '@pulumi/pulumi':
-        specifier: ^3.162.0
-        version: 3.175.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
+        specifier: ^3.192.0
+        version: 3.193.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
       '@sveltejs/adapter-node':
         specifier: ^5.2.12
         version: 5.2.12(@sveltejs/kit@2.21.2(@sveltejs/vite-plugin-svelte@5.0.3(svelte@5.33.18)(vite@6.3.5(@types/node@22.15.30)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.19.3)))(svelte@5.33.18)(vite@6.3.5(@types/node@22.15.30)(jiti@2.4.2)(lightningcss@1.30.1)(tsx@4.19.3)))
@@ -1052,9 +1052,6 @@ packages:
   '@js-sdsl/ordered-map@4.4.2':
     resolution: {integrity: sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==}
 
-  '@l3dev/api-result@0.2.1':
-    resolution: {integrity: sha512-JPURnjpW+/8s7nC9vQgV53q8ktExOOLeG5nE7HSHDFZRYGky973qMhfUws4QNO0PNLu/uZ8Xe6sK055WPzA1JQ==}
-
   '@l3dev/discord-bot-tickets-plugin@0.4.7':
     resolution: {integrity: sha512-OYgV6OiFhnjkO7DZeEPE8jg97oQanYeNjxbjrNgwNp8EJN3gwUSbrERibdPoksG/J4opHVcNgOMNERr5E88L0Q==}
     peerDependencies:
@@ -1073,14 +1070,14 @@ packages:
   '@l3dev/logger@0.3.0':
     resolution: {integrity: sha512-l5F0yfY5iN6lEzo9ooJi458beRML9OHLp87qzD6LpwZKNDX9O8Fe3hwbEzckfNg4a2xe8KX2XrR83Jcz6MUl4A==}
 
-  '@l3dev/mixins@0.2.1':
-    resolution: {integrity: sha512-8ifAyZJFtzMNVPesl7C5SkE/5Mgds63IARTE7MVSyYbciGs8OpC8DkBn1yrC+hY3DKWkp7irmdrJVOfPec2OXg==}
-
-  '@l3dev/result@0.2.1':
-    resolution: {integrity: sha512-CceicCLy9nHlI/Wli6rQWTsxGKmiHqux1w4nNU7cMAFkLAvIBfQLvuyLB4Bd1Kfghd5soZMsQNHWPbYGz8JIXw==}
+  '@l3dev/mixins@0.2.5':
+    resolution: {integrity: sha512-t3FcboMvVMOJvGRZO4GnAzgCU4txnzLE3e3/vVHjFsF8rqBbJHZKCCHeAdO0V4QsbdlFI7dIOaIu6ZZHuJVKcg==}
 
   '@l3dev/result@0.3.1':
     resolution: {integrity: sha512-qDNlCo0+nOJeiVTYJWJL31p8NZluD4Pjq8KveX48czB0tVgODcb1I4s+Iv5Jy1YRGewMgm4QA+t2UnttK0woCA==}
+
+  '@l3dev/result@0.4.0':
+    resolution: {integrity: sha512-yGqy34fuQqYvMg6kE+vdodAkjKTOuLQYzy684ZkmJOps7/0kfjZcPEjltcUzAIl//HCiyaxMlP2tle2vbYV96w==}
 
   '@logdna/tail-file@2.2.0':
     resolution: {integrity: sha512-XGSsWDweP80Fks16lwkAUIr54ICyBs6PsI4mpfTLQaWgEJRtY9xEV+PeyDpJ+sJEGZxqINlpmAwe/6tS1pP8Ng==}
@@ -1283,17 +1280,20 @@ packages:
   '@protobufjs/utf8@1.1.0':
     resolution: {integrity: sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==}
 
-  '@pulumi/aws@6.82.1':
-    resolution: {integrity: sha512-/7rqrvkg2WbuUyojmtJm/AnNmR2SQD4keUuvUF4sNrh77L2CoCI1lD4LA/xMyIDebGH3+x73rM+J4fDhwYRvZw==}
+  '@pulumi/aws@7.6.0':
+    resolution: {integrity: sha512-TE2/Q8XXucIyPhqU/Bv0w9tTpjDVThNI203TA4RbU7CfRWMvg6H5gBrJIQmuu7fIZYT8pXCbgpcxiH7Iap5wnA==}
 
-  '@pulumi/docker@4.6.2':
-    resolution: {integrity: sha512-dMjkR8xkwmYT4mx8GvhQLY4EdmpN6QSDgADXhWaEo5hFxskWqzZUdi/eYlv5OMJPtm3m8V69Q3UOEQAPZPxbyw==}
+  '@pulumi/cloudflare@6.8.0':
+    resolution: {integrity: sha512-6a0EHKshopNYASpNYIxL7mFaVOGFf0/0xlj6CmI/kASAjgOHUn0rfXgwm2Of2s0VV4Tpa6CNLY5iV4VSuREenw==}
 
-  '@pulumi/kubernetes@4.22.1':
-    resolution: {integrity: sha512-1X/x/B1mLEO2b0jSFXVzmo+RxJM9b6QyBrHQqOHIZ+6UaPWWu+D0WfDZ6l6vSKI7ASR0uDQmcXmIs2qjTIa63g==}
+  '@pulumi/docker@4.8.2':
+    resolution: {integrity: sha512-98PF3IlCR3t2+PKA/ExgO4x0vUiEhkScpNaClFJ8Qr1v5NEx167kJooVcduLvAG8ZaWPI/jwIyyH+TdMp6GOig==}
 
-  '@pulumi/pulumi@3.175.0':
-    resolution: {integrity: sha512-15d34B01pkacNiMwX5pXKzo+jSls2UMQV9A754/Hudujml/zp1MDxEeTtgfRYX4r5WDppswoFvNK93RnbHCTWA==}
+  '@pulumi/kubernetes@4.23.0':
+    resolution: {integrity: sha512-sMNV8cNx+MdvwNXCze3EiYgfRCTilJ9PMq4hqT8lOz7hgX5Un9yyDILJCkrt0wlGlB11Dgbq39mjwCeoImOEgg==}
+
+  '@pulumi/pulumi@3.193.0':
+    resolution: {integrity: sha512-KqoOk0rLsP3TQkxyfT6OuDO2wJH4zWT8r7jf/+3uUa9SN+EZiDq9+MTqRYsZVo9x0IhwaSrfIF9xP5BToFrd1g==}
     engines: {node: '>=20'}
     peerDependencies:
       ts-node: '>= 7.0.1 < 12'
@@ -4148,8 +4148,8 @@ packages:
     resolution: {integrity: sha512-tX5e7OM1HnYr2+a2C/4V0htOcSQcoSTH9KgJnVvNm5zm/cyEWKJ7j7YutsH9CxMdtOkkLFy2AHrMci9IM8IPZQ==}
     engines: {node: '>=12.0.0'}
 
-  tmp@0.2.3:
-    resolution: {integrity: sha512-nZD7m9iCPC5g0pYmcaxogYKggSfLsdxl8of3Q/oIbqCqLLIO9IAF0GWjX1z9NZRHPiXv8Wex4yDCaZsgEw0Y8w==}
+  tmp@0.2.5:
+    resolution: {integrity: sha512-voyz6MApa1rQGUxT3E+BK7/ROe8itEx7vD8/HEvt4xwXucvQ5G5oeEiHkmHZJuBO21RpOf+YYm9MOivj709jow==}
     engines: {node: '>=14.14'}
 
   to-regex-range@5.0.1:
@@ -5133,10 +5133,6 @@ snapshots:
 
   '@js-sdsl/ordered-map@4.4.2': {}
 
-  '@l3dev/api-result@0.2.1':
-    dependencies:
-      '@l3dev/result': 0.2.1
-
   '@l3dev/discord-bot-tickets-plugin@0.4.7(@l3dev/discord.js-helpers@0.9.1(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))':
     dependencies:
       '@l3dev/discord.js-helpers': 0.9.1(discord.js@14.19.3)
@@ -5188,13 +5184,13 @@ snapshots:
 
   '@l3dev/logger@0.3.0': {}
 
-  '@l3dev/mixins@0.2.1': {}
+  '@l3dev/mixins@0.2.5': {}
 
-  '@l3dev/result@0.2.1':
+  '@l3dev/result@0.3.1':
     dependencies:
       zod: 3.25.56
 
-  '@l3dev/result@0.3.1':
+  '@l3dev/result@0.4.0':
     dependencies:
       zod: 3.25.56
 
@@ -5464,9 +5460,9 @@ snapshots:
 
   '@protobufjs/utf8@1.1.0': {}
 
-  '@pulumi/aws@6.82.1(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)':
+  '@pulumi/aws@7.6.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)':
     dependencies:
-      '@pulumi/pulumi': 3.175.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
+      '@pulumi/pulumi': 3.193.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
       mime: 2.6.0
     transitivePeerDependencies:
       - bluebird
@@ -5474,9 +5470,18 @@ snapshots:
       - ts-node
       - typescript
 
-  '@pulumi/docker@4.6.2(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)':
+  '@pulumi/cloudflare@6.8.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)':
     dependencies:
-      '@pulumi/pulumi': 3.175.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
+      '@pulumi/pulumi': 3.193.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
+    transitivePeerDependencies:
+      - bluebird
+      - supports-color
+      - ts-node
+      - typescript
+
+  '@pulumi/docker@4.8.2(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)':
+    dependencies:
+      '@pulumi/pulumi': 3.193.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
       semver: 5.7.2
     transitivePeerDependencies:
       - bluebird
@@ -5484,9 +5489,9 @@ snapshots:
       - ts-node
       - typescript
 
-  '@pulumi/kubernetes@4.22.1(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)':
+  '@pulumi/kubernetes@4.23.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)':
     dependencies:
-      '@pulumi/pulumi': 3.175.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
+      '@pulumi/pulumi': 3.193.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
       glob: 10.4.5
       shell-quote: 1.8.2
     transitivePeerDependencies:
@@ -5495,7 +5500,7 @@ snapshots:
       - ts-node
       - typescript
 
-  '@pulumi/pulumi@3.175.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)':
+  '@pulumi/pulumi@3.193.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)':
     dependencies:
       '@grpc/grpc-js': 1.13.2
       '@logdna/tail-file': 2.2.0
@@ -5511,7 +5516,7 @@ snapshots:
       '@types/semver': 7.7.0
       '@types/tmp': 0.2.6
       execa: 5.1.1
-      fdir: 6.4.3(picomatch@3.0.1)
+      fdir: 6.4.5(picomatch@3.0.1)
       google-protobuf: 3.21.4
       got: 11.8.6
       ini: 2.0.0
@@ -5523,7 +5528,7 @@ snapshots:
       require-from-string: 2.0.2
       semver: 7.7.1
       source-map-support: 0.5.21
-      tmp: 0.2.3
+      tmp: 0.2.5
       upath: 1.2.0
     optionalDependencies:
       ts-node: 10.9.2(@types/node@22.15.30)(typescript@5.8.3)
@@ -6956,13 +6961,13 @@ snapshots:
     dependencies:
       reusify: 1.1.0
 
-  fdir@6.4.3(picomatch@3.0.1):
-    optionalDependencies:
-      picomatch: 3.0.1
-
   fdir@6.4.3(picomatch@4.0.2):
     optionalDependencies:
       picomatch: 4.0.2
+
+  fdir@6.4.5(picomatch@3.0.1):
+    optionalDependencies:
+      picomatch: 3.0.1
 
   fdir@6.4.5(picomatch@4.0.2):
     optionalDependencies:
@@ -8545,7 +8550,7 @@ snapshots:
       fdir: 6.4.5(picomatch@4.0.2)
       picomatch: 4.0.2
 
-  tmp@0.2.3: {}
+  tmp@0.2.5: {}
 
   to-regex-range@5.0.1:
     dependencies:
