@@ -75,149 +75,149 @@ const namespace = new k8s.core.v1.Namespace(appName, {
 	}
 });
 
-new k8s.apps.v1.Deployment(appName, {
-	metadata: {
-		namespace: namespace.metadata.name
-	},
-	spec: {
-		strategy: {
-			type: "RollingUpdate",
-			rollingUpdate: {
-				maxSurge: 1,
-				maxUnavailable: 0
-			}
-		},
-		selector: { matchLabels: appLabels },
-		replicas,
-		template: {
-			metadata: { labels: appLabels },
-			spec: {
-				containers: [
-					{
-						name: "backend",
-						image: backendImage.imageName,
-						imagePullPolicy: "Always",
-						ports: [
-							{
-								containerPort: 3000,
-								name: "frcn-backend"
-							}
-						],
-						env: ["LOCAL_ACCESS_TOKEN"].map((name) => ({
-							name,
-							value: process.env[name]
-						})),
-						readinessProbe: {
-							httpGet: {
-								path: "/health",
-								port: "frcn-backend"
-							},
-							successThreshold: 2,
-							periodSeconds: 10,
-							timeoutSeconds: 5
-						}
-					},
-					{
-						name: "website",
-						image: webImage.imageName,
-						imagePullPolicy: "Always",
-						ports: [
-							{
-								containerPort: 3000,
-								name: "frcn-website"
-							}
-						],
-						env: ["PUBLIC_API_BASEURL", "LOCAL_ACCESS_TOKEN"].map((name) => ({
-							name,
-							value: process.env[name]
-						})),
-						readinessProbe: {
-							httpGet: {
-								path: "/",
-								port: "frcn-website"
-							},
-							successThreshold: 2,
-							periodSeconds: 10,
-							timeoutSeconds: 5
-						}
-					}
-				],
-				imagePullSecrets: [{ name: "ecr-reg-creds" }]
-			}
-		}
-	}
-});
+// new k8s.apps.v1.Deployment(appName, {
+// 	metadata: {
+// 		namespace: namespace.metadata.name
+// 	},
+// 	spec: {
+// 		strategy: {
+// 			type: "RollingUpdate",
+// 			rollingUpdate: {
+// 				maxSurge: 2,
+// 				maxUnavailable: 1
+// 			}
+// 		},
+// 		selector: { matchLabels: appLabels },
+// 		replicas,
+// 		template: {
+// 			metadata: { labels: appLabels },
+// 			spec: {
+// 				containers: [
+// 					{
+// 						name: "backend",
+// 						image: backendImage.imageName,
+// 						imagePullPolicy: "Always",
+// 						ports: [
+// 							{
+// 								containerPort: 3000,
+// 								name: "frcn-backend"
+// 							}
+// 						],
+// 						env: ["LOCAL_ACCESS_TOKEN"].map((name) => ({
+// 							name,
+// 							value: process.env[name]
+// 						})),
+// 						readinessProbe: {
+// 							httpGet: {
+// 								path: "/health",
+// 								port: "frcn-backend"
+// 							},
+// 							successThreshold: 2,
+// 							periodSeconds: 10,
+// 							timeoutSeconds: 5
+// 						}
+// 					},
+// 					{
+// 						name: "website",
+// 						image: webImage.imageName,
+// 						imagePullPolicy: "Always",
+// 						ports: [
+// 							{
+// 								containerPort: 3000,
+// 								name: "frcn-website"
+// 							}
+// 						],
+// 						env: ["PUBLIC_API_BASEURL", "LOCAL_ACCESS_TOKEN"].map((name) => ({
+// 							name,
+// 							value: process.env[name]
+// 						})),
+// 						readinessProbe: {
+// 							httpGet: {
+// 								path: "/",
+// 								port: "frcn-website"
+// 							},
+// 							successThreshold: 2,
+// 							periodSeconds: 10,
+// 							timeoutSeconds: 5
+// 						}
+// 					}
+// 				],
+// 				imagePullSecrets: [{ name: "ecr-reg-creds" }]
+// 			}
+// 		}
+// 	}
+// });
 
-const backendService = new k8s.core.v1.Service(`${appName}-backend`, {
-	metadata: {
-		namespace: namespace.metadata.name,
-		name: `${appName}-backend`,
-		labels: appLabels
-	},
-	spec: {
-		ports: [{ port: 80, targetPort: "frcn-backend" }],
-		selector: appLabels
-	}
-});
+// const backendService = new k8s.core.v1.Service(`${appName}-backend`, {
+// 	metadata: {
+// 		namespace: namespace.metadata.name,
+// 		name: `${appName}-backend`,
+// 		labels: appLabels
+// 	},
+// 	spec: {
+// 		ports: [{ port: 80, targetPort: "frcn-backend" }],
+// 		selector: appLabels
+// 	}
+// });
 
-const websiteService = new k8s.core.v1.Service(`${appName}-website`, {
-	metadata: {
-		namespace: namespace.metadata.name,
-		name: `${appName}-website`,
-		labels: appLabels
-	},
-	spec: {
-		ports: [{ port: 80, targetPort: "frcn-website" }],
-		selector: appLabels
-	}
-});
+// const websiteService = new k8s.core.v1.Service(`${appName}-website`, {
+// 	metadata: {
+// 		namespace: namespace.metadata.name,
+// 		name: `${appName}-website`,
+// 		labels: appLabels
+// 	},
+// 	spec: {
+// 		ports: [{ port: 80, targetPort: "frcn-website" }],
+// 		selector: appLabels
+// 	}
+// });
 
-const ingress = new k8s.networking.v1.Ingress(`${appName}-ingress`, {
-	metadata: {
-		namespace: namespace.metadata.name,
-		name: `${appName}-ingress`,
-		annotations: {
-			"kubernetes.io/ingress.class": "nginx"
-		}
-	},
-	spec: {
-		rules: [
-			{
-				host: "api.frontierconsolidated.com",
-				http: {
-					paths: [
-						{
-							pathType: "Prefix",
-							path: "/",
-							backend: {
-								service: {
-									name: backendService.metadata.name,
-									port: { number: 80 }
-								}
-							}
-						}
-					]
-				}
-			},
-			{
-				host: "frontierconsolidated.com",
-				http: {
-					paths: [
-						{
-							pathType: "Prefix",
-							path: "/",
-							backend: {
-								service: {
-									name: websiteService.metadata.name,
-									port: { number: 80 }
-								}
-							}
-						}
-					]
-				}
-			}
-		]
-	}
-});
+// const ingress = new k8s.networking.v1.Ingress(`${appName}-ingress`, {
+// 	metadata: {
+// 		namespace: namespace.metadata.name,
+// 		name: `${appName}-ingress`,
+// 		annotations: {
+// 			"kubernetes.io/ingress.class": "nginx"
+// 		}
+// 	},
+// 	spec: {
+// 		rules: [
+// 			{
+// 				host: "api.frontierconsolidated.com",
+// 				http: {
+// 					paths: [
+// 						{
+// 							pathType: "Prefix",
+// 							path: "/",
+// 							backend: {
+// 								service: {
+// 									name: backendService.metadata.name,
+// 									port: { number: 80 }
+// 								}
+// 							}
+// 						}
+// 					]
+// 				}
+// 			},
+// 			{
+// 				host: "frontierconsolidated.com",
+// 				http: {
+// 					paths: [
+// 						{
+// 							pathType: "Prefix",
+// 							path: "/",
+// 							backend: {
+// 								service: {
+// 									name: websiteService.metadata.name,
+// 									port: { number: 80 }
+// 								}
+// 							}
+// 						}
+// 					]
+// 				}
+// 			}
+// 		]
+// 	}
+// });
 
 export const ingressStatus = ingress.status;
