@@ -28,10 +28,6 @@ export async function startDiscordBot() {
 		},
 		commandExecutor,
 		commands,
-		removeCommands: {
-			global: ["clearrole", "role", "rm_org_member_community_role"],
-			guild: ["clearrole", "rm_org_member_community_role"]
-		},
 		eventListeners,
 		logger,
 		ignoreCommand(interaction) {
