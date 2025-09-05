@@ -1,6 +1,7 @@
 environment:
+  - frcn/pulumi-aws-access
   - frcn-web/beta
 
 config:
-  frcn-web:repositoryName: pkube/frcn-web
-  aws:region: eu-central-1
+  frcn-web:repositoryName: frcn/frcn-web
+  kubernetes:context: frcn

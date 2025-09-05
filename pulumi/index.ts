@@ -39,19 +39,17 @@ new aws.ecr.LifecyclePolicy(`${repositoryName}-lifecycle-policy`, {
 });
 
 const imageName = repository.repositoryUrl;
-const registry = repository.registryId.apply(async (id) => {
-	const credentials = await aws.ecr.getCredentials({ registryId: id });
-	const decodedCredentials = Buffer.from(credentials.authorizationToken, "base64").toString();
-	const [username, password] = decodedCredentials.split(":");
-	if (!password || !username) {
-		throw new Error("Invalid credentials");
-	}
-	return {
-		server: credentials.proxyEndpoint,
-		username: username,
-		password: password
-	};
-});
+const registry = aws.ecr
+	.getAuthorizationTokenOutput({
+		registryId: repository.registryId
+	})
+	.apply(async (credentials) => {
+		return {
+			server: credentials.proxyEndpoint,
+			username: credentials.userName,
+			password: pulumi.secret(credentials.password)
+		};
+	});
 
 const image = new docker.Image(`${appName}-image`, {
 	build: {
