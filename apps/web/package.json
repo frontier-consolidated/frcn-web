@@ -25,7 +25,6 @@
 		"@types/uuid": "^9.0.8",
 		"@types/validator": "^13.11.8",
 		"autoprefixer": "^10.4.16",
-		"eslint-plugin-svelte": "^2.35.1",
 		"flowbite": "^2.2.1",
 		"flowbite-svelte": "^0.44.22",
 		"flowbite-svelte-icons": "^1.0.2",
