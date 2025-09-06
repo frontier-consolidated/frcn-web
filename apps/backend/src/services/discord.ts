@@ -29,7 +29,7 @@ async function getSystemGuild(client: DiscordClient) {
 		const { discordGuildId } = await $system.getSystemSettings();
 
 		return client.guilds.cache.get(discordGuildId) ?? (await client.guilds.fetch(discordGuildId));
-	} catch (err) {
+	} catch (_err) {
 		return null;
 	}
 }
@@ -42,7 +42,7 @@ async function isInSystemGuild(client: DiscordClient, userId: string) {
 		await guild.members.fetch(userId);
 
 		return true;
-	} catch (err) {
+	} catch (_err) {
 		return false;
 	}
 }
@@ -50,7 +50,7 @@ async function isInSystemGuild(client: DiscordClient, userId: string) {
 function getAllGuilds(client: DiscordClient) {
 	try {
 		return Array.from(client.guilds.cache.values());
-	} catch (err) {
+	} catch (_err) {
 		return [];
 	}
 }
@@ -61,7 +61,7 @@ async function getGuild(client: DiscordClient, id: string) {
 	try {
 		const guild = client.guilds.cache.get(id) ?? (await client.guilds.fetch(id));
 		return guild;
-	} catch (err) {
+	} catch (_err) {
 		return null;
 	}
 }
@@ -82,7 +82,7 @@ async function fetchAllChannels(client: DiscordClient, guildId?: string) {
 		return Array.from(channels.values()).filter(
 			(channel): channel is GuildBasedChannel => !!channel
 		);
-	} catch (err) {
+	} catch (_err) {
 		return [];
 	}
 }
@@ -113,7 +113,7 @@ async function getChannel(client: DiscordClient, id: string, guildId?: string) {
 
 		const channel = guild.channels.cache.get(id) ?? (await guild.channels.fetch(id));
 		return channel;
-	} catch (err) {
+	} catch (_err) {
 		return null;
 	}
 }
@@ -162,7 +162,7 @@ async function getAllMembers(client: DiscordClient, guildId?: string) {
 		}
 
 		return Array.from(members.values());
-	} catch (err) {
+	} catch (_err) {
 		return [];
 	}
 }
@@ -179,7 +179,7 @@ async function getMember(client: DiscordClient, user: string, guildId?: string) 
 				cache: true
 			}));
 		return guildMember;
-	} catch (err) {
+	} catch (_err) {
 		return null;
 	}
 }
@@ -205,7 +205,7 @@ async function canUserViewChannel(
 			return channel.guildMembers.has(guildMember.id);
 		}
 		return channel.members.has(guildMember.id);
-	} catch (err) {
+	} catch (_err) {
 		return false;
 	}
 }
@@ -233,7 +233,7 @@ async function getAllRoles(
 		}
 
 		return arr;
-	} catch (err) {
+	} catch (_err) {
 		return [];
 	}
 }
@@ -245,7 +245,7 @@ async function getRole(client: DiscordClient, id: string, guildId?: string) {
 		const role = guild.roles.cache.get(id) ?? (await guild.roles.fetch(id));
 
 		return role;
-	} catch (err) {
+	} catch (_err) {
 		return null;
 	}
 }
@@ -264,7 +264,7 @@ async function getAllEmojis(client: DiscordClient) {
 		}
 
 		return Array.from(emojis.values());
-	} catch (err) {
+	} catch (_err) {
 		return [];
 	}
 }
@@ -276,7 +276,7 @@ async function getEmoji(client: DiscordClient, id: string) {
 		const emoji = guild.emojis.cache.get(id) ?? (await guild.emojis.fetch(id));
 
 		return emoji;
-	} catch (err) {
+	} catch (_err) {
 		return null;
 	}
 }

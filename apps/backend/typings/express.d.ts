@@ -4,8 +4,8 @@ export {};
 
 declare global {
 	namespace Express {
-		interface User extends DatabaseUser {}
-		interface AccessKey extends DatabaseAccessKey {}
+		type User = DatabaseUser;
+		type AccessKey = DatabaseAccessKey;
 
 		interface Request {
 			user?: User;

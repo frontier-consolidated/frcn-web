@@ -49,6 +49,7 @@
 	}
 
 	$: {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		validate;
 		validator.addField(`field-${reference}`, (ignoreRequired) => {
 			showMessage = true;
@@ -69,6 +70,7 @@
 	let arrowEl: Element | null = null;
 	let referenceEl: Element | null = null;
 
+	// eslint-disable-next-line svelte/no-immutable-reactive-statements
 	$: middleware = [dom.shift(), dom.offset(+offset)];
 	function updatePosition() {
 		dom

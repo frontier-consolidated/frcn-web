@@ -7,7 +7,7 @@
 
 	let heading = "Critical Error";
 	let status = $page.error?.status ?? $page.status;
-	$: switch (status) {
+	switch (status) {
 		case 401:
 			heading = "Access Denied";
 			break;

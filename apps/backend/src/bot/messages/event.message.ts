@@ -206,7 +206,7 @@ export async function getEventMessage(client: DiscordClient, event: Event) {
 	try {
 		const channel = await $events.getEventDiscordChannel(event, client);
 		return await channel.messages.fetch(event.discordEventMessageId);
-	} catch (err) {
+	} catch (_err) {
 		return null;
 	}
 }
@@ -223,7 +223,7 @@ export async function postEventMessage(
 	if (!createThread && settings?.createEventThread) {
 		try {
 			await $events.getEventThread(client, event);
-		} catch (err) {
+		} catch (_err) {
 			createThread = true;
 		}
 	}

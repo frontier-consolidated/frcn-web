@@ -8,7 +8,6 @@
 	import { goto, invalidate } from "$app/navigation";
 	import {
 		DatetimePicker,
-		LocationSelectInput,
 		MarkdownEditor,
 		ConfirmationModal,
 		SectionHeading,
@@ -184,6 +183,7 @@
 						}
 					})
 					.then((options) => {
+						// eslint-disable-next-line svelte/infinite-reactive-loop
 						guildOptions = {
 							channels: data.options!.channels,
 							emojis: data.options!.emojis,

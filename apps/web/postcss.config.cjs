@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const autoprefixer = require("autoprefixer");
 const tailwindcss = require("tailwindcss");
 

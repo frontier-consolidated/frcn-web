@@ -49,7 +49,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handleError: HandleServerError = ({ error, status }) => {
+export const handleError: HandleServerError = ({ error }) => {
 	if (error instanceof ApolloError) {
 		if (error.networkError && "statusCode" in error.networkError) {
 			return {

@@ -2,21 +2,10 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import {
-	type Client,
-	type ClientEvents,
-	SlashCommandBuilder,
-	REST,
-	ChatInputCommandInteraction
-} from "discord.js";
+import { type Client, type ClientEvents } from "discord.js";
 
 import { logger } from "../logger";
 import { startEventsUpdate } from "./handlers/updateEvents.interval";
-
-type Command = {
-	command: SlashCommandBuilder;
-	execute: (interaction: ChatInputCommandInteraction) => void | Promise<void>;
-};
 
 type EventModule = {
 	event: keyof ClientEvents;
@@ -51,7 +40,7 @@ async function registerEvents(client: DiscordClient) {
 	}
 }
 
-export async function load(client: DiscordClient, api: REST) {
+export async function load(client: DiscordClient) {
 	await registerEvents(client);
 
 	startEventsUpdate(client);

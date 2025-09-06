@@ -159,7 +159,7 @@ async function getEventChannelCalendarMessage(client: DiscordClient, channel: Ev
 		return channel.discordCalendarMessageId
 			? await discordChannel.messages.fetch(channel.discordCalendarMessageId)
 			: null;
-	} catch (err) {
+	} catch (_err) {
 		return null;
 	}
 }

@@ -19,7 +19,9 @@
 	$: {
 		if (browser && !showSpinner && !spinnerTimeout && $navigating) {
 			spinnerTimeout = setTimeout(() => {
+				// eslint-disable-next-line svelte/infinite-reactive-loop
 				if ($navigating) showSpinner = true;
+				// eslint-disable-next-line svelte/infinite-reactive-loop
 				spinnerTimeout = null;
 			}, 200);
 		} else if (showSpinner && !$navigating) {

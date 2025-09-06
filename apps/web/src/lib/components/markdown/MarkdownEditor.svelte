@@ -53,7 +53,9 @@
 		}),
 		darkTheme
 	].filter((e): e is Extension => !!e);
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	$: view && update(value);
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	$: view && state_extensions && reconfigure();
 
 	onMount(() => (view = createEditorView()));

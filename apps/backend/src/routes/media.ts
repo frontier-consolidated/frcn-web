@@ -181,7 +181,7 @@ export default function route(context: Context, config: RouteConfig) {
 			delete FILE_DATA_CACHE[req.params.id];
 			try {
 				await fileCache.remove(req.params.id);
-			} catch (err) {
+			} catch (_err) {
 				// do nothing
 			}
 
@@ -195,7 +195,7 @@ export default function route(context: Context, config: RouteConfig) {
 			try {
 				const cachedFile = await fileCache.get(req.params.id);
 				buffer = Buffer.from(cachedFile, "base64");
-			} catch (err) {
+			} catch (_err) {
 				// do nothing
 			}
 		}

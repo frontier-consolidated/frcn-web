@@ -3,7 +3,6 @@ import { error, type NumericRange } from "@sveltejs/kit";
 import { AxiosError, isAxiosError } from "axios";
 
 import { browser } from "$app/environment";
-import { goto } from "$app/navigation";
 
 import { pushNotification } from "./stores/NotificationStore";
 

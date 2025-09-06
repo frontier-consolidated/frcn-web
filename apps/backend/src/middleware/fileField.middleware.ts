@@ -13,6 +13,7 @@ const limits: Options["limits"] = {
 	fileSize: $files.MAX_FILE_SIZE_MB * 1024 * 1024
 };
 
+// eslint-disable-next-line import/no-named-as-default-member
 const diskStorage = multer.diskStorage({
 	destination: $files.FILE_UPLOAD_DIR,
 	filename(req, file, callback) {
@@ -21,6 +22,7 @@ const diskStorage = multer.diskStorage({
 	}
 });
 
+// eslint-disable-next-line import/no-named-as-default-member
 const memStorage = multer.memoryStorage();
 
 const diskUpload = multer({

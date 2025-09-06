@@ -149,6 +149,7 @@
 						}
 					})
 					.then((options) => {
+						// eslint-disable-next-line svelte/infinite-reactive-loop
 						modalOptions = {
 							guilds: data.options.guilds,
 							channels: options.data.discordChannels,

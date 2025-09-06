@@ -341,7 +341,7 @@ async function tryCreateEventThread(
 	if (!createThread && flag) {
 		try {
 			thread = await getEventThread(discordClient, event, role);
-		} catch (err) {
+		} catch (_err) {
 			createThread = true;
 		}
 	}

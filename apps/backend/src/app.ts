@@ -67,7 +67,9 @@ export async function createApp(config: CreateAppOptions) {
 
 	app.use(cookieParser());
 
+	// eslint-disable-next-line import/no-named-as-default-member
 	app.use(express.json());
+	// eslint-disable-next-line import/no-named-as-default-member
 	app.use(express.urlencoded({ extended: true }));
 
 	app.use(idMiddleware());

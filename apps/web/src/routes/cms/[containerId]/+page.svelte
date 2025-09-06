@@ -114,6 +114,7 @@
 
 	let isDirty = false;
 	$: {
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		updateTrigger;
 		isDirty = checkIfDirty(data.container, container);
 		canNavigate.set(!isDirty);

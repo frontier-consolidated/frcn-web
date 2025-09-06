@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import type { PrismaClient } from "@prisma/client";
 import { type SessionData, Store } from "express-session";
 
