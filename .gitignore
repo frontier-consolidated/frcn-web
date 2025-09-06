@@ -4,6 +4,7 @@ dist
 .cache
 .svelte-kit
 build
+backups/
 
 /env
 .env
