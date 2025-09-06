@@ -1,7 +1,7 @@
 import type { Event, EventUser, User } from "@prisma/client";
 import { Coda } from "coda-js";
 
-const legionCoda = new Coda(process.env.INTEGRATION_LEGION_CODA_TOKEN);
+const legionCoda = new Coda(process.env.INTEGRATION_LEGION_CODA_TOKEN!);
 
 export async function insertEventIntoLegionCoda(
 	legionEventId: string,
@@ -11,8 +11,8 @@ export async function insertEventIntoLegionCoda(
 	}
 ) {
 	const table = await legionCoda.getTable(
-		process.env.INTEGRATION_LEGION_CODA_DOC_ID,
-		process.env.INTEGRATION_LEGION_CODA_TABLE_ID
+		process.env.INTEGRATION_LEGION_CODA_DOC_ID!,
+		process.env.INTEGRATION_LEGION_CODA_TABLE_ID!
 	);
 
 	const startDate = event.startAt?.toISOString() ?? new Date().toISOString();

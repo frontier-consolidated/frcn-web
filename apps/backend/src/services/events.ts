@@ -39,7 +39,6 @@ import {
 	type EventChannelEditInput,
 	type EventEditInput
 } from "../graphql/__generated__/resolvers-types";
-import { insertEventIntoLegionCoda } from "../integrations/coda";
 import { logger } from "../logger";
 
 const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000;
@@ -929,15 +928,6 @@ async function endEvent(event: Event, discordClient: DiscordClient, postMessage 
 
 	if (endedEvent.channel) {
 		await updateEventChannelCalendarMessage(discordClient, endedEvent.channel);
-	}
-
-	const legionEventId = endedEvent.name.trim().match(/^LGN\d+/);
-	if (legionEventId) {
-		try {
-			await insertEventIntoLegionCoda(legionEventId[0], endedEvent);
-		} catch (err) {
-			logger.error("Error inserting event into legion coda calendar", err);
-		}
 	}
 
 	return endedEvent;
