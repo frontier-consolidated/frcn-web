@@ -57,7 +57,7 @@ RUN rm -rf $PROD/web/src && \
 # Backend App
 FROM base AS backend
 COPY --from=build $PROD/backend $PROD/backend
-COPY --from=build $SRC/scripts/backend/entrypoint.sh $PROD/backend
+COPY --from=build $SRC/apps/backend/entrypoint.sh $PROD/backend
 WORKDIR $PROD/backend
 EXPOSE $PORT
 ENTRYPOINT ["sh", "entrypoint.sh"]
