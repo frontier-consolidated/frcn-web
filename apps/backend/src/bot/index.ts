@@ -1,6 +1,6 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 
 import { type Client, type ClientEvents } from "discord.js";
 
@@ -28,7 +28,7 @@ async function registerEvents(client: DiscordClient) {
 
 	for (const eventFile of eventFiles) {
 		const filePath = path.join(eventsFolder, eventFile);
-		const module = (await import(filePath)) as EventModule;
+		const module = (await import(pathToFileURL(filePath).toString())) as EventModule;
 
 		if (module.once) {
 			client.once(module.event, module.listener);
