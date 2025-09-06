@@ -39,10 +39,6 @@ export default tseslint.config(
 				parser: tseslint.parser,
 				tsconfigRootDir: import.meta.dirname
 			}
-		},
-		rules: {
-			"svelte/no-navigation-without-resolve": "off",
-			"svelte/require-event-dispatcher-types": "off"
 		}
 	},
 	{
@@ -105,7 +101,9 @@ export default tseslint.config(
 					varsIgnorePattern: "^_",
 					caughtErrorsIgnorePattern: "^_"
 				}
-			]
+			],
+			"svelte/no-navigation-without-resolve": "off",
+			"svelte/require-event-dispatcher-types": "off"
 		}
 	}
 );
