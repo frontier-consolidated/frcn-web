@@ -56,6 +56,7 @@
 			submitting = true;
 
 			if (!validator.validate(!data.posted)) {
+				submitting = false;
 				pushNotification({
 					type: "error",
 					message: "Check your inputs"
@@ -63,6 +64,7 @@
 				return false;
 			}
 			if (editData.location.some((loc) => !loc)) {
+				submitting = false;
 				pushNotification({
 					type: "error",
 					message: "Invalid location"
@@ -112,6 +114,7 @@
 			});
 
 			if (errors && errors.length > 0) {
+				submitting = false;
 				pushNotification({
 					type: "error",
 					message: "Failed to save"
@@ -139,6 +142,7 @@
 			submitting = true;
 
 			if (!validator.validate()) {
+				submitting = false;
 				pushNotification({
 					type: "error",
 					message: "Check your inputs"
@@ -146,6 +150,7 @@
 				return false;
 			}
 			if (isDirty && !(await save(false))) {
+				submitting = false;
 				return false;
 			}
 
@@ -163,6 +168,7 @@
 			});
 
 			if (!postData?.success || (errors && errors.length > 0)) {
+				submitting = false;
 				pushNotification({
 					type: "error",
 					message: "Failed to post"
