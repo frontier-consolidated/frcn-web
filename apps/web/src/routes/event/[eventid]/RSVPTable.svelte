@@ -32,10 +32,8 @@
 		<TableHeadCell class="w-16"></TableHeadCell>
 	</TableHead>
 	<TableBody tableBodyClass="divide-y">
-		{#each value as role}
-			{#key role.id}
-				<RsvpItem {validator} {data} bind:roles={value} {role} />
-			{/key}
+		{#each value as role (role.id)}
+			<RsvpItem {validator} {data} bind:roles={value} {role} />
 		{/each}
 	</TableBody>
 </Table>

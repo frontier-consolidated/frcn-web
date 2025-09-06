@@ -115,7 +115,7 @@
 
 <div {id} class={twMerge("relative w-full", clazz)}>
 	<select {disabled} hidden id="{id}-select" {...$$restProps}>
-		{#each options as option}
+		{#each options as option (option.name)}
 			<option value={option.name}>{option.name}</option>
 		{/each}
 	</select>
@@ -136,7 +136,7 @@
 		<span class="flex w-full flex-wrap gap-1">
 			{#if selectedOptions.length > 0}
 				{#if multi}
-					{#each selectedOptions as option}
+					{#each selectedOptions as option (option)}
 						<Badge color="none">
 							<slot {option}>
 								<span>{option.name}</span>
@@ -196,18 +196,16 @@
 			<DropdownItem disabled defaultClass="font-medium py-2 px-4 text-sm text-gray-500"
 				>{placeholder}</DropdownItem
 			>
-			{#each selectableOptions as option}
-				{#key option}
-					<DropdownItem
-						on:click={() => {
-							selectOption(option);
-						}}
-					>
-						<slot {option}>
-							<span>{option.name}</span>
-						</slot>
-					</DropdownItem>
-				{/key}
+			{#each selectableOptions as option (option)}
+				<DropdownItem
+					on:click={() => {
+						selectOption(option);
+					}}
+				>
+					<slot {option}>
+						<span>{option.name}</span>
+					</slot>
+				</DropdownItem>
 			{/each}
 		</Dropdown>
 	{/if}

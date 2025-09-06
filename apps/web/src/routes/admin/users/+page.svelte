@@ -45,7 +45,7 @@
 	/>
 </div>
 <div class="flex max-h-screen flex-col gap-1 overflow-y-auto px-4">
-	{#each data.users as user}
+	{#each data.users as user (user.id)}
 		<button
 			class="flex cursor-pointer items-center justify-between rounded p-2 pe-4 dark:hover:bg-gray-800"
 			on:click={() => {

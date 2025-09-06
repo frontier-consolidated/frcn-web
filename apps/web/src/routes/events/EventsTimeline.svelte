@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	{#each data.events as event}
+	{#each data.events as event (event.id)}
 		{#if event.imageUrl}
 			<link rel="preload" href={event.imageUrl} as="image" />
 		{/if}
@@ -28,7 +28,7 @@
 		<span class="text-gray-400 dark:text-gray-600">No events</span>
 	{/if}
 	<Timeline class="w-full">
-		{#each data.events as event}
+		{#each data.events as event (event.id)}
 			<TimelineItem>
 				<div class="mb-2">
 					<TimeBadge id="test-event-time" format="datetime-relative" value={event.startAt ?? 0} />

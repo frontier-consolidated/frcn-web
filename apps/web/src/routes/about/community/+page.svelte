@@ -31,7 +31,7 @@
 </PageHero>
 <section class="mx-auto mt-2 flex w-full max-w-6xl flex-col gap-8 p-4">
 	{#if index}
-		{#each index.getChildrenOfType(CMSContainerType.AboutSection) as section}
+		{#each index.getChildrenOfType(CMSContainerType.AboutSection) as section (section.id)}
 			<CmsAboutSectionRenderer container={section} />
 		{/each}
 	{/if}

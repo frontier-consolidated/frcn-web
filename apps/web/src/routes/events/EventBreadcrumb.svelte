@@ -24,7 +24,7 @@
 	{/if}
 	{#if event.location}
 		{#if event.location.length > 0}
-			{#each event.location as item}
+			{#each event.location as item (item.name)}
 				<LocationBreadcrumbItem location={item} />
 			{/each}
 		{:else}

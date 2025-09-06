@@ -53,14 +53,14 @@
 <section class="mx-auto mt-24 flex w-full max-w-6xl flex-col gap-8 px-4 lg:flex-row">
 	<Sidebar asideClass="shrink-0 w-64 hidden lg:block" {activeUrl}>
 		<SidebarWrapper>
-			{#each pageGroup as group, i}
+			{#each pageGroup as group, i (group.name)}
 				<SidebarGroup border={i > 0}>
 					<div class="flex items-center gap-2 px-2 dark:text-gray-400">
 						<span class="self-center whitespace-nowrap font-semibold">
 							{group.name}
 						</span>
 					</div>
-					{#each group.pages as page}
+					{#each group.pages as page (page.href)}
 						<SidebarItem label={page.name} href={page.href} class="clip-tl-br-4 rounded">
 							<svelte:fragment slot="icon">
 								{#if page.icon}

@@ -172,7 +172,7 @@
 						</MegaMenu>
 					{/if}
 				{:else}
-					{#each aboutItems as item}
+					{#each aboutItems as item (item.href)}
 						<NavLi href={item.href} target={item.target} class="flex items-center gap-2">
 							<svelte:component this={item.icon} size="sm" tabindex="-1" />{item.name}
 							{#if item.target}

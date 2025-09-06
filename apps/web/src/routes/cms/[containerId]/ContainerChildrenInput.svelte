@@ -72,7 +72,7 @@
 		</Button>
 		{#if allowedChildren.length > 1}
 			<Dropdown containerClass="rounded divide-y z-50" bind:open={openDropdown}>
-				{#each allowedChildren as type}
+				{#each allowedChildren as type (type)}
 					<DropdownItem on:click={() => addChild(type).catch(console.error)}>
 						{strings.toTitleCase(type)}
 					</DropdownItem>
@@ -82,7 +82,7 @@
 	</div>
 	{#if children.length > 0}
 		<Accordion>
-			{#each children as container}
+			{#each children as container (container.id)}
 				<AccordionItem
 					class="group-first-of-type:rounded-t group-last-of-type:rounded-b"
 					paddingDefault="px-4 py-3"

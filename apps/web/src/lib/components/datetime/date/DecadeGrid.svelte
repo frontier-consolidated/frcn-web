@@ -16,7 +16,7 @@
 </script>
 
 <div class="grid w-64 grid-cols-3">
-	{#each years as year}
+	{#each years as year (year)}
 		<span
 			role="button"
 			tabindex="0"

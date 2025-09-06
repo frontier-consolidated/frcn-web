@@ -35,7 +35,7 @@
 
 <figure class={twMerge(figureClass, $$restProps.class)}>
 	<picture>
-		{#each sourceEntries as [breakpoint, src]}
+		{#each sourceEntries as [breakpoint, src] (src)}
 			<source media="(min-width: {breakpoints[breakpoint]})" srcset={src} />
 		{/each}
 		<img class={imgClass} {src} {srcset} {alt} />

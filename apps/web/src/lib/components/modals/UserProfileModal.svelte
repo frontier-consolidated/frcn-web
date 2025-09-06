@@ -11,7 +11,6 @@
 	} from "flowbite-svelte-icons";
 	import { locale } from "svelte-i18n";
 
-	import { page } from "$app/stores";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";
@@ -89,7 +88,7 @@
 			<div>
 				<span class="block font-semibold text-black dark:text-white">Roles</span>
 				<div class="mt-1 flex flex-wrap items-center gap-1">
-					{#each allRoles as role}
+					{#each allRoles as role (role.id)}
 						{@const primaryRole = role.id === $userProfileView.data?.primaryRole.id}
 						<Badge data-role-id={role.id}>
 							{#if primaryRole}
@@ -105,7 +104,7 @@
 										</div>
 										{#each availablePrimaryRoles.filter((role) => !primaryRoleSearch || role.name
 													.toLowerCase()
-													.includes(primaryRoleSearch.trim().toLowerCase())) as role}
+													.includes(primaryRoleSearch.trim().toLowerCase())) as role (role.id)}
 											<li>
 												<button
 													class="w-full cursor-pointer rounded px-2 py-1 text-left hover:bg-gray-600"
@@ -176,7 +175,7 @@
 							</div>
 							{#each giveableNonPrimaryRoles.filter((role) => !nonPrimaryRoleSearch || role.name
 										.toLowerCase()
-										.includes(nonPrimaryRoleSearch.trim().toLowerCase())) as role}
+										.includes(nonPrimaryRoleSearch.trim().toLowerCase())) as role (role.id)}
 								<li>
 									<button
 										class="w-full cursor-pointer rounded px-2 py-1 text-left hover:bg-gray-600"

@@ -135,10 +135,8 @@
 			<TableHeadCell class="w-32"></TableHeadCell>
 		</TableHead>
 		<tbody class="divide-y" use:initSortable>
-			{#each filteredRoles as role, i}
-				{#key role.id}
-					<RoleRow {role} locked={i <= highestMoveable} canMove={!$roleSearch} />
-				{/key}
+			{#each filteredRoles as role, i (role.id)}
+				<RoleRow {role} locked={i <= highestMoveable} canMove={!$roleSearch} />
 			{/each}
 		</tbody>
 	</Table>

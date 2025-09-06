@@ -108,7 +108,7 @@
 	</div>
 	<div class="grid h-56 w-32 grid-cols-2">
 		<div use:initHours class="no-scrollbar overflow-y-scroll">
-			{#each hours as hour}
+			{#each hours as hour (hour)}
 				<span
 					role="button"
 					tabindex="0"
@@ -124,7 +124,7 @@
 			{/each}
 		</div>
 		<div use:initMinutes class="no-scrollbar overflow-y-scroll">
-			{#each minutes as minute}
+			{#each minutes as minute (minute)}
 				<span
 					role="button"
 					tabindex="0"

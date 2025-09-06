@@ -55,7 +55,7 @@
 
 <div class={twMerge("relative w-full", clazz)}>
 	<select hidden {...$$restProps}>
-		{#each options as option}
+		{#each options as option (option.name)}
 			<option value={option.name}>{option.name}</option>
 		{/each}
 	</select>
@@ -84,39 +84,35 @@
 		containerClass="bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded border border-gray-300 dark:border-gray-600 divide-gray-100 dark:divide-gray-600 shadow-md divide-y z-50 w-full cursor-pointer overflow-y-scroll max-h-64"
 		class="rounded"
 	>
-		{#each getOptionGroups(options) as group}
+		{#each getOptionGroups(options) as group (group.name)}
 			<li class="mb-2 w-full text-left text-sm font-medium">
 				<span class="text-md block p-2 font-semibold">{group.name}</span>
 				<ul class="border-t border-gray-300 dark:border-gray-600">
-					{#each group.options as option}
-						{#key option}
-							<DropdownItem
-								class="pl-6"
-								on:click={() => {
-									goto(option.href);
-								}}
-							>
-								<slot {option}>
-									<span>{option.name}</span>
-								</slot>
-							</DropdownItem>
-						{/key}
+					{#each group.options as option (option)}
+						<DropdownItem
+							class="pl-6"
+							on:click={() => {
+								goto(option.href);
+							}}
+						>
+							<slot {option}>
+								<span>{option.name}</span>
+							</slot>
+						</DropdownItem>
 					{/each}
 				</ul>
 			</li>
 		{/each}
-		{#each getLooseOptions(options) as option}
-			{#key option}
-				<DropdownItem
-					on:click={() => {
-						goto(option.href);
-					}}
-				>
-					<slot {option}>
-						<span>{option.name}</span>
-					</slot>
-				</DropdownItem>
-			{/key}
+		{#each getLooseOptions(options) as option (option)}
+			<DropdownItem
+				on:click={() => {
+					goto(option.href);
+				}}
+			>
+				<slot {option}>
+					<span>{option.name}</span>
+				</slot>
+			</DropdownItem>
 		{/each}
 	</Dropdown>
 </div>

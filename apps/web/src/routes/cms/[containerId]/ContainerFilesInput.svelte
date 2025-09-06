@@ -68,7 +68,7 @@
 	</div>
 	{#if files.length > 0}
 		<Accordion>
-			{#each files as file}
+			{#each files as file (file.id)}
 				<AccordionItem
 					class="group-first-of-type:rounded-t group-last-of-type:rounded-b"
 					paddingDefault="px-4 py-2"

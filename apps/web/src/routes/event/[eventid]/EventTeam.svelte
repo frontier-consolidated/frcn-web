@@ -37,7 +37,7 @@
 	{#if open}
 		<ul class="p-2" transition:slide>
 			{#if event.members.length > 0}
-				{#each event.members as member}
+				{#each event.members as member (member.id)}
 					<EventMember bind:event {member} />
 				{/each}
 			{:else}

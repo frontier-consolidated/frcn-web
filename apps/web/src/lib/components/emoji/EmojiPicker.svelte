@@ -113,7 +113,7 @@
 		<ul
 			class="no-scrollbar flex max-h-72 shrink-0 flex-col overflow-y-auto rounded-lg bg-gray-100 p-1 dark:bg-gray-900"
 		>
-			{#each categories as category}
+			{#each categories as category (category)}
 				{#if category === defaultEmojis.categories[0] && categories.length > defaultEmojis.categories.length}
 					<li class="py-2">
 						<div class="h-px w-full bg-gray-600"></div>
@@ -154,7 +154,7 @@
 				on:scroll={(ev) => calculateCurrent(ev.currentTarget)}
 			>
 				<div class={twMerge("grid grid-cols-9", !search ? "hidden" : undefined)}>
-					{#each getEmojisInSearch(search) as emoji}
+					{#each getEmojisInSearch(search) as emoji (emoji.id)}
 						{#if emoji.svg || emoji.imageUrl}
 							<Button
 								data-emoji={emoji.id ?? emoji.name}
@@ -170,14 +170,14 @@
 						{/if}
 					{/each}
 				</div>
-				{#each categories as category}
+				{#each categories as category (category)}
 					<div data-category={category} use:initCategory class={search ? "hidden" : undefined}>
 						<div class="flex items-center px-2 py-1 text-xs font-medium text-gray-300">
 							<EmojiCategoryIcon {categoryIcons} {category} class="me-1 h-3 w-3" />
 							{category.toUpperCase()}
 						</div>
 						<div class="grid grid-cols-9">
-							{#each getEmojisInCategory(category) as emoji}
+							{#each getEmojisInCategory(category) as emoji (emoji.id)}
 								{#if emoji.svg || emoji.imageUrl}
 									<Button
 										data-emoji={emoji.id ?? emoji.name}

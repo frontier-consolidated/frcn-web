@@ -44,7 +44,7 @@
 </script>
 
 <div id="notifications" class="z-100 fixed bottom-0 left-0 m-8 flex w-64 flex-col-reverse gap-2">
-	{#each $notifications as notification}
+	{#each $notifications as notification (notification.id)}
 		<Toast
 			color={getColor(notification.type)}
 			on:close={() => {

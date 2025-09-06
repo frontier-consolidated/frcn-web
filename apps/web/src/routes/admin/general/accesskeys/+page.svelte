@@ -69,10 +69,8 @@
 		<tbody class="divide-y">
 			{#each data.keys.filter((k) => !$keySearch || k.id.toString() === $keySearch.trim() || k.description
 						.toLowerCase()
-						.includes($keySearch.trim().toLowerCase())) as key}
-				{#key key.id}
-					<KeyRow accessKey={key} />
-				{/key}
+						.includes($keySearch.trim().toLowerCase())) as key (key.id)}
+				<KeyRow accessKey={key} />
 			{/each}
 		</tbody>
 	</Table>

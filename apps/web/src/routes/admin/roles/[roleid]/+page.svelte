@@ -257,7 +257,7 @@
 				on:click={() => (window.location.hash = "#users")}
 			>
 				<div class="flex max-h-screen flex-col gap-1 overflow-y-auto p-4">
-					{#each data.role.users as user}
+					{#each data.role.users as user (user.id)}
 						<UserButton role={data.role} {user} />
 					{/each}
 				</div>

@@ -68,7 +68,7 @@
 			<div>
 				<h2 class="mb-6 text-sm font-semibold uppercase text-gray-900 dark:text-white">Social</h2>
 				<FooterLinkGroup>
-					{#each socials as social}
+					{#each socials as social (social.href)}
 						<FooterLink liClass="mb-2" href={social.href} target="_blank">{social.name}</FooterLink>
 					{/each}
 				</FooterLinkGroup>
@@ -110,7 +110,7 @@
 			>
 		</div>
 		<div class="relative flex space-x-6 pr-16 md:ml-auto md:justify-center rtl:space-x-reverse">
-			{#each socials as social}
+			{#each socials as social (social.href)}
 				<FooterIcon href={social.href} target="_blank">
 					<svelte:component
 						this={social.icon}

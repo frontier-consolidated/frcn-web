@@ -62,7 +62,7 @@
 	imageSize="large"
 >
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
-	{#each galleryImages as image}
+	{#each galleryImages as image (image)}
 		<link rel="preload" href={image} as="image" />
 	{/each}
 </Head>
@@ -93,7 +93,7 @@
 	class="border-primary-400 dark:border-primary-600 relative border-y bg-neutral-200 p-4 pt-0 dark:bg-gray-900"
 >
 	<div class="mx-auto -mt-10 grid max-w-7xl gap-4 sm:grid-cols-2 xl:grid-cols-4">
-		{#each pageCards as card}
+		{#each pageCards as card (card.href)}
 			<a href={card.href} class="group/card clip-tr-8 relative rounded">
 				<figure class="h-36 cursor-pointer min-[480px]:h-48 sm:h-60">
 					<img
@@ -145,7 +145,7 @@
 			</div>
 			{#if welcomeCtas.length > 0}
 				<div class="flex w-full flex-1 items-center justify-center gap-4 pt-12">
-					{#each welcomeCtas as cta}
+					{#each welcomeCtas as cta (cta.id)}
 						<CallToActionRenderer container={cta} />
 					{/each}
 				</div>
@@ -175,14 +175,14 @@
 		<Hr class="bg-primary-300 dark:bg-primary-600 my-4" />
 		<div class="grid gap-4 md:grid-cols-2">
 			<div class="grid h-min gap-4">
-				{#each galleryImages.slice(0, Math.ceil(galleryImages.length / 2)) as image}
+				{#each galleryImages.slice(0, Math.ceil(galleryImages.length / 2)) as image (image)}
 					<div class="clip-tr-8 rounded bg-gray-400 p-px dark:bg-gray-800">
 						<img src={image} alt="" class="clip-tr-8 w-full max-w-full rounded object-cover" />
 					</div>
 				{/each}
 			</div>
 			<div class="grid h-min gap-4">
-				{#each galleryImages.slice(Math.ceil(galleryImages.length / 2)) as image}
+				{#each galleryImages.slice(Math.ceil(galleryImages.length / 2)) as image (image)}
 					<div class="clip-tr-8 rounded bg-gray-400 p-px dark:bg-gray-800">
 						<img src={image} alt="" class="clip-tr-8 w-full max-w-full rounded object-cover" />
 					</div>

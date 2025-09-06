@@ -43,7 +43,7 @@
 			</div>
 		</div>
 		<div class="mt-6 flex flex-col gap-2">
-			{#each data.events as event}
+			{#each data.events as event (event.id)}
 				<EventCard {event} dependency="app:my-events" />
 			{/each}
 		</div>

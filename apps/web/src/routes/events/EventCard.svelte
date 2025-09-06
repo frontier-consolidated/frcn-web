@@ -56,7 +56,7 @@
 	>
 		<div class="flex flex-1 flex-col md:flex-none">
 			<div class="ml-4 flex justify-center">
-				{#each event.members.slice(0, 3) as member}
+				{#each event.members.slice(0, 3) as member (member.id)}
 					<Avatar src={member.user?.avatarUrl} stacked />
 				{/each}
 

@@ -232,10 +232,8 @@
 				<TableHeadCell class="w-32"></TableHeadCell>
 			</TableHead>
 			<tbody class="divide-y">
-				{#each data.channels as channel}
-					{#key channel.id}
-						<ChannelRow {channel} />
-					{/key}
+				{#each data.channels as channel (channel.id)}
+					<ChannelRow {channel} />
 				{/each}
 			</tbody>
 		</Table>

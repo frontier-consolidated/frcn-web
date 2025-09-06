@@ -26,7 +26,7 @@
 	<Markdown nowrap source={container.getContent() ?? ""} disabled={["space"]} />
 	{#if ctas.length > 0}
 		<div class="flex flex-1 items-end justify-center">
-			{#each ctas as cta}
+			{#each ctas as cta (cta.id)}
 				<CallToActionRenderer container={cta} />
 			{/each}
 		</div>

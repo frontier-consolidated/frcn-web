@@ -66,7 +66,7 @@
 </script>
 
 <div class="mt-2 flex flex-col gap-4 p-4" {...$$restProps}>
-	{#each permissionDefs as info, i}
+	{#each permissionDefs as info, i (info.permission)}
 		{@const disabled = disableToggles[info.permission]}
 		{@const checked = (permissions & info.permission) > 0}
 		<div>

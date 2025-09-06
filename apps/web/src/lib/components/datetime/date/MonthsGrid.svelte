@@ -21,7 +21,7 @@
 </script>
 
 <div class="grid w-64 grid-cols-4">
-	{#each months as month}
+	{#each months as month (month)}
 		<span
 			role="button"
 			tabindex="0"

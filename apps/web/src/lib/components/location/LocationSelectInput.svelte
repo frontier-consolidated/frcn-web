@@ -46,7 +46,7 @@
 </script>
 
 <ul class="flex flex-col gap-2" {...$$restProps}>
-	{#each liOptions as options, i}
+	{#each liOptions as options, i (options)}
 		<LocationSelectLi
 			{options}
 			deletable={i > 0}

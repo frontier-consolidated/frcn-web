@@ -196,7 +196,7 @@
 			<SidebarGroup ulClass={hideMembers ? "hidden" : ""}>
 				<!-- <EventTeam bind:event={data} /> -->
 				{#if data.members.length > 0}
-					{#each data.members as member}
+					{#each data.members as member (member.id)}
 						<EventMember bind:event={data} {member} />
 					{/each}
 				{:else}

@@ -79,12 +79,12 @@
 </script>
 
 <div class="mb-2 grid grid-cols-7">
-	{#each weekdays as day}
+	{#each weekdays as day (day)}
 		<span class="text-center text-sm font-medium dark:text-gray-400">{day}</span>
 	{/each}
 </div>
 <div class="grid w-64 grid-cols-7">
-	{#each days as day}
+	{#each days as day (day)}
 		{@const selected = dates.isSelected(selectedDate, day)}
 		{@const disabled = isDisabled(viewDate, day)}
 		{@const disabledClass = disabled ? "dark:text-gray-500" : "dark:text-white cursor-pointer"}

@@ -142,7 +142,7 @@
 	</div>
 	<ScreenQuery size="md" let:matches>
 		<div class="grid grid-cols-7 text-xs text-black sm:text-sm md:text-base dark:text-white">
-			{#each days as day, i}
+			{#each days as day, i (day.date)}
 				{@const topRow = i < 7}
 				{@const inPast = day.date < getToday()}
 				{@const selected = dates.isSelected($selectedDate, day.date)}
@@ -209,7 +209,7 @@
 					{#if day.events.length > 0}
 						{#if matches}
 							<div class="flex w-full flex-col items-stretch gap-px px-1">
-								{#each day.events as event}
+								{#each day.events as event (event.id)}
 									{@const eventStart = event.startAt && new Date(event.startAt)}
 									<Button
 										href="/event/{event.id}"
@@ -255,7 +255,7 @@
 				>
 				<CreateEventButton startAt={getEventStartAt($selectedDate)} />
 				<Timeline class="w-full">
-					{#each selectedEvents as event}
+					{#each selectedEvents as event (event.id)}
 						<TimelineItem>
 							<div class="mb-2">
 								<TimeBadge

@@ -63,7 +63,7 @@
 	<Heading tag="h1" class="text-4xl font-medium">CMS</Heading>
 	<Hr class="mt-8" />
 	<div class="flex flex-col items-center gap-2 p-4">
-		{#each indexes as index}
+		{#each indexes as index (index.id)}
 			<a
 				href="/cms/{index.id}"
 				class="flex w-full flex-col rounded bg-white p-4 text-gray-500 shadow-md hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-900"

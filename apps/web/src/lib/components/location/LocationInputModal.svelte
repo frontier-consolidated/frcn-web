@@ -53,29 +53,27 @@
 	</svelte:fragment>
 	{#if searchInput}
 		<ul class="flex h-96 w-full flex-col gap-1 overflow-y-auto">
-			{#each searchResults as location}
+			{#each searchResults as location (location)}
 				{@const selected = selectedValue.at(-1) === location.path.at(-1)}
 				<li>
-					{#key location}
-						<button
-							class={twMerge(
-								"flex w-full items-center p-3 text-left text-white hover:bg-gray-700",
-								selected && "bg-primary-700 hover:bg-primary-600"
-							)}
-							on:click={() => {
-								selectedValue = [...location.path];
-							}}
-						>
-							<LocationIcon {location} />
-							<span>{location.name}</span>
-						</button>
-					{/key}
+					<button
+						class={twMerge(
+							"flex w-full items-center p-3 text-left text-white hover:bg-gray-700",
+							selected && "bg-primary-700 hover:bg-primary-600"
+						)}
+						on:click={() => {
+							selectedValue = [...location.path];
+						}}
+					>
+						<LocationIcon {location} />
+						<span>{location.name}</span>
+					</button>
 				</li>
 			{/each}
 		</ul>
 	{:else}
 		<div class="flex h-96 w-full gap-1 overflow-x-scroll">
-			{#each new Array(Math.max(3, selectedValue.length + 1)) as _, i}
+			{#each new Array(Math.max(3, selectedValue.length + 1)) as _, i (i)}
 				{@const selectable =
 					i === 0
 						? locations
@@ -87,23 +85,21 @@
 						class="flex w-full min-w-[15rem] max-w-[18rem] flex-col overflow-y-auto rounded bg-gray-900"
 						use:initUl={i}
 					>
-						{#each selectable as location}
+						{#each selectable as location (location)}
 							{@const selected = selectedValue[i] === location}
 							<li use:initLi={selected}>
-								{#key location}
-									<button
-										class={twMerge(
-											"flex w-full items-center p-3 text-left text-white hover:bg-gray-700",
-											selected && "bg-primary-700 hover:bg-primary-600"
-										)}
-										on:click={() => {
-											selectedValue = [...selectedValue.slice(0, i), location];
-										}}
-									>
-										<LocationIcon {location} />
-										<span>{location.name}</span>
-									</button>
-								{/key}
+								<button
+									class={twMerge(
+										"flex w-full items-center p-3 text-left text-white hover:bg-gray-700",
+										selected && "bg-primary-700 hover:bg-primary-600"
+									)}
+									on:click={() => {
+										selectedValue = [...selectedValue.slice(0, i), location];
+									}}
+								>
+									<LocationIcon {location} />
+									<span>{location.name}</span>
+								</button>
 							</li>
 						{/each}
 					</ul>
