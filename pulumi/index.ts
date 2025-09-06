@@ -3,6 +3,8 @@ import * as docker from "@pulumi/docker";
 import * as k8s from "@pulumi/kubernetes";
 import * as pulumi from "@pulumi/pulumi";
 
+const namespaceName = "frcn-web";
+
 const appName = "frcn-web";
 const appLabels = { app: appName };
 const replicas = 1;
@@ -67,9 +69,9 @@ const image = new docker.Image(`${appName}-image`, {
 export const baseImageName = image.baseImageName;
 export const fullImageName = image.imageName;
 
-const namespace = new k8s.core.v1.Namespace(appName, {
+const namespace = new k8s.core.v1.Namespace(namespaceName, {
 	metadata: {
-		name: appName
+		name: namespaceName
 	}
 });
 

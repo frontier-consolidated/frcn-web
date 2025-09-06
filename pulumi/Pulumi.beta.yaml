@@ -3,5 +3,5 @@ environment:
   - frcn-web/beta
 
 config:
-  frcn-web:repositoryName: frcn/frcn-web
+  frcn-web:repositoryName: frcn-web/beta
   kubernetes:context: frcn
