@@ -4,7 +4,7 @@
 	"private": true,
 	"license": "MPL-2.0",
 	"scripts": {
-		"setup": "pnpm install && pnpm run --filter=./packages/** build",
+		"setup": "pnpm install && pnpm run --filter=./packages/** build && pnpm run --filter=backend db:generate",
 		"backend:dev": "cd apps/backend && pnpm dev",
 		"web:dev": "cd apps/web && pnpm dev",
 		"lint": "prettier --check . && eslint .",
