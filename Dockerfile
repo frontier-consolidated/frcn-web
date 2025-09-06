@@ -54,7 +54,7 @@ COPY --from=build $PROD/backend $PROD/backend
 COPY --from=build $SRC/apps/backend/entrypoint.sh $PROD/backend
 WORKDIR $PROD/backend
 EXPOSE $PORT
-ENTRYPOINT ["sh", "entrypoint.sh"]
+ENTRYPOINT ["bash", "entrypoint.sh"]
 
 
 # Web App
