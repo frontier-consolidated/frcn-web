@@ -8,47 +8,58 @@ const webDomain = `${pulumi.getStack() === "prod" ? "" : `${pulumi.getStack()}.`
 const apiSubDomain = `${pulumi.getStack() === "prod" ? "" : `${pulumi.getStack()}-`}api`;
 const apiDomain = `${apiSubDomain}.${baseDomain}`;
 
-const appName = "frcn-web";
+const appName = `frcn-web-old${pulumi.getStack() === "prod" ? "" : `-${pulumi.getStack()}`}`;
 const appLabels = { app: appName };
 const replicas = 1;
+
+function createRepository(name: string) {
+	const repository = new aws.ecr.Repository(name);
+
+	new aws.ecr.LifecyclePolicy(
+		`${name}-lifecycle-policy`,
+		{
+			repository: repository.name,
+			policy: {
+				rules: [
+					{
+						rulePriority: 1,
+						description: "Remove untagged images",
+						selection: {
+							tagStatus: "untagged",
+							countType: "imageCountMoreThan",
+							countNumber: 1
+						},
+						action: {
+							type: "expire"
+						}
+					}
+				]
+			}
+		},
+		{
+			parent: repository
+		}
+	);
+
+	const registry = aws.ecr
+		.getAuthorizationTokenOutput({
+			registryId: repository.registryId
+		})
+		.apply(async (credentials) => {
+			return {
+				server: credentials.proxyEndpoint,
+				username: credentials.userName,
+				password: pulumi.secret(credentials.password)
+			};
+		});
+
+	return { repository, registry };
+}
 
 const config = new pulumi.Config();
 const repositoryName = config.require("repositoryName");
 
-const repository = new aws.ecr.Repository(repositoryName);
-
-new aws.ecr.LifecyclePolicy(`${repositoryName}-lifecycle-policy`, {
-	repository: repository.name,
-	policy: {
-		rules: [
-			{
-				rulePriority: 1,
-				description: "Remove untagged images",
-				selection: {
-					tagStatus: "untagged",
-					countType: "imageCountMoreThan",
-					countNumber: 1
-				},
-				action: {
-					type: "expire"
-				}
-			}
-		]
-	}
-});
-
-const registry = aws.ecr
-	.getAuthorizationTokenOutput({
-		registryId: repository.registryId
-	})
-	.apply(async (credentials) => {
-		return {
-			server: credentials.proxyEndpoint,
-			username: credentials.userName,
-			password: pulumi.secret(credentials.password)
-		};
-	});
-
+const backendRepository = createRepository(`${repositoryName}/backend`);
 const backendImage = new docker.Image(`${appName}-backend-image`, {
 	build: {
 		context: "../",
@@ -59,10 +70,12 @@ const backendImage = new docker.Image(`${appName}-backend-image`, {
 		// 	...buildArgs.reduce((args, name) => ({ ...args, [name]: process.env[name] }), {})
 		// }
 	},
-	imageName: repository.repositoryUrl.apply((url) => `${url}/backend`),
-	registry
+	buildOnPreview: false,
+	imageName: backendRepository.repository.repositoryUrl,
+	registry: backendRepository.registry
 });
 
+const webRepository = createRepository(`${repositoryName}/web`);
 const webImage = new docker.Image(`${appName}-web-image`, {
 	build: {
 		context: "../",
@@ -70,8 +83,9 @@ const webImage = new docker.Image(`${appName}-web-image`, {
 		platform: "linux/amd64",
 		target: "web"
 	},
-	imageName: repository.repositoryUrl.apply((url) => `${url}/web`),
-	registry
+	buildOnPreview: false,
+	imageName: webRepository.repository.repositoryUrl,
+	registry: webRepository.registry
 });
 
 const namespace = new k8s.core.v1.Namespace(appName, {
