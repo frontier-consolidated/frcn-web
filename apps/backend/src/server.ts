@@ -2,7 +2,7 @@ import { randomUUID } from "crypto";
 
 import { createApp } from "./app";
 import { initDatabase } from "./database";
-import { getOrigin, getOrigins, getPort, getWebOrigin, validateEnvironment } from "./env";
+import { getDomain, getOrigin, getOrigins, getPort, validateEnvironment } from "./env";
 import { $discord } from "./services/discord";
 import { $events } from "./services/events";
 
@@ -29,7 +29,7 @@ const { context } = await createApp({
 		}
 	},
 	sessionConfig: {
-		domain: getWebOrigin(),
+		domain: getDomain(true),
 		consent: {
 			cookie: process.env.CONSENT_COOKIE
 		},

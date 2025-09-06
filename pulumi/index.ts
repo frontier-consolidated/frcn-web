@@ -4,9 +4,8 @@ import * as k8s from "@pulumi/kubernetes";
 import * as pulumi from "@pulumi/pulumi";
 
 const baseDomain = "frontierconsolidated.com";
-const webDomain = `${pulumi.getStack() === "prod" ? "" : `${pulumi.getStack()}.`}${baseDomain}`;
-const apiSubDomain = `${pulumi.getStack() === "prod" ? "" : `${pulumi.getStack()}-`}api`;
-const apiDomain = `${apiSubDomain}.${baseDomain}`;
+const subDomain = pulumi.getStack() === "prod" ? "" : `${pulumi.getStack()}`;
+const domain = `${subDomain ? `${subDomain}.` : ""}${baseDomain}`;
 
 const appName = `frcn-web-old${pulumi.getStack() === "prod" ? "" : `-${pulumi.getStack()}`}`;
 const appLabels = { app: appName };
@@ -66,9 +65,6 @@ const backendImage = new docker.Image(`${appName}-backend-image`, {
 		dockerfile: "../Dockerfile",
 		platform: "linux/amd64",
 		target: "backend"
-		// args: {
-		// 	...buildArgs.reduce((args, name) => ({ ...args, [name]: process.env[name] }), {})
-		// }
 	},
 	imageName: backendRepository.repository.repositoryUrl,
 	registry: backendRepository.registry
@@ -126,15 +122,19 @@ const deployment = new k8s.apps.v1.Deployment(
 								},
 								{
 									name: "SUB_DOMAIN",
-									value: apiSubDomain
+									value: subDomain
+								},
+								{
+									name: "BASE_PATH",
+									value: "/api"
 								},
 								{
 									name: "WEB_ORIGIN",
-									value: `https://${webDomain}`
+									value: `https://${domain}`
 								},
 								{
 									name: "ORIGINS",
-									value: `https://${webDomain},http://localhost:3000`
+									value: `https://${domain},http://localhost:3000`
 								},
 								{
 									name: "ACCESS_KEY_HEADER",
@@ -196,7 +196,7 @@ const deployment = new k8s.apps.v1.Deployment(
 								},
 								{
 									name: "PUBLIC_API_BASEURL",
-									value: `https://${apiDomain}`
+									value: `https://${domain}/api`
 								},
 								{
 									name: "LOCAL_ACCESS_TOKEN",
@@ -211,6 +211,7 @@ const deployment = new k8s.apps.v1.Deployment(
 		}
 	},
 	{
+		dependsOn: [backendImage, webImage],
 		customTimeouts: {
 			create: "5m",
 			update: "5m"
@@ -254,12 +255,12 @@ const ingress = new k8s.networking.v1.Ingress(`${appName}-ingress`, {
 	spec: {
 		rules: [
 			{
-				host: apiDomain,
+				host: domain,
 				http: {
 					paths: [
 						{
 							pathType: "Prefix",
-							path: "/",
+							path: "/api",
 							backend: {
 								service: {
 									name: backendService.metadata.name,
@@ -271,7 +272,7 @@ const ingress = new k8s.networking.v1.Ingress(`${appName}-ingress`, {
 				}
 			},
 			{
-				host: webDomain,
+				host: domain,
 				http: {
 					paths: [
 						{

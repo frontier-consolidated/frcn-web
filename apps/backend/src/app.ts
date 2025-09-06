@@ -22,6 +22,7 @@ import { rateLimitMiddleware } from "./middleware/rateLimit.middleware";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/session";
 import { timestampMiddleware } from "./middleware/timestamp.middleware";
 import { createS3Client } from "./s3Client";
+import { getBasePath } from "./env";
 
 export interface CreateAppOptions {
 	origins: string[];
@@ -111,10 +112,11 @@ export async function createApp(config: CreateAppOptions) {
 		config.s3Config.clientSecret
 	);
 
-	// const cmsBus = await createCmsEventBus(config.cmsConfig.databaseUrl, config.cmsConfig.schema);
+	const router = express.Router();
 
 	const context: Context = {
 		expressApp: app,
+		router: router,
 		server,
 		apolloServer,
 		discordClient,
@@ -137,6 +139,12 @@ export async function createApp(config: CreateAppOptions) {
 			default: (context: Context, config: RouteConfig, appConfig: CreateAppOptions) => void;
 		};
 		module.default(context, config.routeConfig, config);
+	}
+
+	if (getBasePath() && getBasePath() !== "/") {
+		app.use(getBasePath(), router);
+	} else {
+		app.use(router);
 	}
 
 	app.use((err: Error | Error[], req: Request, res: Response, _next: NextFunction) => {

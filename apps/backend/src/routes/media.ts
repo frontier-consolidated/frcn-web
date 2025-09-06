@@ -49,7 +49,7 @@ export default function route(context: Context, config: RouteConfig) {
 
 	setupCache(fileCache);
 
-	context.expressApp.post(
+	context.router.post(
 		"/media/upload",
 		fileField("file", { maxFiles: 1, requireAttachment: true }),
 		async (req, res, next) => {
@@ -136,7 +136,7 @@ export default function route(context: Context, config: RouteConfig) {
 		}
 	);
 
-	context.expressApp.get("/media/:id", async (req, res) => {
+	context.router.get("/media/:id", async (req, res) => {
 		const cached = FILE_DATA_CACHE[req.params.id];
 
 		let filename: string;
@@ -158,7 +158,7 @@ export default function route(context: Context, config: RouteConfig) {
 		res.redirect(308, req.baseUrl + `/media/${req.params.id}/${filename}`);
 	});
 
-	context.expressApp.get("/media/:id/:slug", async (req, res, next) => {
+	context.router.get("/media/:id/:slug", async (req, res, next) => {
 		const { download } = req.query as { download?: string };
 
 		let cached = FILE_DATA_CACHE[req.params.id];

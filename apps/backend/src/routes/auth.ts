@@ -11,7 +11,7 @@ export default function route(context: Context, config: RouteConfig) {
 	const clientSecret = config.auth.clientSecret;
 	const scope = ["identify"];
 
-	context.expressApp.get("/oauth", (req, res) => {
+	context.router.get("/oauth", (req, res) => {
 		const { redirect_uri } = req.query as {
 			redirect_uri?: string;
 		};
@@ -46,7 +46,7 @@ export default function route(context: Context, config: RouteConfig) {
 		res.redirect(redirectUrl);
 	});
 
-	context.expressApp.get("/oauth/callback", async (req, res) => {
+	context.router.get("/oauth/callback", async (req, res) => {
 		const { code, state } = req.query as { code?: string; state?: string };
 
 		const { redirect_uri } = (
@@ -135,7 +135,7 @@ export default function route(context: Context, config: RouteConfig) {
 		res.redirect(redirect_uri ?? "/");
 	});
 
-	context.expressApp.get("/logout", async (req, res) => {
+	context.router.get("/logout", async (req, res) => {
 		await req.logout();
 		res.sendStatus(200);
 	});

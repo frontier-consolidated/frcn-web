@@ -2,7 +2,7 @@ import type { Context, RouteConfig } from "../context";
 import { getDomain } from "../env";
 
 export default function route(context: Context, config: RouteConfig) {
-	context.expressApp.put("/consent", (req, res) => {
+	context.router.put("/consent", (req, res) => {
 		let { action } = req.body as {
 			action?: "reject" | "necessary" | "all";
 		};

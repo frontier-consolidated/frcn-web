@@ -95,7 +95,7 @@ const CMS_EXPORT_SCHEMA = {
 export default function route(context: Context, _config: RouteConfig) {
 	const exportValidator = new Validator();
 
-	context.expressApp.get("/cms/export", async (req, res) => {
+	context.router.get("/cms/export", async (req, res) => {
 		if (!req.user) {
 			return res.status(401).send({
 				message: "Must be authenticated"
@@ -186,7 +186,7 @@ export default function route(context: Context, _config: RouteConfig) {
 		res.end(buffer);
 	});
 
-	context.expressApp.post(
+	context.router.post(
 		"/cms/import",
 		fileField("export", { maxFiles: 1, disk: false }),
 		async (req, res) => {

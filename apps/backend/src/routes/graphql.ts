@@ -113,7 +113,7 @@ export default async function route(context: Context, _: unknown, appConfig: Cre
 	context.apolloServer.addPlugin(PluginDrainWebSocketServer(wsCleanup));
 	await context.apolloServer.start();
 
-	context.expressApp.use(
+	context.router.use(
 		"/graphql",
 		expressMiddleware(context.apolloServer, {
 			context: function ({ req }) {
