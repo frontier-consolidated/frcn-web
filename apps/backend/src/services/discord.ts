@@ -28,9 +28,7 @@ async function getSystemGuild(client: DiscordClient) {
 	try {
 		const { discordGuildId } = await $system.getSystemSettings();
 
-		return (
-			client.guilds.cache.get(discordGuildId) ?? (await client.guilds.fetch(discordGuildId))
-		);
+		return client.guilds.cache.get(discordGuildId) ?? (await client.guilds.fetch(discordGuildId));
 	} catch (err) {
 		return null;
 	}
@@ -330,11 +328,14 @@ async function $init({ discordClient }: Context) {
 	const batchSize = 100;
 	for (let i = 0; i < Math.ceil(members.length / batchSize); i++) {
 		const batch = members.slice(i * batchSize, (i + 1) * batchSize);
-		setTimeout(async () => {
-			for (const member of batch) {
-				await diffCheckUser(member, null);
-			}
-		}, (i + 1) * 10000);
+		setTimeout(
+			async () => {
+				for (const member of batch) {
+					await diffCheckUser(member, null);
+				}
+			},
+			(i + 1) * 10000
+		);
 	}
 
 	logger.info("Discord client initiated");

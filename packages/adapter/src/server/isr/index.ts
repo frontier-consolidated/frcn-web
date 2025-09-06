@@ -22,13 +22,13 @@ let assetsDir: string;
 const isrRendered = new Map<string, boolean>();
 const invalidateIsrFiles = new Map<string, boolean>();
 
-export function configure_isr(opts: { server: Server, asset_dir: string }) {
+export function configure_isr(opts: { server: Server; asset_dir: string }) {
 	server = opts.server;
 	assetsDir = opts.asset_dir;
 }
 
 export function is_isr_route(pathname: string) {
-    return isr.has(pathname);
+	return isr.has(pathname);
 }
 
 export function invalidate_isr_route(pathname: string) {
@@ -66,7 +66,7 @@ async function compress_file(file: string, format: "gz" | "br" = "gz") {
 function mkdirp(dir: string) {
 	try {
 		fs.mkdirSync(dir, { recursive: true });
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (e: any) {
 		if (e.code === "EEXIST") {
 			if (!fs.statSync(dir).isDirectory()) {
@@ -106,7 +106,7 @@ function decode_uri(uri: string) {
 
 const escape_html_attr_dict = {
 	"&": "&amp;",
-	"\"": "&quot;"
+	'"': "&quot;"
 } as Record<string, string>;
 
 const escape_html_attr_regex = new RegExp(
@@ -148,7 +148,13 @@ function output_filename(path: string, is_html: boolean) {
 
 const REDIRECT = 3;
 
-async function save_isr_render(response: Response, body: Buffer, pathname: string, q: Queue, saved: Map<string, string>) {
+async function save_isr_render(
+	response: Response,
+	body: Buffer,
+	pathname: string,
+	q: Queue,
+	saved: Map<string, string>
+) {
 	const encoded = encodeURI(pathname);
 	const response_type = Math.floor(response.status / 100);
 
@@ -177,9 +183,7 @@ async function save_isr_render(response: Response, body: Buffer, pathname: strin
 					dest,
 					`<script>location.href=${devalue.uneval(
 						location
-					)};</script><meta http-equiv="refresh" content=${escape_html_attr(
-						`0;url=${location}`
-					)}>`
+					)};</script><meta http-equiv="refresh" content=${escape_html_attr(`0;url=${location}`)}>`
 				);
 			}
 		}
@@ -189,10 +193,10 @@ async function save_isr_render(response: Response, body: Buffer, pathname: strin
 
 	if (response.status === 200) {
 		mkdirp(dir);
-	
+
 		fs.writeFileSync(dest, body);
 		await Promise.all([compress_file(dest, "gz"), compress_file(dest, "br")]);
-		
+
 		console.log(`Successfully rendered isr route '${pathname}' to ${dest}`);
 	}
 

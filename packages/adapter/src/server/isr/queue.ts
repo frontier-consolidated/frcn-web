@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type Task = {
-    fn: () => Promise<any>,
-    fulfil: (value: any) => void,
-    reject: (error: Error) => void
+	fn: () => Promise<any>;
+	fulfil: (value: any) => void;
+	reject: (error: Error) => void;
 };
 
 export type Queue = ReturnType<typeof queue>;

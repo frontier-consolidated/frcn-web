@@ -53,7 +53,7 @@ export const user = writable<{ loading: boolean; adminMode: boolean; data: UserD
 									__permissions: data.roles.permissions,
 									primaryRole: data.roles.primaryRole,
 									roles: data.roles.roles
-							  }
+								}
 							: null
 					}));
 				}
@@ -72,7 +72,7 @@ export const user = writable<{ loading: boolean; adminMode: boolean; data: UserD
 								...data.user,
 								permissions: adminMode ? data.user.permissions : 0,
 								__permissions: data.user.permissions
-						  }
+							}
 						: null
 				});
 			})
@@ -94,7 +94,7 @@ export function toggleAdminMode(enabled?: boolean) {
 				? {
 						...value.data,
 						permissions: adminMode ? value.data.__permissions : 0
-				  }
+					}
 				: null
 		};
 	});
@@ -133,7 +133,7 @@ export async function login() {
 					...data.user,
 					permissions: obj.adminMode ? data.user.permissions : 0,
 					__permissions: data.user?.permissions
-			  }
+				}
 			: null
 	}));
 }

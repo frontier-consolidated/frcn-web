@@ -1,4 +1,3 @@
-
 import { REST, Routes, type RESTPostOAuth2AccessTokenResult, type APIUser } from "discord.js";
 
 import type { Context, RouteConfig } from "../context";
@@ -31,7 +30,7 @@ export default function route(context: Context, config: RouteConfig) {
 
 		const state = Buffer.from(
 			JSON.stringify({
-				redirect_uri,
+				redirect_uri
 			}),
 			"utf-8"
 		).toString("base64url");
@@ -41,7 +40,7 @@ export default function route(context: Context, config: RouteConfig) {
 			redirect_uri: getURL(req.protocol, "/oauth/callback").href,
 			response_type: "code",
 			scope: scope.join(","),
-			state,
+			state
 		});
 		const redirectUrl = `https://discord.com/api/oauth2/authorize?${params.toString()}`;
 		res.redirect(redirectUrl);
@@ -50,9 +49,9 @@ export default function route(context: Context, config: RouteConfig) {
 	context.expressApp.get("/oauth/callback", async (req, res) => {
 		const { code, state } = req.query as { code?: string; state?: string };
 
-		const { redirect_uri } = (state ? JSON.parse(
-			Buffer.from(state, "base64url").toString("utf-8")
-		) : {}) as {
+		const { redirect_uri } = (
+			state ? JSON.parse(Buffer.from(state, "base64url").toString("utf-8")) : {}
+		) as {
 			redirect_uri?: string;
 		};
 
@@ -63,9 +62,14 @@ export default function route(context: Context, config: RouteConfig) {
 				});
 			}
 			const url = new URL(redirect_uri);
-			url.searchParams.set("login_err", Buffer.from(JSON.stringify({
-				error: "Missing oauth code"
-			})).toString("base64url"));
+			url.searchParams.set(
+				"login_err",
+				Buffer.from(
+					JSON.stringify({
+						error: "Missing oauth code"
+					})
+				).toString("base64url")
+			);
 			return res.redirect(url.toString());
 		}
 
@@ -77,22 +81,25 @@ export default function route(context: Context, config: RouteConfig) {
 					redirect_uri: getURL(req.protocol, "/oauth/callback").href,
 					grant_type: "authorization_code",
 					scope: scope.join(","),
-					code,
+					code
 				}).toString(),
 				passThroughBody: true,
 				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-				},
+					"Content-Type": "application/x-www-form-urlencoded"
+				}
 			})) as RESTPostOAuth2AccessTokenResult;
 
 			const rest = new REST({ version: "10" }).setToken(authToken.access_token);
 			const discordUser = (await rest.get(Routes.user("@me"), {
 				auth: true,
-				authPrefix: "Bearer",
+				authPrefix: "Bearer"
 			})) as APIUser;
 
 			const adminIds = getAdminIds();
-			if (!adminIds.includes(discordUser.id) && !(await $discord.isInSystemGuild(context.discordClient, discordUser.id))) {
+			if (
+				!adminIds.includes(discordUser.id) &&
+				!(await $discord.isInSystemGuild(context.discordClient, discordUser.id))
+			) {
 				if (!redirect_uri) {
 					return res.status(400).send({
 						message: "Not in guild"
@@ -105,7 +112,7 @@ export default function route(context: Context, config: RouteConfig) {
 
 			const user = await $users.getOrCreateUser(discordUser, context.discordClient);
 			await $users.syncRoles(context.discordClient, user);
-			
+
 			await req.login(user);
 		} catch (err) {
 			if (!redirect_uri) {
@@ -114,9 +121,14 @@ export default function route(context: Context, config: RouteConfig) {
 				});
 			}
 			const url = new URL(redirect_uri);
-			url.searchParams.set("login_err", Buffer.from(JSON.stringify({
-				error: (err as Error).message
-			})).toString("base64url"));
+			url.searchParams.set(
+				"login_err",
+				Buffer.from(
+					JSON.stringify({
+						error: (err as Error).message
+					})
+				).toString("base64url")
+			);
 			return res.redirect(url.toString());
 		}
 

@@ -24,7 +24,7 @@
 		if (el)
 			el.scrollIntoView({
 				behavior: instant ? "instant" : "smooth",
-				block: "center",
+				block: "center"
 			});
 	}
 	function scrollToMinute(minute: number, instant?: boolean) {
@@ -32,7 +32,7 @@
 		if (el)
 			el.scrollIntoView({
 				behavior: instant ? "instant" : "smooth",
-				block: "center",
+				block: "center"
 			});
 	}
 
@@ -82,16 +82,17 @@
 		setMinute(minute.valueOf());
 	}
 
-	const spanClass = "block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer";
+	const spanClass =
+		"block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer";
 	const activeClass = "bg-primary-600 dark:hover:bg-primary-700";
 	const inactiveClass = "dark:hover:bg-gray-600";
 </script>
 
 <div>
-	<div class="flex justify-between items-center mb-2 p-1">
+	<div class="mb-2 flex items-center justify-between p-1">
 		<Input
 			bind:value={inputHour}
-			class="w-14 text-center no-inner-spin rounded"
+			class="no-inner-spin w-14 rounded text-center"
 			type="number"
 			min="0"
 			max="23"
@@ -99,14 +100,14 @@
 		<span class="font-bold">:</span>
 		<Input
 			bind:value={inputMinute}
-			class="w-14 text-center no-inner-spin rounded"
+			class="no-inner-spin w-14 rounded text-center"
 			type="number"
 			min="0"
 			max="59"
 		/>
 	</div>
-	<div class="grid grid-cols-2 h-56 w-32">
-		<div use:initHours class="overflow-y-scroll no-scrollbar">
+	<div class="grid h-56 w-32 grid-cols-2">
+		<div use:initHours class="no-scrollbar overflow-y-scroll">
 			{#each hours as hour}
 				<span
 					role="button"
@@ -122,7 +123,7 @@
 				</span>
 			{/each}
 		</div>
-		<div use:initMinutes class="overflow-y-scroll no-scrollbar">
+		<div use:initMinutes class="no-scrollbar overflow-y-scroll">
 			{#each minutes as minute}
 				<span
 					role="button"

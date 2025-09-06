@@ -11,7 +11,7 @@ import {
 	system,
 	securityPost,
 	raceTrack,
-	jumpPoint,
+	jumpPoint
 } from "../helpers";
 
 export const Stanton = system("Stanton", [
@@ -48,29 +48,17 @@ export const Stanton = system("Stanton", [
 		outpost("HDES-Calthrope (NA)"),
 		station("Everus Harbor"),
 		commArray("Comm Array ST1-61"),
-		moon("Arial", [
-			outpost("HDMS-Bezdek"),
-			outpost("HDMS-Lathan"),
-			commArray("Comm Array ST1-13"),
-		]),
+		moon("Arial", [outpost("HDMS-Bezdek"), outpost("HDMS-Lathan"), commArray("Comm Array ST1-13")]),
 		moon("Aberdeen", [
 			outpost("HDMS-Anderson"),
 			outpost("HDMS-Norgaard"),
 			outpost("HDES-Dobbs (NA)"),
 			outpost("Barton Flats Aid Shelter"),
 			prison("Klescher Rehabilitation Facility"),
-			commArray("Comm Array ST1-92"),
+			commArray("Comm Array ST1-92")
 		]),
-		moon("Magda", [
-			outpost("HDMS-Hahn"),
-			outpost("HDMS-Perlman"),
-			commArray("Comm Array ST1-48"),
-		]),
-		moon("Ita", [
-			outpost("HDMS-Ryder"),
-			outpost("HDMS-Woodruff"),
-			commArray("Comm Array ST1-02"),
-		]),
+		moon("Magda", [outpost("HDMS-Hahn"), outpost("HDMS-Perlman"), commArray("Comm Array ST1-48")]),
+		moon("Ita", [outpost("HDMS-Ryder"), outpost("HDMS-Woodruff"), commArray("Comm Array ST1-02")])
 	]),
 	planet("Crusader", [
 		city("Orison"),
@@ -94,7 +82,7 @@ export const Stanton = system("Stanton", [
 			securityPost("Security Post Dipur"),
 			securityPost("Security Post Criska"),
 			securityPost("Security Post Kareah", true),
-			commArray("Comm Array ST2-28"),
+			commArray("Comm Array ST2-28")
 		]),
 		moon("Daymar", [
 			outpost("Brio's Breaker Yard"),
@@ -114,7 +102,7 @@ export const Stanton = system("Stanton", [
 			securityPost("Security Post Prashad"),
 			securityPost("Security Post Moluto"),
 			station("Covalex Shipping Hub Gundo"),
-			commArray("Comm Array ST2-47"),
+			commArray("Comm Array ST2-47")
 		]),
 		moon("Yela", [
 			outpost("NT-999-XX"),
@@ -133,8 +121,8 @@ export const Stanton = system("Stanton", [
 			securityPost("Security Post Opal"),
 			raceTrack("Miner's Lament", true),
 			station("Grim HEX"),
-			commArray("Comm Array ST2-76"),
-		]),
+			commArray("Comm Array ST2-76")
+		])
 	]),
 	planet("ArcCorp", [
 		city("Area18"),
@@ -147,10 +135,10 @@ export const Stanton = system("Stanton", [
 		station("Baijini Point"),
 		commArray("Comm Array ST3-90"),
 		moon("Lyria", [
-			outpost("\"The Pit\""),
+			outpost('"The Pit"'),
 			outpost("<= UNINITIALIZED =>"),
 			outpost("Elsewhere"),
-			outpost("\"Wheeler's\""),
+			outpost('"Wheeler\'s"'),
 			outpost("The Orphanage"),
 			outpost("Humboldt Mines"),
 			outpost("Loveridge Mineral Reserve"),
@@ -165,7 +153,7 @@ export const Stanton = system("Stanton", [
 			outpost("Shubin Processing Facility SPAL-12"),
 			outpost("Shubin Processing Facility SPAL-3"),
 			outpost("Teddy's Playhouse"),
-			commArray("Comm Array ST3-18"),
+			commArray("Comm Array ST3-18")
 		]),
 		moon("Wala", [
 			outpost("Good Times Temple"),
@@ -179,8 +167,8 @@ export const Stanton = system("Stanton", [
 			outpost("ArcCorp Mining Area 048"),
 			outpost("ArcCorp Mining Area 056"),
 			outpost("ArcCorp Mining Area 061"),
-			commArray("Comm Array ST3-35"),
-		]),
+			commArray("Comm Array ST3-35")
+		])
 	]),
 	planet("microTech", [
 		city("New Babbage"),
@@ -223,33 +211,30 @@ export const Stanton = system("Stanton", [
 			outpost("Shubin Processing Facility SPMC-10"),
 			outpost("Shubin Mining Facility SMCa-6"),
 			outpost("Shubin Mining Facility SMCa-8"),
-			commArray("Comm Array ST4-31"),
+			commArray("Comm Array ST4-31")
 		]),
 		moon("Clio", [
 			outpost("Rayari McGrath Research Outpost"),
 			outpost("Rayari Cantwell Research Outpost"),
-			commArray("Comm Array ST4-59"),
+			commArray("Comm Array ST4-59")
 		]),
 		moon("Euterpe", [
 			outpost("The Icebreaker"),
 			outpost("Bud's Growery"),
 			outpost("Devlin Scrap & Salvage"),
-			commArray("Comm Array ST4-64"),
-		]),
+			commArray("Comm Array ST4-64")
+		])
 	]),
 	lagrangePoint("HUR L1", [astroidField("HUR L1-A"), station("HUR-L1 Green Glade Station")]),
 	lagrangePoint("HUR L2", [astroidField("HUR L2-A"), station("HUR-L2 Faithful Dream Station")]),
-	lagrangePoint("HUR L3", [
-		astroidField("HUR L3-A"),
-		station("HUR-L3 Thundering Express Station"),
-	]),
+	lagrangePoint("HUR L3", [astroidField("HUR L3-A"), station("HUR-L3 Thundering Express Station")]),
 	lagrangePoint("HUR L4", [astroidField("HUR L4-A"), station("HUR-L4 Melodic Fields Station")]),
 	lagrangePoint("HUR L5", [astroidField("HUR L5-A"), station("HUR-L5 High Course Station")]),
 	lagrangePoint("CRU L1", [astroidField("CRU L1-A"), station("CRU-L1 Ambitious Dream Station")]),
 	lagrangePoint("CRU L2", [
 		astroidField("CRU L2-A"),
 		astroidField("CRU L2-B"),
-		astroidField("CRU L2-C"),
+		astroidField("CRU L2-C")
 	]),
 	lagrangePoint("CRU L3", [astroidField("CRU L3-A")]),
 	lagrangePoint("CRU L4", [astroidField("CRU L4-A"), station("CRU-L4 Shallow Fields Station")]),
@@ -264,12 +249,12 @@ export const Stanton = system("Stanton", [
 		astroidField("MIC L2-A"),
 		astroidField("MIC L2-B"),
 		astroidField("MIC L2-C"),
-		station("MIC-L2 Long Forest Station"),
+		station("MIC-L2 Long Forest Station")
 	]),
 	lagrangePoint("MIC L3", [astroidField("MIC L3-A"), station("MIC-L3 Endless Odyssey Station")]),
 	lagrangePoint("MIC L4", [astroidField("MIC L4-A"), station("MIC-L4 Red Crossroads Station")]),
 	lagrangePoint("MIC L5", [astroidField("MIC L5-A"), station("MIC-L5 Modern Icarus Station")]),
 	jumpPoint("Stanton - Pyro Jump Point", [station("Pyro Gateway")]),
 	jumpPoint("Stanton - Terra Jump Point", [station("Terra Gateway")]),
-	jumpPoint("Stanton - Magnus Jump Point", [station("Magnus Gateway")]),
+	jumpPoint("Stanton - Magnus Jump Point", [station("Magnus Gateway")])
 ]);

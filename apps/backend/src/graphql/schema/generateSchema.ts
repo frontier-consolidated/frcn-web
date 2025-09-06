@@ -19,7 +19,7 @@ function generatePagedTypes(typeDefs: string) {
 
 		const type = match.groups?.type;
 		if (!type) continue;
-		
+
 		extTypeDefs += `
 type ${match[0]} {
     items: [${type}!]!
@@ -38,7 +38,7 @@ function generateEnumTypes(typeDefs: string) {
 	let extTypeDefs = typeDefs;
 
 	for (const [name, obj] of Object.entries(enums)) {
-		const keys = Object.keys(obj).filter(key => !(Number(key) >= 0));
+		const keys = Object.keys(obj).filter((key) => !(Number(key) >= 0));
 
 		extTypeDefs += `
 enum ${name} {
@@ -50,11 +50,11 @@ enum ${name} {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const inputTypeDefs = fs.readFileSync(path.join(__dirname, "schema.graphql"), {
-	encoding: "utf-8",
+	encoding: "utf-8"
 });
 
 const typeDefs = generateEnumTypes(generatePagedTypes(inputTypeDefs + "\n# GENERATED TYPES:\n"));
 
 fs.writeFileSync(path.join(__dirname, "schema.generated.graphql"), typeDefs, {
-	encoding: "utf-8",
+	encoding: "utf-8"
 });

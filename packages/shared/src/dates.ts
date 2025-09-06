@@ -59,9 +59,7 @@ export function isCurrentMonth(month: Date, date: Date) {
 }
 
 export function isSelected(selected: Date | null, date: Date) {
-	return (
-		selected && new Date(date).setHours(0, 0, 0, 0) == new Date(selected).setHours(0, 0, 0, 0)
-	);
+	return selected && new Date(date).setHours(0, 0, 0, 0) == new Date(selected).setHours(0, 0, 0, 0);
 }
 
 export function isToday(date: Date) {
@@ -89,7 +87,7 @@ export function toDurationComponents(value?: number | null) {
 			seconds: 0,
 			minutes: 0,
 			hours: 0,
-			days: 0,
+			days: 0
 		};
 	}
 	const seconds = Math.floor(value / 1000);
@@ -98,7 +96,7 @@ export function toDurationComponents(value?: number | null) {
 		seconds: seconds % 60,
 		minutes: Math.floor(seconds / 60) % 60,
 		hours: Math.floor(seconds / 3600) % 24,
-		days: Math.floor(seconds / 86400),
+		days: Math.floor(seconds / 86400)
 	};
 }
 

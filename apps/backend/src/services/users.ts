@@ -51,7 +51,7 @@ async function getUsers(filter: GetUsersFilter, page: number = 0, limit: number 
 							mode: "insensitive"
 						}
 					}
-			  ]
+				]
 			: undefined
 	};
 
@@ -113,7 +113,7 @@ async function getOrCreateUser(discordUser: DiscordUser | APIUser, discordClient
 
 	const avatarUrl = discordUser.avatar
 		? "https://cdn.discordapp.com" +
-		  CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP)
+			CDNRoutes.userAvatar(discordUser.id, discordUser.avatar, ImageFormat.WebP)
 		: "";
 
 	const now = new Date();
@@ -332,7 +332,7 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 							connect: {
 								id: newPrimaryRole.id
 							}
-					  }
+						}
 					: undefined,
 				roles:
 					rolesToGive.length > 0 || rolesToRemove.length > 0
@@ -341,7 +341,7 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 									rolesToGive.length > 0
 										? rolesToGive.map((role) => ({
 												roleId: role.id
-										  }))
+											}))
 										: undefined,
 								deleteMany:
 									rolesToRemove.length > 0
@@ -349,9 +349,9 @@ async function syncRoles(discordClient: DiscordClient, user: User) {
 												roleId: {
 													in: rolesToRemove.map((role) => role.id)
 												}
-										  }
+											}
 										: undefined
-						  }
+							}
 						: undefined
 			}
 		});
@@ -375,7 +375,7 @@ async function unauthenticateSessions(user: User) {
 						disconnect: session.userId
 							? {
 									id: session.userId
-							  }
+								}
 							: undefined
 					},
 					data: JSON.stringify(data)

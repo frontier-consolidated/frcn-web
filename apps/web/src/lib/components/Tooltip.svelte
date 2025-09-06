@@ -12,6 +12,10 @@
 <slot name="icon">
 	<InfoCircleSolid {id} {size} class={iconPlacement == "right" ? "ms-2" : "me-2"} />
 </slot>
-<Popover triggeredBy={triggeredBy ? triggeredBy : id ? `#${id}` : undefined} {...$$restProps} class={twMerge("font-medium text-sm", $$restProps.class)}>
+<Popover
+	triggeredBy={triggeredBy ? triggeredBy : id ? `#${id}` : undefined}
+	{...$$restProps}
+	class={twMerge("text-sm font-medium", $$restProps.class)}
+>
 	<slot />
 </Popover>

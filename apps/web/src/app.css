@@ -5,7 +5,9 @@
 /* Fractul */
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Hairline"), local("Fractul-Hairline"),
+	src:
+		local("Fractul Hairline"),
+		local("Fractul-Hairline"),
 		url("/fonts/Fractul-Hairline.woff2") format("woff2"),
 		url("/fonts/Fractul-Hairline.woff") format("woff");
 	font-weight: 100;
@@ -13,7 +15,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Thin"), local("Fractul-Thin"),
+	src:
+		local("Fractul Thin"),
+		local("Fractul-Thin"),
 		url("/fonts/Fractul-Thin.woff2") format("woff2"),
 		url("/fonts/Fractul-Thin.woff") format("woff");
 	font-weight: 200;
@@ -21,7 +25,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Light"), local("Fractul-Light"),
+	src:
+		local("Fractul Light"),
+		local("Fractul-Light"),
 		url("/fonts/Fractul-Light.woff2") format("woff2"),
 		url("/fonts/Fractul-Light.woff") format("woff");
 	font-weight: 300;
@@ -29,7 +35,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Regular"), local("Fractul-Regular"),
+	src:
+		local("Fractul Regular"),
+		local("Fractul-Regular"),
 		url("/fonts/Fractul-Regular.woff2") format("woff2"),
 		url("/fonts/Fractul-Regular.woff") format("woff");
 	font-weight: 400;
@@ -37,7 +45,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Medium"), local("Fractul-Medium"),
+	src:
+		local("Fractul Medium"),
+		local("Fractul-Medium"),
 		url("/fonts/Fractul-Medium.woff2") format("woff2"),
 		url("/fonts/Fractul-Medium.woff") format("woff");
 	font-weight: 500;
@@ -45,7 +55,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul SemiBold"), local("Fractul-SemiBold"),
+	src:
+		local("Fractul SemiBold"),
+		local("Fractul-SemiBold"),
 		url("/fonts/Fractul-SemiBold.woff2") format("woff2"),
 		url("/fonts/Fractul-SemiBold.woff") format("woff");
 	font-weight: 600;
@@ -53,7 +65,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Bold"), local("Fractul-Bold"),
+	src:
+		local("Fractul Bold"),
+		local("Fractul-Bold"),
 		url("/fonts/Fractul-Bold.woff2") format("woff2"),
 		url("/fonts/Fractul-Bold.woff") format("woff");
 	font-weight: 700;
@@ -61,7 +75,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul ExtraBold"), local("Fractul-ExtraBold"),
+	src:
+		local("Fractul ExtraBold"),
+		local("Fractul-ExtraBold"),
 		url("/fonts/Fractul-ExtraBold.woff2") format("woff2"),
 		url("/fonts/Fractul-ExtraBold.woff") format("woff");
 	font-weight: 800;
@@ -69,7 +85,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Black"), local("Fractul-Black"),
+	src:
+		local("Fractul Black"),
+		local("Fractul-Black"),
 		url("/fonts/Fractul-Black.woff2") format("woff2"),
 		url("/fonts/Fractul-Black.woff") format("woff");
 	font-weight: 900;
@@ -78,7 +96,9 @@
 
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Hairline Italic"), local("Fractul-HairlineItalic"),
+	src:
+		local("Fractul Hairline Italic"),
+		local("Fractul-HairlineItalic"),
 		url("/fonts/Fractul-HairlineItalic.woff2") format("woff2"),
 		url("/fonts/Fractul-HairlineItalic.woff") format("woff");
 	font-weight: 100;
@@ -86,7 +106,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Thin Italic"), local("Fractul-ThinItalic"),
+	src:
+		local("Fractul Thin Italic"),
+		local("Fractul-ThinItalic"),
 		url("/fonts/Fractul-ThinItalic.woff2") format("woff2"),
 		url("/fonts/Fractul-ThinItalic.woff") format("woff");
 	font-weight: 200;
@@ -94,7 +116,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Light Italic"), local("Fractul-LightItalic"),
+	src:
+		local("Fractul Light Italic"),
+		local("Fractul-LightItalic"),
 		url("/fonts/Fractul-LightItalic.woff2") format("woff2"),
 		url("/fonts/Fractul-LightItalic.woff") format("woff");
 	font-weight: 300;
@@ -102,7 +126,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Italic"), local("Fractul-Italic"),
+	src:
+		local("Fractul Italic"),
+		local("Fractul-Italic"),
 		url("/fonts/Fractul-Italic.woff2") format("woff2"),
 		url("/fonts/Fractul-Italic.woff") format("woff");
 	font-weight: 400;
@@ -110,7 +136,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Medium Italic"), local("Fractul-MediumItalic"),
+	src:
+		local("Fractul Medium Italic"),
+		local("Fractul-MediumItalic"),
 		url("/fonts/Fractul-MediumItalic.woff2") format("woff2"),
 		url("/fonts/Fractul-MediumItalic.woff") format("woff");
 	font-weight: 500;
@@ -118,7 +146,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul SemiBold Italic"), local("Fractul-SemiBoldItalic"),
+	src:
+		local("Fractul SemiBold Italic"),
+		local("Fractul-SemiBoldItalic"),
 		url("/fonts/Fractul-SemiBoldItalic.woff2") format("woff2"),
 		url("/fonts/Fractul-SemiBoldItalic.woff") format("woff");
 	font-weight: 600;
@@ -126,7 +156,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Bold Italic"), local("Fractul-BoldItalic"),
+	src:
+		local("Fractul Bold Italic"),
+		local("Fractul-BoldItalic"),
 		url("/fonts/Fractul-BoldItalic.woff2") format("woff2"),
 		url("/fonts/Fractul-BoldItalic.woff") format("woff");
 	font-weight: 700;
@@ -134,7 +166,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul ExtraBold Italic"), local("Fractul-ExtraBoldItalic"),
+	src:
+		local("Fractul ExtraBold Italic"),
+		local("Fractul-ExtraBoldItalic"),
 		url("/fonts/Fractul-ExtraBoldItalic.woff2") format("woff2"),
 		url("/fonts/Fractul-ExtraBoldItalic.woff") format("woff");
 	font-weight: 800;
@@ -142,7 +176,9 @@
 }
 @font-face {
 	font-family: "Fractul";
-	src: local("Fractul Black Italic"), local("Fractul-BlackItalic"),
+	src:
+		local("Fractul Black Italic"),
+		local("Fractul-BlackItalic"),
 		url("/fonts/Fractul-BlackItalic.woff2") format("woff2"),
 		url("/fonts/Fractul-BlackItalic.woff") format("woff");
 	font-weight: 900;

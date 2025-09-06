@@ -34,10 +34,7 @@ export async function diffCheckUser(
 	const currentConnectedDiscordRoles = currentUserRoles.filter((role) => !!role.discordId);
 
 	if (oldMember) {
-		const { added, removed } = $discord.getGuildMemberRoleDiffs(
-			oldMember.roles,
-			newMember.roles
-		);
+		const { added, removed } = $discord.getGuildMemberRoleDiffs(oldMember.roles, newMember.roles);
 		for (const discordRole of added) {
 			const role = await $roles.getRoleByDiscordId(discordRole.id);
 			if (!role) continue;
@@ -149,7 +146,7 @@ export async function diffCheckUser(
 							connect: {
 								id: newPrimaryRole.id
 							}
-					  }
+						}
 					: undefined,
 				roles:
 					rolesToGive.length > 0 || rolesToRemove.length > 0
@@ -158,7 +155,7 @@ export async function diffCheckUser(
 									rolesToGive.length > 0
 										? rolesToGive.map((role) => ({
 												roleId: role.id
-										  }))
+											}))
 										: undefined,
 								deleteMany:
 									rolesToRemove.length > 0
@@ -166,9 +163,9 @@ export async function diffCheckUser(
 												roleId: {
 													in: rolesToRemove.map((role) => role.id)
 												}
-										  }
+											}
 										: undefined
-						  }
+							}
 						: undefined
 			}
 		});

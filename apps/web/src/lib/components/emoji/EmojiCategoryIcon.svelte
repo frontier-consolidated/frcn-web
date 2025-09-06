@@ -8,7 +8,7 @@
 		GiftBoxSolid,
 		HeartSolid,
 		FlagOutline,
-		ExclamationCircleSolid,
+		ExclamationCircleSolid
 	} from "flowbite-svelte-icons";
 	import type { ComponentType, SvelteComponent } from "svelte";
 
@@ -61,7 +61,12 @@
 </script>
 
 {#if imageSrc}
-	<img src={imageSrc} alt="Emoji category icon" class="shrink-0 w-6 h-6 me-2 object-contain" {...$$restProps} />
+	<img
+		src={imageSrc}
+		alt="Emoji category icon"
+		class="me-2 h-6 w-6 shrink-0 object-contain"
+		{...$$restProps}
+	/>
 {:else}
-	<svelte:component this={icon} class="shrink-0 w-6 h-6 me-2" {...$$restProps} />
+	<svelte:component this={icon} class="me-2 h-6 w-6 shrink-0" {...$$restProps} />
 {/if}

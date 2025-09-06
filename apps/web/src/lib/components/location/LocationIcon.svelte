@@ -43,7 +43,7 @@
 </script>
 
 {#if icon != null}
-	<svelte:component this={icon} class="shrink-0 w-6 h-6 me-2" {...$$restProps} />
+	<svelte:component this={icon} class="me-2 h-6 w-6 shrink-0" {...$$restProps} />
 {:else}
-	<svg class="w-0 h-0"></svg>
+	<svg class="h-0 w-0"></svg>
 {/if}

@@ -14,35 +14,35 @@
 	let searchInput = $search;
 </script>
 
-<Head
-	title="My Events"
-	description="My events"
-/>
+<Head title="My Events" description="My events" />
 
-<div class="flex flex-col mx-auto w-full max-w-6xl p-4 mt-24">
-	<Heading tag="h1" class="font-medium text-4xl">My Events</Heading>
+<div class="mx-auto mt-24 flex w-full max-w-6xl flex-col p-4">
+	<Heading tag="h1" class="text-4xl font-medium">My Events</Heading>
 	<Hr />
-	<section class="flex flex-col mt-4">
+	<section class="mt-4 flex flex-col">
 		<div>
-			<div class="flex flex-col sm:flex-row gap-2">
-				<Search size="md" placeholder="Search by name" class="sm:max-w-[400px] rounded"
-					bind:value={searchInput} 
+			<div class="flex flex-col gap-2 sm:flex-row">
+				<Search
+					size="md"
+					placeholder="Search by name"
+					class="rounded sm:max-w-[400px]"
+					bind:value={searchInput}
 					on:keydown={(e) => {
 						if (e.key === "Enter") search.set(searchInput);
-					}} 
+					}}
 					on:blur={() => {
 						search.set(searchInput);
-					}} 
+					}}
 				/>
-				<div class="shrink-0 flex flex-col justify-end min-[480px]:flex-row gap-2">
-					<Button color="alternative" class="md:flex-1 sm:shrink-0" href="/events">
+				<div class="flex shrink-0 flex-col justify-end gap-2 min-[480px]:flex-row">
+					<Button color="alternative" class="sm:shrink-0 md:flex-1" href="/events">
 						All Events
 					</Button>
 					<CreateEventButton />
 				</div>
 			</div>
 		</div>
-		<div class="flex flex-col gap-2 mt-6">
+		<div class="mt-6 flex flex-col gap-2">
 			{#each data.events as event}
 				<EventCard {event} dependency="app:my-events" />
 			{/each}

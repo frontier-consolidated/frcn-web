@@ -23,11 +23,11 @@ export type RouteConfig = {
 	auth: {
 		clientId: string;
 		clientSecret: string;
-	},
+	};
 	consent: {
 		cookie: string;
-	},
+	};
 	files: {
 		bucketName: string;
-	}
+	};
 };

@@ -24,10 +24,12 @@
 </Head>
 
 <PageHero srcset={heroImageSrcset}>
-	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">{index?.getTitle() ? index?.getTitle() : "Frontier Organisation"}</Heading>
+	<Heading tag="h1" class="text-4xl font-medium text-white drop-shadow-md sm:text-5xl"
+		>{index?.getTitle() ? index?.getTitle() : "Frontier Organisation"}</Heading
+	>
 	<p class="text-slate-400 drop-shadow-md">{index?.getSubTitle() ? index?.getSubTitle() : ""}</p>
 </PageHero>
-<section class="mt-2 flex flex-col gap-8 p-4 w-full max-w-6xl mx-auto">
+<section class="mx-auto mt-2 flex w-full max-w-6xl flex-col gap-8 p-4">
 	{#if index}
 		{#each index.getChildrenOfType(CMSContainerType.AboutSection) as section}
 			<CmsAboutSectionRenderer container={section} />

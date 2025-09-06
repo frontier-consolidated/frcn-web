@@ -11,8 +11,8 @@ export async function seed(database: typeof Database) {
 		where: { unique: true },
 		update: {},
 		create: {
-			discordGuildId: "",
-		},
+			discordGuildId: ""
+		}
 	});
 
 	const roles = await database.userRole.findMany();
@@ -36,13 +36,13 @@ export async function seed(database: typeof Database) {
 	if (!adminRole) {
 		adminRole = await database.$transaction(async (tx) => {
 			await tx.$executeRaw`UPDATE "user"."roles" SET "order" = "order" + 1 WHERE "order" >= 1`;
-			
+
 			return await tx.userRole.create({
 				data: {
 					name: "Admin",
 					permissions: permissions([Permission.Admin]),
 					order: 1
-				},
+				}
 			});
 		});
 
@@ -52,14 +52,14 @@ export async function seed(database: typeof Database) {
 	if (!defaultRole) {
 		defaultRole = await database.$transaction(async (tx) => {
 			await tx.$executeRaw`UPDATE "user"."roles" SET "order" = "order" + 1 WHERE "order" >= 0`;
-			
+
 			return await tx.userRole.create({
 				data: {
 					name: "default",
 					primary: true,
 					permissions: 0,
 					order: 0
-				},
+				}
 			});
 		});
 
@@ -80,8 +80,8 @@ export async function seed(database: typeof Database) {
 				avatarUrl: "",
 				primaryRole: {
 					connect: {
-						id: defaultRole.id,
-					},
+						id: defaultRole.id
+					}
 				},
 				roles: {
 					create: {
@@ -89,12 +89,12 @@ export async function seed(database: typeof Database) {
 					}
 				},
 				status: {
-					create: {},
+					create: {}
 				},
 				settings: {
-					create: {},
-				},
-			},
+					create: {}
+				}
+			}
 		});
 		logger.log(`Upsert Admin user '${id}'`);
 	}

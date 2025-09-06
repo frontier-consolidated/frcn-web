@@ -7,7 +7,7 @@ import type {
 	DiscordEmoji,
 	DiscordGuild,
 	DiscordRole,
-	Resolvers,
+	Resolvers
 } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
 import { gqlErrorNotFound } from "../gqlError";
@@ -30,13 +30,11 @@ export async function resolveDiscordGuild(guild: string | Guild, context: GQLCon
 
 	return {
 		id: guildObj.id,
-		name: guildObj.name,
+		name: guildObj.name
 	} satisfies DiscordGuild;
 }
 
-export function resolveDiscordChannel(
-	channel: GuildBasedChannel,
-) {
+export function resolveDiscordChannel(channel: GuildBasedChannel) {
 	let name = channel.name;
 	switch (channel.type) {
 		case ChannelType.GuildCategory:
@@ -55,7 +53,7 @@ export function resolveDiscordChannel(
 		name,
 		type: ChannelType[channel.type],
 		parentId: channel.parentId,
-		sendMessages: false, // field-resolved
+		sendMessages: false // field-resolved
 	} satisfies WithModel<DiscordChannel, GuildBasedChannel>;
 }
 
@@ -69,14 +67,14 @@ export async function resolveDiscordRole(role: string | Role, context: GQLContex
 
 		if (!guildRole)
 			throw gqlErrorNotFound(`Discord role not found: ${role}`, {
-				roleId: role,
+				roleId: role
 			});
 	}
 
 	return {
 		id: guildRole.id,
 		name: guildRole.name,
-		color: guildRole.hexColor,
+		color: guildRole.hexColor
 	} satisfies DiscordRole;
 }
 
@@ -90,7 +88,7 @@ export async function resolveDiscordEmoji(emoji: string | GuildEmoji, context: G
 
 		if (!guildEmoji) {
 			throw gqlErrorNotFound(`Discord emoji not found: ${emoji}`, {
-				emojiId: emoji,
+				emojiId: emoji
 			});
 		}
 	}
@@ -100,8 +98,8 @@ export async function resolveDiscordEmoji(emoji: string | GuildEmoji, context: G
 		name: guildEmoji.name ?? "",
 		image: guildEmoji.imageURL({
 			extension: "webp",
-			size: 64,
-		}),
+			size: 64
+		})
 	} satisfies DiscordEmoji;
 }
 
@@ -120,25 +118,35 @@ export const discordResolvers: Resolvers = {
 			return guilds.map((guild) => resolveDiscordGuild(guild, context));
 		},
 		async getAllDiscordTextChannels(source, args, context) {
-			const channels = await $discord.getAllTextChannels(context.app.discordClient, args.guildId ?? undefined);
+			const channels = await $discord.getAllTextChannels(
+				context.app.discordClient,
+				args.guildId ?? undefined
+			);
 			return channels.map(resolveDiscordChannel);
 		},
 		async getAllDiscordVoiceChannels(source, args, context) {
-			const channels = await $discord.getAllVoiceChannels(context.app.discordClient, args.guildId ?? undefined);
+			const channels = await $discord.getAllVoiceChannels(
+				context.app.discordClient,
+				args.guildId ?? undefined
+			);
 			return channels.map(resolveDiscordChannel);
 		},
 		async getAllDiscordCategories(source, args, context) {
-			const categories = await $discord.getAllCategories(context.app.discordClient, args.guildId ?? undefined);
+			const categories = await $discord.getAllCategories(
+				context.app.discordClient,
+				args.guildId ?? undefined
+			);
 			return categories.map(resolveDiscordChannel);
 		},
 		async getAllDiscordEmojis(source, args, context) {
 			const guild = await $discord.getSystemGuild(context.app.discordClient);
-			if (!guild) return {
-				serverName: "!UNKNOWN",
-				serverAvatar: null,
-				emojis: []
-			};
-			
+			if (!guild)
+				return {
+					serverName: "!UNKNOWN",
+					serverAvatar: null,
+					emojis: []
+				};
+
 			const emojis = await $discord.getAllEmojis(context.app.discordClient);
 			return {
 				serverName: guild.name,
@@ -150,8 +158,12 @@ export const discordResolvers: Resolvers = {
 			};
 		},
 		async getAllDiscordRoles(source, args, context) {
-			const roles = await $discord.getAllRoles(context.app.discordClient, args.guildId, args.everyone ?? undefined);
+			const roles = await $discord.getAllRoles(
+				context.app.discordClient,
+				args.guildId,
+				args.everyone ?? undefined
+			);
 			return roles.map((role) => resolveDiscordRole(role, context));
-		},
-	},
+		}
+	}
 };

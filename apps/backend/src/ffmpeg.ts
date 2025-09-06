@@ -7,14 +7,14 @@ fluentFfmpeg.setFfprobePath(ffprobeInstall.path);
 
 export function ffmpeg(fn: (command: fluentFfmpeg.FfmpegCommand) => fluentFfmpeg.FfmpegCommand) {
 	return new Promise<void>((resolve, reject) => {
-        const command = fluentFfmpeg({
-            niceness: 20,
-        });
+		const command = fluentFfmpeg({
+			niceness: 20
+		});
 		fn(command);
 		// @ts-ignore
 		command.on("end", resolve);
 		// @ts-ignore
-        command.on("error", reject);
+		command.on("error", reject);
 	});
 }
 

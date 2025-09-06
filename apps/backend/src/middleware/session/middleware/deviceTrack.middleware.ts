@@ -27,7 +27,7 @@ export const middleware: MiddlewareHandler = function ({ deviceTrack, consent, d
 				maxAge: 365 * 24 * 3600 * 1000,
 				httpOnly: true,
 				secure: req.secure,
-				sameSite: "lax",
+				sameSite: "lax"
 			});
 		}
 
@@ -40,7 +40,7 @@ export const middleware: MiddlewareHandler = function ({ deviceTrack, consent, d
 					next();
 					return;
 				}
-	
+
 				if (!req.session.deviceId) {
 					req.session.deviceId = deviceId;
 					next();

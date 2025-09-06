@@ -41,7 +41,7 @@
 		cleanup();
 	}}
 >
-	<span class="font-medium text-xl text-gray-800 dark:text-white">We use cookies</span>
+	<span class="text-xl font-medium text-gray-800 dark:text-white">We use cookies</span>
 	<p>
 		We use cookies to enhance site functionality, improve your site experience and track your
 		current login session. You may accept or reject by clicking below or at anytime by clicking

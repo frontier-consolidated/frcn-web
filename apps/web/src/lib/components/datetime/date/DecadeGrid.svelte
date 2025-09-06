@@ -15,13 +15,13 @@
 	}
 </script>
 
-<div class="grid grid-cols-3 w-64">
+<div class="grid w-64 grid-cols-3">
 	{#each years as year}
 		<span
 			role="button"
 			tabindex="0"
 			data-timestamp={year.getTime()}
-			class="block rounded-lg text-center text-sm font-semibold p-2 dark:text-white cursor-pointer dark:hover:bg-gray-600"
+			class="block cursor-pointer rounded-lg p-2 text-center text-sm font-semibold dark:text-white dark:hover:bg-gray-600"
 			on:click={() => {
 				viewDate = year;
 				zoomLevel = 2;

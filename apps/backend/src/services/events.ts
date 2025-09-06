@@ -130,7 +130,7 @@ async function getEvents(
 				? {
 						contains: search,
 						mode: "insensitive"
-				  }
+					}
 				: undefined,
 			eventType,
 			posted: true,
@@ -138,7 +138,7 @@ async function getEvents(
 				? {
 						gte: duration.min,
 						lte: duration.max
-				  }
+					}
 				: undefined,
 			OR: startAtOr.length > 0 ? startAtOr : undefined
 		},
@@ -186,7 +186,7 @@ async function getUpcomingEvents(maxTimeInFutureMs?: number) {
 			startAt: maxTimeInFutureMs
 				? {
 						lte: new Date(now + maxTimeInFutureMs)
-				  }
+					}
 				: undefined
 		},
 		include: {
@@ -281,8 +281,7 @@ async function createEventThread(
 	const thread = await channel!.threads.create({
 		name: threadName,
 		type: ChannelType.PrivateThread,
-		reason:
-			"Create thread for event: " + event.name + (role ? ` for RSVP role ${role.name}` : ""),
+		reason: "Create thread for event: " + event.name + (role ? ` for RSVP role ${role.name}` : ""),
 		autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
 		invitable: false
 	});
@@ -305,7 +304,7 @@ async function createEventThread(
 						}
 					}
 				}
-		  })
+			})
 		: await getEventMembers(event.id, {
 				include: {
 					user: {
@@ -314,7 +313,7 @@ async function createEventThread(
 						}
 					}
 				}
-		  });
+			});
 
 	for (const rsvp of rsvps) {
 		if (!rsvp.user || thread.members.cache.has(rsvp.user.discordId)) continue;
@@ -541,10 +540,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 		if (updatedMember.event.discordThreadId) {
 			try {
 				const thread = await getEventThread(discordClient, updatedMember.event);
-				await thread.members.remove(
-					updatedMember.user.discordId,
-					"UnRSVPed / Kicked from event"
-				);
+				await thread.members.remove(updatedMember.user.discordId, "UnRSVPed / Kicked from event");
 			} catch (err) {
 				logger.error("Failed to remove user to event thread", err);
 			}
@@ -553,10 +549,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 		if (rsvp?.discordThreadId) {
 			try {
 				const thread = await getEventThread(discordClient, updatedMember.event, rsvp);
-				await thread.members.remove(
-					updatedMember.user.discordId,
-					"UnRSVPed / Kicked from event"
-				);
+				await thread.members.remove(updatedMember.user.discordId, "UnRSVPed / Kicked from event");
 			} catch (err) {
 				logger.error("Failed to remove user to event role thread", err);
 			}
@@ -720,7 +713,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 						connect: {
 							id: data.channel
 						}
-				  }
+					}
 				: undefined,
 			name: data.name != null ? data.name : undefined,
 			summary: data.summary != null ? data.summary : undefined,
@@ -747,7 +740,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 						deleteMany: rolesToDelete.map((r) => ({
 							id: r.id
 						}))
-				  }
+					}
 				: undefined,
 			discordMentions: data.mentions ? data.mentions : undefined,
 			settings: data.settings
@@ -759,7 +752,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 							inviteOnly: data.settings.inviteOnly ?? undefined,
 							openToJoinRequests: data.settings.openToJoinRequests ?? undefined
 						}
-				  }
+					}
 				: undefined,
 			accessType: data.accessType ? data.accessType : undefined,
 			accessRoles: data.accessRoles
@@ -771,7 +764,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 								roleId
 							}
 						}))
-				  }
+					}
 				: undefined
 		},
 		include: {
@@ -1049,7 +1042,7 @@ async function rsvpForEvent(
 							connect: {
 								id: rsvp.id
 							}
-					  }
+						}
 					: undefined
 		}
 	});

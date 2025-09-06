@@ -74,9 +74,7 @@
 					channel: editData.channel.id ? editData.channel.id : undefined,
 					name: editData.name ? editData.name : undefined,
 					summary: editData.summary ? editData.summary : undefined,
-					description: editData.description
-						? editData.description.slice(0, 2024)
-						: undefined,
+					description: editData.description ? editData.description.slice(0, 2024) : undefined,
 					imageUrl: editData.imageUrl,
 					eventType: editData.eventType,
 					location: editData.location.map((loc) => loc.name),
@@ -294,10 +292,7 @@
 							<img
 								src={editData.imageUrl}
 								alt="Event thumbnail"
-								class={twMerge(
-									"rounded h-48",
-									imagePlaceholder ? "hidden" : undefined
-								)}
+								class={twMerge("h-48 rounded", imagePlaceholder ? "hidden" : undefined)}
 								on:error={() => {
 									setTimeout(() => {
 										imagePlaceholder = true;
@@ -313,7 +308,7 @@
 						{#if editData.imageUrl && imagePlaceholder}
 							<div
 								role="status"
-								class="animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700"
+								class="flex h-48 w-full animate-pulse items-center justify-center rounded bg-gray-300 dark:bg-gray-700"
 							>
 								<svg
 									width="48"
@@ -381,16 +376,11 @@
 						Hide Location
 					</Checkbox>
 					<Helper>
-						If enabled, the event location will only be shown to users once the event
-						starts
+						If enabled, the event location will only be shown to users once the event starts
 					</Helper>
 				</Field>
 				<Field {validator} for="event-location" value={editData.location}>
-					<LocationInput
-						id="event-location"
-						disabled={!canEdit}
-						bind:value={editData.location}
-					/>
+					<LocationInput id="event-location" disabled={!canEdit} bind:value={editData.location} />
 				</Field>
 			</div>
 		</section>
@@ -402,12 +392,10 @@
 					<Select
 						id="event-access"
 						name="event-access"
-						options={[EventAccessType.Channel, EventAccessType.Everyone].map(
-							(type) => ({
-								value: type,
-								name: strings.toTitleCase(type)
-							})
-						)}
+						options={[EventAccessType.Channel, EventAccessType.Everyone].map((type) => ({
+							value: type,
+							name: strings.toTitleCase(type)
+						}))}
 						required
 						disabled={!canEdit}
 						bind:value={editData.accessType}
@@ -479,18 +467,14 @@
 					>
 						<div class="flex items-center">
 							<div
-								class="rounded-full w-3 h-3 me-2"
+								class="me-2 h-3 w-3 rounded-full"
 								style="background-color:{option.style?.color}"
 							/>
 							<span>{option.name}</span>
 						</div>
 					</Select>
 				</Field>
-				<Field
-					{validator}
-					for="event-create-thread"
-					value={editData.settings.createEventThread}
-				>
+				<Field {validator} for="event-create-thread" value={editData.settings.createEventThread}>
 					<Toggle
 						id="event-create-thread"
 						disabled={!canEdit || data.posted}
@@ -528,7 +512,7 @@
 		/>
 	</div>
 </section>
-<div class="flex flex-wrap justify-end items-center gap-2">
+<div class="flex flex-wrap items-center justify-end gap-2">
 	{#if data.posted && startDate && startDate <= new Date()}
 		<Button
 			disabled={data.archived}

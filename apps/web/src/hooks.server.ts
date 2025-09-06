@@ -13,9 +13,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	const cookie = event.request.headers.get("cookie");
-	const apollo = createApolloClient(cookie ? {
+	const apollo = createApolloClient(
 		cookie
-	} : undefined);
+			? {
+					cookie
+				}
+			: undefined
+	);
 
 	event.locals.apollo = apollo;
 
@@ -27,7 +31,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 		try {
 			const { data } = await userFetchApollo.query({
-				query: Queries.CURRENT_USER_SERVER,
+				query: Queries.CURRENT_USER_SERVER
 			});
 
 			if (data.user) event.locals.user = { ...data.user, cookie };

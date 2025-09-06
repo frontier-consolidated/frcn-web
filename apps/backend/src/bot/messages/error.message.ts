@@ -9,6 +9,6 @@ export function buildErrorMessage(message: string) {
 		.setDescription(message);
 
 	return {
-		embeds: [embed],
+		embeds: [embed]
 	} satisfies BaseMessageOptions;
 }

@@ -7,20 +7,20 @@
 
 	import Button from "./Button.svelte";
 
-    export let spinner = false;
+	export let spinner = false;
 </script>
 
 <Button
-    {...$$restProps}
-    size="sm"
-    class={twMerge("px-8", $$restProps.class)}
-    on:click={() => {
-        if ($user.loading) return;
-        login().catch(console.error);
-    }}
+	{...$$restProps}
+	size="sm"
+	class={twMerge("px-8", $$restProps.class)}
+	on:click={() => {
+		if ($user.loading) return;
+		login().catch(console.error);
+	}}
 >
-    {#if spinner && ($user.loading || !browser)}
-        <Spinner class="me-2" size="4" color="white" />
-    {/if}
-    LOGIN
+	{#if spinner && ($user.loading || !browser)}
+		<Spinner class="me-2" size="4" color="white" />
+	{/if}
+	LOGIN
 </Button>

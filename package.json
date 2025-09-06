@@ -1,34 +1,34 @@
 {
-  "name": "frcn",
-  "version": "0.0.1",
-  "type": "module",
-  "license": "MPL-2.0",
-  "scripts": {
-    "setup": "pnpm --config.dedupe-peer-dependents=false --filter ./packages/adapter install && pnpm --filter ./packages/adapter build && pnpm install && pnpm run --filter=./packages/** build",
-    "backend:dev": "cd apps/backend && pnpm dev",
-    "web:dev": "cd apps/web && pnpm dev",
-    "lint": "prettier --check . && eslint .",
-    "lint-fix": "prettier --check --write . && eslint . --fix",
-    "format": "prettier --write ."
-  },
-  "devDependencies": {
-    "@pulumi/aws": "^7.6.0",
-    "@pulumi/cloudflare": "^6.8.0",
-    "@pulumi/docker": "^4.8.2",
-    "@pulumi/kubernetes": "^4.23.0",
-    "@pulumi/pulumi": "^3.192.0",
-    "@types/eslint": "^9.6.1",
-    "@types/node": "^24.3.0",
-    "eslint": "^9.24.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-import-resolver-typescript": "^3.10.0",
-    "eslint-plugin-import": "^2.31.0",
-    "eslint-plugin-svelte": "^3.5.1",
-    "globals": "^16.0.0",
-    "prettier": "^3.5.3",
-    "prettier-plugin-svelte": "^3.3.3",
-    "prettier-plugin-tailwindcss": "^0.6.11",
-    "typescript": "^5.3.3",
-    "typescript-eslint": "^8.29.1"
-  }
+	"name": "frcn",
+	"version": "0.0.1",
+	"type": "module",
+	"license": "MPL-2.0",
+	"scripts": {
+		"setup": "pnpm --config.dedupe-peer-dependents=false --filter ./packages/adapter install && pnpm --filter ./packages/adapter build && pnpm install && pnpm run --filter=./packages/** build",
+		"backend:dev": "cd apps/backend && pnpm dev",
+		"web:dev": "cd apps/web && pnpm dev",
+		"lint": "prettier --check . && eslint .",
+		"lint-fix": "prettier --check --write . && eslint . --fix",
+		"format": "prettier --write ."
+	},
+	"devDependencies": {
+		"@pulumi/aws": "^7.6.0",
+		"@pulumi/cloudflare": "^6.8.0",
+		"@pulumi/docker": "^4.8.2",
+		"@pulumi/kubernetes": "^4.23.0",
+		"@pulumi/pulumi": "^3.192.0",
+		"@types/eslint": "^9.6.1",
+		"@types/node": "^24.3.0",
+		"eslint": "^9.24.0",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-import-resolver-typescript": "^3.10.0",
+		"eslint-plugin-import": "^2.31.0",
+		"eslint-plugin-svelte": "^3.5.1",
+		"globals": "^16.0.0",
+		"prettier": "^3.5.3",
+		"prettier-plugin-svelte": "^3.3.3",
+		"prettier-plugin-tailwindcss": "^0.6.11",
+		"typescript": "^5.3.3",
+		"typescript-eslint": "^8.29.1"
+	}
 }

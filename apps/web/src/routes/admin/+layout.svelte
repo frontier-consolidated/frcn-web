@@ -50,29 +50,21 @@
 	$: activeUrl = $page.url.pathname;
 </script>
 
-<section class="flex flex-col lg:flex-row gap-8 px-4 mx-auto w-full max-w-6xl mt-24">
+<section class="mx-auto mt-24 flex w-full max-w-6xl flex-col gap-8 px-4 lg:flex-row">
 	<Sidebar asideClass="shrink-0 w-64 hidden lg:block" {activeUrl}>
 		<SidebarWrapper>
 			{#each pageGroup as group, i}
 				<SidebarGroup border={i > 0}>
-					<div class="flex items-center gap-2 dark:text-gray-400 px-2">
-						<span class="self-center font-semibold whitespace-nowrap">
+					<div class="flex items-center gap-2 px-2 dark:text-gray-400">
+						<span class="self-center whitespace-nowrap font-semibold">
 							{group.name}
 						</span>
 					</div>
 					{#each group.pages as page}
-						<SidebarItem
-							label={page.name}
-							href={page.href}
-							class="rounded clip-tl-br-4"
-						>
+						<SidebarItem label={page.name} href={page.href} class="clip-tl-br-4 rounded">
 							<svelte:fragment slot="icon">
 								{#if page.icon}
-									<svelte:component
-										this={page.icon}
-										tabindex="-1"
-										class="outline-none"
-									/>
+									<svelte:component this={page.icon} tabindex="-1" class="outline-none" />
 								{/if}
 							</svelte:fragment>
 						</SidebarItem>
@@ -96,18 +88,13 @@
 	>
 		<div class="flex items-center gap-2">
 			{#if option.style}
-				<svelte:component
-					this={option.style.icon}
-					tabindex="-1"
-					class="outline-none"
-					size="sm"
-				/>
+				<svelte:component this={option.style.icon} tabindex="-1" class="outline-none" size="sm" />
 			{/if}
 			<span>{option.name}</span>
 		</div>
 	</NavigationSelect>
 	<div
-		class="flex-1 flex flex-col overflow-y-auto min-h-[80vh] py-4 px-3 bg-gray-50 rounded dark:bg-gray-900"
+		class="flex min-h-[80vh] flex-1 flex-col overflow-y-auto rounded bg-gray-50 px-3 py-4 dark:bg-gray-900"
 	>
 		<slot />
 	</div>

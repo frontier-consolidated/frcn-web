@@ -10,7 +10,7 @@
 			const weekdayDate = new Date(0, 0, i);
 			weekdays.push(
 				new Intl.DateTimeFormat($locale!, {
-					weekday: "short",
+					weekday: "short"
 				})
 					.format(weekdayDate)
 					.slice(0, 2)
@@ -61,8 +61,7 @@
 		for (let i = 0; i < dates.daysPerMonth; i++) {
 			const relativeDay = i - firstDay;
 			const day =
-				(relativeDay < 0 ? daysInPreviousMonth + relativeDay : relativeDay % daysInMonth) +
-				1;
+				(relativeDay < 0 ? daysInPreviousMonth + relativeDay : relativeDay % daysInMonth) + 1;
 			const monthShift = relativeDay < 0 ? -1 : Math.floor(relativeDay / daysInMonth);
 			let year = viewDate.getFullYear();
 			let month = viewDate.getMonth() + monthShift;
@@ -79,24 +78,37 @@
 	}
 </script>
 
-<div class="grid grid-cols-7 mb-2">
+<div class="mb-2 grid grid-cols-7">
 	{#each weekdays as day}
-		<span class="font-medium text-center text-sm dark:text-gray-400">{day}</span>
+		<span class="text-center text-sm font-medium dark:text-gray-400">{day}</span>
 	{/each}
 </div>
-<div class="grid grid-cols-7 w-64">
+<div class="grid w-64 grid-cols-7">
 	{#each days as day}
 		{@const selected = dates.isSelected(selectedDate, day)}
 		{@const disabled = isDisabled(viewDate, day)}
 		{@const disabledClass = disabled ? "dark:text-gray-500" : "dark:text-white cursor-pointer"}
-		{@const selectedClass = disabled ? selected ? "bg-primary-800 dark:text-gray-200" : "" : selected ? "bg-primary-600 dark:hover:bg-primary-700" : "dark:hover:bg-gray-600"}
-		{@const todayClass = dates.isToday(day) ? twMerge("bg-gray-500", disabled ? "dark:text-gray-400" : undefined) : ""}
+		{@const selectedClass = disabled
+			? selected
+				? "bg-primary-800 dark:text-gray-200"
+				: ""
+			: selected
+				? "bg-primary-600 dark:hover:bg-primary-700"
+				: "dark:hover:bg-gray-600"}
+		{@const todayClass = dates.isToday(day)
+			? twMerge("bg-gray-500", disabled ? "dark:text-gray-400" : undefined)
+			: ""}
 		<span
 			role="button"
 			tabindex="0"
 			aria-disabled={disabled}
 			data-timestamp={day.getTime()}
-			class={twMerge("block rounded-lg text-center text-sm font-semibold p-2", disabledClass, selectedClass, todayClass)}
+			class={twMerge(
+				"block rounded-lg p-2 text-center text-sm font-semibold",
+				disabledClass,
+				selectedClass,
+				todayClass
+			)}
 			on:click={() => setDate(day)}
 			on:keydown={(ev) => {
 				if (ev.key == "Enter") setDate(day);

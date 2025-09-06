@@ -4,11 +4,12 @@ import type { PageServerLoad } from "./$types";
 import { getEvents } from "./helpers";
 
 export const load = (async ({ locals, url, depends }) => {
-    depends("app:events");
+	depends("app:events");
 
-    if (!locals.user) error(401, {
-        message: "Must be authenticated to view this page"
-    });
+	if (!locals.user)
+		error(401, {
+			message: "Must be authenticated to view this page"
+		});
 
-    return await getEvents(locals.apollo, url);
+	return await getEvents(locals.apollo, url);
 }) satisfies PageServerLoad;

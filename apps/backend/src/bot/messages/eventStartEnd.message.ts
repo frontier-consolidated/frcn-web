@@ -24,9 +24,7 @@ export async function buildEventStartMessage(
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
 		.setTitle(`${event.name} - Event starting!`)
-		.setDescription(
-			`The event is now starting! Scheduled event end: <t:${scheduledEndTime}:R>`
-		);
+		.setDescription(`The event is now starting! Scheduled event end: <t:${scheduledEndTime}:R>`);
 
 	if (event.location) {
 		embed.addFields({

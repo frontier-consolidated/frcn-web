@@ -18,8 +18,8 @@ export function PluginLogging(): ApolloServerPlugin<GQLContext> {
 							query: requestContext.request.query?.replace(/\s+/g, " ")
 						});
 					}
-				},
+				}
 			};
-		},
+		}
 	};
 }

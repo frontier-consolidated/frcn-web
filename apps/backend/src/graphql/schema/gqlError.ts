@@ -15,15 +15,19 @@ export function gqlError(type: GraphQLErrorType, message: string, options?: Grap
 		...options,
 		extensions: {
 			code: type,
-			...options?.extensions,
-		},
+			...options?.extensions
+		}
 	});
 }
 
-export function gqlErrorNotFound(message: string, extensions: Record<string, unknown>, originalError?: Error) {
+export function gqlErrorNotFound(
+	message: string,
+	extensions: Record<string, unknown>,
+	originalError?: Error
+) {
 	return gqlError("NOT_FOUND", message, {
 		extensions,
-		originalError,
+		originalError
 	});
 }
 
@@ -47,8 +51,8 @@ type PermissionErrorExtension =
 export function gqlErrorPermission(permission: PermissionErrorExtension) {
 	return gqlError("MISSING_PERMISSION", "Missing permission", {
 		extensions: {
-			missingPermission: permission,
-		},
+			missingPermission: permission
+		}
 	});
 }
 

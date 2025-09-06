@@ -4,8 +4,8 @@ export {};
 
 declare global {
 	namespace Express {
-		interface User extends DatabaseUser { }
-		interface AccessKey extends DatabaseAccessKey { }
+		interface User extends DatabaseUser {}
+		interface AccessKey extends DatabaseAccessKey {}
 
 		interface Request {
 			user?: User;
@@ -20,7 +20,7 @@ declare global {
 				used: number;
 				remaining: number;
 				resetTime: Date;
-			}
+			};
 
 			login(user: User): Promise<void>;
 			logout(): Promise<void>;

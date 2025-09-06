@@ -3,7 +3,7 @@
 	import { hasAdmin } from "@frcn/shared";
 	import { Search, Table, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { CloseSolid, EditOutline } from "flowbite-svelte-icons";
-    import Sortable from "sortablejs";
+	import Sortable from "sortablejs";
 	import { queryParam } from "sveltekit-search-params";
 
 	import { Button, Head, SectionHeading } from "$lib/components";
@@ -17,10 +17,12 @@
 	import RoleRow from "./RoleRow.svelte";
 
 	const roleSearch = queryParam("q");
-    
+
 	$: editRoles = $rolesCache.toReversed();
 
-	$: filteredRoles = $roleSearch ? editRoles.filter(r => r.name.toLowerCase().includes($roleSearch!.toLowerCase())) : editRoles;
+	$: filteredRoles = $roleSearch
+		? editRoles.filter((r) => r.name.toLowerCase().includes($roleSearch!.toLowerCase()))
+		: editRoles;
 
 	function getHighestMovableRole(roles: typeof $rolesCache, user: GetCurrentUserQuery["user"]) {
 		if (!user) return roles.length;
@@ -30,7 +32,7 @@
 
 		let highest = roles.length;
 		for (const [i, role] of roles.entries()) {
-			const userRole = userRoles.find(r => r.id === role.id);
+			const userRole = userRoles.find((r) => r.id === role.id);
 			if (userRole && i < highest) {
 				highest = i;
 			}
@@ -44,19 +46,21 @@
 
 	let isDirty = false;
 	$: {
-		isDirty = $rolesCache.toReversed().reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false);
+		isDirty = $rolesCache
+			.toReversed()
+			.reduce((dirty, role, i) => dirty || editRoles[i].id !== role.id, false);
 		canNavigate.set(!isDirty);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let sortable: Sortable;
-    function initSortable(el: HTMLElement) {
+	function initSortable(el: HTMLElement) {
 		sortable = new Sortable(el, {
 			handle: ".move-handle",
 			forceFallback: true,
 			fallbackClass: "dragging",
 			filter: ".cannot-reorder",
-			onMove: function(ev) {
+			onMove: function (ev) {
 				if (ev.related.classList.contains("cannot-reorder")) {
 					return false;
 				}
@@ -68,21 +72,21 @@
 				editRoles = updatedRoles;
 			}
 		});
-    }
+	}
 
 	async function save() {
 		const { errors } = await getApollo().mutate({
 			mutation: Mutations.REORDER_ROLES,
 			variables: {
-				order: editRoles.toReversed().map(r => r.id)
+				order: editRoles.toReversed().map((r) => r.id)
 			},
-			errorPolicy: "all",
+			errorPolicy: "all"
 		});
 
 		if (errors && errors.length > 0) {
 			pushNotification({
 				type: "error",
-				message: "Failed to save",
+				message: "Failed to save"
 			});
 			console.error(errors);
 			return;
@@ -92,45 +96,42 @@
 	}
 </script>
 
-<Head
-	title="Roles - Admin"
-/>
+<Head title="Roles - Admin" />
 
-<SectionHeading>
-    User Roles
-</SectionHeading>
-<div class="flex gap-2 px-2 my-4" use:initNavigation>
-    <Search size="md" bind:value={$roleSearch} class="rounded" />
-    <Button class="shrink-0" on:click={async () => {
-		try {
-			const { data: createData } = await getApollo().mutate({
-				mutation: Mutations.CREATE_ROLE,
-			});
+<SectionHeading>User Roles</SectionHeading>
+<div class="my-4 flex gap-2 px-2" use:initNavigation>
+	<Search size="md" bind:value={$roleSearch} class="rounded" />
+	<Button
+		class="shrink-0"
+		on:click={async () => {
+			try {
+				const { data: createData } = await getApollo().mutate({
+					mutation: Mutations.CREATE_ROLE
+				});
 
-			if (createData && createData.role) {
-				await goto(`/admin/roles/${createData.role}`);
+				if (createData && createData.role) {
+					await goto(`/admin/roles/${createData.role}`);
+				}
+			} catch (err) {
+				pushNotification({
+					type: "error",
+					message: "Failed to create role"
+				});
+				console.error(err);
 			}
-		} catch (err) {
-			pushNotification({
-				type: "error",
-				message: "Failed to create role"
-			});
-			console.error(err);
-		}
-	}}>
-        Create Role
-    </Button>
+		}}
+	>
+		Create Role
+	</Button>
 </div>
-<div class="flex-1 flex flex-col justify-between">
+<div class="flex flex-1 flex-col justify-between">
 	<Table divClass="relative">
 		<TableHead>
 			<TableHeadCell class="w-8 px-0"></TableHeadCell>
 			<TableHeadCell class="pl-2">
 				Roles - {editRoles.length}
 			</TableHeadCell>
-			<TableHeadCell class="w-32 text-center">
-				Members
-			</TableHeadCell>
+			<TableHeadCell class="w-32 text-center">Members</TableHeadCell>
 			<TableHeadCell class="w-32"></TableHeadCell>
 		</TableHead>
 		<tbody class="divide-y" use:initSortable>
@@ -141,10 +142,13 @@
 			{/each}
 		</tbody>
 	</Table>
-	<div class="flex justify-end items-center gap-2">
-		<Button color="alternative" on:click={() => {
-			editRoles = $rolesCache.toReversed();
-		}}>
+	<div class="flex items-center justify-end gap-2">
+		<Button
+			color="alternative"
+			on:click={() => {
+				editRoles = $rolesCache.toReversed();
+			}}
+		>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>
 		<Button

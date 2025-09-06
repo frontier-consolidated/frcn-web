@@ -6,7 +6,7 @@ import adminPermissions from "$lib/data/adminPermissions";
 import type { LayoutServerLoad } from "./$types";
 
 export const load = (async ({ locals }) => {
-    if (!locals.user || !hasOneOfPermissions(locals.user.permissions, adminPermissions)) {
-        redirect(307, "/");
-    }
+	if (!locals.user || !hasOneOfPermissions(locals.user.permissions, adminPermissions)) {
+		redirect(307, "/");
+	}
 }) satisfies LayoutServerLoad;

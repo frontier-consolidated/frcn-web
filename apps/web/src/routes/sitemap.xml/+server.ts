@@ -3,8 +3,7 @@ import { createETag } from "$lib/server/etag";
 import type { RequestHandler } from "./$types";
 
 export const GET: RequestHandler = async ({ url }) => {
-    const xml = 
-    /* xml */`
+	const xml = /* xml */ `
     <?xml version="1.0" encoding="UTF-8" ?>
     <urlset
         xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
@@ -53,11 +52,11 @@ export const GET: RequestHandler = async ({ url }) => {
     </urlset>
     `;
 
-    return new Response(xml.trim(), {
-        headers: {
-            "Content-Type": "application/xml",
-            "Cache-Control": "public, must-revalidate, max-age=300",
-            "ETag": createETag(xml)
-        }
-    });
+	return new Response(xml.trim(), {
+		headers: {
+			"Content-Type": "application/xml",
+			"Cache-Control": "public, must-revalidate, max-age=300",
+			ETag: createETag(xml)
+		}
+	});
 };

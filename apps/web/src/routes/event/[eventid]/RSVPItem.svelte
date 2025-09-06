@@ -18,7 +18,7 @@
 	let editRole = structuredClone(role);
 
 	function updateRole(edit: PageData["rsvpRoles"][number]) {
-		const index = roles.findIndex(r => r.id === role.id);
+		const index = roles.findIndex((r) => r.id === role.id);
 		const updatedRoles = [...roles.filter((r) => r.id != role.id)];
 		updatedRoles.splice(index, 0, edit);
 		roles = updatedRoles;
@@ -44,7 +44,7 @@
 				editRole.emoji = {
 					id,
 					name: emojiInput.name,
-					image: emojiInput.imageUrl,
+					image: emojiInput.imageUrl
 				};
 				editRole = updateRole(editRole);
 			}
@@ -56,7 +56,7 @@
 				name: emoji.name,
 				names: [emoji.name],
 				imageUrl: emoji.image,
-				category: data.options!.emojis.serverName.toLowerCase(),
+				category: data.options!.emojis.serverName.toLowerCase()
 			})) as Emoji[])
 		: [];
 
@@ -65,16 +65,24 @@
 
 <TableBodyRow>
 	<TableBodyCell class="text-center">
-		<EmojiPickerInput init={editRole.emoji.id} {additionalEmojis} categoryIcons={data.options?.emojis ? {
-			[data.options.emojis.serverName.toLowerCase()]: data.options.emojis.serverAvatar ?? DatabaseSolid
-		} : undefined} bind:value={emojiInput} />
+		<EmojiPickerInput
+			init={editRole.emoji.id}
+			{additionalEmojis}
+			categoryIcons={data.options?.emojis
+				? {
+						[data.options.emojis.serverName.toLowerCase()]:
+							data.options.emojis.serverAvatar ?? DatabaseSolid
+					}
+				: undefined}
+			bind:value={emojiInput}
+		/>
 	</TableBodyCell>
 	<TableBodyCell>
 		<Field {validator} for="role-name-{role.id}" value={editRole.name} required>
 			<Input
 				id="role-name-{role.id}"
 				name="event-role-name"
-				class="!bg-transparent !border-transparent !p-1 text-ellipsis rounded"
+				class="text-ellipsis rounded !border-transparent !bg-transparent !p-1"
 				placeholder="Role name"
 				maxlength="255"
 				bind:value={editRole.name}
@@ -87,7 +95,7 @@
 			name="event-role-user-limit"
 			min="0"
 			pattern="([0-9]+|{INFINITY})"
-			class="!bg-transparent !border-transparent !p-1 no-inner-spin text-center rounded"
+			class="no-inner-spin rounded !border-transparent !bg-transparent !p-1 text-center"
 			bind:value={limitInput}
 			on:blur={() => {
 				let num = Number(limitInput);
@@ -123,7 +131,10 @@
 		<div class="flex items-center justify-center">
 			<TrashBinSolid
 				aria-disabled={roles.length <= 1}
-				class={twMerge("dark:text-white dark:hover:text-red-600", roles.length <= 1 ? "cursor-not-allowed opacity-50" : "cursor-pointer")}
+				class={twMerge(
+					"dark:text-white dark:hover:text-red-600",
+					roles.length <= 1 ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+				)}
 				on:click={() => {
 					if (roles.length <= 1) return;
 					roles = roles.filter((r) => r.id != role.id);

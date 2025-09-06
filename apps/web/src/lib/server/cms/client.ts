@@ -46,9 +46,7 @@ export class CmsClient {
 			return null;
 		}
 
-		return data?.container
-			? this.transformContainerWithRecursiveChildren(data.container)
-			: null;
+		return data?.container ? this.transformContainerWithRecursiveChildren(data.container) : null;
 	}
 
 	async getContainer(id: string) {
@@ -60,9 +58,7 @@ export class CmsClient {
 			fetchPolicy: "no-cache"
 		});
 
-		return data?.container
-			? this.transformContainerWithRecursiveChildren(data.container)
-			: null;
+		return data?.container ? this.transformContainerWithRecursiveChildren(data.container) : null;
 	}
 
 	transformContainerWithRecursiveChildren(container: ContentContainerData) {
@@ -71,9 +67,7 @@ export class CmsClient {
 
 		const children: ContentContainerData[] = [];
 		for (const child of container.recursiveChildren) {
-			children.push(
-				this.transformContainerWithRecursiveChildren(child as ContentContainerData)
-			);
+			children.push(this.transformContainerWithRecursiveChildren(child as ContentContainerData));
 		}
 		container.children = children;
 		delete container.recursiveChildren;

@@ -3,9 +3,25 @@
 	import { page } from "$app/stores";
 	import { Permission, hasAdmin } from "@frcn/shared";
 	import { Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
-	import { ArrowLeftSolid, CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
+	import {
+		ArrowLeftSolid,
+		CloseSolid,
+		EditOutline,
+		ExclamationCircleSolid
+	} from "flowbite-svelte-icons";
 
-	import { Hr, SectionHeading, Select, Tooltip, Field, FieldValidator, Button, PermissionToggles, Head, ConfirmationModal } from "$lib/components";
+	import {
+		Hr,
+		SectionHeading,
+		Select,
+		Tooltip,
+		Field,
+		FieldValidator,
+		Button,
+		PermissionToggles,
+		Head,
+		ConfirmationModal
+	} from "$lib/components";
 	import { getApollo, Mutations } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
@@ -13,7 +29,7 @@
 	import { rolesCache } from "$lib/stores/RolesCacheStore";
 	import { user } from "$lib/stores/UserStore";
 
-    import type { PageData } from "./$types";
+	import type { PageData } from "./$types";
 	import UserButton from "./UserButton.svelte";
 
 	function cloneRoleData(data: PageData["role"]) {
@@ -37,7 +53,7 @@
 		return !clean;
 	}
 
-    export let data: PageData;
+	export let data: PageData;
 	let editData = cloneRoleData(data.role);
 
 	const { canNavigate, initNavigation } = preventNavigation();
@@ -48,13 +64,19 @@
 		canNavigate.set(!isDirty);
 	}
 
-	function checkIfCanToggleAdmin(roles: typeof $rolesCache, role: PageData["role"], user: GetCurrentUserQuery["user"]) {
+	function checkIfCanToggleAdmin(
+		roles: typeof $rolesCache,
+		role: PageData["role"],
+		user: GetCurrentUserQuery["user"]
+	) {
 		if (!user) return false;
 		if (!hasAdmin(user.permissions)) return false;
 		if (role.default) return false;
 
 		const userRoles = [user.primaryRole, ...user.roles];
-		const adminRoles = roles.filter(r => !!userRoles.find(r2 => r2.id === r.id) && hasAdmin(r.permissions));
+		const adminRoles = roles.filter(
+			(r) => !!userRoles.find((r2) => r2.id === r.id) && hasAdmin(r.permissions)
+		);
 		if (adminRoles.length === 0) return true; // root admin user
 		if (adminRoles.length > 1) return true; // user has multiple admin roles, let them toggle it
 		return adminRoles[0].id != role.id;
@@ -69,13 +91,18 @@
 		if (!validator.validate()) {
 			pushNotification({
 				type: "error",
-				message: "Check your inputs",
+				message: "Check your inputs"
 			});
 			return;
 		}
 
 		// If setting this to a primary role will make it the default, display a confirmation
-		if (!confirm && editData.primary && data.role.primary === false && $rolesCache.findIndex(r => r.id === data.role.id) < $rolesCache.findIndex(r => r.primary)) {
+		if (
+			!confirm &&
+			editData.primary &&
+			data.role.primary === false &&
+			$rolesCache.findIndex((r) => r.id === data.role.id) < $rolesCache.findIndex((r) => r.primary)
+		) {
 			makeDefaultPrimaryModal = true;
 			return;
 		}
@@ -91,13 +118,13 @@
 					primary: editData.primary
 				}
 			},
-			errorPolicy: "all",
+			errorPolicy: "all"
 		});
 
 		if (errors && errors.length > 0) {
 			pushNotification({
 				type: "error",
-				message: "Failed to save",
+				message: "Failed to save"
 			});
 			console.error(errors);
 			return;
@@ -107,20 +134,26 @@
 	}
 </script>
 
-<Head
-	title="{data.role?.name} Role - Admin"
-/>
+<Head title="{data.role?.name} Role - Admin" />
 
-<a class="flex items-center text-gray-300 mb-2 p-2 cursor-pointer hover:text-gray-400" href="/admin/roles" use:initNavigation>
+<a
+	class="mb-2 flex cursor-pointer items-center p-2 text-gray-300 hover:text-gray-400"
+	href="/admin/roles"
+	use:initNavigation
+>
 	<ArrowLeftSolid class="me-2" tabindex="-1" /> Back to Roles
 </a>
 <SectionHeading>
-    Edit Role - {data.role?.name}
+	Edit Role - {data.role?.name}
 </SectionHeading>
-<div class="flex-1 flex flex-col justify-between">
+<div class="flex flex-1 flex-col justify-between">
 	<div>
 		<Tabs style="underline" class="mt-2" contentClass="">
-			<TabItem title="General" open={$page.url.hash === "#general" || !$page.url.hash} on:click={() => window.location.hash = "#general"}>
+			<TabItem
+				title="General"
+				open={$page.url.hash === "#general" || !$page.url.hash}
+				on:click={() => (window.location.hash = "#general")}
+			>
 				<div class="flex flex-col gap-4 p-4">
 					<Field {validator} for="system-roles-role-name" value={editData.name} required>
 						<Label for="system-roles-role-name" class="mb-2">Role Name</Label>
@@ -148,7 +181,7 @@
 					<Field {validator} for="system-roles-role-discord-role" value={editData.discordId}>
 						<Label for="system-roles-role-discord-role" class="mb-2 flex items-center">
 							Discord Role
-							{#if data.role.discordId && !data.options.discordRoles.find(r => r.id === data.role.discordId)}
+							{#if data.role.discordId && !data.options.discordRoles.find((r) => r.id === data.role.discordId)}
 								<Tooltip>
 									<ExclamationCircleSolid slot="icon" class="ms-2 text-orange-400" />
 									The previously linked discord role no longer exists
@@ -158,35 +191,51 @@
 						<Select
 							id="system-roles-role-discord-role"
 							name="system-roles-role-discord-role"
-							options={[{
-								value: "",
-								name: "None",
-							}, ...data.options.discordRoles.map(role => ({
-								value: role.id,
-								name: role.name,
-								style: {
-									color: role.color === "#000000" ? "#e5e7eb" : role.color
-								}
-							}))]}
+							options={[
+								{
+									value: "",
+									name: "None"
+								},
+								...data.options.discordRoles.map((role) => ({
+									value: role.id,
+									name: role.name,
+									style: {
+										color: role.color === "#000000" ? "#e5e7eb" : role.color
+									}
+								}))
+							]}
 							search
 							bind:value={editData.discordId}
 							let:option
 						>
 							<div class="flex items-center">
 								{#if option.style?.color}
-									<div class="rounded-full w-3 h-3 me-2" style="background-color:{option.style?.color}" />
+									<div
+										class="me-2 h-3 w-3 rounded-full"
+										style="background-color:{option.style?.color}"
+									/>
 								{/if}
 								<span>{option.name}</span>
 							</div>
 						</Select>
 						<Helper class="mt-1">
-							The discord guild role that this role is linked to, users will receive this role if they have the selected discord role
+							The discord guild role that this role is linked to, users will receive this role if
+							they have the selected discord role
 						</Helper>
 					</Field>
 				</div>
 			</TabItem>
-			<TabItem title="Permissions" open={$page.url.hash === "#permissions"} on:click={() => window.location.hash = "#permissions"}>
-				<PermissionToggles disableToggles={{ [Permission.Admin]: !canToggleAdmin }} bind:permissions={editData.permissions} let:info let:checked>
+			<TabItem
+				title="Permissions"
+				open={$page.url.hash === "#permissions"}
+				on:click={() => (window.location.hash = "#permissions")}
+			>
+				<PermissionToggles
+					disableToggles={{ [Permission.Admin]: !canToggleAdmin }}
+					bind:permissions={editData.permissions}
+					let:info
+					let:checked
+				>
 					{#if info.permission === Permission.Admin && !canToggleAdmin}
 						{#if data.role.default}
 							<Tooltip>
@@ -202,8 +251,12 @@
 					{/if}
 				</PermissionToggles>
 			</TabItem>
-			<TabItem title="Users ({data.role.users.length})" open={$page.url.hash === "#users"} on:click={() => window.location.hash = "#users"}>
-				<div class="flex flex-col gap-1 p-4 max-h-screen overflow-y-auto">
+			<TabItem
+				title="Users ({data.role.users.length})"
+				open={$page.url.hash === "#users"}
+				on:click={() => (window.location.hash = "#users")}
+			>
+				<div class="flex max-h-screen flex-col gap-1 overflow-y-auto p-4">
 					{#each data.role.users as user}
 						<UserButton role={data.role} {user} />
 					{/each}
@@ -211,10 +264,13 @@
 			</TabItem>
 		</Tabs>
 	</div>
-	<div class="flex justify-end items-center gap-2">
-		<Button color="alternative" on:click={() => {
-			editData = cloneRoleData(data.role);
-		}}>
+	<div class="flex items-center justify-end gap-2">
+		<Button
+			color="alternative"
+			on:click={() => {
+				editData = cloneRoleData(data.role);
+			}}
+		>
 			<CloseSolid class="me-2" tabindex="-1" /> Cancel
 		</Button>
 		<Button
@@ -229,8 +285,17 @@
 	</div>
 </div>
 
-<ConfirmationModal title="Make default primary role" bind:open={makeDefaultPrimaryModal} on:confirm={async () => {
-	save(true).then(() => (makeDefaultPrimaryModal = false)).catch(console.error);
-}}>
-    <span>WARNING! Making this a primary role will make it the default primary role. Place this role above the default before making it primary to prevent this.</span>
+<ConfirmationModal
+	title="Make default primary role"
+	bind:open={makeDefaultPrimaryModal}
+	on:confirm={async () => {
+		save(true)
+			.then(() => (makeDefaultPrimaryModal = false))
+			.catch(console.error);
+	}}
+>
+	<span
+		>WARNING! Making this a primary role will make it the default primary role. Place this role
+		above the default before making it primary to prevent this.</span
+	>
 </ConfirmationModal>

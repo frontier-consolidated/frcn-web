@@ -1,3 +1,5 @@
+**/__generated__
+
 # Package Managers
 package-lock.json
 pnpm-lock.yaml

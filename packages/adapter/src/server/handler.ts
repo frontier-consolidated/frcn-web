@@ -45,22 +45,22 @@ await server.init({
 configure_isr({ server, asset_dir });
 
 function serve(path: string, client: boolean = false, prerendered = false): Middleware | null {
-    if (!fs.existsSync(path)) return null;
+	if (!fs.existsSync(path)) return null;
 
 	return sirv(path, {
-        etag: true,
-        gzip: true,
+		etag: true,
+		gzip: true,
 		brotli: true,
 		dev: prerendered,
-        setHeaders: client
-            ? ((res, pathname) => {
-                // only apply to build directory, not e.g. version.json
-                if (pathname.startsWith(`/${manifest.appPath}/immutable/`) && res.statusCode === 200) {
-                    res.setHeader("cache-control", "public,max-age=31536000,immutable");
-                }
-            })
-            : undefined
-    });
+		setHeaders: client
+			? (res, pathname) => {
+					// only apply to build directory, not e.g. version.json
+					if (pathname.startsWith(`/${manifest.appPath}/immutable/`) && res.statusCode === 200) {
+						res.setHeader("cache-control", "public,max-age=31536000,immutable");
+					}
+				}
+			: undefined
+	});
 }
 
 // required because the static file server ignores trailing slashes
@@ -121,7 +121,7 @@ const ssr: Middleware = async (req, res) => {
 						);
 					}
 
-					const value = /** @type {string} */ (req.headers[address_header]) || "";
+					const value = /** @type {string} */ req.headers[address_header] || "";
 
 					if (address_header === "x-forwarded-for") {
 						const addresses = (value as string).split(",");
@@ -180,7 +180,7 @@ function get_origin(headers: IncomingHttpHeaders) {
 		return `${protocol}://${host}`;
 	}
 }
-	
+
 export async function on_start() {
 	await render_isr_routes();
 

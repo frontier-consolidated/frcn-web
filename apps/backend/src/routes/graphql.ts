@@ -15,13 +15,13 @@ import { $users } from "../services/users";
 
 type WsContextExtra = {
 	socket: WebSocket;
-	request: Request
+	request: Request;
 };
 
 export default async function route(context: Context, _: unknown, appConfig: CreateAppOptions) {
 	const wsServer = new WebSocketServer({
 		server: context.server,
-		path: "/graphql",
+		path: "/graphql"
 	});
 
 	const store = sessionStore as unknown as Express.SessionStore;
@@ -33,74 +33,82 @@ export default async function route(context: Context, _: unknown, appConfig: Cre
 		storeReady = true;
 	});
 
-	const wsCleanup = useServer<Record<string, unknown> | undefined, WsContextExtra>({
-		schema,
-		context: async (ctx, _msg, _args) => {
-			if (!ctx.extra.request) throw new Error("HTTP request required to authenticate subscription");
-			
-			const req = ctx.extra.request;
-			// @ts-expect-error ignore set-cookie implementation
-			req.header = function (name) {
-				return req.headers[name];
-			};
-			
-			await (async () => {
-				if (req.session) return;
-				if (!storeReady) return;
+	const wsCleanup = useServer<Record<string, unknown> | undefined, WsContextExtra>(
+		{
+			schema,
+			context: async (ctx, _msg, _args) => {
+				if (!ctx.extra.request)
+					throw new Error("HTTP request required to authenticate subscription");
 
-				const store = sessionStore as unknown as Express.SessionStore;
-				req.sessionStore = store;
+				const req = ctx.extra.request;
+				// @ts-expect-error ignore set-cookie implementation
+				req.header = function (name) {
+					return req.headers[name];
+				};
 
-				const cookieId = getSessionID(req.header("cookie") ?? "", appConfig.sessionConfig.session.cookie, appConfig.sessionConfig.session.secret);
-				if (!cookieId) return;
+				await (async () => {
+					if (req.session) return;
+					if (!storeReady) return;
 
-				req.sessionID = cookieId;
+					const store = sessionStore as unknown as Express.SessionStore;
+					req.sessionStore = store;
 
-				await new Promise<void>((resolve, reject) => {
-					store.get(cookieId, (err, session) => {
-						if (err && err.code !== "ENOENT") {
-							return reject(err);
-						}
+					const cookieId = getSessionID(
+						req.header("cookie") ?? "",
+						appConfig.sessionConfig.session.cookie,
+						appConfig.sessionConfig.session.secret
+					);
+					if (!cookieId) return;
 
-						try {
-							if (err || !session) {
-								store.generate(req);
-							} else {
-								store.createSession(req, session);
+					req.sessionID = cookieId;
+
+					await new Promise<void>((resolve, reject) => {
+						store.get(cookieId, (err, session) => {
+							if (err && err.code !== "ENOENT") {
+								return reject(err);
 							}
-						} catch (e) {
-							return reject(e);
-						}
 
-						resolve();
+							try {
+								if (err || !session) {
+									store.generate(req);
+								} else {
+									store.createSession(req, session);
+								}
+							} catch (e) {
+								return reject(e);
+							}
+
+							resolve();
+						});
 					});
-				});
-			})();
+				})();
 
-			await (async () => {
-				const consentValue = getConsent(req, appConfig.sessionConfig.consent.cookie);
-		
-				if (req.session.user && consentValue !== "reject") {
-					const user = await $users.getUser(req.session.user);
-					if (!user) {
-						delete req.session.user;
-					} else {
-						req.user = user;
+				await (async () => {
+					const consentValue = getConsent(req, appConfig.sessionConfig.consent.cookie);
+
+					if (req.session.user && consentValue !== "reject") {
+						const user = await $users.getUser(req.session.user);
+						if (!user) {
+							delete req.session.user;
+						} else {
+							req.user = user;
+						}
 					}
-				}
-			})();
+				})();
 
-			const accessKey = await getRequestAccessKey(req, appConfig.accesskeyConfig.header);
-			if (accessKey) req.accessKey = accessKey;
+				const accessKey = await getRequestAccessKey(req, appConfig.accesskeyConfig.header);
+				if (accessKey) req.accessKey = accessKey;
 
-			return {
-				user: req.user,
-				accesskey: req.accessKey,
-				app: context,
-				req: req
-			} satisfies GQLContext;
+				return {
+					user: req.user,
+					accesskey: req.accessKey,
+					app: context,
+					req: req
+				} satisfies GQLContext;
+			}
 		},
-	}, wsServer);
+		wsServer
+	);
 
 	context.apolloServer.addPlugin(PluginDrainWebSocketServer(wsCleanup));
 	await context.apolloServer.start();
@@ -115,7 +123,7 @@ export default async function route(context: Context, _: unknown, appConfig: Cre
 					app: context,
 					req
 				});
-			},
+			}
 		})
 	);
 }

@@ -20,7 +20,7 @@
 		{id}
 		placeholder="Select location"
 		{...$$restProps}
-		class="flex-1 rounded overflow-x-hidden text-ellipsis"
+		class="flex-1 overflow-x-hidden text-ellipsis rounded"
 		on:click={() => {
 			if (disabled) return;
 			modalOpen = true;

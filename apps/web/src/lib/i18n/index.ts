@@ -7,5 +7,5 @@ const defaultLocale = "en";
 
 init({
 	fallbackLocale: defaultLocale,
-	initialLocale: browser ? window.navigator.language : defaultLocale,
+	initialLocale: browser ? window.navigator.language : defaultLocale
 });

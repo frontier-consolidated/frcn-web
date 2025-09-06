@@ -194,10 +194,6 @@ export async function updateEventChannelCalendarMessage(
 			await message.edit(payload);
 		}
 	} catch (err) {
-		logger.error(
-			"Failed to update event channel calendar message",
-			{ channel: channel.id },
-			err
-		);
+		logger.error("Failed to update event channel calendar message", { channel: channel.id }, err);
 	}
 }

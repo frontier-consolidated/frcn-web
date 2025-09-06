@@ -36,7 +36,7 @@ export function resolveUser(user: User) {
 		rsvps: [], // field-resolved
 		events: [], // field-resolved
 		status: null as unknown as GQLUserStatus, // field-resolved
-		settings: null as unknown as GQLUserSettings, // field-resolved
+		settings: null as unknown as GQLUserSettings // field-resolved
 	} satisfies WithModel<GQLUser, User>;
 }
 
@@ -44,13 +44,13 @@ export function resolveUserStatus(status: UserStatus) {
 	return {
 		activity: status.activity,
 		ship: status.ship,
-		updatedAt: status.updatedAt,
+		updatedAt: status.updatedAt
 	} satisfies GQLUserStatus;
 }
 
 export function resolveUserSettings(settings: UserSettings) {
 	return {
-		updatedAt: settings.updatedAt,
+		updatedAt: settings.updatedAt
 	} satisfies GQLUserSettings;
 }
 
@@ -73,7 +73,7 @@ export const userResolvers: Resolvers = {
 					role: true
 				}
 			});
-			return roles.map(r => r.role).map(resolveUserRole);
+			return roles.map((r) => r.role).map(resolveUserRole);
 		},
 		async rsvps(source, args, context) {
 			if (!context.user) throw gqlErrorUnauthenticated();
@@ -107,7 +107,7 @@ export const userResolvers: Resolvers = {
 
 			const settings = await $users.getSettings(_model.id);
 			return resolveUserSettings(settings!);
-		},
+		}
 	},
 
 	Query: {
@@ -121,7 +121,7 @@ export const userResolvers: Resolvers = {
 			const user = args.id == context.user?.id ? context.user : await $users.getUser(args.id);
 			if (!user) return null;
 			return resolveUser(user);
-		},
+		}
 	},
 
 	Mutation: {
@@ -156,8 +156,8 @@ export const userResolvers: Resolvers = {
 					role: true
 				}
 			});
-			return roles.map(r => r.role).map(resolveUserRole);
-		},
+			return roles.map((r) => r.role).map(resolveUserRole);
+		}
 	},
 
 	Subscription: {

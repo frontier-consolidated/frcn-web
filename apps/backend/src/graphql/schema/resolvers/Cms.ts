@@ -1,4 +1,3 @@
-
 import { CMSContainerType, ContainerTypeMap } from "@frcn/cms";
 import type { ContentContainer, ContentContainerFile, FileUpload } from "@prisma/client";
 
@@ -9,7 +8,7 @@ import { $cms } from "../../../services/cms";
 import type {
 	ContentContainer as GQLContentContainer,
 	ContentContainerFile as GQLContentContainerFile,
-	Resolvers,
+	Resolvers
 } from "../../__generated__/resolvers-types";
 import type { GQLContext } from "../../context";
 import { gqlErrorBadInput } from "../gqlError";
@@ -24,11 +23,15 @@ export function resolveContentContainer(container: ContentContainer) {
 		content: container.content,
 		files: [], // field-resolved
 		children: [], // field-resolved
-		recursiveChildren: [], // field-resolved
+		recursiveChildren: [] // field-resolved
 	} satisfies WithModel<GQLContentContainer, ContentContainer>;
 }
 
-export function resolveContentContainerFile(link: ContentContainerFile, file: FileUpload, context: GQLContext) {
+export function resolveContentContainerFile(
+	link: ContentContainerFile,
+	file: FileUpload,
+	context: GQLContext
+) {
 	return {
 		id: link.id,
 		identifier: link.identifier,
@@ -49,11 +52,19 @@ export const cmsResolvers: Resolvers = {
 				}
 			});
 
-			const resolved = fileLinks.map((link) => {
-				return resolveContentContainerFile(link, link.file, context);
-			}).filter((f): f is NonNullable<typeof f> => !!f);
-			
-			const idToIndex = resolved.reduce((record, file) => ({ ...record, [file.id]: _model.filesOrder.findIndex(id => id === file.id) }), {} as Record<string, number>);
+			const resolved = fileLinks
+				.map((link) => {
+					return resolveContentContainerFile(link, link.file, context);
+				})
+				.filter((f): f is NonNullable<typeof f> => !!f);
+
+			const idToIndex = resolved.reduce(
+				(record, file) => ({
+					...record,
+					[file.id]: _model.filesOrder.findIndex((id) => id === file.id)
+				}),
+				{} as Record<string, number>
+			);
 			resolved.sort((a, b) => idToIndex[a.id] - idToIndex[b.id]);
 			return resolved;
 		},
@@ -61,14 +72,22 @@ export const cmsResolvers: Resolvers = {
 			const { _model } = source as WithModel<GQLContentContainer, ContentContainer>;
 			const children = await $cms.getContainerChildren(_model.id);
 
-			const idToIndex = children.reduce((record, child) => ({ ...record, [child.id]: _model.childrenOrder.findIndex(id => id === child.id) }), {} as Record<string, number>);
-			return [...children].sort((a, b) => idToIndex[a.id] - idToIndex[b.id]).map(resolveContentContainer);
+			const idToIndex = children.reduce(
+				(record, child) => ({
+					...record,
+					[child.id]: _model.childrenOrder.findIndex((id) => id === child.id)
+				}),
+				{} as Record<string, number>
+			);
+			return [...children]
+				.sort((a, b) => idToIndex[a.id] - idToIndex[b.id])
+				.map(resolveContentContainer);
 		},
 		async recursiveChildren(source, args, context) {
 			const { _model } = source as WithModel<GQLContentContainer, ContentContainer>;
 
 			async function getChildrenRecursive(container: ContentContainer) {
-				const children = await $cms.getContainerChildren(container.id, {
+				const children = (await $cms.getContainerChildren(container.id, {
 					include: {
 						files: {
 							include: {
@@ -76,7 +95,7 @@ export const cmsResolvers: Resolvers = {
 							}
 						}
 					}
-				}) as (ContentContainer & { files: (ContentContainerFile & { file: FileUpload })[] })[];
+				})) as (ContentContainer & { files: (ContentContainerFile & { file: FileUpload })[] })[];
 
 				const resolvedChildren = [];
 				for (const child of children) {
@@ -85,11 +104,19 @@ export const cmsResolvers: Resolvers = {
 					// @ts-ignore
 					delete resolved._model;
 
-					const resolvedFiles = child.files.map((link) => {
-						return resolveContentContainerFile(link, link.file, context);
-					}).filter((f): f is NonNullable<typeof f> => !!f);
-					
-					const idToIndex = resolvedFiles.reduce((record, file) => ({ ...record, [file.id]: container.filesOrder.findIndex(id => id === file.id) }), {} as Record<string, number>);
+					const resolvedFiles = child.files
+						.map((link) => {
+							return resolveContentContainerFile(link, link.file, context);
+						})
+						.filter((f): f is NonNullable<typeof f> => !!f);
+
+					const idToIndex = resolvedFiles.reduce(
+						(record, file) => ({
+							...record,
+							[file.id]: container.filesOrder.findIndex((id) => id === file.id)
+						}),
+						{} as Record<string, number>
+					);
 					resolvedFiles.sort((a, b) => idToIndex[a.id] - idToIndex[b.id]);
 
 					resolved.files = resolvedFiles as never[];
@@ -97,7 +124,13 @@ export const cmsResolvers: Resolvers = {
 					resolvedChildren.push(resolved);
 				}
 
-				const idToIndex = resolvedChildren.reduce((record, child) => ({ ...record, [child.id]: container.childrenOrder.findIndex(id => id === child.id) }), {} as Record<string, number>);
+				const idToIndex = resolvedChildren.reduce(
+					(record, child) => ({
+						...record,
+						[child.id]: container.childrenOrder.findIndex((id) => id === child.id)
+					}),
+					{} as Record<string, number>
+				);
 				return [...resolvedChildren].sort((a, b) => idToIndex[a.id] - idToIndex[b.id]);
 			}
 
@@ -115,7 +148,11 @@ export const cmsResolvers: Resolvers = {
 
 	Query: {
 		async getContentContainer(source, args) {
-			const container = await $cms.getContainer(args.identifier, args.type, args.parentId ?? undefined);
+			const container = await $cms.getContainer(
+				args.identifier,
+				args.type,
+				args.parentId ?? undefined
+			);
 			if (!container) return null;
 			return resolveContentContainer(container);
 		},
@@ -140,20 +177,26 @@ export const cmsResolvers: Resolvers = {
 				const ContainerClass = ContainerTypeMap[parent.type as CMSContainerType];
 				const container = new ContainerClass({
 					id: parent.id,
-					title: parent.title,
+					title: parent.title
 				});
 
 				if (!container.getAllowedChildren().includes(args.type as CMSContainerType)) {
-					throw gqlErrorBadInput(`Container type '${args.type}' is not allowed as a child of '${parent.type}'`);
+					throw gqlErrorBadInput(
+						`Container type '${args.type}' is not allowed as a child of '${parent.type}'`
+					);
 				}
 			}
-			
+
 			if (!Object.values(CMSContainerType).includes(args.type as CMSContainerType)) {
 				throw gqlErrorBadInput(`Invalid container type '${args.type}'`);
 			}
 
 			logger.audit(context, "created a new ContentContainer", args);
-			const container = await $cms.createContainer(args.type, args.identifier ?? undefined, parent ?? undefined);
+			const container = await $cms.createContainer(
+				args.type,
+				args.identifier ?? undefined,
+				parent ?? undefined
+			);
 			return resolveContentContainer(container);
 		},
 		async editContentContainer(source, args, context) {
@@ -169,7 +212,9 @@ export const cmsResolvers: Resolvers = {
 			if (!container) return null;
 
 			if (args.order.length !== container.childrenOrder.length) {
-				throw gqlErrorBadInput("Given children order is not the same length as container's children order on server");
+				throw gqlErrorBadInput(
+					"Given children order is not the same length as container's children order on server"
+				);
 			}
 
 			const seen: string[] = [];
@@ -178,7 +223,9 @@ export const cmsResolvers: Resolvers = {
 					throw gqlErrorBadInput(`Duplicate container id in given children order: ${id}`);
 				}
 				if (!container.childrenOrder.includes(id)) {
-					throw gqlErrorBadInput(`Container id in given children order not in container's children order on server: ${id}`);
+					throw gqlErrorBadInput(
+						`Container id in given children order not in container's children order on server: ${id}`
+					);
 				}
 
 				seen.push(id);
@@ -193,7 +240,9 @@ export const cmsResolvers: Resolvers = {
 			if (!container) return null;
 
 			if (args.order.length !== container.filesOrder.length) {
-				throw gqlErrorBadInput("Given files order is not the same length as container's files order on server");
+				throw gqlErrorBadInput(
+					"Given files order is not the same length as container's files order on server"
+				);
 			}
 
 			const seen: string[] = [];
@@ -202,7 +251,9 @@ export const cmsResolvers: Resolvers = {
 					throw gqlErrorBadInput(`Duplicate container id in given files order: ${id}`);
 				}
 				if (!container.filesOrder.includes(id)) {
-					throw gqlErrorBadInput(`Container id in given files order not in container's files order on server: ${id}`);
+					throw gqlErrorBadInput(
+						`Container id in given files order not in container's files order on server: ${id}`
+					);
 				}
 
 				seen.push(id);
@@ -238,4 +289,3 @@ export const cmsResolvers: Resolvers = {
 		}
 	}
 };
- 

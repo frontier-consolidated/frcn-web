@@ -9,8 +9,8 @@ import type { Adapter, RouteDefinition } from "@sveltejs/kit";
 import { rollup } from "rollup";
 
 interface AdapterOptions {
-    out?: string;
-    precompress?: boolean;
+	out?: string;
+	precompress?: boolean;
 	envPrefix?: string;
 }
 
@@ -19,22 +19,22 @@ export interface AdapterPageConfig {
 }
 
 export default function (opts: AdapterOptions = {}) {
-    const { out = "build", precompress = true, envPrefix = "" } = opts;
+	const { out = "build", precompress = true, envPrefix = "" } = opts;
 
-    return {
-        name: "@frcn/adapter",
+	return {
+		name: "@frcn/adapter",
 
-        async adapt(builder) {
-            const tmp = builder.getBuildDirectory("adapter-frcn");
+		async adapt(builder) {
+			const tmp = builder.getBuildDirectory("adapter-frcn");
 
-            builder.rimraf(out);
-            builder.rimraf(tmp);
+			builder.rimraf(out);
+			builder.rimraf(tmp);
 			builder.mkdirp(tmp);
-			
+
 			const files = fileURLToPath(new URL("./files", import.meta.url).href);
 
-            builder.log.minor("Copying assets");
-            builder.writeClient(`${out}/client${builder.config.kit.paths.base}`);
+			builder.log.minor("Copying assets");
+			builder.writeClient(`${out}/client${builder.config.kit.paths.base}`);
 			builder.writePrerendered(`${out}/prerendered${builder.config.kit.paths.base}`);
 
 			if (precompress) {
@@ -62,7 +62,7 @@ export default function (opts: AdapterOptions = {}) {
 
 			builder.writeServer(tmp);
 
-			const isrPaths = Array.from(isrRoutes.keys()).map(r => getPathname(r));
+			const isrPaths = Array.from(isrRoutes.keys()).map((r) => getPathname(r));
 
 			fs.writeFileSync(
 				`${tmp}/manifest.js`,
@@ -82,7 +82,7 @@ export default function (opts: AdapterOptions = {}) {
 			const serverBundle = await rollup({
 				input: {
 					index: `${tmp}/index.js`,
-					manifest: `${tmp}/manifest.js`,
+					manifest: `${tmp}/manifest.js`
 				},
 				external: [
 					// dependencies could have deep exports, so we need a regex
@@ -141,16 +141,16 @@ export default function (opts: AdapterOptions = {}) {
 					MANIFEST: "./server/manifest.js",
 					SERVER: "./server/index.js",
 					SHIMS: "./shims.js",
-					ENV_PREFIX: JSON.stringify(envPrefix),
+					ENV_PREFIX: JSON.stringify(envPrefix)
 					// MAIN_ENTRYPOINT: main ? "./main/main.js" : "false"
 				}
 			});
-        },
+		},
 
-        supports: {
+		supports: {
 			read: () => true
 		}
-    } satisfies Adapter;
+	} satisfies Adapter;
 }
 
 function getPathname(route: RouteDefinition) {

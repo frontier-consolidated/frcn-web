@@ -39,7 +39,7 @@
 		{/each}
 	</TableBody>
 </Table>
-<div class="flex items-center justify-center p-2 w-full">
+<div class="flex w-full items-center justify-center p-2">
 	<Button
 		on:click={() => {
 			value = [
@@ -49,10 +49,10 @@
 					name: "",
 					emoji: {
 						id: "white_check_mark",
-						name: "white_check_mark",
+						name: "white_check_mark"
 					},
-					limit: 0,
-				},
+					limit: 0
+				}
 			];
 		}}>Add Role</Button
 	>

@@ -5,14 +5,18 @@ import type { ObjMap } from "graphql/jsutils/ObjMap";
 function parseObject(typeName: string, ast: ObjectValueNode, variables: Maybe<ObjMap<unknown>>) {
 	const value = Object.create(null);
 	ast.fields.forEach((field) => {
-	  // eslint-disable-next-line no-use-before-define
-	  value[field.name.value] = parseLiteral(typeName, field.value, variables);
+		// eslint-disable-next-line no-use-before-define
+		value[field.name.value] = parseLiteral(typeName, field.value, variables);
 	});
-  
+
 	return value;
 }
 
-function parseLiteral(typeName: string, ast: ValueNode, variables: Maybe<ObjMap<unknown>>): unknown {
+function parseLiteral(
+	typeName: string,
+	ast: ValueNode,
+	variables: Maybe<ObjMap<unknown>>
+): unknown {
 	switch (ast.kind) {
 		case Kind.STRING:
 		case Kind.BOOLEAN:
@@ -35,13 +39,14 @@ function parseLiteral(typeName: string, ast: ValueNode, variables: Maybe<ObjMap<
 
 export const ObjectScalar = new GraphQLScalarType<unknown, unknown>({
 	name: "Object",
-	description: "The `Object` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).",
+	description:
+		"The `Object` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).",
 	specifiedByURL: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf",
 	extensions: {
 		codegenScalarType: "unknown",
 		jsonSchema: {
-			type: "unknown",
-		},
+			type: "unknown"
+		}
 	},
 	serialize(value) {
 		return value;
@@ -51,5 +56,5 @@ export const ObjectScalar = new GraphQLScalarType<unknown, unknown>({
 	},
 	parseLiteral(ast, variables) {
 		return parseLiteral("JSON", ast, variables);
-	},
+	}
 });

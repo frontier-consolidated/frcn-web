@@ -42,12 +42,12 @@
 	</picture>
 	<figcaption class={twMerge(captionClass, positions[position])}>
 		<div
-			class="text-xl font-medium -mt-8 w-max max-w-full clip-tr-8 py-4 pl-8 pr-12 bg-white dark:bg-gray-900 md:mt-0 md:pt-0 md:bg-transparent md:dark:bg-transparent"
+			class="clip-tr-8 -mt-8 w-max max-w-full bg-white py-4 pl-8 pr-12 text-xl font-medium md:mt-0 md:bg-transparent md:pt-0 dark:bg-gray-900 md:dark:bg-transparent"
 		>
-			<span class="me-2 text-primary-700 dark:text-primary-500">///</span>
+			<span class="text-primary-700 dark:text-primary-500 me-2">///</span>
 			{title}
 		</div>
-		<div class="px-8 flex flex-col gap-3">
+		<div class="flex flex-col gap-3 px-8">
 			<slot />
 		</div>
 	</figcaption>

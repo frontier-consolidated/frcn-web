@@ -8,7 +8,14 @@ import "eslint-import-resolver-typescript";
 
 export default tseslint.config(
 	{
-		ignores: ["eslint.config.js", "vite.config.ts", "build/", ".svelte-kit/", "dist/", "**/__generated__"]
+		ignores: [
+			"eslint.config.js",
+			"vite.config.ts",
+			"build/",
+			".svelte-kit/",
+			"dist/",
+			"**/__generated__"
+		]
 	},
 	eslint.configs.recommended,
 	...tseslint.configs.recommended,
@@ -41,7 +48,10 @@ export default tseslint.config(
 			},
 			"import/resolver": {
 				typescript: {
-					project: [import.meta.dirname + "/apps/*/tsconfig.json", import.meta.dirname + "/packages/*/tsconfig.json"]
+					project: [
+						import.meta.dirname + "/apps/*/tsconfig.json",
+						import.meta.dirname + "/packages/*/tsconfig.json"
+					]
 				},
 				node: {
 					extensions: [".js", ".jsx", ".ts", ".tsx", ".svelte", ".svelte.js", ".svelte.ts"]

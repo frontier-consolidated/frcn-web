@@ -11,8 +11,8 @@ const ACCESS_KEY_SALT_ROUNDS = 12;
 async function getSystemSettings() {
 	return await database.systemSettings.findFirstOrThrow({
 		include: {
-			defaultEventChannel: true,
-		},
+			defaultEventChannel: true
+		}
 	});
 }
 
@@ -21,11 +21,13 @@ async function editSystemSettings(data: SystemEditInput) {
 		where: { unique: true },
 		data: {
 			discordGuildId: data.discordGuildId ?? undefined,
-			defaultEventChannel: data.defaultEventChannelId ? {
-				connect: {
-					id: data.defaultEventChannelId
-				} 
-			} : undefined
+			defaultEventChannel: data.defaultEventChannelId
+				? {
+						connect: {
+							id: data.defaultEventChannelId
+						}
+					}
+				: undefined
 		},
 		include: {
 			defaultEventChannel: true

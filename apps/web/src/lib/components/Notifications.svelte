@@ -5,7 +5,7 @@
 	import {
 		notifications,
 		type Notification,
-		dropNotification,
+		dropNotification
 	} from "$lib/stores/NotificationStore";
 
 	function getColor(
@@ -43,7 +43,7 @@
 	}
 </script>
 
-<div id="notifications" class="fixed flex flex-col-reverse gap-2 bottom-0 left-0 w-64 m-8 z-100">
+<div id="notifications" class="z-100 fixed bottom-0 left-0 m-8 flex w-64 flex-col-reverse gap-2">
 	{#each $notifications as notification}
 		<Toast
 			color={getColor(notification.type)}
@@ -51,7 +51,12 @@
 				dropNotification(notification.id);
 			}}
 		>
-			<svelte:component this={getIcon(notification.type)} slot="icon" class="w-5 h-5" tabindex="-1" />
+			<svelte:component
+				this={getIcon(notification.type)}
+				slot="icon"
+				class="h-5 w-5"
+				tabindex="-1"
+			/>
 			{notification.message}
 		</Toast>
 	{/each}

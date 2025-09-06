@@ -43,7 +43,7 @@
 	}}
 >
 	<svelte:fragment slot="header">
-		<div class="flex justify-end items-center w-full px-4">
+		<div class="flex w-full items-center justify-end px-4">
 			<div class="max-w-xs">
 				<Input bind:value={searchInput} placeholder="Search...">
 					<SearchSolid slot="left" size="sm" class="ms-1" tabindex="-1" />
@@ -52,14 +52,14 @@
 		</div>
 	</svelte:fragment>
 	{#if searchInput}
-		<ul class="flex flex-col gap-1 w-full h-96 overflow-y-auto">
+		<ul class="flex h-96 w-full flex-col gap-1 overflow-y-auto">
 			{#each searchResults as location}
 				{@const selected = selectedValue.at(-1) === location.path.at(-1)}
 				<li>
 					{#key location}
 						<button
 							class={twMerge(
-								"flex items-center w-full p-3 text-white text-left hover:bg-gray-700",
+								"flex w-full items-center p-3 text-left text-white hover:bg-gray-700",
 								selected && "bg-primary-700 hover:bg-primary-600"
 							)}
 							on:click={() => {
@@ -74,7 +74,7 @@
 			{/each}
 		</ul>
 	{:else}
-		<div class="flex gap-1 w-full h-96 overflow-x-scroll">
+		<div class="flex h-96 w-full gap-1 overflow-x-scroll">
 			{#each new Array(Math.max(3, selectedValue.length + 1)) as _, i}
 				{@const selectable =
 					i === 0
@@ -84,7 +84,7 @@
 							: []}
 				{#if i < 3 || selectable.length}
 					<ul
-						class="flex flex-col w-full min-w-[15rem] max-w-[18rem] rounded bg-gray-900 overflow-y-auto"
+						class="flex w-full min-w-[15rem] max-w-[18rem] flex-col overflow-y-auto rounded bg-gray-900"
 						use:initUl={i}
 					>
 						{#each selectable as location}
@@ -93,14 +93,11 @@
 								{#key location}
 									<button
 										class={twMerge(
-											"flex items-center w-full p-3 text-white text-left hover:bg-gray-700",
+											"flex w-full items-center p-3 text-left text-white hover:bg-gray-700",
 											selected && "bg-primary-700 hover:bg-primary-600"
 										)}
 										on:click={() => {
-											selectedValue = [
-												...selectedValue.slice(0, i),
-												location
-											];
+											selectedValue = [...selectedValue.slice(0, i), location];
 										}}
 									>
 										<LocationIcon {location} />
