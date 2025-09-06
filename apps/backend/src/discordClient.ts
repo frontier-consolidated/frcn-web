@@ -13,7 +13,7 @@ export async function createDiscordClient(token: string) {
 		]
 	}) as DiscordClient;
 
-	await load(client, rest);
+	await load(client);
 
 	return {
 		client,
