@@ -52,10 +52,6 @@
 	let submitting = false;
 
 	async function save(notifyOfSuccess = true) {
-		if (submitting) {
-			return false;
-		}
-
 		try {
 			submitting = true;
 
@@ -139,10 +135,6 @@
 	}
 
 	async function post() {
-		if (submitting) {
-			return false;
-		}
-
 		try {
 			submitting = true;
 
@@ -153,11 +145,13 @@
 				});
 				return false;
 			}
-			if (isDirty && !(await save(false))) return false;
+			if (isDirty && !(await save(false))) {
+				return false;
+			}
 
 			pushNotification({
 				type: "info",
-				message: "POsting event..."
+				message: "Posting event..."
 			});
 
 			const { data: postData, errors } = await getApollo().mutate({
@@ -584,7 +578,7 @@
 		<Button
 			disabled={submitting || !isDirty || !canEdit}
 			on:click={() => {
-				if (!isDirty || !canEdit) return;
+				if (submitting || !isDirty || !canEdit) return;
 				save();
 			}}
 		>
@@ -595,7 +589,7 @@
 			color="green"
 			disabled={submitting || !isDirty}
 			on:click={() => {
-				if (!isDirty) return;
+				if (submitting || !isDirty) return;
 				save();
 			}}
 		>
@@ -604,7 +598,7 @@
 		<Button
 			disabled={submitting || data.posted}
 			on:click={() => {
-				if (data.posted) return;
+				if (submitting || data.posted) return;
 				post();
 			}}
 		>
