@@ -49,111 +49,143 @@
 	let deleteModalOpen = false;
 	let archiveModalOpen = false;
 
+	let submitting = false;
+
 	async function save(notifyOfSuccess = true) {
-		if (!validator.validate(!data.posted)) {
-			pushNotification({
-				type: "error",
-				message: "Check your inputs"
-			});
-			return false;
-		}
-		if (editData.location.some((loc) => !loc)) {
-			pushNotification({
-				type: "error",
-				message: "Invalid location"
-			});
+		if (submitting) {
 			return false;
 		}
 
-		const { errors } = await getApollo().mutate({
-			mutation: Mutations.EDIT_EVENT,
-			variables: {
-				eventId: data.id,
-				data: {
-					channel: editData.channel.id ? editData.channel.id : undefined,
-					name: editData.name ? editData.name : undefined,
-					summary: editData.summary ? editData.summary : undefined,
-					description: editData.description ? editData.description.slice(0, 2024) : undefined,
-					imageUrl: editData.imageUrl,
-					eventType: editData.eventType,
-					location: editData.location.map((loc) => loc.name),
-					startAt: editData.startAt,
-					duration: editData.duration,
-					roles: editData.rsvpRoles.map((r) => ({
-						id: r.id,
-						name: r.name,
-						limit: r.limit,
-						emoji: r.emoji.name,
-						emojiId: r.emoji.id
-					})),
-					mentions: editData.mentions,
-					settings: {
-						createEventThread: editData.settings.createEventThread,
-						createThreadsForRoles: editData.settings.createThreadsForRoles,
-						hideLocation: editData.settings.hideLocation,
-						inviteOnly: editData.settings.inviteOnly,
-						openToJoinRequests: editData.settings.openToJoinRequests
-					},
-					accessType: editData.accessType,
-					accessRoles: editData.accessRoles.map((role) => role.id)
-				}
-			},
-			errorPolicy: "all"
-		});
+		try {
+			submitting = true;
 
-		if (errors && errors.length > 0) {
+			if (!validator.validate(!data.posted)) {
+				pushNotification({
+					type: "error",
+					message: "Check your inputs"
+				});
+				return false;
+			}
+			if (editData.location.some((loc) => !loc)) {
+				pushNotification({
+					type: "error",
+					message: "Invalid location"
+				});
+				return false;
+			}
+
 			pushNotification({
-				type: "error",
-				message: "Failed to save"
+				type: "info",
+				message: "Saving event..."
 			});
-			console.error(errors);
-			return false;
-		}
 
-		await invalidate("app:currentevent");
-
-		if (notifyOfSuccess) {
-			pushNotification({
-				type: "success",
-				message: "Event successfully saved!"
+			const { errors } = await getApollo().mutate({
+				mutation: Mutations.EDIT_EVENT,
+				variables: {
+					eventId: data.id,
+					data: {
+						channel: editData.channel.id ? editData.channel.id : undefined,
+						name: editData.name ? editData.name : undefined,
+						summary: editData.summary ? editData.summary : undefined,
+						description: editData.description ? editData.description.slice(0, 2024) : undefined,
+						imageUrl: editData.imageUrl,
+						eventType: editData.eventType,
+						location: editData.location.map((loc) => loc.name),
+						startAt: editData.startAt,
+						duration: editData.duration,
+						roles: editData.rsvpRoles.map((r) => ({
+							id: r.id,
+							name: r.name,
+							limit: r.limit,
+							emoji: r.emoji.name,
+							emojiId: r.emoji.id
+						})),
+						mentions: editData.mentions,
+						settings: {
+							createEventThread: editData.settings.createEventThread,
+							createThreadsForRoles: editData.settings.createThreadsForRoles,
+							hideLocation: editData.settings.hideLocation,
+							inviteOnly: editData.settings.inviteOnly,
+							openToJoinRequests: editData.settings.openToJoinRequests
+						},
+						accessType: editData.accessType,
+						accessRoles: editData.accessRoles.map((role) => role.id)
+					}
+				},
+				errorPolicy: "all"
 			});
+
+			if (errors && errors.length > 0) {
+				pushNotification({
+					type: "error",
+					message: "Failed to save"
+				});
+				console.error(errors);
+				return false;
+			}
+
+			await invalidate("app:currentevent");
+
+			if (notifyOfSuccess) {
+				pushNotification({
+					type: "success",
+					message: "Event successfully saved!"
+				});
+			}
+			return true;
+		} finally {
+			submitting = false;
 		}
-		return true;
 	}
 
 	async function post() {
-		if (!validator.validate()) {
-			pushNotification({
-				type: "error",
-				message: "Check your inputs"
-			});
-			return false;
-		}
-		if (isDirty && !(await save(false))) return false;
-
-		const { data: postData, errors } = await getApollo().mutate({
-			mutation: Mutations.POST_EVENT,
-			variables: {
-				eventId: data.id
-			},
-			errorPolicy: "all"
-		});
-
-		if (!postData?.success || (errors && errors.length > 0)) {
-			pushNotification({
-				type: "error",
-				message: "Failed to post"
-			});
-			console.error(errors);
+		if (submitting) {
 			return false;
 		}
 
-		await invalidate("app:currentevent");
-		pushNotification({
-			type: "success",
-			message: "Event successfully posted!"
-		});
-		return true;
+		try {
+			submitting = true;
+
+			if (!validator.validate()) {
+				pushNotification({
+					type: "error",
+					message: "Check your inputs"
+				});
+				return false;
+			}
+			if (isDirty && !(await save(false))) return false;
+
+			pushNotification({
+				type: "info",
+				message: "POsting event..."
+			});
+
+			const { data: postData, errors } = await getApollo().mutate({
+				mutation: Mutations.POST_EVENT,
+				variables: {
+					eventId: data.id
+				},
+				errorPolicy: "all"
+			});
+
+			if (!postData?.success || (errors && errors.length > 0)) {
+				pushNotification({
+					type: "error",
+					message: "Failed to post"
+				});
+				console.error(errors);
+				return false;
+			}
+
+			await invalidate("app:currentevent");
+			pushNotification({
+				type: "success",
+				message: "Event successfully posted!"
+			});
+			return true;
+		} finally {
+			submitting = false;
+		}
 	}
 
 	let guildOptions = data.options;
@@ -550,7 +582,7 @@
 	</Button>
 	{#if data.posted}
 		<Button
-			disabled={!isDirty || !canEdit}
+			disabled={submitting || !isDirty || !canEdit}
 			on:click={() => {
 				if (!isDirty || !canEdit) return;
 				save();
@@ -561,7 +593,7 @@
 	{:else}
 		<Button
 			color="green"
-			disabled={!isDirty}
+			disabled={submitting || !isDirty}
 			on:click={() => {
 				if (!isDirty) return;
 				save();
@@ -570,7 +602,7 @@
 			<EditOutline class="me-2" tabindex="-1" /> Save Draft
 		</Button>
 		<Button
-			disabled={data.posted}
+			disabled={submitting || data.posted}
 			on:click={() => {
 				if (data.posted) return;
 				post();
