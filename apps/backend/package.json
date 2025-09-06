@@ -5,7 +5,7 @@
 	"scripts": {
 		"dev": "nodemon -e js,mjs,cjs,ts,mts,cts,json --exec \"tsx --env-file .env.local src/server.ts\"",
 		"start": "node --loader extensionless --no-warnings dist/server.js",
-		"build": "tsc -p tsconfig.prod.json && cp src/graphql/schema/schema.generated.graphql dist/graphql/schema",
+		"build": "tsc -p tsconfig.prod.json && cp src/graphql/schema/schema.generated.graphql dist/graphql/schema && cp -r src/__generated__ dist/__generated__",
 		"db:generate": "prisma generate",
 		"db:migrate": "prisma migrate dev",
 		"db:push": "prisma db push",
