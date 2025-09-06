@@ -1,5 +1,5 @@
 import type Data from "./emojis";
-import json from "./emojis.json";
+import json from "./emojis.json" with { type: "json" };
 
 export const data = json as Data;
 
