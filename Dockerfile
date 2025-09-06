@@ -10,8 +10,8 @@ ENV PATH="$PNPM_HOME:$PATH"
 ENV PORT=80
 ENV NODE_ENV=production
 
-RUN corepack enable
-RUN apt install -y --update curl git
+RUN corepack install --global pnpm@10.15.1 && corepack enable
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
 # Build
 FROM base AS build
