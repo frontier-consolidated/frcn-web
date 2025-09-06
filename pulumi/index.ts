@@ -99,13 +99,6 @@ const deployment = new k8s.apps.v1.Deployment(
 			namespace: namespace.metadata.name
 		},
 		spec: {
-			strategy: {
-				type: "RollingUpdate",
-				rollingUpdate: {
-					maxSurge: 2,
-					maxUnavailable: 1
-				}
-			},
 			selector: { matchLabels: appLabels },
 			replicas,
 			template: {
@@ -138,6 +131,10 @@ const deployment = new k8s.apps.v1.Deployment(
 								{
 									name: "WEB_ORIGIN",
 									value: `https://${webDomain}`
+								},
+								{
+									name: "ORIGINS",
+									value: `https://${webDomain},http://localhost:3000`
 								},
 								{
 									name: "ACCESS_KEY_HEADER",
@@ -199,7 +196,7 @@ const deployment = new k8s.apps.v1.Deployment(
 								},
 								{
 									name: "PUBLIC_API_BASEURL",
-									value: "https://api.frontierconsolidated.com"
+									value: `https://${apiDomain}`
 								},
 								{
 									name: "LOCAL_ACCESS_TOKEN",
@@ -250,7 +247,8 @@ const ingress = new k8s.networking.v1.Ingress(`${appName}-ingress`, {
 		namespace: namespace.metadata.name,
 		name: `${appName}-ingress`,
 		annotations: {
-			"kubernetes.io/ingress.class": "nginx"
+			"kubernetes.io/ingress.class": "nginx",
+			"nginx.ingress.kubernetes.io/proxy-buffer-size": "8k"
 		}
 	},
 	spec: {
