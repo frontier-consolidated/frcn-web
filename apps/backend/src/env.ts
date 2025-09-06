@@ -98,7 +98,7 @@ export function validateEnvironment() {
 	// BASE_PATH
 
 	expectEnvvar("WEB_ORIGIN");
-	expectEnvvar("ORIGINS");
+	// expectEnvvar("ORIGINS");
 
 	expectEnvvar("DATABASE_URL");
 
