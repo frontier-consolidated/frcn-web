@@ -4,4 +4,4 @@ environment:
 
 config:
   kubernetes:context: frcn
-  frcn-web-old:repositoryName: frcn/frcn-web-old
+  frcn-web-old:repositoryName: frcn-web-old/prod
