@@ -10,7 +10,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 ENV PORT=80
 
 RUN corepack enable
-RUN apk add --update curl git
+RUN apt install -y --update curl git
 
 # Build
 FROM base AS build
@@ -19,19 +19,22 @@ WORKDIR $SRC
 
 ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
 
+# Remove .gitignore files as pnpm will respect these by default
+RUN find . -name ".gitignore" -exec rm {} \;
+
 # Build custom adapter
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm --config.dedupe-peer-dependents=false --filter ./packages/adapter install --frozen-lockfile
 RUN pnpm --filter ./packages/adapter build
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm --filter=backend db-generate
+RUN pnpm --filter=backend db:generate
+
+# Copy generated prisma client to backend node_modules
+RUN find . -type d -name '.prisma' | xargs -I {} cp -r {} ./apps/backend/node_modules/
 
 RUN pnpm run --filter=\!./packages/adapter build
 RUN pnpm deploy --filter=backend --prod $PROD/backend
 RUN pnpm deploy --filter=web --prod $PROD/web
-
-# Copy generated prisma client to backend node_modules
-RUN find . -type d -name '.prisma' | xargs cp -rt $PROD/backend/node_modules
 
 # Delete environment files since we only needed them for building
 RUN find $PROD -name ".env" -exec rm {} \;
