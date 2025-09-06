@@ -23,14 +23,10 @@ ENV PRISMA_SKIP_POSTINSTALL_GENERATE=true
 # Remove .gitignore files as pnpm will respect these by default
 RUN find . -name ".gitignore" -exec rm {} \;
 
-# Build custom adapter
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm --config.dedupe-peer-dependents=false --filter ./packages/adapter install --frozen-lockfile
-RUN pnpm --filter ./packages/adapter build
-
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm --filter=backend db:generate
 
-RUN pnpm run --filter=\!./packages/adapter build
+RUN pnpm run -r build
 RUN pnpm deploy --filter=backend --prod $PROD/backend
 RUN pnpm deploy --filter=web --prod $PROD/web
 

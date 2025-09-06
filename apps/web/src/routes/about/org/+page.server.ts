@@ -5,9 +5,6 @@ import type { PageServerLoad } from "./$types";
 
 const cmsIdentifier = "/about/org";
 
-export const prerender = "auto";
-export const config = { isr: true };
-
 export const load = (async () => {
 	if (building) return {};
 	const index = await getCmsClient().getIndex(cmsIdentifier);
