@@ -70,7 +70,6 @@ const backendImage = new docker.Image(`${appName}-backend-image`, {
 		// 	...buildArgs.reduce((args, name) => ({ ...args, [name]: process.env[name] }), {})
 		// }
 	},
-	buildOnPreview: false,
 	imageName: backendRepository.repository.repositoryUrl,
 	registry: backendRepository.registry
 });
@@ -83,7 +82,6 @@ const webImage = new docker.Image(`${appName}-web-image`, {
 		platform: "linux/amd64",
 		target: "web"
 	},
-	buildOnPreview: false,
 	imageName: webRepository.repository.repositoryUrl,
 	registry: webRepository.registry
 });
@@ -120,14 +118,14 @@ const deployment = new k8s.apps.v1.Deployment(
 							imagePullPolicy: "Always",
 							ports: [
 								{
-									containerPort: 3000,
+									containerPort: 3001,
 									name: "frcn-backend"
 								}
 							],
 							env: [
 								{
 									name: "PORT",
-									value: "3000"
+									value: "3001"
 								},
 								{
 									name: "DOMAIN",
