@@ -8,6 +8,7 @@ ARG PROD=/prod
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 ENV PORT=80
+ENV NODE_ENV=production
 
 RUN corepack enable
 RUN apt install -y --update curl git
