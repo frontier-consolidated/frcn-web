@@ -88,7 +88,6 @@ async function getEvents(
 		startAt.min ??= new Date();
 	}
 
-	// If the date range is less than or equal to a calendar range then don't limit items
 	if (
 		limit === -1 &&
 		startAt.min &&
@@ -98,8 +97,9 @@ async function getEvents(
 		limit = -1;
 	} else {
 		if (limit === -1) limit = 20;
-		limit = Math.min(100, limit);
 	}
+
+	limit = Math.min(100, limit);
 
 	const startAtOr: Prisma.EventWhereInput[] = [];
 
