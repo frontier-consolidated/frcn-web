@@ -93,7 +93,7 @@ importers:
         specifier: ^10.0.12
         version: 10.0.12(graphql@16.8.1)
       '@prisma/client':
-        specifier: ^5.12.0
+        specifier: 5.12.0
         version: 5.12.0(prisma@5.12.0)
       '@types/fluent-ffmpeg':
         specifier: ^2.1.24

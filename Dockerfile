@@ -30,9 +30,6 @@ RUN pnpm --filter ./packages/adapter build
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm --filter=backend db:generate
 
-# Copy generated prisma client to backend node_modules
-RUN find . -type d -name '.prisma' | xargs -I {} cp -r {} ./apps/backend/node_modules/
-
 RUN pnpm run --filter=\!./packages/adapter build
 RUN pnpm deploy --filter=backend --prod $PROD/backend
 RUN pnpm deploy --filter=web --prod $PROD/web

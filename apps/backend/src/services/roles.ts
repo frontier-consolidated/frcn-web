@@ -1,4 +1,4 @@
-import type { Prisma, User, UserRole } from "@prisma/client";
+import type { Prisma, User, UserRole } from "../__generated__/client";
 
 import { $users } from "./users";
 import { database } from "../database";

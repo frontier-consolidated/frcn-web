@@ -1,4 +1,4 @@
-import type { User, UserRole } from "@prisma/client";
+import type { User, UserRole } from "../../__generated__/client";
 import { Events, GuildMember, type PartialGuildMember } from "discord.js";
 
 import type { EventListener } from "..";

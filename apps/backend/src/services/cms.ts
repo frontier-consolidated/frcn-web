@@ -5,7 +5,7 @@ import type {
 	FileUpload,
 	Prisma,
 	User
-} from "@prisma/client";
+} from "../__generated__/client";
 
 import { $files } from "./files";
 import { database } from "../database";

@@ -1,5 +1,5 @@
 import { Permission, hasPermission, permissions } from "@frcn/shared";
-import type { UserRole } from "@prisma/client";
+import type { UserRole } from "../__generated__/client";
 
 import { getAdminIds } from "../env";
 import { logger } from "../logger";

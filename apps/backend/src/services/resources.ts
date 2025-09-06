@@ -1,5 +1,5 @@
 import { S3Client } from "@aws-sdk/client-s3";
-import type { Prisma, User } from "@prisma/client";
+import type { Prisma, User } from "../__generated__/client";
 
 import { $files } from "./files";
 import { database } from "../database";

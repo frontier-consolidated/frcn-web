@@ -1,5 +1,5 @@
 import { Permission, hasOwnedObjectPermission } from "@frcn/shared";
-import type { Resource, User } from "@prisma/client";
+import type { Resource, User } from "../../../__generated__/client";
 
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";

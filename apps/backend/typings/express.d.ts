@@ -1,4 +1,4 @@
-import type { User as DatabaseUser, AccessKey as DatabaseAccessKey } from "@prisma/client";
+import type { User as DatabaseUser, AccessKey as DatabaseAccessKey } from "./__generated__/client";
 
 export {};
 

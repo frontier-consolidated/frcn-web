@@ -1,6 +1,6 @@
 import { dates, strings } from "@frcn/shared";
 import { getEmojiByName } from "@frcn/shared/emojis";
-import type { Event } from "@prisma/client";
+import type { Event } from "../../__generated__/client";
 import {
 	type BaseMessageOptions,
 	ButtonStyle,

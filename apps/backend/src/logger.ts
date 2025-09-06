@@ -1,6 +1,6 @@
 import util from "util";
 
-import type { AccessKey, User } from "@prisma/client";
+import type { AccessKey, User } from "./__generated__/client";
 import type { Request } from "express";
 
 import { isProd } from "./env";

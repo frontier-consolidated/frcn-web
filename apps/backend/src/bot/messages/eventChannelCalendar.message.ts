@@ -1,4 +1,4 @@
-import type { Event, EventChannel } from "@prisma/client";
+import type { Event, EventChannel } from "../../__generated__/client";
 import { type BaseMessageOptions, EmbedBuilder, TextChannel } from "discord.js";
 
 import type { DiscordClient } from "..";

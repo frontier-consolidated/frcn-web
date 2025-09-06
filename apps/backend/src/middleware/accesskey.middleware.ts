@@ -1,5 +1,5 @@
 import { Permission } from "@frcn/shared";
-import type { AccessKey } from "@prisma/client";
+import type { AccessKey } from "../__generated__/client";
 import type { Request, RequestHandler } from "express";
 
 import { $system } from "../services/system";

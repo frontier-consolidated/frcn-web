@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-import type { AccessKey } from "@prisma/client";
+import type { AccessKey } from "../__generated__/client";
 import * as bcrypt from "bcrypt";
 
 import { database } from "../database";

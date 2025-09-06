@@ -10,7 +10,7 @@ import {
 	type S3Client
 } from "@aws-sdk/client-s3";
 import { Upload } from "@aws-sdk/lib-storage";
-import type { FileUpload, User } from "@prisma/client";
+import type { FileUpload, User } from "../__generated__/client";
 import * as mime from "mime-types";
 
 import { database, type Transaction } from "../database";

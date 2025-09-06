@@ -1,4 +1,4 @@
-import type { User, UserSettings, UserStatus } from "@prisma/client";
+import type { User, UserSettings, UserStatus } from "../../../__generated__/client";
 
 import { resolveEvent, resolveEventRsvp } from "./Event";
 import { resolveUserRole } from "./Roles";

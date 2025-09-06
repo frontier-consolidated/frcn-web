@@ -1,4 +1,4 @@
-import type { Event } from "@prisma/client";
+import type { Event } from "../../__generated__/client";
 import {
 	type BaseMessageOptions,
 	EmbedBuilder,

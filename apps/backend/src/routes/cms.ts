@@ -1,6 +1,6 @@
 import { CMSContainerType } from "@frcn/cms";
 import { Permission, hasPermission } from "@frcn/shared";
-import type { ContentContainer, FileUpload } from "@prisma/client";
+import type { ContentContainer, FileUpload } from "../__generated__/client";
 import { Validator, type Schema } from "jsonschema";
 
 import type { Context, RouteConfig } from "../context";

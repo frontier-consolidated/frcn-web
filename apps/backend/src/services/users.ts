@@ -1,5 +1,5 @@
 import { Permission } from "@frcn/shared";
-import type { Prisma, User, UserRole } from "@prisma/client";
+import type { Prisma, User, UserRole } from "../__generated__/client";
 import { type APIUser, type User as DiscordUser, CDNRoutes, ImageFormat } from "discord.js";
 
 import { $discord } from "./discord";

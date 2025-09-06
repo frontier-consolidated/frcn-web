@@ -1,4 +1,4 @@
-import type { User } from "@prisma/client";
+import type { User } from "../__generated__/client";
 
 import type {
 	UserRole as GQLUserRole,

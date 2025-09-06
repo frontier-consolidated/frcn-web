@@ -1,5 +1,5 @@
 import { hasAdmin } from "@frcn/shared";
-import type { UserRole } from "@prisma/client";
+import type { UserRole } from "../../../__generated__/client";
 
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";

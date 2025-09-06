@@ -1,5 +1,9 @@
 import { CMSContainerType, ContainerTypeMap } from "@frcn/cms";
-import type { ContentContainer, ContentContainerFile, FileUpload } from "@prisma/client";
+import type {
+	ContentContainer,
+	ContentContainerFile,
+	FileUpload
+} from "../../../__generated__/client";
 
 import type { WithModel } from "./types";
 import { getOrigin } from "../../../env";

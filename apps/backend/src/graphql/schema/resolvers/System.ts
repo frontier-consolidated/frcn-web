@@ -1,5 +1,5 @@
 import { hasAdmin } from "@frcn/shared";
-import type { AccessKey } from "@prisma/client";
+import type { AccessKey } from "../../../__generated__/client";
 import { ChannelType, type GuildBasedChannel } from "discord.js";
 
 import { resolveDiscordGuild } from "./Discord";

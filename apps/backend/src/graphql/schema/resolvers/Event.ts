@@ -6,7 +6,7 @@ import type {
 	Event,
 	User,
 	EventChannel
-} from "@prisma/client";
+} from "../../../__generated__/client";
 import type { CategoryChannel } from "discord.js";
 
 import { resolveDiscordChannel, resolveDiscordEmoji, resolveDiscordGuild } from "./Discord";

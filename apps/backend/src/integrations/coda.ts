@@ -1,4 +1,4 @@
-import type { Event, EventUser, User } from "@prisma/client";
+import type { Event, EventUser, User } from "../__generated__/client";
 import { Coda } from "coda-js";
 
 const legionCoda = new Coda(process.env.INTEGRATION_LEGION_CODA_TOKEN!);

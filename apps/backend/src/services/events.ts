@@ -9,7 +9,7 @@ import type {
 	EventUser,
 	Prisma,
 	User
-} from "@prisma/client";
+} from "../__generated__/client";
 import {
 	ChannelType,
 	TextChannel,

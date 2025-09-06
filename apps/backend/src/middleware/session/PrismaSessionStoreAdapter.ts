@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "../../__generated__/client";
 import { type SessionData, Store } from "express-session";
 
 export interface PrismaSessionStoreAdapteOptions {
