@@ -3,6 +3,7 @@ lockfileVersion: '9.0'
 settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
+  injectWorkspacePackages: true
 
 importers:
 
@@ -318,13 +319,13 @@ importers:
     devDependencies:
       '@frcn/adapter':
         specifier: workspace:^
-        version: link:../../packages/adapter
+        version: file:packages/adapter(tslib@2.4.1)(typescript@5.4.4)
       '@frcn/graphql-scalar-types':
         specifier: workspace:^
         version: link:../../packages/graphql-scalar-types
       '@graphql-codegen/cli':
         specifier: ^5.0.0
-        version: 5.0.0(@types/node@24.3.0)(encoding@0.1.13)(graphql@16.8.1)(typescript@5.3.3)
+        version: 5.0.0(@types/node@24.3.0)(encoding@0.1.13)(graphql@16.8.1)(typescript@5.4.4)
       '@graphql-codegen/client-preset':
         specifier: ^4.1.0
         version: 4.1.0(encoding@0.1.13)(graphql@16.8.1)
@@ -351,7 +352,7 @@ importers:
         version: 10.4.16(postcss@8.4.32)
       eslint-plugin-svelte:
         specifier: ^2.35.1
-        version: 2.35.1(eslint@9.35.0(jiti@1.21.0))(svelte@4.2.12)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3))
+        version: 2.35.1(eslint@9.35.0(jiti@1.21.0))(svelte@4.2.12)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4))
       flowbite:
         specifier: ^2.2.1
         version: 2.2.1
@@ -360,7 +361,7 @@ importers:
         version: 0.44.22(svelte@4.2.12)
       flowbite-svelte-icons:
         specifier: ^1.0.2
-        version: 1.0.2(svelte@4.2.12)(tailwind-merge@2.2.1)(tailwindcss@3.3.6(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3)))
+        version: 1.0.2(svelte@4.2.12)(tailwind-merge@2.2.1)(tailwindcss@3.3.6(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4)))
       postcss:
         specifier: ^8.4.32
         version: 8.4.32
@@ -375,7 +376,7 @@ importers:
         version: 3.6.0(@babel/core@7.23.7)(postcss-load-config@5.0.2(jiti@1.21.0)(postcss@8.4.32))(postcss@8.4.32)(svelte@4.2.12)
       tailwindcss:
         specifier: ^3.3.6
-        version: 3.3.6(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3))
+        version: 3.3.6(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4))
       tslib:
         specifier: ^2.4.1
         version: 2.4.1
@@ -1612,6 +1613,9 @@ packages:
 
   '@formatjs/intl-localematcher@0.5.4':
     resolution: {integrity: sha512-zTwEpWOzZ2CiKcB93BLngUX59hQkuZjT2+SAQEscSm52peDW/getsawMcWF1rGRpMCX6D7nSJA3CzJ8gn13N/g==}
+
+  '@frcn/adapter@file:packages/adapter':
+    resolution: {directory: packages/adapter, type: directory}
 
   '@graphql-codegen/add@5.0.0':
     resolution: {integrity: sha512-ynWDOsK2yxtFHwcJTB9shoSkUd7YXd6ZE57f0nk7W5cu/nAgxZZpEsnTPEpZB/Mjf14YRGe2uJHQ7AfElHjqUQ==}
@@ -5876,10 +5880,6 @@ packages:
     resolution: {integrity: sha512-D/kj5JNu6oo2EIy+XL/26JEDTlIbB8hw85G8StOE6L74RQAVVP5rej6wxCNqyMbR4RkPfqvezVbPw81Ngd6Kcw==}
     engines: {node: ^10 || ^12 || >=14}
 
-  postcss@8.4.38:
-    resolution: {integrity: sha512-Wglpdk03BSfXkHoQa3b/oulrotAkwrlLDRSOb9D0bN86FdRyE9lppSp33aHNPgBa0JKCoB+drFLZkQoRRYae5A==}
-    engines: {node: ^10 || ^12 || >=14}
-
   postcss@8.5.6:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
@@ -8758,6 +8758,17 @@ snapshots:
     dependencies:
       tslib: 2.6.2
 
+  '@frcn/adapter@file:packages/adapter(tslib@2.4.1)(typescript@5.4.4)':
+    dependencies:
+      '@rollup/plugin-commonjs': 25.0.7(rollup@4.14.1)
+      '@rollup/plugin-json': 6.1.0(rollup@4.14.1)
+      '@rollup/plugin-node-resolve': 15.2.3(rollup@4.14.1)
+      '@rollup/plugin-typescript': 11.1.6(rollup@4.14.1)(tslib@2.4.1)(typescript@5.4.4)
+      rollup: 4.14.1
+    transitivePeerDependencies:
+      - tslib
+      - typescript
+
   '@graphql-codegen/add@5.0.0(graphql@16.8.1)':
     dependencies:
       '@graphql-codegen/plugin-helpers': 5.0.1(graphql@16.8.1)
@@ -8811,7 +8822,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  '@graphql-codegen/cli@5.0.0(@types/node@24.3.0)(encoding@0.1.13)(graphql@16.8.1)(typescript@5.3.3)':
+  '@graphql-codegen/cli@5.0.0(@types/node@24.3.0)(encoding@0.1.13)(graphql@16.8.1)(typescript@5.4.4)':
     dependencies:
       '@babel/generator': 7.23.6
       '@babel/template': 7.22.15
@@ -8830,11 +8841,11 @@ snapshots:
       '@graphql-tools/utils': 10.0.12(graphql@16.8.1)
       '@whatwg-node/fetch': 0.8.8
       chalk: 4.1.2
-      cosmiconfig: 8.3.6(typescript@5.3.3)
+      cosmiconfig: 8.3.6(typescript@5.4.4)
       debounce: 1.2.1
       detect-indent: 6.1.0
       graphql: 16.8.1
-      graphql-config: 5.0.3(@types/node@24.3.0)(encoding@0.1.13)(graphql@16.8.1)(typescript@5.3.3)
+      graphql-config: 5.0.3(@types/node@24.3.0)(encoding@0.1.13)(graphql@16.8.1)(typescript@5.4.4)
       inquirer: 8.2.6
       is-glob: 4.0.3
       jiti: 1.21.0
@@ -9957,6 +9968,17 @@ snapshots:
 
   '@repeaterjs/repeater@3.0.5': {}
 
+  '@rollup/plugin-commonjs@25.0.7(rollup@4.14.1)':
+    dependencies:
+      '@rollup/pluginutils': 5.1.0(rollup@4.14.1)
+      commondir: 1.0.1
+      estree-walker: 2.0.2
+      glob: 8.1.0
+      is-reference: 1.2.1
+      magic-string: 0.30.5
+    optionalDependencies:
+      rollup: 4.14.1
+
   '@rollup/plugin-commonjs@25.0.7(rollup@4.9.5)':
     dependencies:
       '@rollup/pluginutils': 5.1.0(rollup@4.9.5)
@@ -9968,11 +9990,28 @@ snapshots:
     optionalDependencies:
       rollup: 4.9.5
 
+  '@rollup/plugin-json@6.1.0(rollup@4.14.1)':
+    dependencies:
+      '@rollup/pluginutils': 5.1.0(rollup@4.14.1)
+    optionalDependencies:
+      rollup: 4.14.1
+
   '@rollup/plugin-json@6.1.0(rollup@4.9.5)':
     dependencies:
       '@rollup/pluginutils': 5.1.0(rollup@4.9.5)
     optionalDependencies:
       rollup: 4.9.5
+
+  '@rollup/plugin-node-resolve@15.2.3(rollup@4.14.1)':
+    dependencies:
+      '@rollup/pluginutils': 5.1.0(rollup@4.14.1)
+      '@types/resolve': 1.20.2
+      deepmerge: 4.3.1
+      is-builtin-module: 3.2.1
+      is-module: 1.0.0
+      resolve: 1.22.8
+    optionalDependencies:
+      rollup: 4.14.1
 
   '@rollup/plugin-node-resolve@15.2.3(rollup@4.9.5)':
     dependencies:
@@ -9984,6 +10023,15 @@ snapshots:
       resolve: 1.22.8
     optionalDependencies:
       rollup: 4.9.5
+
+  '@rollup/plugin-typescript@11.1.6(rollup@4.14.1)(tslib@2.4.1)(typescript@5.4.4)':
+    dependencies:
+      '@rollup/pluginutils': 5.1.0(rollup@4.14.1)
+      resolve: 1.22.8
+      typescript: 5.4.4
+    optionalDependencies:
+      rollup: 4.14.1
+      tslib: 2.4.1
 
   '@rollup/plugin-typescript@11.1.6(rollup@4.9.5)(tslib@2.6.2)(typescript@5.4.4)':
     dependencies:
@@ -10482,7 +10530,7 @@ snapshots:
       esm-env: 1.0.0
       import-meta-resolve: 4.0.0
       kleur: 4.1.5
-      magic-string: 0.30.5
+      magic-string: 0.30.9
       mrmime: 2.0.0
       sade: 1.8.1
       set-cookie-parser: 2.6.0
@@ -11668,15 +11716,6 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  cosmiconfig@8.3.6(typescript@5.3.3):
-    dependencies:
-      import-fresh: 3.3.0
-      js-yaml: 4.1.0
-      parse-json: 5.2.0
-      path-type: 4.0.0
-    optionalDependencies:
-      typescript: 5.3.3
-
   cosmiconfig@8.3.6(typescript@5.4.4):
     dependencies:
       import-fresh: 3.3.0
@@ -12107,7 +12146,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.42.0(eslint@9.35.0(jiti@1.21.0))(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@9.35.0(jiti@1.21.0)))(eslint@9.35.0(jiti@1.21.0)):
+  eslint-module-utils@2.12.1(@typescript-eslint/parser@8.42.0(eslint@9.35.0(jiti@1.21.0))(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.35.0(jiti@1.21.0)):
     dependencies:
       debug: 3.2.7
     optionalDependencies:
@@ -12129,7 +12168,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.35.0(jiti@1.21.0)
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.42.0(eslint@9.35.0(jiti@1.21.0))(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@9.35.0(jiti@1.21.0)))(eslint@9.35.0(jiti@1.21.0))
+      eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.42.0(eslint@9.35.0(jiti@1.21.0))(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.35.0(jiti@1.21.0))
       hasown: 2.0.2
       is-core-module: 2.16.1
       is-glob: 4.0.3
@@ -12147,7 +12186,7 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-plugin-svelte@2.35.1(eslint@9.35.0(jiti@1.21.0))(svelte@4.2.12)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3)):
+  eslint-plugin-svelte@2.35.1(eslint@9.35.0(jiti@1.21.0))(svelte@4.2.12)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4)):
     dependencies:
       '@eslint-community/eslint-utils': 4.4.0(eslint@9.35.0(jiti@1.21.0))
       '@jridgewell/sourcemap-codec': 1.4.15
@@ -12157,7 +12196,7 @@ snapshots:
       esutils: 2.0.3
       known-css-properties: 0.29.0
       postcss: 8.4.32
-      postcss-load-config: 3.1.4(postcss@8.4.32)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3))
+      postcss-load-config: 3.1.4(postcss@8.4.32)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4))
       postcss-safe-parser: 6.0.0(postcss@8.4.32)
       postcss-selector-parser: 6.0.15
       semver: 7.5.4
@@ -12477,11 +12516,11 @@ snapshots:
 
   flatted@3.2.9: {}
 
-  flowbite-svelte-icons@1.0.2(svelte@4.2.12)(tailwind-merge@2.2.1)(tailwindcss@3.3.6(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3))):
+  flowbite-svelte-icons@1.0.2(svelte@4.2.12)(tailwind-merge@2.2.1)(tailwindcss@3.3.6(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4))):
     dependencies:
       svelte: 4.2.12
       tailwind-merge: 2.2.1
-      tailwindcss: 3.3.6(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3))
+      tailwindcss: 3.3.6(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4))
 
   flowbite-svelte@0.44.22(svelte@4.2.12):
     dependencies:
@@ -12721,7 +12760,7 @@ snapshots:
       - typescript
       - utf-8-validate
 
-  graphql-config@5.0.3(@types/node@24.3.0)(encoding@0.1.13)(graphql@16.8.1)(typescript@5.3.3):
+  graphql-config@5.0.3(@types/node@24.3.0)(encoding@0.1.13)(graphql@16.8.1)(typescript@5.4.4):
     dependencies:
       '@graphql-tools/graphql-file-loader': 8.0.0(graphql@16.8.1)
       '@graphql-tools/json-file-loader': 8.0.0(graphql@16.8.1)
@@ -12729,7 +12768,7 @@ snapshots:
       '@graphql-tools/merge': 9.0.1(graphql@16.8.1)
       '@graphql-tools/url-loader': 8.0.1(@types/node@24.3.0)(encoding@0.1.13)(graphql@16.8.1)
       '@graphql-tools/utils': 10.0.12(graphql@16.8.1)
-      cosmiconfig: 8.3.6(typescript@5.3.3)
+      cosmiconfig: 8.3.6(typescript@5.4.4)
       graphql: 16.8.1
       jiti: 1.21.0
       minimatch: 4.2.3
@@ -13988,13 +14027,13 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.4.32
 
-  postcss-load-config@3.1.4(postcss@8.4.32)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3)):
+  postcss-load-config@3.1.4(postcss@8.4.32)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4)):
     dependencies:
       lilconfig: 2.1.0
       yaml: 1.10.2
     optionalDependencies:
       postcss: 8.4.32
-      ts-node: 10.9.2(@types/node@24.3.0)(typescript@5.3.3)
+      ts-node: 10.9.2(@types/node@24.3.0)(typescript@5.4.4)
 
   postcss-load-config@3.1.4(postcss@8.5.6)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3)):
     dependencies:
@@ -14004,13 +14043,13 @@ snapshots:
       postcss: 8.5.6
       ts-node: 10.9.2(@types/node@24.3.0)(typescript@5.3.3)
 
-  postcss-load-config@4.0.2(postcss@8.4.32)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3)):
+  postcss-load-config@4.0.2(postcss@8.4.32)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4)):
     dependencies:
       lilconfig: 3.0.0
       yaml: 2.3.4
     optionalDependencies:
       postcss: 8.4.32
-      ts-node: 10.9.2(@types/node@24.3.0)(typescript@5.3.3)
+      ts-node: 10.9.2(@types/node@24.3.0)(typescript@5.4.4)
 
   postcss-load-config@5.0.2(jiti@1.21.0)(postcss@8.4.32):
     dependencies:
@@ -14058,12 +14097,6 @@ snapshots:
       nanoid: 3.3.7
       picocolors: 1.0.0
       source-map-js: 1.0.2
-
-  postcss@8.4.38:
-    dependencies:
-      nanoid: 3.3.7
-      picocolors: 1.0.0
-      source-map-js: 1.2.0
 
   postcss@8.5.6:
     dependencies:
@@ -14914,7 +14947,7 @@ snapshots:
     dependencies:
       '@babel/runtime': 7.23.9
 
-  tailwindcss@3.3.6(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3)):
+  tailwindcss@3.3.6(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -14933,7 +14966,7 @@ snapshots:
       postcss: 8.4.32
       postcss-import: 15.1.0(postcss@8.4.32)
       postcss-js: 4.0.1(postcss@8.4.32)
-      postcss-load-config: 4.0.2(postcss@8.4.32)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.3.3))
+      postcss-load-config: 4.0.2(postcss@8.4.32)(ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4))
       postcss-nested: 6.0.1(postcss@8.4.32)
       postcss-selector-parser: 6.0.15
       resolve: 1.22.8
@@ -15054,6 +15087,25 @@ snapshots:
       diff: 4.0.2
       make-error: 1.3.6
       typescript: 5.3.3
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+    optional: true
+
+  ts-node@10.9.2(@types/node@24.3.0)(typescript@5.4.4):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.9
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 24.3.0
+      acorn: 8.11.3
+      acorn-walk: 8.3.2
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 5.4.4
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
     optional: true
@@ -15285,7 +15337,7 @@ snapshots:
   vite@5.2.8(@types/node@18.19.3):
     dependencies:
       esbuild: 0.20.2
-      postcss: 8.4.38
+      postcss: 8.5.6
       rollup: 4.14.1
     optionalDependencies:
       '@types/node': 18.19.3
