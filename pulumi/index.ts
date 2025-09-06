@@ -94,134 +94,143 @@ const namespace = new k8s.core.v1.Namespace(appName, {
 	}
 });
 
-const deployment = new k8s.apps.v1.Deployment(appName, {
-	metadata: {
-		namespace: namespace.metadata.name
-	},
-	spec: {
-		strategy: {
-			type: "RollingUpdate",
-			rollingUpdate: {
-				maxSurge: 2,
-				maxUnavailable: 1
-			}
+const deployment = new k8s.apps.v1.Deployment(
+	appName,
+	{
+		metadata: {
+			namespace: namespace.metadata.name
 		},
-		selector: { matchLabels: appLabels },
-		replicas,
-		template: {
-			metadata: { labels: appLabels },
-			spec: {
-				containers: [
-					{
-						name: "backend",
-						image: backendImage.imageName,
-						imagePullPolicy: "Always",
-						ports: [
-							{
-								containerPort: 3000,
-								name: "frcn-backend"
+		spec: {
+			strategy: {
+				type: "RollingUpdate",
+				rollingUpdate: {
+					maxSurge: 2,
+					maxUnavailable: 1
+				}
+			},
+			selector: { matchLabels: appLabels },
+			replicas,
+			template: {
+				metadata: { labels: appLabels },
+				spec: {
+					containers: [
+						{
+							name: "backend",
+							image: backendImage.imageName,
+							imagePullPolicy: "Always",
+							ports: [
+								{
+									containerPort: 3000,
+									name: "frcn-backend"
+								}
+							],
+							env: [
+								{
+									name: "PORT",
+									value: "3000"
+								},
+								{
+									name: "DOMAIN",
+									value: baseDomain
+								},
+								{
+									name: "SUB_DOMAIN",
+									value: apiSubDomain
+								},
+								{
+									name: "WEB_ORIGIN",
+									value: `https://${webDomain}`
+								},
+								{
+									name: "ACCESS_KEY_HEADER",
+									value: "x-frcn-access-key"
+								},
+								{
+									name: "CONSENT_COOKIE",
+									value: `frcn${pulumi.getStack() === "prod" ? "" : `-${pulumi.getStack()}`}.consent`
+								},
+								{
+									name: "DEVICE_TRACK_COOKIE",
+									value: `frcn${pulumi.getStack() === "prod" ? "" : `-${pulumi.getStack()}`}.deviceid`
+								},
+								{
+									name: "SESSION_COOKIE",
+									value: `frcn${pulumi.getStack() === "prod" ? "" : `-${pulumi.getStack()}`}.sid`
+								},
+								...[
+									"DATABASE_URL",
+									"LOCAL_ACCESS_TOKEN",
+									"SESSION_SECRET",
+									"ADMIN_DISCORD_IDS",
+									"DISCORD_CLIENTID",
+									"DISCORD_SECRET",
+									"DISCORD_TOKEN",
+									"AWS_S3_BUCKET",
+									"AWS_S3_REGION",
+									"AWS_S3_KEY",
+									"AWS_S3_SECRET"
+								].map((name) => ({
+									name,
+									value: process.env[name]
+								}))
+							],
+							readinessProbe: {
+								httpGet: {
+									path: "/health",
+									port: "frcn-backend"
+								},
+								successThreshold: 2,
+								periodSeconds: 10,
+								timeoutSeconds: 5
 							}
-						],
-						env: [
-							{
-								name: "PORT",
-								value: "3000"
-							},
-							{
-								name: "DOMAIN",
-								value: baseDomain
-							},
-							{
-								name: "SUB_DOMAIN",
-								value: apiSubDomain
-							},
-							{
-								name: "WEB_ORIGIN",
-								value: `https://${webDomain}`
-							},
-							{
-								name: "ACCESS_KEY_HEADER",
-								value: "x-frcn-access-key"
-							},
-							{
-								name: "CONSENT_COOKIE",
-								value: `frcn${pulumi.getStack() === "prod" ? "" : `-${pulumi.getStack()}`}.consent`
-							},
-							{
-								name: "DEVICE_TRACK_COOKIE",
-								value: `frcn${pulumi.getStack() === "prod" ? "" : `-${pulumi.getStack()}`}.deviceid`
-							},
-							{
-								name: "SESSION_COOKIE",
-								value: `frcn${pulumi.getStack() === "prod" ? "" : `-${pulumi.getStack()}`}.sid`
-							},
-							...[
-								"DATABASE_URL",
-								"LOCAL_ACCESS_TOKEN",
-								"SESSION_SECRET",
-								"ADMIN_DISCORD_IDS",
-								"DISCORD_CLIENTID",
-								"DISCORD_SECRET",
-								"DISCORD_TOKEN",
-								"AWS_S3_BUCKET",
-								"AWS_S3_REGION",
-								"AWS_S3_KEY",
-								"AWS_S3_SECRET"
-							].map((name) => ({
-								name,
-								value: process.env[name]
-							}))
-						],
-						readinessProbe: {
-							httpGet: {
-								path: "/health",
-								port: "frcn-backend"
-							},
-							successThreshold: 2,
-							periodSeconds: 10,
-							timeoutSeconds: 5
+						},
+						{
+							name: "website",
+							image: webImage.imageName,
+							imagePullPolicy: "Always",
+							ports: [
+								{
+									containerPort: 3000,
+									name: "frcn-website"
+								}
+							],
+							env: [
+								{
+									name: "PORT",
+									value: "3000"
+								},
+								{
+									name: "PUBLIC_API_BASEURL",
+									value: "https://api.frontierconsolidated.com"
+								},
+								{
+									name: "LOCAL_ACCESS_TOKEN",
+									value: process.env.LOCAL_ACCESS_TOKEN
+								}
+							],
+							readinessProbe: {
+								httpGet: {
+									path: "/",
+									port: "frcn-website"
+								},
+								successThreshold: 2,
+								periodSeconds: 10,
+								timeoutSeconds: 5
+							}
 						}
-					},
-					{
-						name: "website",
-						image: webImage.imageName,
-						imagePullPolicy: "Always",
-						ports: [
-							{
-								containerPort: 3000,
-								name: "frcn-website"
-							}
-						],
-						env: [
-							{
-								name: "PORT",
-								value: "3000"
-							},
-							{
-								name: "PUBLIC_API_BASEURL",
-								value: "https://api.frontierconsolidated.com"
-							},
-							{
-								name: "LOCAL_ACCESS_TOKEN",
-								value: process.env.LOCAL_ACCESS_TOKEN
-							}
-						],
-						readinessProbe: {
-							httpGet: {
-								path: "/",
-								port: "frcn-website"
-							},
-							successThreshold: 2,
-							periodSeconds: 10,
-							timeoutSeconds: 5
-						}
-					}
-				],
-				imagePullSecrets: [{ name: "ecr-reg-creds" }]
+					],
+					imagePullSecrets: [{ name: "ecr-reg-creds" }]
+				}
 			}
 		}
+	},
+	{
+		customTimeouts: {
+			create: "5m",
+			update: "5m"
+		}
 	}
-});
+);
 
 const backendService = new k8s.core.v1.Service(`${appName}-backend`, {
 	metadata: {
