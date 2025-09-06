@@ -1,7 +1,7 @@
 import fs from "fs";
 import http from "http";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 
 import timeout from "connect-timeout";
 import cookieParser from "cookie-parser";
@@ -131,8 +131,9 @@ export async function createApp(config: CreateAppOptions) {
 
 	for (const file of files) {
 		if (!file.isFile()) continue;
+		const filePath = path.join(file.path, file.name);
 
-		const module = (await import(path.join(file.path, file.name))) as {
+		const module = (await import(pathToFileURL(filePath).toString())) as {
 			default: (context: Context, config: RouteConfig, appConfig: CreateAppOptions) => void;
 		};
 		module.default(context, config.routeConfig, config);
