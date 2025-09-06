@@ -3,21 +3,13 @@ import http from "http";
 import path from "path";
 import { fileURLToPath } from "url";
 
-import { Permission, hasPermission } from "@frcn/shared";
 import timeout from "connect-timeout";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import express, {
-	type NextFunction,
-	type Request,
-	type RequestHandler,
-	type Response
-} from "express";
-import statusMonitor from "express-status-monitor";
+import express, { type NextFunction, type Request, type Response } from "express";
 
 import type { Context, RouteConfig } from "./context";
 import { createDiscordClient } from "./discordClient";
-import { getBasePath } from "./env";
 import { createApolloServer } from "./graphql";
 import { logger } from "./logger";
 import {
@@ -30,7 +22,6 @@ import { rateLimitMiddleware } from "./middleware/rateLimit.middleware";
 import { type SessionMiddlewareConfig, sessionMiddlewares } from "./middleware/session";
 import { timestampMiddleware } from "./middleware/timestamp.middleware";
 import { createS3Client } from "./s3Client";
-import { $users } from "./services/users";
 
 export interface CreateAppOptions {
 	origins: string[];
@@ -55,11 +46,6 @@ export async function createApp(config: CreateAppOptions) {
 	const server = http.createServer(app);
 
 	app.set("trust proxy", true);
-
-	const monitor = statusMonitor({
-		socketPath: getBasePath() + "/socket.io"
-	}) as RequestHandler & { middleware: RequestHandler; pageRoute: RequestHandler };
-	app.use(monitor.middleware);
 
 	app.get("/health", (_req, res) => {
 		res.setHeader("Cache-Control", "private, no-cache, no-store, max-ages=0");
@@ -108,26 +94,6 @@ export async function createApp(config: CreateAppOptions) {
 
 		next();
 	});
-
-	app.get(
-		"/metrics",
-		async (req, res, next) => {
-			if (!req.user) {
-				return res.status(401).send({
-					message: "Must be authenticated"
-				});
-			}
-
-			if (!hasPermission(await $users.getPermissions(req.user), Permission.Admin)) {
-				return res.status(403).send({
-					message: "Missing permissions"
-				});
-			}
-
-			next();
-		},
-		monitor.pageRoute
-	);
 
 	const apolloServer = createApolloServer(server, {
 		introspection: true
