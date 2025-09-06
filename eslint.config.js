@@ -10,10 +10,10 @@ export default tseslint.config(
 	{
 		ignores: [
 			"eslint.config.js",
-			"vite.config.ts",
-			"build/",
-			".svelte-kit/",
-			"dist/",
+			"**/vite.config.ts",
+			"**/build/",
+			"**/.svelte-kit/",
+			"**/dist/",
 			"**/__generated__"
 		]
 	},
@@ -103,7 +103,8 @@ export default tseslint.config(
 				}
 			],
 			"svelte/no-navigation-without-resolve": "off",
-			"svelte/require-event-dispatcher-types": "off"
+			"svelte/require-event-dispatcher-types": "off",
+			"svelte/no-reactive-reassign": "off"
 		}
 	}
 );
