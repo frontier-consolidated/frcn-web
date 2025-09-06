@@ -205,16 +205,7 @@ const deployment = new k8s.apps.v1.Deployment(
 									name: "LOCAL_ACCESS_TOKEN",
 									value: process.env.LOCAL_ACCESS_TOKEN
 								}
-							],
-							readinessProbe: {
-								httpGet: {
-									path: "/",
-									port: "frcn-website"
-								},
-								successThreshold: 2,
-								periodSeconds: 10,
-								timeoutSeconds: 5
-							}
+							]
 						}
 					],
 					imagePullSecrets: [{ name: "ecr-reg-creds" }]
