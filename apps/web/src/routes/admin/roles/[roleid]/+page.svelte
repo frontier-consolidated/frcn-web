@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { invalidate } from "$app/navigation";
-	import { page } from "$app/stores";
 	import { Permission, hasAdmin } from "@frcn/shared";
 	import { Helper, Input, Label, TabItem, Tabs, Toggle } from "flowbite-svelte";
 	import {
@@ -10,6 +8,8 @@
 		ExclamationCircleSolid
 	} from "flowbite-svelte-icons";
 
+	import { invalidate } from "$app/navigation";
+	import { page } from "$app/stores";
 	import {
 		Hr,
 		SectionHeading,

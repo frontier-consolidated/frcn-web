@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { goto, invalidate } from "$app/navigation";
 	import { TableBodyCell, TableBodyRow } from "flowbite-svelte";
 	import { EditOutline, TrashBinSolid } from "flowbite-svelte-icons";
 
+	import { goto, invalidate } from "$app/navigation";
 	import { ConfirmationModal, Tooltip } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";

@@ -6,6 +6,7 @@ import zlib from "zlib";
 
 import type { Server } from "@sveltejs/kit";
 import * as devalue from "devalue";
+// eslint-disable-next-line import/no-unresolved
 import { base, isr } from "MANIFEST";
 
 import { Queue, queue } from "./queue";
@@ -66,7 +67,6 @@ async function compress_file(file: string, format: "gz" | "br" = "gz") {
 function mkdirp(dir: string) {
 	try {
 		fs.mkdirSync(dir, { recursive: true });
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (e: any) {
 		if (e.code === "EEXIST") {
 			if (!fs.statSync(dir).isDirectory()) {

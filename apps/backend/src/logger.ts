@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import util from "util";
 
 import type { AccessKey, User } from "@prisma/client";

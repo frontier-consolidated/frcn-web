@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
 	import { indentWithTab } from "@codemirror/commands";
 	import { markdown } from "@codemirror/lang-markdown";
 	import { indentUnit } from "@codemirror/language";
@@ -14,6 +13,8 @@
 	import { Spinner } from "flowbite-svelte";
 	import { createEventDispatcher, getContext, onDestroy, onMount } from "svelte";
 	import { twMerge } from "tailwind-merge";
+
+	import { browser } from "$app/environment";
 
 	import { Underline } from "./extensions";
 	import { darkTheme } from "./theme/dark";

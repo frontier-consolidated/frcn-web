@@ -5,9 +5,9 @@ import type {
 	UpdatedUserRoles as GQLUpdatedUserRoles
 } from "./__generated__/resolvers-types";
 import { pubsub } from "./pubsub";
+import { $roles } from "../services/roles";
 import { resolveUserRole } from "./schema/resolvers/Roles";
 import type { WithModel } from "./schema/resolvers/types";
-import { $roles } from "../services/roles";
 
 export function publishUserRolesUpdated(users: User[]) {
 	for (const user of users) {

@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { page } from "$app/stores";
 	import { Alert } from "flowbite-svelte";
+
+	import { page } from "$app/stores";
 </script>
 
 <Alert color="red">

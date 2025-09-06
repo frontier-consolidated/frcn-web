@@ -10,8 +10,8 @@ import {
 	ChatInputCommandInteraction
 } from "discord.js";
 
-import { startEventsUpdate } from "./handlers/updateEvents.interval";
 import { logger } from "../logger";
+import { startEventsUpdate } from "./handlers/updateEvents.interval";
 
 type Command = {
 	command: SlashCommandBuilder;

@@ -2,9 +2,8 @@ import { ApolloError } from "@apollo/client/core";
 import { error, type Handle, type HandleServerError, type NumericRange } from "@sveltejs/kit";
 import { locale } from "svelte-i18n";
 
-import { Queries, createApolloClient } from "$lib/graphql";
-
 import { env } from "$env/dynamic/private";
+import { Queries, createApolloClient } from "$lib/graphql";
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const lang = event.request.headers.get("accept-language")?.split(",")[0];

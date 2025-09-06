@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import { page } from "$app/stores";
 	import { Timeline, TimelineItem, Pagination } from "flowbite-svelte";
 
+	import { goto } from "$app/navigation";
+	import { page } from "$app/stores";
 	import { TimeBadge } from "$lib/components";
 	import { getCurrentPage, getPageUrl, getPages } from "$lib/pageHelpers";
 

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { goto, invalidate } from "$app/navigation";
 	import { CMSContainerType, CmsContainer, CmsFile } from "@frcn/cms";
 	import { strings } from "@frcn/shared";
 	import { ArrowLeftSolid, CloseSolid, EditOutline } from "flowbite-svelte-icons";
 	import { setContext } from "svelte";
 
+	import { goto, invalidate } from "$app/navigation";
 	import { transformContainer, type ContentContainerData } from "$lib/cms/transformContainer";
 	import { Button, ConfirmationModal, FieldValidator, Head, SectionHeading } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";

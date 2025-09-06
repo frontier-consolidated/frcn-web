@@ -39,8 +39,8 @@ import {
 	type EventChannelEditInput,
 	type EventEditInput
 } from "../graphql/__generated__/resolvers-types";
-import { logger } from "../logger";
 import { insertEventIntoLegionCoda } from "../integrations/coda";
+import { logger } from "../logger";
 
 const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000;
 
@@ -277,7 +277,7 @@ async function createEventThread(
 	if ((role && !settings?.createThreadsForRoles) || (!role && !settings?.createEventThread))
 		return null;
 
-	let threadName = role ? `${event.name.slice(0, 11)}.. | ${role.name}` : event.name;
+	const threadName = role ? `${event.name.slice(0, 11)}.. | ${role.name}` : event.name;
 	const thread = await channel!.threads.create({
 		name: threadName,
 		type: ChannelType.PrivateThread,

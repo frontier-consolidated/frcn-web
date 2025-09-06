@@ -1,9 +1,9 @@
 <script lang="ts">
 	import "../app.css";
-	import { browser } from "$app/environment";
-	import { navigating } from "$app/stores";
 	import { Spinner } from "flowbite-svelte";
 
+	import { browser } from "$app/environment";
+	import { navigating } from "$app/stores";
 	import {
 		CookieConsentModal,
 		Footer,

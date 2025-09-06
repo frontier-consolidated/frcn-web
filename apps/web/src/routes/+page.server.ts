@@ -1,5 +1,4 @@
 import { building } from "$app/environment";
-
 import { getCmsClient } from "$lib/server/cms";
 
 import type { PageServerLoad } from "./$types";

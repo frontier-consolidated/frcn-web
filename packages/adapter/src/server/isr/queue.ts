@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export type Task = {
 	fn: () => Promise<any>;
 	fulfil: (value: any) => void;

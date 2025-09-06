@@ -1,4 +1,3 @@
-import { browser } from "$app/environment";
 import type { Operation, TypedDocumentNode } from "@apollo/client";
 import { ApolloClient, InMemoryCache } from "@apollo/client/core";
 import { setContext } from "@apollo/client/link/context";
@@ -10,6 +9,7 @@ import { Kind, OperationTypeNode } from "graphql";
 import { createClient } from "graphql-ws";
 import { onMount } from "svelte";
 
+import { browser } from "$app/environment";
 import { Routes, apiUri } from "$lib/api";
 
 import { fragments } from "./documents/fragments";

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { invalidate } from "$app/navigation";
 	import {
 		Helper,
 		Label,
@@ -12,6 +11,7 @@
 	} from "flowbite-svelte";
 	import { CloseSolid, EditOutline, ExclamationCircleSolid } from "flowbite-svelte-icons";
 
+	import { invalidate } from "$app/navigation";
 	import { Button, Field, FieldValidator, Head, SectionHeading, Select } from "$lib/components";
 	import Tooltip from "$lib/components/Tooltip.svelte";
 	import { Mutations, Queries, getApollo } from "$lib/graphql";
@@ -176,7 +176,7 @@
 <SectionHeading>Event Channels</SectionHeading>
 <div class="flex flex-1 flex-col justify-between" use:initNavigation>
 	<div class="flex flex-col gap-4 p-4">
-		<Field {validator} for="system-channels-guildid" value={"a"} required>
+		<Field {validator} for="system-channels-guildid" value="a" required>
 			<Label for="system-channels-default-channel" class="mb-2">Default Event Channel</Label>
 			<div class="flex items-center gap-2">
 				<Select

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { Search, Table, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { ArrowLeftSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params";
 
+	import { goto } from "$app/navigation";
 	import { Head } from "$lib/components";
 	import Button from "$lib/components/Button.svelte";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";

@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 declare module "ENV" {
 	export function env(key: string, fallback?: any): string;
 }

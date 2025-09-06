@@ -13,9 +13,9 @@ import {
 
 import { $system } from "./system";
 import type { DiscordClient } from "../bot";
+import { diffCheckUser } from "../bot/events/guildMemberUpdate.event";
 import type { Context } from "../context";
 import { logger } from "../logger";
-import { diffCheckUser } from "../bot/events/guildMemberUpdate.event";
 
 const cacheTimestamps = {
 	channels: -1,

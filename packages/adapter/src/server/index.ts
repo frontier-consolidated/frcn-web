@@ -1,4 +1,6 @@
+// eslint-disable-next-line import/no-unresolved
 import { env } from "ENV";
+// eslint-disable-next-line import/no-unresolved
 import { handler, on_start } from "HANDLER";
 import polka from "polka";
 

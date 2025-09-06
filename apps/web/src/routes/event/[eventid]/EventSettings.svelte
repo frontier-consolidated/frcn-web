@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { goto, invalidate } from "$app/navigation";
 	import { strings, EventTypeOptions } from "@frcn/shared";
 	import { Checkbox, Helper, Input, Label, Toggle } from "flowbite-svelte";
 	import { EditOutline, CaretRightSolid, CloseSolid, ArchiveSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 	import isURL from "validator/lib/isURL";
 
+	import { goto, invalidate } from "$app/navigation";
 	import {
 		DatetimePicker,
 		LocationSelectInput,
@@ -17,6 +17,8 @@
 		FieldValidator,
 		Button
 	} from "$lib/components";
+	import DurationSelect from "$lib/components/datetime/DurationSelect.svelte";
+	import LocationInput from "$lib/components/location/LocationInput.svelte";
 	import { Mutations, Queries, getApollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
@@ -25,8 +27,6 @@
 	import type { PageData } from "./$types";
 	import RsvpTable from "./RSVPTable.svelte";
 	import { checkIfDirty, cloneEventSettingsData } from "./settings";
-	import DurationSelect from "$lib/components/datetime/DurationSelect.svelte";
-	import LocationInput from "$lib/components/location/LocationInput.svelte";
 
 	export let data: PageData;
 	let editData = cloneEventSettingsData(data);

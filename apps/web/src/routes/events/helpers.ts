@@ -1,7 +1,7 @@
-import { goto } from "$app/navigation";
 import { dates } from "@frcn/shared";
 import { getLocations } from "@frcn/shared/locations";
 
+import { goto } from "$app/navigation";
 import { Queries, getApollo, type TypedApolloClient, Mutations } from "$lib/graphql";
 import type { GetEventsQueryVariables } from "$lib/graphql/__generated__/graphql";
 import { getPageVars } from "$lib/pageHelpers";

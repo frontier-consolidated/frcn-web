@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { invalidate } from "$app/navigation";
 	import { Avatar } from "flowbite-svelte";
 	import { CloseCircleSolid } from "flowbite-svelte-icons";
 
+	import { invalidate } from "$app/navigation";
 	import { ConfirmationModal, Tooltip } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";

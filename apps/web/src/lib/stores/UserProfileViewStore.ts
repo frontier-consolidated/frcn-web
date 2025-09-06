@@ -1,6 +1,6 @@
-import { browser } from "$app/environment";
 import { get, writable } from "svelte/store";
 
+import { browser } from "$app/environment";
 import { Queries, Subscriptions, getApollo, subscribe } from "$lib/graphql";
 import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";
 import { handleApiError } from "$lib/handleApiError";

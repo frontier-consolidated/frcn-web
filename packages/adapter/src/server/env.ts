@@ -30,7 +30,6 @@ if (ENV_PREFIX) {
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function env(name: string, fallback: any) {
 	const prefix = expected_unprefixed.has(name) ? "" : ENV_PREFIX;
 	const prefixed = prefix + name;

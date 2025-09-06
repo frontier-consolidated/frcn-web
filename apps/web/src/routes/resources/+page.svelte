@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import { page } from "$app/stores";
 	import { Permission, hasOneOfPermissions } from "@frcn/shared";
 	import { Heading, Pagination, Search } from "flowbite-svelte";
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params";
 
+	import { goto } from "$app/navigation";
+	import { page } from "$app/stores";
 	import { Button, Head, Hr, PageHero } from "$lib/components";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import metaImage from "$lib/images/stock/resources-hero.png?w=1200&format=webp&imagetools";
@@ -77,7 +77,7 @@
 </PageHero>
 <div class="mx-auto flex w-full max-w-6xl flex-col p-4">
 	<section class="mt-2 grid grid-cols-2 gap-2 px-4 sm:gap-4 lg:grid-cols-4">
-		{#each tools as tool}
+		{#each tools as tool (tool)}
 			<ToolButton name={tool.name} img={tool.icon} href={tool.href} />
 		{/each}
 	</section>
@@ -110,7 +110,7 @@
 				{/if}
 			</div>
 			<div class="mt-4 flex flex-wrap gap-2">
-				{#each tags as tag}
+				{#each tags as tag (tag)}
 					<Button
 						color={$selectedTags?.includes(tag) ? "blue" : "dark"}
 						size="xs"
@@ -130,7 +130,7 @@
 		</div>
 		<div class="flex w-full flex-col items-center self-start">
 			<div class="grid w-full gap-2 p-4 min-[580px]:grid-cols-2 lg:grid-cols-3">
-				{#each data.resources as resource}
+				{#each data.resources as resource (resource.id)}
 					<ResourceCard
 						{selectedTags}
 						{resource}

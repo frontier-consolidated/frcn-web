@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
 	import { A, Modal } from "flowbite-svelte";
 	import { queryParam } from "sveltekit-search-params";
 
+	import { browser } from "$app/environment";
 	import { Routes, api } from "$lib/api";
 	import { cookieConsentModal } from "$lib/stores/CookieConsentModalStore";
 

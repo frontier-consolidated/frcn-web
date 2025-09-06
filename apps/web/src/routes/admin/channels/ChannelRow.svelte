@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto, invalidate } from "$app/navigation";
 	import {
 		Breadcrumb,
 		BreadcrumbItem,
@@ -10,6 +9,7 @@
 	} from "flowbite-svelte";
 	import { EditOutline, ExclamationCircleSolid, TrashBinSolid } from "flowbite-svelte-icons";
 
+	import { goto, invalidate } from "$app/navigation";
 	import { ConfirmationModal, Tooltip } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { EventState } from "$lib/graphql/__generated__/graphql";

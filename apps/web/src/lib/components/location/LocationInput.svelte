@@ -2,6 +2,7 @@
 	import { type AnyLocation } from "@frcn/shared/locations";
 	import { Input } from "flowbite-svelte";
 	import { twMerge } from "tailwind-merge";
+
 	import LocationInputModal from "./LocationInputModal.svelte";
 	import Button from "../Button.svelte";
 

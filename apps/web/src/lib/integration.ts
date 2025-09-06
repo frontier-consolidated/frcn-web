@@ -1,6 +1,7 @@
-import { browser } from "$app/environment";
 import type { AxiosResponse } from "axios";
 import { v4 as uuid } from "uuid";
+
+import { browser } from "$app/environment";
 
 type ResponsePayload =
 	| {

@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
-	import { page } from "$app/stores";
 	import { Navbar, NavBrand, NavLi, NavUl, NavHamburger, MegaMenu, Spinner } from "flowbite-svelte";
 	import {
 		InfoCircleSolid,
@@ -16,6 +14,8 @@
 	} from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
+	import { browser } from "$app/environment";
+	import { page } from "$app/stores";
 	import { DISCORD_URL, MERCH_URL } from "$lib/constants";
 	import logo from "$lib/images/logo.png";
 	import { login, logout, user } from "$lib/stores/UserStore";

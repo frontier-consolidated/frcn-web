@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
 	import { Spinner } from "flowbite-svelte";
 	import { twMerge } from "tailwind-merge";
 
+	import { browser } from "$app/environment";
 	import { login, user } from "$lib/stores/UserStore";
 
 	import Button from "./Button.svelte";

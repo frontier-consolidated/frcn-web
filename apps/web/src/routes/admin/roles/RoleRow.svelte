@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { Badge, TableBodyCell, TableBodyRow } from "flowbite-svelte";
 	import {
 		DiscordSolid,
@@ -12,6 +11,7 @@
 	} from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 
+	import { goto } from "$app/navigation";
 	import { ConfirmationModal, Tooltip } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";

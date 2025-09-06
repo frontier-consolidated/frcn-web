@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from "$app/stores";
 	import { Permission, hasPermission } from "@frcn/shared";
 	import { Avatar, Badge, Dropdown, Modal, Search } from "flowbite-svelte";
 	import {
@@ -12,6 +11,7 @@
 	} from "flowbite-svelte-icons";
 	import { locale } from "svelte-i18n";
 
+	import { page } from "$app/stores";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { UserFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";

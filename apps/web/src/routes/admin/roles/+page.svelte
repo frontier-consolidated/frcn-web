@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { hasAdmin } from "@frcn/shared";
 	import { Search, Table, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { CloseSolid, EditOutline } from "flowbite-svelte-icons";
 	import Sortable from "sortablejs";
 	import { queryParam } from "sveltekit-search-params";
 
+	import { goto } from "$app/navigation";
 	import { Button, Head, SectionHeading } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";

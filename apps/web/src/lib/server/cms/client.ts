@@ -1,9 +1,8 @@
 import { CMSContainerType } from "@frcn/cms";
 
+import { env } from "$env/dynamic/private";
 import type { ContentContainerData } from "$lib/cms/transformContainer";
 import { createApolloClient, Queries, type TypedApolloClient } from "$lib/graphql";
-
-import { env } from "$env/dynamic/private";
 
 export class CmsClient {
 	private apollo: TypedApolloClient;

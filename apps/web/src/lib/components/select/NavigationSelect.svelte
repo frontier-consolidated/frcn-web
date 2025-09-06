@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { Dropdown, DropdownItem } from "flowbite-svelte";
 	import { AngleDownSolid } from "flowbite-svelte-icons";
 	import { getContext } from "svelte";
 	import { twMerge } from "tailwind-merge";
+
+	import { goto } from "$app/navigation";
 
 	import type { NavigationOption, OptionGroup } from "./types";
 

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { page } from "$app/stores";
 	import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from "flowbite-svelte";
 	import { GearSolid, TagSolid, UserGroupSolid, UserHeadsetSolid } from "flowbite-svelte-icons";
 	import type { ComponentType, SvelteComponent } from "svelte";
 
+	import { page } from "$app/stores";
 	import NavigationSelect from "$lib/components/select/NavigationSelect.svelte";
 
 	const pageGroup = [

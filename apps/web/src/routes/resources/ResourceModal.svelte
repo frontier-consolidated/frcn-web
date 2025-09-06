@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { invalidateAll } from "$app/navigation";
 	import { Modal, Label, Input, Textarea } from "flowbite-svelte";
 	import { UploadSolid, FileSolid } from "flowbite-svelte-icons";
 
+	import { invalidateAll } from "$app/navigation";
 	import { Routes, api } from "$lib/api";
 	import { Select, Field, FieldValidator, Button } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";

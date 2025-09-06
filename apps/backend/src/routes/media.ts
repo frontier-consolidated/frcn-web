@@ -24,7 +24,6 @@ async function setupCache(cache: FileSystemCache) {
 		fs.mkdirSync(cache.basePath, { recursive: true });
 		// rwxrwxr--
 		fs.chmodSync(cache.basePath, 0o774);
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (e: any) {
 		if (e.code === "EEXIST") {
 			if (!fs.statSync(cache.basePath).isDirectory()) {

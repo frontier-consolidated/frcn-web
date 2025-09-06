@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { Alert } from "flowbite-svelte";
 	import { CloseSolid } from "flowbite-svelte-icons";
 
+	import { goto } from "$app/navigation";
 	import { Button, ConfirmationModal, Head } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { invalidate } from "$app/navigation";
 	import { Permission, hasOwnedObjectPermission } from "@frcn/shared";
 	import { Dropdown, DropdownItem, Frame, Toolbar, ToolbarButton } from "flowbite-svelte";
 	import {
@@ -13,6 +12,7 @@
 	import { createEventDispatcher } from "svelte";
 	import type { Writable } from "svelte/store";
 
+	import { invalidate } from "$app/navigation";
 	import { CreatedByButton, TimeBadge, ConfirmationModal, Button } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
@@ -53,7 +53,7 @@
 				value={resource.updatedAt}
 				class="dark:bg-gray-900"
 			/>
-			{#each resource.tags as tag}
+			{#each resource.tags as tag (tag)}
 				<Frame
 					class="bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-300 inline-flex cursor-pointer items-center justify-center divide-gray-200 rounded border-gray-200 px-2.5 py-0.5 text-xs font-medium dark:divide-gray-700 dark:border-gray-700"
 					on:click={() => {

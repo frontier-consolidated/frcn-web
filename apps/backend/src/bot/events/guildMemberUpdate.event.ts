@@ -4,10 +4,10 @@ import { Events, GuildMember, type PartialGuildMember } from "discord.js";
 import type { EventListener } from "..";
 import { database } from "../../database";
 import { publishRolesUpdated, publishUserRolesUpdated } from "../../graphql/events";
+import { logger } from "../../logger";
 import { $discord } from "../../services/discord";
 import { $roles } from "../../services/roles";
 import { $users } from "../../services/users";
-import { logger } from "../../logger";
 
 export const event = Events.GuildMemberUpdate;
 

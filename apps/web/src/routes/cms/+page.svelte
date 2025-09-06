@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { invalidate } from "$app/navigation";
 	import { CMSContainerType, type IndexContainer } from "@frcn/cms";
 	import { Heading, Input, Label, Modal } from "flowbite-svelte";
 
+	import { invalidate } from "$app/navigation";
 	import { transformContainer } from "$lib/cms/transformContainer";
 	import { Button, Field, FieldValidator, Head, Hr } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";

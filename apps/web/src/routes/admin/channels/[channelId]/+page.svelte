@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { invalidate } from "$app/navigation";
 	import { Helper, Input, Label } from "flowbite-svelte";
 	import { ArrowLeftSolid, CloseSolid, EditOutline } from "flowbite-svelte-icons";
 
+	import { invalidate } from "$app/navigation";
 	import { Button, Field, FieldValidator, Head, Select } from "$lib/components";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
 	import { Mutations, getApollo } from "$lib/graphql";

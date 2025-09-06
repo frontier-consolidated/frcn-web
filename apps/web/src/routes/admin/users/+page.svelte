@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import { page } from "$app/stores";
 	import { Avatar, Pagination, Search } from "flowbite-svelte";
 	import { queryParam } from "sveltekit-search-params";
 
+	import { goto } from "$app/navigation";
+	import { page } from "$app/stores";
 	import { Head, SectionHeading } from "$lib/components";
 	import { getCurrentPage, getPageUrl, getPages } from "$lib/pageHelpers";
 	import { viewUserProfile } from "$lib/stores/UserProfileViewStore";

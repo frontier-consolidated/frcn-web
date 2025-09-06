@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { page } from "$app/stores";
 	import { Heading } from "flowbite-svelte";
 	import { RotateOutline } from "flowbite-svelte-icons";
 
+	import { page } from "$app/stores";
 	import { Button, Head, LoginButton } from "$lib/components";
 
 	let heading = "Critical Error";

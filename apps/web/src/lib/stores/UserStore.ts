@@ -1,11 +1,11 @@
-import { browser } from "$app/environment";
 import { writable, get } from "svelte/store";
 
+import { browser } from "$app/environment";
+import { env } from "$env/dynamic/public";
 import { Routes, api } from "$lib/api";
 import { Queries, Subscriptions, getApollo, subscribe } from "$lib/graphql";
 import type { GetCurrentUserQuery } from "$lib/graphql/__generated__/graphql";
 import { handleApiError } from "$lib/handleApiError";
-import { env } from "$env/dynamic/public";
 
 type UserData =
 	| (NonNullable<GetCurrentUserQuery["user"]> & { __permissions: number })

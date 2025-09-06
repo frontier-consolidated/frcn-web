@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { Input, Modal } from "flowbite-svelte";
-
-	import { SearchSolid } from "flowbite-svelte-icons";
 	import { getChildren, locations, searchLocations } from "@frcn/shared/locations";
 	import type { AnyLocation } from "@frcn/shared/locations";
+	import { Input, Modal } from "flowbite-svelte";
+	import { SearchSolid } from "flowbite-svelte-icons";
+	import { twMerge } from "tailwind-merge";
+
 	import Button from "../Button.svelte";
 	import LocationIcon from "./LocationIcon.svelte";
-	import { twMerge } from "tailwind-merge";
 
 	export let value: AnyLocation[] = [];
 	export let open: boolean = false;

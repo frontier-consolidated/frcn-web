@@ -5,7 +5,6 @@ import type { ObjMap } from "graphql/jsutils/ObjMap";
 function parseObject(typeName: string, ast: ObjectValueNode, variables: Maybe<ObjMap<unknown>>) {
 	const value = Object.create(null);
 	ast.fields.forEach((field) => {
-		// eslint-disable-next-line no-use-before-define
 		value[field.name.value] = parseLiteral(typeName, field.value, variables);
 	});
 

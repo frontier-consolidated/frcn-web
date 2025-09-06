@@ -1,7 +1,7 @@
-import { browser } from "$app/environment";
 import { Permission, hasOneOfPermissions } from "@frcn/shared";
 import { readable } from "svelte/store";
 
+import { browser } from "$app/environment";
 import { Queries, Subscriptions, getApollo, subscribe } from "$lib/graphql";
 import type { GetAllRolesQuery } from "$lib/graphql/__generated__/graphql";
 import { handleApiError } from "$lib/handleApiError";

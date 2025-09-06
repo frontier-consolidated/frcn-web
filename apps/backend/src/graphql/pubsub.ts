@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { EventEmitter } from "events";
 
 import type { GraphQLResolveInfo } from "graphql";
@@ -24,7 +23,6 @@ class CustomPubSub<Events extends Record<string, any>> extends PubSubEngine {
 		this.emitter = new EventEmitter();
 	}
 
-	// eslint-disable-next-line require-await
 	async publish<TKey extends Exclude<keyof Events, symbol | number>>(
 		triggerName: TKey,
 		payload: Events[TKey]
@@ -32,7 +30,6 @@ class CustomPubSub<Events extends Record<string, any>> extends PubSubEngine {
 		this.emitter.emit(triggerName, payload);
 	}
 
-	// eslint-disable-next-line require-await
 	async subscribe<TKey extends Exclude<keyof Events, symbol | number>>(
 		triggerName: TKey,
 		onMessage: (payload: Events[TKey]) => void

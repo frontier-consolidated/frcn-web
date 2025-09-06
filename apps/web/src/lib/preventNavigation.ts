@@ -1,5 +1,6 @@
-import { browser } from "$app/environment";
 import { get, writable } from "svelte/store";
+
+import { browser } from "$app/environment";
 
 const attrName = "data-navigation-prevention";
 

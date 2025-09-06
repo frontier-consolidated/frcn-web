@@ -71,7 +71,7 @@
 <SectionHeading>General Settings</SectionHeading>
 <div class="flex flex-1 flex-col justify-between" use:initNavigation>
 	<div class="flex flex-col gap-4 p-4">
-		<Field {validator} for="system-general-guildid" value={"a"} required>
+		<Field {validator} for="system-general-guildid" value="a" required>
 			<Label for="system-general-guildid" class="mb-1">Discord Guild</Label>
 			<span class="mb-1 block text-xs text-gray-500">Current Guild: {data.discordGuild.name}</span>
 			<Input

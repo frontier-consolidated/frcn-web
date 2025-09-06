@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { invalidate } from "$app/navigation";
 	import { hasPermission, Permission } from "@frcn/shared";
 	import { Sidebar, SidebarGroup, SidebarItem, SidebarWrapper } from "flowbite-svelte";
 	import {
@@ -12,6 +11,7 @@
 		UsersSolid
 	} from "flowbite-svelte-icons";
 
+	import { invalidate } from "$app/navigation";
 	import { RsvpModal } from "$lib/components";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";

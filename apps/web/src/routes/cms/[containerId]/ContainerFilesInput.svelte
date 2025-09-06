@@ -118,9 +118,7 @@
 				openUploadModal = false;
 			}}
 		/>
-		<Helper>
-			Images will be scaled down such that their major axis is {"<"}1600px.
-		</Helper>
+		<Helper>Images will be scaled down such that their major axis is &lt;1600px.</Helper>
 	</div>
 </Modal>
 
