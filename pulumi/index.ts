@@ -75,78 +75,96 @@ const namespace = new k8s.core.v1.Namespace(appName, {
 	}
 });
 
-// new k8s.apps.v1.Deployment(appName, {
-// 	metadata: {
-// 		namespace: namespace.metadata.name
-// 	},
-// 	spec: {
-// 		strategy: {
-// 			type: "RollingUpdate",
-// 			rollingUpdate: {
-// 				maxSurge: 2,
-// 				maxUnavailable: 1
-// 			}
-// 		},
-// 		selector: { matchLabels: appLabels },
-// 		replicas,
-// 		template: {
-// 			metadata: { labels: appLabels },
-// 			spec: {
-// 				containers: [
-// 					{
-// 						name: "backend",
-// 						image: backendImage.imageName,
-// 						imagePullPolicy: "Always",
-// 						ports: [
-// 							{
-// 								containerPort: 3000,
-// 								name: "frcn-backend"
-// 							}
-// 						],
-// 						env: ["LOCAL_ACCESS_TOKEN"].map((name) => ({
-// 							name,
-// 							value: process.env[name]
-// 						})),
-// 						readinessProbe: {
-// 							httpGet: {
-// 								path: "/health",
-// 								port: "frcn-backend"
-// 							},
-// 							successThreshold: 2,
-// 							periodSeconds: 10,
-// 							timeoutSeconds: 5
-// 						}
-// 					},
-// 					{
-// 						name: "website",
-// 						image: webImage.imageName,
-// 						imagePullPolicy: "Always",
-// 						ports: [
-// 							{
-// 								containerPort: 3000,
-// 								name: "frcn-website"
-// 							}
-// 						],
-// 						env: ["PUBLIC_API_BASEURL", "LOCAL_ACCESS_TOKEN"].map((name) => ({
-// 							name,
-// 							value: process.env[name]
-// 						})),
-// 						readinessProbe: {
-// 							httpGet: {
-// 								path: "/",
-// 								port: "frcn-website"
-// 							},
-// 							successThreshold: 2,
-// 							periodSeconds: 10,
-// 							timeoutSeconds: 5
-// 						}
-// 					}
-// 				],
-// 				imagePullSecrets: [{ name: "ecr-reg-creds" }]
-// 			}
-// 		}
-// 	}
-// });
+new k8s.apps.v1.Deployment(appName, {
+	metadata: {
+		namespace: namespace.metadata.name
+	},
+	spec: {
+		strategy: {
+			type: "RollingUpdate",
+			rollingUpdate: {
+				maxSurge: 2,
+				maxUnavailable: 1
+			}
+		},
+		selector: { matchLabels: appLabels },
+		replicas,
+		template: {
+			metadata: { labels: appLabels },
+			spec: {
+				containers: [
+					{
+						name: "backend",
+						image: backendImage.imageName,
+						imagePullPolicy: "Always",
+						ports: [
+							{
+								containerPort: 3000,
+								name: "frcn-backend"
+							}
+						],
+						env: [
+							"DATABASE_URL",
+							"LOCAL_ACCESS_TOKEN",
+							"SESSION_SECRET",
+							"ADMIN_DISCORD_IDS",
+							"DISCORD_CLIENTID",
+							"DISCORD_SECRET",
+							"DISCORD_TOKEN",
+							"AWS_S3_BUCKET",
+							"AWS_S3_REGION",
+							"AWS_S3_KEY",
+							"AWS_S3_SECRET"
+						].map((name) => ({
+							name,
+							value: process.env[name]
+						})),
+						readinessProbe: {
+							httpGet: {
+								path: "/health",
+								port: "frcn-backend"
+							},
+							successThreshold: 2,
+							periodSeconds: 10,
+							timeoutSeconds: 5
+						}
+					},
+					{
+						name: "website",
+						image: webImage.imageName,
+						imagePullPolicy: "Always",
+						ports: [
+							{
+								containerPort: 3000,
+								name: "frcn-website"
+							}
+						],
+						env: [
+							{
+								name: "PUBLIC_API_BASEURL",
+								value: "https://api.frontierconsolidated.com"
+							},
+							...["LOCAL_ACCESS_TOKEN"].map((name) => ({
+								name,
+								value: process.env[name]
+							}))
+						],
+						readinessProbe: {
+							httpGet: {
+								path: "/",
+								port: "frcn-website"
+							},
+							successThreshold: 2,
+							periodSeconds: 10,
+							timeoutSeconds: 5
+						}
+					}
+				],
+				imagePullSecrets: [{ name: "ecr-reg-creds" }]
+			}
+		}
+	}
+});
 
 // const backendService = new k8s.core.v1.Service(`${appName}-backend`, {
 // 	metadata: {
@@ -220,4 +238,4 @@ const namespace = new k8s.core.v1.Namespace(appName, {
 // 	}
 // });
 
-export const ingressStatus = ingress.status;
+// export const ingressStatus = ingress.status;
