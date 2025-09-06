@@ -6,6 +6,8 @@ import { env } from "$env/dynamic/private";
 import { Queries, createApolloClient } from "$lib/graphql";
 
 export const handle: Handle = async ({ event, resolve }) => {
+	console.log(event.request.method, event.url);
+
 	const lang = event.request.headers.get("accept-language")?.split(",")[0];
 	if (lang) {
 		locale.set(lang);
@@ -35,6 +37,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 			if (data.user) event.locals.user = { ...data.user, cookie };
 		} catch (err) {
+			console.error(err);
 			if (err instanceof ApolloError) {
 				if (err.networkError && "statusCode" in err.networkError) {
 					if (err.networkError.statusCode >= 400) {
@@ -42,11 +45,13 @@ export const handle: Handle = async ({ event, resolve }) => {
 					}
 				}
 			}
-			console.error(err);
 		}
 	}
 
-	return resolve(event);
+	const response = await resolve(event);
+	console.log(event.request.method, event.url.toString(), response);
+
+	return response;
 };
 
 export const handleError: HandleServerError = ({ error }) => {
