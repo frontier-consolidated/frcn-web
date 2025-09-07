@@ -101,6 +101,13 @@ const deployment = new k8s.apps.v1.Deployment(
 		spec: {
 			selector: { matchLabels: appLabels },
 			replicas,
+			strategy: {
+				type: "RollingUpdate",
+				rollingUpdate: {
+					maxSurge: 1,
+					maxUnavailable: 1
+				}
+			},
 			template: {
 				metadata: { labels: appLabels },
 				spec: {
