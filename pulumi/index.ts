@@ -92,11 +92,7 @@ const deployment = new k8s.apps.v1.Deployment(
 	appName,
 	{
 		metadata: {
-			namespace: namespace.metadata.name,
-			annotations: {
-				"ecr/backend-image-digest": backendImage.repoDigest,
-				"ecr/web-image-digest": webImage.repoDigest
-			}
+			namespace: namespace.metadata.name
 		},
 		spec: {
 			selector: { matchLabels: appLabels },
@@ -109,7 +105,13 @@ const deployment = new k8s.apps.v1.Deployment(
 				}
 			},
 			template: {
-				metadata: { labels: appLabels },
+				metadata: {
+					labels: appLabels,
+					annotations: {
+						"ecr/backend-image-digest": backendImage.repoDigest,
+						"ecr/web-image-digest": webImage.repoDigest
+					}
+				},
 				spec: {
 					containers: [
 						{
