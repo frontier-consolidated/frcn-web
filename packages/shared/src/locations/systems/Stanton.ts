@@ -14,7 +14,6 @@ import {
 } from "../helpers";
 
 export const Stanton = system("Stanton", [
-	// star("Stanton"),
 	planet("Hurston", { coordinates: { azimuthal: 0, distance: 12.85 } }, [
 		city("Lorville"),
 		outpost("Reclamation & Disposal Orinth"),
