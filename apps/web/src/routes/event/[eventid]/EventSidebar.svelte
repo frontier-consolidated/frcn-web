@@ -178,15 +178,18 @@
 				{hideMembers ? "Show Members" : "Hide Members"}
 			</SidebarButton>
 			{#if data.canEdit || hasPermission($user.data?.__permissions ?? 0, Permission.CreateEvents)}
-				<SidebarButton
-					on:click={(e) => {
-						exportMembers(e.altKey);
-					}}
-				>
+				<SidebarButton on:click={() => exportMembers()}>
 					<svelte:fragment slot="icon">
 						<FileExportSolid size="sm" tabindex="-1" />
 					</svelte:fragment>
 					Export members
+				</SidebarButton>
+				<!-- Adding advanced export as a separate button -->
+				<SidebarButton on:click={() => exportMembers(true)}>
+					<svelte:fragment slot="icon">
+						<FileExportSolid size="sm" tabindex="-1" />
+					</svelte:fragment>
+					Advanced Export
 				</SidebarButton>
 			{/if}
 			<!-- <SidebarButton class="text-white bg-primary-500 hover:bg-primary-600 dark:bg-primary-700 dark:hover:bg-primary-600">

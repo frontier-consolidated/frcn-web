@@ -12,8 +12,22 @@ import type {
 	Station,
 	CommArray,
 	SecurityPost,
-	AstroidField
+	AstroidField,
+	SphericalCoordinates
 } from "./types";
+
+type InSpaceData =
+	| {
+			inSpace: false;
+	  }
+	| {
+			inSpace: true;
+			coordinates: SphericalCoordinates;
+	  };
+
+type OrbitalData = {
+	coordinates: SphericalCoordinates;
+};
 
 export function system(name: string, children: System["children"] = []) {
 	return {
@@ -23,48 +37,57 @@ export function system(name: string, children: System["children"] = []) {
 	} satisfies System;
 }
 
-export function jumpPoint(name: string, children: JumpPoint["children"]) {
+export function jumpPoint(name: string, data: OrbitalData) {
 	return {
 		type: "JUMP_POINT",
 		name,
-		children
+		coordinates: data.coordinates
 	} satisfies JumpPoint;
 }
 
-export function lagrangePoint(name: string, children: LagrangePoint["children"]) {
+export function lagrangePoint(
+	name: string,
+	data: OrbitalData,
+	children: LagrangePoint["children"]
+) {
 	return {
 		type: "LAGRANGE_POINT",
 		name,
+		coordinates: data.coordinates,
 		children
 	} satisfies LagrangePoint;
 }
 
-export function astroidField(name: string) {
+export function astroidField(name: string, data: OrbitalData) {
 	return {
 		type: "ASTROID_FIELD",
-		name
+		name,
+		coordinates: data.coordinates
 	} satisfies AstroidField;
 }
 
-export function star(name: string) {
+export function star(name: string, data: OrbitalData) {
 	return {
 		type: "STAR",
-		name
+		name,
+		coordinates: data.coordinates
 	} satisfies Star;
 }
 
-export function planet(name: string, children: Planet["children"] = []) {
+export function planet(name: string, data: OrbitalData, children: Planet["children"] = []) {
 	return {
 		type: "PLANET",
 		name,
+		coordinates: data.coordinates,
 		children
 	} satisfies Planet;
 }
 
-export function moon(name: string, children: Moon["children"] = []) {
+export function moon(name: string, data: OrbitalData, children: Moon["children"] = []) {
 	return {
 		type: "MOON",
 		name,
+		coordinates: data.coordinates,
 		children
 	} satisfies Moon;
 }
@@ -90,32 +113,36 @@ export function prison(name: string) {
 	} satisfies Prison;
 }
 
-export function raceTrack(name: string, inSpace: boolean = false) {
+export function raceTrack(name: string, data: InSpaceData = { inSpace: false }) {
 	return {
 		type: "RACE_TRACK",
-		inSpace,
+		inSpace: data.inSpace,
+		coordinates: "coordinates" in data ? data.coordinates : undefined,
 		name
 	} satisfies RaceTrack;
 }
 
-export function station(name: string) {
+export function station(name: string, data: OrbitalData) {
 	return {
 		type: "STATION",
-		name
+		name,
+		coordinates: data.coordinates
 	} satisfies Station;
 }
 
-export function commArray(name: string) {
+export function commArray(name: string, data: OrbitalData) {
 	return {
 		type: "COMM_ARRAY",
-		name
+		name,
+		coordinates: data.coordinates
 	} satisfies CommArray;
 }
 
-export function securityPost(name: string, inSpace: boolean = false) {
+export function securityPost(name: string, data: InSpaceData = { inSpace: false }) {
 	return {
 		type: "SECURITY_POST",
-		inSpace,
+		inSpace: data.inSpace,
+		coordinates: "coordinates" in data ? data.coordinates : undefined,
 		name
 	} satisfies SecurityPost;
 }
