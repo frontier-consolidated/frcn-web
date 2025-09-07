@@ -3,6 +3,9 @@ name: Pulumi
 on:
   - pull_request
 
+permissions:
+  contents: read
+
 jobs:
   preview:
     name: Preview
