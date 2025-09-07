@@ -34,8 +34,6 @@ jobs:
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4
-        with:
-          version: 1.32.2
 
       - name: Set Kubeconfig Context
         uses: azure/k8s-set-context@v4
