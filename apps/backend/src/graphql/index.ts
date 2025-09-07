@@ -32,11 +32,11 @@ export function createApolloServer(server: HttpServer, config: CreateApolloServe
 							require_protocol: true,
 							require_valid_protocol: true,
 							protocols: ["https"],
-							validate_length: true,
+							validate_length: true
 						});
-					},
-				},
-			}),
-		],
+					}
+				}
+			})
+		]
 	});
 }

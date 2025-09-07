@@ -1,6 +1,7 @@
-import { browser } from "$app/environment";
 import { writable } from "svelte/store";
 import { v4 as uuidv4 } from "uuid";
+
+import { browser } from "$app/environment";
 
 export type Notification = {
 	type: "error" | "info" | "success";
@@ -31,8 +32,8 @@ export function pushNotification(notification: Omit<Notification, "id" | "exitAt
 			{
 				...notification,
 				id: uuidv4(),
-				exitAt: Date.now() + (notification.timeout ?? 10000),
-			},
+				exitAt: Date.now() + (notification.timeout ?? 10000)
+			}
 		];
 	});
 }

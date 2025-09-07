@@ -12,5 +12,5 @@ export type NavigationOption<S extends Record<string, any> = Record<string, any>
 
 export type OptionGroup<T> = {
 	name: string;
-	options: T[]
+	options: T[];
 };

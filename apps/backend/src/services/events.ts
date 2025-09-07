@@ -9,7 +9,7 @@ import type {
 	EventUser,
 	Prisma,
 	User
-} from "@prisma/client";
+} from "../__generated__/client";
 import {
 	ChannelType,
 	TextChannel,
@@ -40,7 +40,6 @@ import {
 	type EventEditInput
 } from "../graphql/__generated__/resolvers-types";
 import { logger } from "../logger";
-import { insertEventIntoLegionCoda } from "../integrations/coda";
 
 const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000;
 
@@ -89,7 +88,6 @@ async function getEvents(
 		startAt.min ??= new Date();
 	}
 
-	// If the date range is less than or equal to a calendar range then don't limit items
 	if (
 		limit === -1 &&
 		startAt.min &&
@@ -99,8 +97,9 @@ async function getEvents(
 		limit = -1;
 	} else {
 		if (limit === -1) limit = 20;
-		limit = Math.min(100, limit);
 	}
+
+	limit = Math.min(100, limit);
 
 	const startAtOr: Prisma.EventWhereInput[] = [];
 
@@ -130,7 +129,7 @@ async function getEvents(
 				? {
 						contains: search,
 						mode: "insensitive"
-				  }
+					}
 				: undefined,
 			eventType,
 			posted: true,
@@ -138,7 +137,7 @@ async function getEvents(
 				? {
 						gte: duration.min,
 						lte: duration.max
-				  }
+					}
 				: undefined,
 			OR: startAtOr.length > 0 ? startAtOr : undefined
 		},
@@ -186,7 +185,7 @@ async function getUpcomingEvents(maxTimeInFutureMs?: number) {
 			startAt: maxTimeInFutureMs
 				? {
 						lte: new Date(now + maxTimeInFutureMs)
-				  }
+					}
 				: undefined
 		},
 		include: {
@@ -277,12 +276,11 @@ async function createEventThread(
 	if ((role && !settings?.createThreadsForRoles) || (!role && !settings?.createEventThread))
 		return null;
 
-	let threadName = role ? `${event.name.slice(0, 11)}.. | ${role.name}` : event.name;
+	const threadName = role ? `${event.name.slice(0, 11)}.. | ${role.name}` : event.name;
 	const thread = await channel!.threads.create({
 		name: threadName,
 		type: ChannelType.PrivateThread,
-		reason:
-			"Create thread for event: " + event.name + (role ? ` for RSVP role ${role.name}` : ""),
+		reason: "Create thread for event: " + event.name + (role ? ` for RSVP role ${role.name}` : ""),
 		autoArchiveDuration: ThreadAutoArchiveDuration.OneWeek,
 		invitable: false
 	});
@@ -305,7 +303,7 @@ async function createEventThread(
 						}
 					}
 				}
-		  })
+			})
 		: await getEventMembers(event.id, {
 				include: {
 					user: {
@@ -314,7 +312,7 @@ async function createEventThread(
 						}
 					}
 				}
-		  });
+			});
 
 	for (const rsvp of rsvps) {
 		if (!rsvp.user || thread.members.cache.has(rsvp.user.discordId)) continue;
@@ -342,7 +340,7 @@ async function tryCreateEventThread(
 	if (!createThread && flag) {
 		try {
 			thread = await getEventThread(discordClient, event, role);
-		} catch (err) {
+		} catch (_err) {
 			createThread = true;
 		}
 	}
@@ -541,10 +539,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 		if (updatedMember.event.discordThreadId) {
 			try {
 				const thread = await getEventThread(discordClient, updatedMember.event);
-				await thread.members.remove(
-					updatedMember.user.discordId,
-					"UnRSVPed / Kicked from event"
-				);
+				await thread.members.remove(updatedMember.user.discordId, "UnRSVPed / Kicked from event");
 			} catch (err) {
 				logger.error("Failed to remove user to event thread", err);
 			}
@@ -553,10 +548,7 @@ async function kickEventMember(member: EventUser, discordClient: DiscordClient) 
 		if (rsvp?.discordThreadId) {
 			try {
 				const thread = await getEventThread(discordClient, updatedMember.event, rsvp);
-				await thread.members.remove(
-					updatedMember.user.discordId,
-					"UnRSVPed / Kicked from event"
-				);
+				await thread.members.remove(updatedMember.user.discordId, "UnRSVPed / Kicked from event");
 			} catch (err) {
 				logger.error("Failed to remove user to event role thread", err);
 			}
@@ -720,7 +712,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 						connect: {
 							id: data.channel
 						}
-				  }
+					}
 				: undefined,
 			name: data.name != null ? data.name : undefined,
 			summary: data.summary != null ? data.summary : undefined,
@@ -747,7 +739,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 						deleteMany: rolesToDelete.map((r) => ({
 							id: r.id
 						}))
-				  }
+					}
 				: undefined,
 			discordMentions: data.mentions ? data.mentions : undefined,
 			settings: data.settings
@@ -759,7 +751,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 							inviteOnly: data.settings.inviteOnly ?? undefined,
 							openToJoinRequests: data.settings.openToJoinRequests ?? undefined
 						}
-				  }
+					}
 				: undefined,
 			accessType: data.accessType ? data.accessType : undefined,
 			accessRoles: data.accessRoles
@@ -771,7 +763,7 @@ async function editEvent(event: Event, data: EventEditInput, discordClient: Disc
 								roleId
 							}
 						}))
-				  }
+					}
 				: undefined
 		},
 		include: {
@@ -938,15 +930,6 @@ async function endEvent(event: Event, discordClient: DiscordClient, postMessage 
 		await updateEventChannelCalendarMessage(discordClient, endedEvent.channel);
 	}
 
-	const legionEventId = endedEvent.name.trim().match(/^LGN\d+/);
-	if (legionEventId) {
-		try {
-			await insertEventIntoLegionCoda(legionEventId[0], endedEvent);
-		} catch (err) {
-			logger.error("Error inserting event into legion coda calendar", err);
-		}
-	}
-
 	return endedEvent;
 }
 
@@ -1049,7 +1032,7 @@ async function rsvpForEvent(
 							connect: {
 								id: rsvp.id
 							}
-					  }
+						}
 					: undefined
 		}
 	});

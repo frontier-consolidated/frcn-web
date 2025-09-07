@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { invalidate } from "$app/navigation";
 	import { Label, Modal } from "flowbite-svelte";
 
+	import { invalidate } from "$app/navigation";
 	import { Mutations, getApollo } from "$lib/graphql";
 	import type { EventFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import { pushNotification } from "$lib/stores/NotificationStore";

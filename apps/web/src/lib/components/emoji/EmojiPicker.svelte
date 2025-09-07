@@ -107,13 +107,13 @@
 		bind:value={search}
 		placeholder=":{currentEmoji.name}:"
 		size="sm"
-		class="mb-1 sm:text-sm border-transparent dark:border-transparent dark:bg-gray-900"
+		class="mb-1 border-transparent sm:text-sm dark:border-transparent dark:bg-gray-900"
 	/>
 	<div class="flex gap-1">
 		<ul
-			class="shrink-0 flex flex-col p-1 rounded-lg bg-gray-100 dark:bg-gray-900 max-h-72 overflow-y-auto no-scrollbar"
+			class="no-scrollbar flex max-h-72 shrink-0 flex-col overflow-y-auto rounded-lg bg-gray-100 p-1 dark:bg-gray-900"
 		>
-			{#each categories as category}
+			{#each categories as category (category)}
 				{#if category === defaultEmojis.categories[0] && categories.length > defaultEmojis.categories.length}
 					<li class="py-2">
 						<div class="h-px w-full bg-gray-600"></div>
@@ -122,7 +122,7 @@
 				<li
 					data-category={category}
 					use:initCategoryButton
-					class="flex justify-center items-center"
+					class="flex items-center justify-center"
 				>
 					<button
 						on:click={() => {
@@ -130,25 +130,31 @@
 							if (div) {
 								div.scrollIntoView({
 									inline: "start",
-									behavior: "instant",
+									behavior: "instant"
 								});
 							}
 						}}
 						type="button"
-						class={twMerge("inline-block text-sm font-medium text-center disabled:cursor-not-allowed", category === currentCategory ? activeClass : inactiveClass)}
+						class={twMerge(
+							"inline-block text-center text-sm font-medium disabled:cursor-not-allowed",
+							category === currentCategory ? activeClass : inactiveClass
+						)}
 					>
-						<EmojiCategoryIcon {categoryIcons} {category} tabindex="-1" class="w-4 h-4" />
+						<EmojiCategoryIcon {categoryIcons} {category} tabindex="-1" class="h-4 w-4" />
 					</button>
 				</li>
 			{/each}
 		</ul>
-		<div class="flex flex-col gap-1 max-h-72 h-full">
+		<div class="flex h-full max-h-72 flex-col gap-1">
 			<div
-				class={twMerge("flex-1 flex flex-col min-h-[16rem] h-64 max-h-64 overflow-y-auto no-scrollbar", search ? undefined : "gap-3")}
+				class={twMerge(
+					"no-scrollbar flex h-64 max-h-64 min-h-[16rem] flex-1 flex-col overflow-y-auto",
+					search ? undefined : "gap-3"
+				)}
 				on:scroll={(ev) => calculateCurrent(ev.currentTarget)}
 			>
 				<div class={twMerge("grid grid-cols-9", !search ? "hidden" : undefined)}>
-					{#each getEmojisInSearch(search) as emoji}
+					{#each getEmojisInSearch(search) as emoji (emoji.id)}
 						{#if emoji.svg || emoji.imageUrl}
 							<Button
 								data-emoji={emoji.id ?? emoji.name}
@@ -164,14 +170,14 @@
 						{/if}
 					{/each}
 				</div>
-				{#each categories as category}
+				{#each categories as category (category)}
 					<div data-category={category} use:initCategory class={search ? "hidden" : undefined}>
-						<div class="px-2 py-1 flex items-center font-medium text-xs text-gray-300">
-							<EmojiCategoryIcon {categoryIcons} {category} class="w-3 h-3 me-1" />
+						<div class="flex items-center px-2 py-1 text-xs font-medium text-gray-300">
+							<EmojiCategoryIcon {categoryIcons} {category} class="me-1 h-3 w-3" />
 							{category.toUpperCase()}
 						</div>
 						<div class="grid grid-cols-9">
-							{#each getEmojisInCategory(category) as emoji}
+							{#each getEmojisInCategory(category) as emoji (emoji.id)}
 								{#if emoji.svg || emoji.imageUrl}
 									<Button
 										data-emoji={emoji.id ?? emoji.name}
@@ -191,12 +197,12 @@
 				{/each}
 			</div>
 			<div
-				class="px-2 flex items-center h-7 w-full rounded-lg text-sm bg-gray-100 dark:bg-gray-900"
+				class="flex h-7 w-full items-center rounded-lg bg-gray-100 px-2 text-sm dark:bg-gray-900"
 			>
 				<div class="w-7">
-					<EmojiImage emoji={currentEmoji} class="w-5 h-5" />
+					<EmojiImage emoji={currentEmoji} class="h-5 w-5" />
 				</div>
-				<div class="w-72 ms-1 text-ellipsis text-left overflow-x-hidden">
+				<div class="ms-1 w-72 overflow-x-hidden text-ellipsis text-left">
 					{currentEmoji.names
 						.filter((name) => !/[:;=()]/g.test(name))
 						.map((name) => `:${name}:`)

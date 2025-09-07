@@ -7,8 +7,8 @@ export function PluginDrainWebSocketServer(disposable: Disposable): ApolloServer
 			return Promise.resolve({
 				async drainServer() {
 					await disposable.dispose();
-				},
+				}
 			});
-		},
+		}
 	};
 }

@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import { page } from "$app/stores";
 	import { Permission, hasOneOfPermissions } from "@frcn/shared";
 	import { Heading, Pagination, Search } from "flowbite-svelte";
 	import { CirclePlusSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params";
 
+	import { goto } from "$app/navigation";
+	import { page } from "$app/stores";
 	import { Button, Head, Hr, PageHero } from "$lib/components";
 	import type { ResourceFragmentFragment } from "$lib/graphql/__generated__/graphql";
 	import metaImage from "$lib/images/stock/resources-hero.png?w=1200&format=webp&imagetools";
@@ -20,7 +20,6 @@
 	import verseGuideIcon from "$lib/images/tool-icons/verseguide.svg";
 	import { getCurrentPage, getPageUrl, getPages } from "$lib/pageHelpers";
 	import { user } from "$lib/stores/UserStore";
-
 
 	import type { PageData } from "./$types";
 	import ResourceCard from "./ResourceCard.svelte";
@@ -37,7 +36,7 @@
 		encode(value: string[]) {
 			if (value.length === 0) return undefined;
 			return value.join(",");
-		},
+		}
 	});
 	let searchInput = $search;
 
@@ -49,14 +48,14 @@
 		{ name: "Server Status", icon: rsiIcon, href: "https://status.robertsspaceindustries.com/" },
 		{ name: "Hangar Link", icon: hangarLinkIcon, href: "https://hangar.link/" },
 		{ name: "VerseGuide", icon: verseGuideIcon, href: "https://verseguide.com/" },
-		{ name: "SC Org Tools", icon: scorgToolsIcon, href: "https://scorg.tools/" },
+		{ name: "SC Org Tools", icon: scorgToolsIcon, href: "https://scorg.tools/" }
 	];
 
 	export let data: PageData;
 
 	let fileModal = { open: false, edit: null } as {
 		open: boolean;
-		edit: ResourceFragmentFragment | null
+		edit: ResourceFragmentFragment | null;
 	};
 
 	$: currentPage = getCurrentPage($page.url.searchParams);
@@ -72,28 +71,33 @@
 </Head>
 
 <PageHero srcset={heroImageSrcset} height="h-[30vh]">
-	<Heading tag="h1" class="text-white font-medium text-4xl sm:text-5xl drop-shadow-md">Resources</Heading>
+	<Heading tag="h1" class="text-4xl font-medium text-white drop-shadow-md sm:text-5xl"
+		>Resources</Heading
+	>
 </PageHero>
-<div class="flex flex-col mx-auto w-full max-w-6xl p-4">
-	<section class="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mt-2 px-4">
-		{#each tools as tool}
+<div class="mx-auto flex w-full max-w-6xl flex-col p-4">
+	<section class="mt-2 grid grid-cols-2 gap-2 px-4 sm:gap-4 lg:grid-cols-4">
+		{#each tools as tool (tool)}
 			<ToolButton name={tool.name} img={tool.icon} href={tool.href} />
 		{/each}
 	</section>
 	<Hr class="mt-4" />
-	<section class="flex flex-col gap-2 mt-4">
+	<section class="mt-4 flex flex-col gap-2">
 		<div>
-			<div class="flex flex-col sm:flex-row gap-2">
-				<Search size="md" placeholder="Search by name" class="rounded flex-1 sm:w-96" 
-					bind:value={searchInput} 
+			<div class="flex flex-col gap-2 sm:flex-row">
+				<Search
+					size="md"
+					placeholder="Search by name"
+					class="flex-1 rounded sm:w-96"
+					bind:value={searchInput}
 					on:keydown={(e) => {
 						if (e.key === "Enter") search.set(searchInput);
-					}} 
+					}}
 					on:blur={() => {
 						search.set(searchInput);
-					}} 
+					}}
 				/>
-				{#if hasOneOfPermissions($user.data?.permissions ?? 0, [Permission.CreateResources, Permission.ManageResources])}
+				{#if hasOneOfPermissions( $user.data?.permissions ?? 0, [Permission.CreateResources, Permission.ManageResources] )}
 					<Button
 						class="self-end sm:shrink-0"
 						on:click={() => {
@@ -106,16 +110,16 @@
 				{/if}
 			</div>
 			<div class="mt-4 flex flex-wrap gap-2">
-				{#each tags as tag}
+				{#each tags as tag (tag)}
 					<Button
 						color={$selectedTags?.includes(tag) ? "blue" : "dark"}
 						size="xs"
-						class="px-6 shrink-0"
+						class="shrink-0 px-6"
 						on:click={() => {
 							if ($selectedTags?.includes(tag)) {
-								selectedTags.update(tags => (tags ?? []).filter(t => t !== tag));
+								selectedTags.update((tags) => (tags ?? []).filter((t) => t !== tag));
 							} else {
-								selectedTags.update(tags => [...(tags ?? []), tag]);
+								selectedTags.update((tags) => [...(tags ?? []), tag]);
 							}
 						}}
 					>
@@ -124,19 +128,27 @@
 				{/each}
 			</div>
 		</div>
-		<div class="flex flex-col items-center self-start w-full">
-			<div class="w-full grid min-[580px]:grid-cols-2 lg:grid-cols-3 gap-2 p-4">
-				{#each data.resources as resource}
-					<ResourceCard {selectedTags} {resource} on:edit={(ev) => {
-						fileModal.edit = ev.detail;
-						fileModal.open = true;
-					}} />
+		<div class="flex w-full flex-col items-center self-start">
+			<div class="grid w-full gap-2 p-4 min-[580px]:grid-cols-2 lg:grid-cols-3">
+				{#each data.resources as resource (resource.id)}
+					<ResourceCard
+						{selectedTags}
+						{resource}
+						on:edit={(ev) => {
+							fileModal.edit = ev.detail;
+							fileModal.open = true;
+						}}
+					/>
 				{/each}
 			</div>
 			<Pagination
 				{pages}
-				on:previous={() => { if (data.prevPage != null) goto(getPageUrl($page.url, data.prevPage + 1)); }}
-				on:next={() => { if (data.nextPage != null) goto(getPageUrl($page.url, data.nextPage + 1)); }}
+				on:previous={() => {
+					if (data.prevPage != null) goto(getPageUrl($page.url, data.prevPage + 1));
+				}}
+				on:next={() => {
+					if (data.nextPage != null) goto(getPageUrl($page.url, data.nextPage + 1));
+				}}
 			/>
 		</div>
 	</section>

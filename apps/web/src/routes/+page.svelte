@@ -62,7 +62,7 @@
 	imageSize="large"
 >
 	<link rel="preload" imagesrcset={heroImageSrcset} imagesizes="100vw" as="image" />
-	{#each galleryImages as image}
+	{#each galleryImages as image (image)}
 		<link rel="preload" href={image} as="image" />
 	{/each}
 </Head>
@@ -71,37 +71,38 @@
 	<img
 		srcset={heroImageSrcset}
 		alt="index hero"
-		class="w-full object-cover min-h-[25rem] h-[50vh] brightness-90 bg-slate-950"
+		class="h-[50vh] min-h-[25rem] w-full bg-slate-950 object-cover brightness-90"
 	/>
-	<div class="absolute top-0 left-0 h-full w-full flex items-center justify-center gap-12">
+	<div class="absolute left-0 top-0 flex h-full w-full items-center justify-center gap-12">
 		<div class="flex items-center px-4 sm:px-0">
 			<img
 				src={logo}
-				class="drop-shadow-md h-16 sm:h-24 md:h-32 mr-4"
+				class="mr-4 h-16 drop-shadow-md sm:h-24 md:h-32"
 				alt="Frontier Consolidated logo"
 			/>
-			<div class="drop-shadow-md self-stretch w-px bg-gray-300"></div>
+			<div class="w-px self-stretch bg-gray-300 drop-shadow-md"></div>
 			<h1
-				class="drop-shadow-md ml-6 sm:ml-12 text-2xl min-[460px]:text-3xl sm:text-4xl md:text-5xl text-white font-medium"
-				>Frontier Consolidated</h1
+				class="ml-6 text-2xl font-medium text-white drop-shadow-md min-[460px]:text-3xl sm:ml-12 sm:text-4xl md:text-5xl"
 			>
+				Frontier Consolidated
+			</h1>
 		</div>
 	</div>
 </div>
 <section
-	class="relative p-4 pt-0 border-y border-primary-400 dark:border-primary-600 bg-neutral-200 dark:bg-gray-900"
+	class="border-primary-400 dark:border-primary-600 relative border-y bg-neutral-200 p-4 pt-0 dark:bg-gray-900"
 >
-	<div class="-mt-10 grid sm:grid-cols-2 xl:grid-cols-4 gap-4 mx-auto max-w-7xl">
-		{#each pageCards as card}
-			<a href={card.href} class="group/card relative rounded clip-tr-8">
-				<figure class="h-36 min-[480px]:h-48 sm:h-60 cursor-pointer">
+	<div class="mx-auto -mt-10 grid max-w-7xl gap-4 sm:grid-cols-2 xl:grid-cols-4">
+		{#each pageCards as card (card.href)}
+			<a href={card.href} class="group/card clip-tr-8 relative rounded">
+				<figure class="h-36 cursor-pointer min-[480px]:h-48 sm:h-60">
 					<img
-						class="clip-tr-8 rounded h-full w-full object-cover transition-[filter] group-hover/card:grayscale"
+						class="clip-tr-8 h-full w-full rounded object-cover transition-[filter] group-hover/card:grayscale"
 						src={card.src}
 						alt={card.name}
 					/>
 					<figcaption
-						class="absolute rounded-b flex items-center w-full bottom-0 left-0 p-2 sm:p-4 bg-white/50 dark:bg-black/30 backdrop-blur-lg text-gray-900 dark:text-white font-semibold text-md"
+						class="text-md absolute bottom-0 left-0 flex w-full items-center rounded-b bg-white/50 p-2 font-semibold text-gray-900 backdrop-blur-lg sm:p-4 dark:bg-black/30 dark:text-white"
 					>
 						<svelte:component this={card.icon} size="sm" class="me-2" tabindex="-1" />
 						{card.name}
@@ -111,40 +112,40 @@
 		{/each}
 	</div>
 	<div
-		class="absolute -bottom-[2rem] left-0 clip-br-parallel-8 w-[20%] h-8 bg-primary-400 dark:bg-primary-600"
+		class="clip-br-parallel-8 bg-primary-400 dark:bg-primary-600 absolute -bottom-[2rem] left-0 h-8 w-[20%]"
 	></div>
 	<div
-		class="absolute -bottom-[2rem] right-0 clip-bl-parallel-8 w-[20%] h-8 bg-primary-400 dark:bg-primary-600"
+		class="clip-bl-parallel-8 bg-primary-400 dark:bg-primary-600 absolute -bottom-[2rem] right-0 h-8 w-[20%]"
 	></div>
 	<div
-		class="absolute -bottom-[calc(2rem-1px)] left-0 clip-br-parallel-8 w-[calc(20%-1px)] h-8 bg-neutral-200 dark:bg-gray-900"
+		class="clip-br-parallel-8 absolute -bottom-[calc(2rem-1px)] left-0 h-8 w-[calc(20%-1px)] bg-neutral-200 dark:bg-gray-900"
 	></div>
 	<div
-		class="absolute -bottom-[calc(2rem-1px)] right-0 clip-bl-parallel-8 w-[calc(20%-1px)] h-8 bg-neutral-200 dark:bg-gray-900"
+		class="clip-bl-parallel-8 absolute -bottom-[calc(2rem-1px)] right-0 h-8 w-[calc(20%-1px)] bg-neutral-200 dark:bg-gray-900"
 	></div>
 </section>
-<section class="w-full bg-white dark:bg-slate-950 bg-triangle-pattern px-4 py-16">
-	<div class="mx-auto w-full max-w-5xl flex flex-col md:flex-row gap-2 md:gap-8">
+<section class="bg-triangle-pattern w-full bg-white px-4 py-16 dark:bg-slate-950">
+	<div class="mx-auto flex w-full max-w-5xl flex-col gap-2 md:flex-row md:gap-8">
 		<div
-			class="shrink-0 overflow-hidden rounded clip-tl-br-12 h-[500px] md:self-stretch w-full md:w-[350px] lg:w-[400px] p-px dark:bg-gray-700"
+			class="clip-tl-br-12 h-[500px] w-full shrink-0 overflow-hidden rounded p-px md:w-[350px] md:self-stretch lg:w-[400px] dark:bg-gray-700"
 		>
 			<img
 				src={welcomeSection?.getFiles()[0]?.getSrc() ?? placeholder}
 				alt="welcome to the frontier"
-				class="h-full w-full object-cover clip-tl-br-12"
+				class="clip-tl-br-12 h-full w-full object-cover"
 			/>
 		</div>
-		<div class="self-stretch flex flex-col p-6">
-			<h2 class="text-3xl lg:text-4xl font-semibold text-black dark:text-white"
-				><span class="me-4 text-primary-700 dark:text-primary-500">///</span>
-				{welcomeSection?.getTitle() ?? ""}</h2
-			>
+		<div class="flex flex-col self-stretch p-6">
+			<h2 class="text-3xl font-semibold text-black lg:text-4xl dark:text-white">
+				<span class="text-primary-700 dark:text-primary-500 me-4">///</span>
+				{welcomeSection?.getTitle() ?? ""}
+			</h2>
 			<div class="mt-6 flex flex-col gap-4 text-lg text-gray-800 dark:text-gray-300">
 				<Markdown nowrap source={welcomeSection?.getContent() ?? ""} disabled={["space"]} />
 			</div>
 			{#if welcomeCtas.length > 0}
-				<div class="flex-1 w-full pt-12 flex justify-center items-center gap-4">
-					{#each welcomeCtas as cta}
+				<div class="flex w-full flex-1 items-center justify-center gap-4 pt-12">
+					{#each welcomeCtas as cta (cta.id)}
 						<CallToActionRenderer container={cta} />
 					{/each}
 				</div>
@@ -154,7 +155,7 @@
 </section>
 {#if partners.length}
 	<section
-		class="border-y border-primary-400 dark:border-primary-600 bg-slate-300 dark:bg-gray-900 py-8"
+		class="border-primary-400 dark:border-primary-600 border-y bg-slate-300 py-8 dark:bg-gray-900"
 	>
 		<!-- <h2 class="text-center text-3xl font-medium text-primary-600 dark:text-gray-300">Our Partners</h2>
 		<Marquee fade class="mt-8">
@@ -166,32 +167,24 @@
 		</Marquee> -->
 	</section>
 {/if}
-<div class="mt-24 flex flex-col mx-auto w-full max-w-5xl p-4 pt-0 gap-24">
+<div class="mx-auto mt-24 flex w-full max-w-5xl flex-col gap-24 p-4 pt-0">
 	<section>
-		<Heading tag="h2" class="font-medium text-2xl">
-			<span class="me-4 text-primary-700 dark:text-primary-500">///</span> Gallery
+		<Heading tag="h2" class="text-2xl font-medium">
+			<span class="text-primary-700 dark:text-primary-500 me-4">///</span> Gallery
 		</Heading>
-		<Hr class="my-4 bg-primary-300 dark:bg-primary-600" />
-		<div class="grid md:grid-cols-2 gap-4">
-			<div class="grid gap-4 h-min">
-				{#each galleryImages.slice(0, Math.ceil(galleryImages.length / 2)) as image}
-					<div class="rounded clip-tr-8 p-px bg-gray-400 dark:bg-gray-800">
-						<img
-							src={image}
-							alt=""
-							class="w-full max-w-full clip-tr-8 rounded object-cover"
-						/>
+		<Hr class="bg-primary-300 dark:bg-primary-600 my-4" />
+		<div class="grid gap-4 md:grid-cols-2">
+			<div class="grid h-min gap-4">
+				{#each galleryImages.slice(0, Math.ceil(galleryImages.length / 2)) as image (image)}
+					<div class="clip-tr-8 rounded bg-gray-400 p-px dark:bg-gray-800">
+						<img src={image} alt="" class="clip-tr-8 w-full max-w-full rounded object-cover" />
 					</div>
 				{/each}
 			</div>
-			<div class="grid gap-4 h-min">
-				{#each galleryImages.slice(Math.ceil(galleryImages.length / 2)) as image}
-					<div class="rounded clip-tr-8 p-px bg-gray-400 dark:bg-gray-800">
-						<img
-							src={image}
-							alt=""
-							class="w-full max-w-full clip-tr-8 rounded object-cover"
-						/>
+			<div class="grid h-min gap-4">
+				{#each galleryImages.slice(Math.ceil(galleryImages.length / 2)) as image (image)}
+					<div class="clip-tr-8 rounded bg-gray-400 p-px dark:bg-gray-800">
+						<img src={image} alt="" class="clip-tr-8 w-full max-w-full rounded object-cover" />
 					</div>
 				{/each}
 			</div>

@@ -1,6 +1,6 @@
 import { randomUUID } from "crypto";
 
-import type { AccessKey } from "@prisma/client";
+import type { AccessKey } from "../__generated__/client";
 import * as bcrypt from "bcrypt";
 
 import { database } from "../database";
@@ -11,8 +11,8 @@ const ACCESS_KEY_SALT_ROUNDS = 12;
 async function getSystemSettings() {
 	return await database.systemSettings.findFirstOrThrow({
 		include: {
-			defaultEventChannel: true,
-		},
+			defaultEventChannel: true
+		}
 	});
 }
 
@@ -21,11 +21,13 @@ async function editSystemSettings(data: SystemEditInput) {
 		where: { unique: true },
 		data: {
 			discordGuildId: data.discordGuildId ?? undefined,
-			defaultEventChannel: data.defaultEventChannelId ? {
-				connect: {
-					id: data.defaultEventChannelId
-				} 
-			} : undefined
+			defaultEventChannel: data.defaultEventChannelId
+				? {
+						connect: {
+							id: data.defaultEventChannelId
+						}
+					}
+				: undefined
 		},
 		include: {
 			defaultEventChannel: true

@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/default
-import PrismaClientPkg from "@prisma/client";
-import type { ITXClientDenyList } from "@prisma/client/runtime/library";
+import PrismaClientPkg from "../__generated__/client";
+import type { ITXClientDenyList } from "../__generated__/client/runtime/library";
 
 import { migrate } from "./migrate";
 import { seed } from "./seed";

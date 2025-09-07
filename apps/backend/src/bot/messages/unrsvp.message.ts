@@ -8,6 +8,6 @@ export function buildUnrsvpMessage() {
 		.setDescription("RSVP successfully removed.");
 
 	return {
-		embeds: [embed],
+		embeds: [embed]
 	} satisfies BaseMessageOptions;
 }

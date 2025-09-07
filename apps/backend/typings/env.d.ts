@@ -6,8 +6,6 @@ declare global {
 			TZ?: string;
 			NODE_ENV?: string;
 
-			SERVE_WEB?: string;
-
 			PORT: string;
 			EXTERNAL_PORT?: string;
 			DOMAIN: string;
@@ -18,11 +16,6 @@ declare global {
 			ORIGINS: string;
 
 			DATABASE_URL: string;
-
-			CMS_BUS_DATABASE_URL?: string;
-			CMS_BUS_SCHEMA: string;
-			/** @deprecated */
-			CMS_ACCESS_KEY?: string;
 
 			LOCAL_ACCESS_TOKEN?: string;
 
@@ -43,10 +36,6 @@ declare global {
 			AWS_S3_REGION: string;
 			AWS_S3_KEY: string;
 			AWS_S3_SECRET: string;
-
-			INTEGRATION_LEGION_CODA_TOKEN: string;
-			INTEGRATION_LEGION_CODA_DOC_ID: string;
-			INTEGRATION_LEGION_CODA_TABLE_ID: string;
 		}
 	}
 }

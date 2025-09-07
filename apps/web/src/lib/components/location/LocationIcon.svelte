@@ -1,49 +1,63 @@
 <script lang="ts">
 	import type { AnyLocation } from "@frcn/shared/locations";
 
-	import CityIcon from "./icons/City.svelte";
-	import MoonIcon from "./icons/Moon.svelte";
-	import OrbitalMarkerIcon from "./icons/OrbitalMarker.svelte";
-	import OutpostIcon from "./icons/Outpost.svelte";
-	import PlanetIcon from "./icons/Planet.svelte";
-	import StationIcon from "./icons/Station.svelte";
-	import SystemIcon from "./icons/System.svelte";
+	import AstroidFieldSvg from "./icons/AstroidField.svg?raw";
+	import CitySvg from "./icons/City.svg?raw";
+	import JumpPointSvg from "./icons/JumpPoint.svg?raw";
+	import MarkerSvg from "./icons/Marker.svg?raw";
+	import MoonSvg from "./icons/Moon.svg?raw";
+	import OutpostSvg from "./icons/Outpost.svg?raw";
+	import PlanetSvg from "./icons/Planet.svg?raw";
+	import StationSvg from "./icons/Station.svg?raw";
+	import SystemSvg from "./icons/System.svg?raw";
 
 	export let location: AnyLocation;
 
-	let icon: any;
+	let svg: string = "";
 	switch (location.type) {
 		case "SYSTEM":
-			icon = SystemIcon;
+			svg = SystemSvg;
 			break;
 		case "PLANET":
-			icon = PlanetIcon;
+			svg = PlanetSvg;
 			break;
 		case "MOON":
-			icon = MoonIcon;
+			svg = MoonSvg;
 			break;
 		case "STATION":
 		case "COMM_ARRAY":
-			icon = StationIcon;
+			svg = StationSvg;
 			break;
-		case "LAGRANGE_POINT":
 		case "JUMP_POINT":
-			icon = OrbitalMarkerIcon;
+			svg = JumpPointSvg;
 			break;
 		case "CITY":
-			icon = CityIcon;
+			svg = CitySvg;
 			break;
 		case "OUTPOST":
-			icon = OutpostIcon;
+			svg = OutpostSvg;
+			break;
+		case "ASTROID_FIELD":
+			svg = AstroidFieldSvg;
 			break;
 		default:
-			icon = null;
+			svg = MarkerSvg;
 			break;
 	}
+
+	$: elements = svg.replace(/<svg[ \n]([^>]*)>/, "").replace("</svg>", "");
 </script>
 
-{#if icon != null}
-	<svelte:component this={icon} class="shrink-0 w-6 h-6 me-2" {...$$restProps} />
-{:else}
-	<svg class="w-0 h-0"></svg>
-{/if}
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	width="64"
+	height="64"
+	viewBox="0 0 64 64"
+	class="me-2 h-6 w-6 shrink-0"
+	fill={svg.match(/<svg[ \n][^>]*fill=["']([^"']+)["']/)?.[1] ?? "none"}
+	{...$$restProps}
+>
+	<title>{location.type}</title>
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+	{@html elements}
+</svg>

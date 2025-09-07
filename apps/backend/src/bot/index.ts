@@ -1,22 +1,11 @@
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 
-import {
-	type Client,
-	type ClientEvents,
-	SlashCommandBuilder,
-	REST,
-	ChatInputCommandInteraction
-} from "discord.js";
+import { type Client, type ClientEvents } from "discord.js";
 
-import { startEventsUpdate } from "./handlers/updateEvents.interval";
 import { logger } from "../logger";
-
-type Command = {
-	command: SlashCommandBuilder;
-	execute: (interaction: ChatInputCommandInteraction) => void | Promise<void>;
-};
+import { startEventsUpdate } from "./handlers/updateEvents.interval";
 
 type EventModule = {
 	event: keyof ClientEvents;
@@ -39,7 +28,7 @@ async function registerEvents(client: DiscordClient) {
 
 	for (const eventFile of eventFiles) {
 		const filePath = path.join(eventsFolder, eventFile);
-		const module = (await import(filePath)) as EventModule;
+		const module = (await import(pathToFileURL(filePath).toString())) as EventModule;
 
 		if (module.once) {
 			client.once(module.event, module.listener);
@@ -51,7 +40,7 @@ async function registerEvents(client: DiscordClient) {
 	}
 }
 
-export async function load(client: DiscordClient, api: REST) {
+export async function load(client: DiscordClient) {
 	await registerEvents(client);
 
 	startEventsUpdate(client);

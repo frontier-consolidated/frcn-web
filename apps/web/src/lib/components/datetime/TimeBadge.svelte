@@ -8,7 +8,7 @@
 	export let id: string;
 	export let format: "duration" | "datetime" | "datetime-relative" = "datetime";
 	export let value: number;
-	
+
 	function formatTime(value: number) {
 		let datetime: string;
 		let text: string;
@@ -31,7 +31,7 @@
 
 					const hoursMinutes = new Intl.DateTimeFormat($locale!, {
 						hour: "2-digit",
-						minute: "2-digit",
+						minute: "2-digit"
 					}).format(date);
 
 					if (dates.isToday(date)) {
@@ -43,12 +43,12 @@
 					} else if (now > date) {
 						text = new Intl.DateTimeFormat($locale!, {
 							dateStyle: "short",
-							timeStyle: "short",
+							timeStyle: "short"
 						}).format(date);
 					} else {
 						text = new Intl.DateTimeFormat($locale!, {
 							dateStyle: "full",
-							timeStyle: "short",
+							timeStyle: "short"
 						}).format(date);
 					}
 
@@ -63,7 +63,7 @@
 
 					const hoursMinutes = new Intl.DateTimeFormat($locale!, {
 						hour: "2-digit",
-						minute: "2-digit",
+						minute: "2-digit"
 					}).format(date);
 
 					let relative = "";
@@ -82,12 +82,12 @@
 					} else if (now > date) {
 						text = new Intl.DateTimeFormat($locale!, {
 							dateStyle: "short",
-							timeStyle: "short",
+							timeStyle: "short"
 						}).format(date);
 					} else {
 						text = new Intl.DateTimeFormat($locale!, {
 							dateStyle: "full",
-							timeStyle: "short",
+							timeStyle: "short"
 						}).format(date);
 					}
 
@@ -118,7 +118,12 @@
 	});
 </script>
 
-<Badge {id} color="none" {...$$restProps} class={twMerge("tabular-nums dark:text-gray-300", $$restProps.class)}>
+<Badge
+	{id}
+	color="none"
+	{...$$restProps}
+	class={twMerge("tabular-nums dark:text-gray-300", $$restProps.class)}
+>
 	<time {datetime}>{text}</time>
 </Badge>
 <Popover defaultClass="px-2 py-1 text-xs" triggeredBy="#{id}">{popoverText}</Popover>

@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: frcn-web-db
+    restart: always
+    ports:
+      - "15403:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=frcn
+
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d frcn'"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+volumes:
+  pg-data:

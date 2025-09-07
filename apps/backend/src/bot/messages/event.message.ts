@@ -1,6 +1,6 @@
 import { dates, strings } from "@frcn/shared";
 import { getEmojiByName } from "@frcn/shared/emojis";
-import type { Event } from "@prisma/client";
+import type { Event } from "../../__generated__/client";
 import {
 	type BaseMessageOptions,
 	ButtonStyle,
@@ -124,16 +124,10 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 		...event.roles.map((role) => {
 			const members = role.members.filter((m) => !!m.user);
 			const roleEmoji =
-				role.emoji === role.emojiId
-					? `:${role.emoji}:`
-					: `<:${role.emoji}:${role.emojiId}>`;
+				role.emoji === role.emojiId ? `:${role.emoji}:` : `<:${role.emoji}:${role.emojiId}>`;
 
 			const valueLimit =
-				120 +
-				Math.min(
-					880,
-					Math.floor((members.length / totalMembers) * remainingCharacterLimit)
-				);
+				120 + Math.min(880, Math.floor((members.length / totalMembers) * remainingCharacterLimit));
 			let value = " ";
 			if (members.length > 0) {
 				for (const [i, member] of members.entries()) {
@@ -175,7 +169,7 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 					: {
 							id: role.emojiId,
 							name: role.emoji
-					  }
+						}
 			);
 
 		rsvpSelect.addOptions(option);
@@ -199,9 +193,7 @@ export async function buildEventMessage(id: string, client: DiscordClient, threa
 
 	return {
 		content: event.discordMentions
-			.map((mention) =>
-				mention === guild.roles.everyone.id ? "@everyone" : `<@&${mention}>`
-			)
+			.map((mention) => (mention === guild.roles.everyone.id ? "@everyone" : `<@&${mention}>`))
 			.join(" "),
 		embeds: [eventEmbed],
 		components: [selectRow, buttonRow]
@@ -214,7 +206,7 @@ export async function getEventMessage(client: DiscordClient, event: Event) {
 	try {
 		const channel = await $events.getEventDiscordChannel(event, client);
 		return await channel.messages.fetch(event.discordEventMessageId);
-	} catch (err) {
+	} catch (_err) {
 		return null;
 	}
 }
@@ -231,7 +223,7 @@ export async function postEventMessage(
 	if (!createThread && settings?.createEventThread) {
 		try {
 			await $events.getEventThread(client, event);
-		} catch (err) {
+		} catch (_err) {
 			createThread = true;
 		}
 	}

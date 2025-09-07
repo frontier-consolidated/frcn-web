@@ -3,13 +3,13 @@ schema: "../backend/src/graphql/schema/schema.generated.graphql"
 documents: "./src/lib/graphql/documents/**/*.ts"
 ignoreNoDocuments: true
 generates:
-    ./src/lib/graphql/__generated__/:
-        preset: "client"
-        presetConfig:
-            gqlTagName: "gql"
-            fragmentMasking: false
-        config:
-            useTypeImports: true
-            useIndexSignature: true
+  ./src/lib/graphql/__generated__/:
+    preset: "client"
+    presetConfig:
+      gqlTagName: "gql"
+      fragmentMasking: false
+    config:
+      useTypeImports: true
+      useIndexSignature: true
 config:
-    scalars: "@frcn/graphql-scalar-types/client"
+  scalars: "@frcn/graphql-scalar-types/client"

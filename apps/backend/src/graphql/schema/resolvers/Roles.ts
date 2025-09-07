@@ -1,5 +1,5 @@
 import { hasAdmin } from "@frcn/shared";
-import type { UserRole } from "@prisma/client";
+import type { UserRole } from "../../../__generated__/client";
 
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
@@ -22,7 +22,7 @@ export function resolveUserRole(role: UserRole) {
 		permissions: role.permissions,
 		users: [], // field-resolved
 		updatedAt: role.updatedAt,
-		createdAt: role.createdAt,
+		createdAt: role.createdAt
 	} satisfies WithModel<GQLUserRole, UserRole>;
 }
 
@@ -50,7 +50,7 @@ export const roleResolvers: Resolvers = {
 			const role = await $roles.getRole(args.id);
 			if (!role) return null;
 			return resolveUserRole(role);
-		},
+		}
 	},
 
 	Mutation: {
@@ -68,21 +68,30 @@ export const roleResolvers: Resolvers = {
 			const users = await $roles.getRoleUsers(role);
 			if (role.primary && data.primary === false) {
 				if (users.length > 0) {
-					const newRole = data.newPrimaryRole && await $roles.getRole(data.newPrimaryRole);
-	
+					const newRole = data.newPrimaryRole && (await $roles.getRole(data.newPrimaryRole));
+
 					if (!newRole || !newRole.primary) {
-						throw gqlErrorBadInput(`Cannot switch primary role to non-primary role because there are users assigned and an invalid alternative was given: ${data.newPrimaryRole}`);
+						throw gqlErrorBadInput(
+							`Cannot switch primary role to non-primary role because there are users assigned and an invalid alternative was given: ${data.newPrimaryRole}`
+						);
 					}
 				}
 			}
 
 			if (!role.primary && data.primary) {
 				if (users.length > 0) {
-					throw gqlErrorBadInput("Cannot switch non-primary role to primary role while it has users assigned");
+					throw gqlErrorBadInput(
+						"Cannot switch non-primary role to primary role while it has users assigned"
+					);
 				}
 			}
-			
-			if (role.primary && data.primary !== false && data.permissions && hasAdmin(data.permissions)) {
+
+			if (
+				role.primary &&
+				data.primary !== false &&
+				data.permissions &&
+				hasAdmin(data.permissions)
+			) {
 				const defaultRole = await $roles.getDefaultPrimaryRole();
 				if (role.id === defaultRole.id) {
 					throw gqlErrorBadInput("Cannot give admin permissions to default primary role");
@@ -115,7 +124,7 @@ export const roleResolvers: Resolvers = {
 				if (seen.includes(roleId)) {
 					throw gqlErrorBadInput(`Duplicate role id in given role order: ${roleId}`);
 				}
-				if (!roles.find(r => r.id === roleId)) {
+				if (!roles.find((r) => r.id === roleId)) {
 					throw gqlErrorBadInput(`Role id in given role order not in server roles: ${roleId}`);
 				}
 
@@ -123,13 +132,13 @@ export const roleResolvers: Resolvers = {
 			}
 
 			const permissions = await calculatePermissions(context);
-			
+
 			if (!hasAdmin(permissions) && context.user) {
 				const userRoles = await $users.getAllRoles(context.user);
-	
+
 				let highest = 0;
 				for (const role of roles) {
-					const userRole = userRoles.find(r => r.id === role.id);
+					const userRole = userRoles.find((r) => r.id === role.id);
 					if (userRole && role.order > highest) {
 						highest = role.order;
 					}
@@ -149,14 +158,16 @@ export const roleResolvers: Resolvers = {
 		},
 		async syncRoles(source, args, context) {
 			const users = await $users.getAllUsers();
-			await Promise.all(users.map(async (user) => await $users.syncRoles(context.app.discordClient, user)));
+			await Promise.all(
+				users.map(async (user) => await $users.syncRoles(context.app.discordClient, user))
+			);
 			return true;
 		},
 		async changeUserPrimaryRole(source, args, context) {
 			const role = await $roles.getRole(args.roleId);
 			if (!role) throw gqlErrorBadInput(`Could not find role with id: ${args.roleId}`);
 			if (!role.primary) throw gqlErrorBadInput("Role is not a primary role");
-			
+
 			const user = await $users.getUser(args.userId);
 			if (!user) throw gqlErrorBadInput(`Could not find user with id: ${args.userId}`);
 
@@ -168,10 +179,10 @@ export const roleResolvers: Resolvers = {
 			const role = await $roles.getRole(args.roleId);
 			if (!role) throw gqlErrorBadInput(`Could not find role with id: ${args.roleId}`);
 			if (role.primary) throw gqlErrorBadInput("Cannot give primary role use changePrimaryRole");
-			
+
 			const user = await $users.getUser(args.userId);
 			if (!user) throw gqlErrorBadInput(`Could not find user with id: ${args.userId}`);
-			
+
 			if (await $roles.hasRole(role, user)) return null;
 
 			logger.audit(context, "gave a user a Role", args);
@@ -182,10 +193,10 @@ export const roleResolvers: Resolvers = {
 			const role = await $roles.getRole(args.roleId);
 			if (!role) throw gqlErrorBadInput(`Could not find role with id: ${args.roleId}`);
 			if (role.primary) throw gqlErrorBadInput("Cannot remove primary role use changePrimaryRole");
-			
+
 			const user = await $users.getUser(args.userId);
 			if (!user) throw gqlErrorBadInput(`Could not find user with id: ${args.userId}`);
-			
+
 			if (!(await $roles.hasRole(role, user))) return false;
 
 			logger.audit(context, "removed a user's Role", args);

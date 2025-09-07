@@ -8,7 +8,7 @@ export enum EventType {
 	Combined = "COMBINED",
 	Shenanigans = "SHENANIGANS",
 	Misc = "MISC",
-	Roleplay = "ROLEPLAY",
+	Roleplay = "ROLEPLAY"
 }
 
 const eventTypeNameMap = {
@@ -21,11 +21,11 @@ const eventTypeNameMap = {
 	[EventType.Combined]: "Combined Op",
 	[EventType.Shenanigans]: "Shenanigans",
 	[EventType.Misc]: "Miscellaneous",
-	[EventType.Roleplay]: "Roleplay",
+	[EventType.Roleplay]: "Roleplay"
 } satisfies Record<EventType, string>;
 export const EventTypeOptions = Object.values(EventType).map((value) => {
 	return {
 		value,
-		name: eventTypeNameMap[value],
+		name: eventTypeNameMap[value]
 	};
 });

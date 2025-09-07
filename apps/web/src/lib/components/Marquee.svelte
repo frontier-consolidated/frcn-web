@@ -7,12 +7,16 @@
 	export let reverse: boolean = false;
 	export let fade: boolean = false;
 	export let innerClass: string = "";
-    export let durationClass: string = "[--duration:5s]";
+	export let durationClass: string = "[--duration:5s]";
 	export let numberOfCopies: number = 10;
 </script>
 
 <div
-	class={twMerge("group flex gap-[1rem] overflow-hidden", $$restProps.class, direction === "left" ? "flex-row" : "flex-col")}
+	class={twMerge(
+		"group flex gap-[1rem] overflow-hidden",
+		$$restProps.class,
+		direction === "left" ? "flex-row" : "flex-col"
+	)}
 	style={`mask-image: ${
 		fade
 			? `linear-gradient(${
@@ -32,11 +36,9 @@
 	{#each Array(numberOfCopies).fill(0) as _, i (i)}
 		<div
 			class={twMerge(
-				"flex justify-around gap-[1rem] [--gap:1rem] shrink-0",
-                durationClass,
-				direction === "left"
-					? "animate-marquee-left flex-row"
-					: "animate-marquee-up flex-col",
+				"flex shrink-0 justify-around gap-[1rem] [--gap:1rem]",
+				durationClass,
+				direction === "left" ? "animate-marquee-left flex-row" : "animate-marquee-up flex-col",
 				pauseOnHover && "group-hover:[animation-play-state:paused]",
 				reverse && "direction-reverse",
 				innerClass
@@ -48,31 +50,31 @@
 </div>
 
 <style>
-    @keyframes marquee-left {
-        from {
-            transform: translateX(0);
-        }
+	@keyframes marquee-left {
+		from {
+			transform: translateX(0);
+		}
 
-        to {
-            transform: translateX(calc(-100% - var(--gap)));
-        }
-    }
+		to {
+			transform: translateX(calc(-100% - var(--gap)));
+		}
+	}
 
-    .animate-marquee-left {
-        animation: marquee-left var(--duration, 40s) linear infinite;
-    }
+	.animate-marquee-left {
+		animation: marquee-left var(--duration, 40s) linear infinite;
+	}
 
-    @keyframes marquee-up {
-        from {
-            transform: translateY(0);
-        }
+	@keyframes marquee-up {
+		from {
+			transform: translateY(0);
+		}
 
-        to {
-            transform: translateY(calc(-100% - var(--gap)));
-        }
-    }
+		to {
+			transform: translateY(calc(-100% - var(--gap)));
+		}
+	}
 
-    .animate-marquee-up {
-        animation: marquee-up var(--duration, 40s) linear infinite;
-    }
+	.animate-marquee-up {
+		animation: marquee-up var(--duration, 40s) linear infinite;
+	}
 </style>

@@ -28,5 +28,5 @@ export const renderers = {
 	paragraph: Paragraph,
 	space: Space,
 	strong: Strong,
-	text: Text,
+	text: Text
 };
