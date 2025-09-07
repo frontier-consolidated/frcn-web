@@ -48,7 +48,7 @@ jobs:
           method: kubeconfig
           kubeconfig: ${{ secrets.KUBECONFIG }}
 
-      - name: Run pulumi preview
+      - name: Run pulumi up
         uses: pulumi/actions@v6
         with:
           command: up
