@@ -45,7 +45,7 @@ jobs:
         uses: pulumi/actions@v6
         with:
           command: preview
-          stack-name: frcn-web-old/dev
+          stack-name: dev
           work-dir: ./pulumi
         env:
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
