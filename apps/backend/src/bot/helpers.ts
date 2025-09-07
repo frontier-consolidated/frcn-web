@@ -1,4 +1,3 @@
-import { strings } from "@frcn/shared";
 import { getLocations, type AnyLocation } from "@frcn/shared/locations";
 
 const emojiIdsByClient = {
@@ -58,9 +57,7 @@ export function getLocationBreadcrumbs(location: string[]) {
 	let value = "";
 	if (location.length > 0) {
 		const locations = getLocations(location);
-		value = locations
-			.map((loc) => `${getLocationEmoji(loc)} **${strings.toTitleCase(loc.name)}**`.trim())
-			.join(" > ");
+		value = locations.map((loc) => `${getLocationEmoji(loc)} **${loc.name}**`.trim()).join(" > ");
 	} else {
 		value = "Anywhere";
 	}
