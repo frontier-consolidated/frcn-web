@@ -1,13 +1,13 @@
-import type { User, UserRole } from "@prisma/client";
+import type { User, UserRole } from "../../__generated__/client";
 import { Events, GuildMember, type PartialGuildMember } from "discord.js";
 
 import type { EventListener } from "..";
 import { database } from "../../database";
 import { publishRolesUpdated, publishUserRolesUpdated } from "../../graphql/events";
+import { logger } from "../../logger";
 import { $discord } from "../../services/discord";
 import { $roles } from "../../services/roles";
 import { $users } from "../../services/users";
-import { logger } from "../../logger";
 
 export const event = Events.GuildMemberUpdate;
 
@@ -34,10 +34,7 @@ export async function diffCheckUser(
 	const currentConnectedDiscordRoles = currentUserRoles.filter((role) => !!role.discordId);
 
 	if (oldMember) {
-		const { added, removed } = $discord.getGuildMemberRoleDiffs(
-			oldMember.roles,
-			newMember.roles
-		);
+		const { added, removed } = $discord.getGuildMemberRoleDiffs(oldMember.roles, newMember.roles);
 		for (const discordRole of added) {
 			const role = await $roles.getRoleByDiscordId(discordRole.id);
 			if (!role) continue;
@@ -149,7 +146,7 @@ export async function diffCheckUser(
 							connect: {
 								id: newPrimaryRole.id
 							}
-					  }
+						}
 					: undefined,
 				roles:
 					rolesToGive.length > 0 || rolesToRemove.length > 0
@@ -158,7 +155,7 @@ export async function diffCheckUser(
 									rolesToGive.length > 0
 										? rolesToGive.map((role) => ({
 												roleId: role.id
-										  }))
+											}))
 										: undefined,
 								deleteMany:
 									rolesToRemove.length > 0
@@ -166,9 +163,9 @@ export async function diffCheckUser(
 												roleId: {
 													in: rolesToRemove.map((role) => role.id)
 												}
-										  }
+											}
 										: undefined
-						  }
+							}
 						: undefined
 			}
 		});

@@ -1,12 +1,21 @@
 import { DeleteObjectCommand, type S3Client } from "@aws-sdk/client-s3";
-import type { ContentContainer, ContentContainerFile, FileUpload, Prisma, User } from "@prisma/client";
+import type {
+	ContentContainer,
+	ContentContainerFile,
+	FileUpload,
+	Prisma,
+	User
+} from "../__generated__/client";
 
 import { $files } from "./files";
 import { database } from "../database";
-import type { ContentContainerEditInput, ContentContainerFileEditInput } from "../graphql/__generated__/resolvers-types";
+import type {
+	ContentContainerEditInput,
+	ContentContainerFileEditInput
+} from "../graphql/__generated__/resolvers-types";
 
 export type CmsAttachFileMetadata = {
-	identifier?: string
+	identifier?: string;
 };
 
 async function getContainer(identifier: string, type: string, parentId?: string) {
@@ -27,17 +36,27 @@ async function getContainersOfType(type: string, parentId?: string) {
 	});
 }
 
-async function getContainerChildren<T extends Prisma.ContentContainer$childrenArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$childrenArgs>) {
-	const result = await database.contentContainer.findUnique({
-		where: { id }
-	}).children<T>(args);
+async function getContainerChildren<T extends Prisma.ContentContainer$childrenArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.ContentContainer$childrenArgs>
+) {
+	const result = await database.contentContainer
+		.findUnique({
+			where: { id }
+		})
+		.children<T>(args);
 	return result ?? [];
 }
 
-async function getContainerParent<T extends Prisma.ContentContainer$parentArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$parentArgs>) {
-	const result = await database.contentContainer.findUnique({
-		where: { id }
-	}).parent<T>(args);
+async function getContainerParent<T extends Prisma.ContentContainer$parentArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.ContentContainer$parentArgs>
+) {
+	const result = await database.contentContainer
+		.findUnique({
+			where: { id }
+		})
+		.parent<T>(args);
 	return result;
 }
 
@@ -47,11 +66,13 @@ async function createContainer(type: string, identifier?: string, parent?: Conte
 			data: {
 				type,
 				identifier,
-				parent: parent ? {
-					connect: {
-						id: parent.id
-					}
-				} : undefined
+				parent: parent
+					? {
+							connect: {
+								id: parent.id
+							}
+						}
+					: undefined
 			}
 		});
 
@@ -122,7 +143,7 @@ async function deleteContainer(s3Client: S3Client, bucket: string, id: string, d
 				await tx.contentContainer.update({
 					where: { id: parent.id },
 					data: {
-						childrenOrder: parent.childrenOrder.filter(c => c !== id)
+						childrenOrder: parent.childrenOrder.filter((c) => c !== id)
 					}
 				});
 			}
@@ -138,10 +159,15 @@ async function getContainerFileLink(id: string) {
 	});
 }
 
-async function getContainerFileLinks<T extends Prisma.ContentContainer$filesArgs>(id: string, args?: Prisma.Subset<T, Prisma.ContentContainer$filesArgs>) {
-	const result = await database.contentContainer.findUnique({
-		where: { id }
-	}).files<T>(args);
+async function getContainerFileLinks<T extends Prisma.ContentContainer$filesArgs>(
+	id: string,
+	args?: Prisma.Subset<T, Prisma.ContentContainer$filesArgs>
+) {
+	const result = await database.contentContainer
+		.findUnique({
+			where: { id }
+		})
+		.files<T>(args);
 	return result ?? [];
 }
 
@@ -154,7 +180,7 @@ async function getContainerDescendantFiles(id: string) {
 				file: true
 			}
 		});
-		const files = fileLinks.map(link => link.file);
+		const files = fileLinks.map((link) => link.file);
 		collectedFiles.push(...files);
 
 		const children = await getContainerChildren(containerId, {
@@ -170,7 +196,14 @@ async function getContainerDescendantFiles(id: string) {
 	return collectedFiles;
 }
 
-async function attachFile(client: S3Client, bucket: string, file: Express.Multer.File, owner: User, containerId: string, metadata: CmsAttachFileMetadata) {
+async function attachFile(
+	client: S3Client,
+	bucket: string,
+	file: Express.Multer.File,
+	owner: User,
+	containerId: string,
+	metadata: CmsAttachFileMetadata
+) {
 	const container = await database.contentContainer.findUniqueOrThrow({
 		where: { id: containerId }
 	});
@@ -193,13 +226,13 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 
 				const command = new DeleteObjectCommand({
 					Bucket: bucket,
-					Key: currentFileLink.file.key,
+					Key: currentFileLink.file.key
 				});
-			
+
 				await tx.fileUpload.delete({
 					where: { id: currentFileLink.fileId }
 				});
-				
+
 				await client.send(command);
 			}
 		}
@@ -216,11 +249,11 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 				}
 			}
 		});
-		
+
 		await tx.contentContainer.update({
 			where: { id: containerId },
 			data: {
-				filesOrder: [...container.filesOrder.filter(id => id !== oldLinkId), fileLink.id]
+				filesOrder: [...container.filesOrder.filter((id) => id !== oldLinkId), fileLink.id]
 			}
 		});
 
@@ -231,11 +264,14 @@ async function attachFile(client: S3Client, bucket: string, file: Express.Multer
 	});
 }
 
-async function editContainerFileLink(fileLink: ContentContainerFile, data: ContentContainerFileEditInput) {
+async function editContainerFileLink(
+	fileLink: ContentContainerFile,
+	data: ContentContainerFileEditInput
+) {
 	return await database.contentContainerFile.update({
 		where: { id: fileLink.id },
 		data: {
-			identifier: data.identifier ?? undefined,
+			identifier: data.identifier ?? undefined
 		},
 		include: {
 			file: true
@@ -243,10 +279,14 @@ async function editContainerFileLink(fileLink: ContentContainerFile, data: Conte
 	});
 }
 
-async function deleteContainerFileLink(s3Client: S3Client, bucket: string, fileLink: ContentContainerFile) {
+async function deleteContainerFileLink(
+	s3Client: S3Client,
+	bucket: string,
+	fileLink: ContentContainerFile
+) {
 	const file = await $files.getFileById(fileLink.fileId);
 	const container = await getContainerById(fileLink.containerId);
-	
+
 	await database.$transaction(async (tx) => {
 		if (file) {
 			await tx.fileUpload.delete({
@@ -255,7 +295,7 @@ async function deleteContainerFileLink(s3Client: S3Client, bucket: string, fileL
 
 			const command = new DeleteObjectCommand({
 				Bucket: bucket,
-				Key: file.key,
+				Key: file.key
 			});
 			await s3Client.send(command);
 		}
@@ -264,7 +304,7 @@ async function deleteContainerFileLink(s3Client: S3Client, bucket: string, fileL
 			await tx.contentContainer.update({
 				where: { id: container.id },
 				data: {
-					filesOrder: container.filesOrder.filter(id => id !== fileLink.id)
+					filesOrder: container.filesOrder.filter((id) => id !== fileLink.id)
 				}
 			});
 		}

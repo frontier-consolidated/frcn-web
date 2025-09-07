@@ -78,11 +78,14 @@ export function isProd() {
 export function getAdminIds() {
 	const envIds = process.env.ADMIN_DISCORD_IDS ?? "";
 	if (!envIds) return [];
-	return envIds.split(",").map(id => id.trim());
+	return envIds.split(",").map((id) => id.trim());
 }
 
 function expectEnvvar(envvar: keyof NodeJS.ProcessEnv) {
-	assert(process.env[envvar] && (process.env[envvar]?.length ?? 0) > 0, `Environment: Expected var '${envvar}'`);
+	assert(
+		process.env[envvar] && (process.env[envvar]?.length ?? 0) > 0,
+		`Environment: Expected var '${envvar}'`
+	);
 }
 
 export function validateEnvironment() {
@@ -95,13 +98,9 @@ export function validateEnvironment() {
 	// BASE_PATH
 
 	expectEnvvar("WEB_ORIGIN");
-	expectEnvvar("ORIGINS");
+	// expectEnvvar("ORIGINS");
 
 	expectEnvvar("DATABASE_URL");
-
-	// CMS_BUS_DATABASE_URL
-	expectEnvvar("CMS_BUS_SCHEMA");
-	// if (process.env.SERVE_WEB === "true") expectEnvvar("CMS_ACCESS_KEY");
 
 	expectEnvvar("LOCAL_ACCESS_TOKEN");
 
@@ -122,10 +121,6 @@ export function validateEnvironment() {
 	expectEnvvar("AWS_S3_REGION");
 	expectEnvvar("AWS_S3_KEY");
 	expectEnvvar("AWS_S3_SECRET");
-
-	expectEnvvar("INTEGRATION_LEGION_CODA_TOKEN");
-	expectEnvvar("INTEGRATION_LEGION_CODA_DOC_ID");
-	expectEnvvar("INTEGRATION_LEGION_CODA_TABLE_ID");
 
 	logger.info("No issues with environment found");
 }

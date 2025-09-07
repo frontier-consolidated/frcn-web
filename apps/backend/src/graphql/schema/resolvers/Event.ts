@@ -6,7 +6,7 @@ import type {
 	Event,
 	User,
 	EventChannel
-} from "@prisma/client";
+} from "../../../__generated__/client";
 import type { CategoryChannel } from "discord.js";
 
 import { resolveDiscordChannel, resolveDiscordEmoji, resolveDiscordGuild } from "./Discord";
@@ -103,7 +103,7 @@ async function resolveEventRsvpRole(role: EventRsvpRole, context: GQLContext) {
 				? {
 						id: role.emojiId,
 						name: role.emoji
-				  }
+					}
 				: await resolveDiscordEmoji(role.emojiId, context),
 		limit: role.limit,
 		members: [] // field-resolved
@@ -327,9 +327,7 @@ export const eventResolvers: Resolvers = {
 			}
 
 			if (minStartAt && maxStartAt && minStartAt > maxStartAt) {
-				throw gqlErrorBadInput(
-					"Range not allowed: `maxStartAt` must be greater than `minStartAt`"
-				);
+				throw gqlErrorBadInput("Range not allowed: `maxStartAt` must be greater than `minStartAt`");
 			}
 
 			if (minDuration && maxDuration && minDuration > maxDuration) {
@@ -407,16 +405,13 @@ export const eventResolvers: Resolvers = {
 			const eventChannel = data.channel
 				? await $events.getEventChannel(data.channel)
 				: event.channelId
-				? await $events.getEventChannel(event.channelId)
-				: null;
+					? await $events.getEventChannel(event.channelId)
+					: null;
 			if (data.channel && !eventChannel) {
 				throw gqlErrorBadInput(`Event channel not found: ${data.channel}`);
 			}
 
-			if (
-				data.eventType &&
-				!(Object.values(EventType) as string[]).includes(data.eventType)
-			) {
+			if (data.eventType && !(Object.values(EventType) as string[]).includes(data.eventType)) {
 				throw gqlErrorBadInput(`Event type not allowed: ${data.eventType}`);
 			}
 
@@ -455,17 +450,13 @@ export const eventResolvers: Resolvers = {
 						data.accessType === EventAccessType.PrimaryRole &&
 						(!data.accessRoles || data.accessRoles.length != 1)
 					) {
-						throw gqlErrorBadInput(
-							"Expected exactly 1 access role with accessType=PrimaryRole"
-						);
+						throw gqlErrorBadInput("Expected exactly 1 access role with accessType=PrimaryRole");
 					}
 					if (
 						data.accessType === EventAccessType.SelectRoles &&
 						(!data.accessRoles || data.accessRoles.length < 1)
 					) {
-						throw gqlErrorBadInput(
-							"Expected atleast 1 access role with accessType=SelectRoles"
-						);
+						throw gqlErrorBadInput("Expected atleast 1 access role with accessType=SelectRoles");
 					}
 					const roles = await $roles.getAllRoles({
 						select: { id: true, primary: true }
@@ -538,9 +529,7 @@ export const eventResolvers: Resolvers = {
 			}
 
 			if (!(await $discord.canManageChannelsInCategory(discordCategory))) {
-				throw gqlErrorBadState(
-					"Cannot manage channels in the linked event channel category"
-				);
+				throw gqlErrorBadState("Cannot manage channels in the linked event channel category");
 			}
 
 			if (
@@ -663,19 +652,12 @@ export const eventResolvers: Resolvers = {
 			const roles = await $events.getRSVPRoles(event.id);
 			const role = roles.find((r) => r.id === args.rsvp);
 			if (!role) throw gqlErrorBadInput("No such rsvp role with id");
-			if (!(await $events.canJoinRsvp(role)))
-				throw gqlErrorBadInput(`RSVP '${role.name}' is full`);
+			if (!(await $events.canJoinRsvp(role))) throw gqlErrorBadInput(`RSVP '${role.name}' is full`);
 
 			const currentRsvp = await $events.getUserRsvp(event, context.user);
 
 			logger.audit(context, "rsvped for an Event", args);
-			await $events.rsvpForEvent(
-				event,
-				role,
-				context.user,
-				currentRsvp,
-				context.app.discordClient
-			);
+			await $events.rsvpForEvent(event, role, context.user, currentRsvp, context.app.discordClient);
 			return true;
 		},
 		async unrsvpForEvent(source, args, context) {
@@ -684,9 +666,7 @@ export const eventResolvers: Resolvers = {
 			if (!event) return false;
 
 			if (event.endedAt || event.archived) {
-				throw gqlErrorBadInput(
-					"Cannot unrsvp from event after it has ended or been archived"
-				);
+				throw gqlErrorBadInput("Cannot unrsvp from event after it has ended or been archived");
 			}
 
 			logger.audit(context, "unrsvped for an Event", args);
@@ -714,9 +694,7 @@ export const eventResolvers: Resolvers = {
 				throw gqlErrorOwnership();
 
 			if (event?.endedAt || event?.archived) {
-				throw gqlErrorBadInput(
-					"Cannot kick user from event after it has ended or been archived"
-				);
+				throw gqlErrorBadInput("Cannot kick user from event after it has ended or been archived");
 			}
 
 			logger.audit(context, "kicked user from an Event", args);

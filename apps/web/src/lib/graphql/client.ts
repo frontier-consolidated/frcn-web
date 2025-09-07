@@ -1,4 +1,3 @@
-import { browser } from "$app/environment";
 import type { Operation, TypedDocumentNode } from "@apollo/client";
 import { ApolloClient, InMemoryCache } from "@apollo/client/core";
 import { setContext } from "@apollo/client/link/context";
@@ -10,6 +9,7 @@ import { Kind, OperationTypeNode } from "graphql";
 import { createClient } from "graphql-ws";
 import { onMount } from "svelte";
 
+import { browser } from "$app/environment";
 import { Routes, apiUri } from "$lib/api";
 
 import { fragments } from "./documents/fragments";
@@ -20,15 +20,15 @@ export function createApolloClient(headers?: Record<string, string>) {
 		credentials: "include",
 		headers
 	});
-	
+
 	const wsLink = browser
 		? new GraphQLWsLink(
 				createClient({
-					url: apiUri(Routes.graphqlServer(), location.protocol === "https:" ? "wss" : "ws"),
+					url: apiUri(Routes.graphqlServer(), location.protocol === "https:" ? "wss" : "ws")
 				})
-		  )
+			)
 		: null;
-	
+
 	function linkSplitter({ query }: Operation) {
 		const definition = getMainDefinition(query);
 		return (
@@ -36,9 +36,11 @@ export function createApolloClient(headers?: Record<string, string>) {
 			definition.operation === OperationTypeNode.SUBSCRIPTION
 		);
 	}
-	
-	const linkChain = wsLink ? setContext(() => ({})).split(linkSplitter, wsLink, httpLink) : httpLink;
-	
+
+	const linkChain = wsLink
+		? setContext(() => ({})).split(linkSplitter, wsLink, httpLink)
+		: httpLink;
+
 	return new ApolloClient({
 		ssrMode: !browser,
 		link: linkChain,
@@ -70,26 +72,37 @@ export function getApollo() {
 type SubscribeOptions<T extends TypedDocumentNode<any, any>> = {
 	variables?: VariablesOf<T>;
 	onNext: (data: NonNullable<ResultOf<T>>) => void;
-	onError?: ((error: any) => void);
-	onComplete?: (() => void);
+	onError?: (error: any) => void;
+	onComplete?: () => void;
 };
 
-export function subscribe<T extends TypedDocumentNode<any, any>>(document: T, options: SubscribeOptions<T>) {
+export function subscribe<T extends TypedDocumentNode<any, any>>(
+	document: T,
+	options: SubscribeOptions<T>
+) {
 	const observer = getApollo().subscribe({
 		query: document,
 		variables: options.variables,
 		errorPolicy: "all"
 	});
 
-	const subscription = observer.subscribe(({ data, errors }) => {
-		if (errors && errors.length > 0) {
-			console.error("Error on subscription", { query: document, variables: options.variables }, errors);
-			return;
-		}
-		if (!data) return;
+	const subscription = observer.subscribe(
+		({ data, errors }) => {
+			if (errors && errors.length > 0) {
+				console.error(
+					"Error on subscription",
+					{ query: document, variables: options.variables },
+					errors
+				);
+				return;
+			}
+			if (!data) return;
 
-		options.onNext(data as NonNullable<ResultOf<T>>);
-	}, options.onError, options.onComplete);
+			options.onNext(data as NonNullable<ResultOf<T>>);
+		},
+		options.onError,
+		options.onComplete
+	);
 
 	return () => {
 		if (subscription.closed) return;
@@ -97,7 +110,10 @@ export function subscribe<T extends TypedDocumentNode<any, any>>(document: T, op
 	};
 }
 
-export function subscribeOnMount<T extends TypedDocumentNode<any, any>>(document: T, options: SubscribeOptions<T>) {
+export function subscribeOnMount<T extends TypedDocumentNode<any, any>>(
+	document: T,
+	options: SubscribeOptions<T>
+) {
 	onMount(() => {
 		return subscribe(document, options);
 	});

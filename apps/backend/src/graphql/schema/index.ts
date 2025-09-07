@@ -15,13 +15,13 @@ function applyDirectives(schema: GraphQLSchema) {
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const typeDefs = fs.readFileSync(path.join(__dirname, "schema.generated.graphql"), {
-	encoding: "utf-8",
+	encoding: "utf-8"
 });
 
 const schema = applyDirectives(
 	makeExecutableSchema({
 		typeDefs: [constraintDirectiveTypeDefsGql, typeDefs],
-		resolvers,
+		resolvers
 	})
 );
 

@@ -1,15 +1,15 @@
 <script lang="ts">
 	import type { AnyLocation } from "@frcn/shared/locations";
 
-	import AstroidFieldSvg from "./icons/AstroidField.svg";
-	import CitySvg from "./icons/City.svg";
-	import JumpPointSvg from "./icons/JumpPoint.svg";
-	import MarkerSvg from "./icons/Marker.svg";
-	import MoonSvg from "./icons/Moon.svg";
-	import OutpostSvg from "./icons/Outpost.svg";
-	import PlanetSvg from "./icons/Planet.svg";
-	import StationSvg from "./icons/Station.svg";
-	import SystemSvg from "./icons/System.svg";
+	import AstroidFieldSvg from "./icons/AstroidField.svg?raw";
+	import CitySvg from "./icons/City.svg?raw";
+	import JumpPointSvg from "./icons/JumpPoint.svg?raw";
+	import MarkerSvg from "./icons/Marker.svg?raw";
+	import MoonSvg from "./icons/Moon.svg?raw";
+	import OutpostSvg from "./icons/Outpost.svg?raw";
+	import PlanetSvg from "./icons/Planet.svg?raw";
+	import StationSvg from "./icons/Station.svg?raw";
+	import SystemSvg from "./icons/System.svg?raw";
 
 	export let location: AnyLocation;
 
@@ -53,7 +53,8 @@
 	width="64"
 	height="64"
 	viewBox="0 0 64 64"
-	class="shrink-0 w-6 h-6 me-2"
+	class="me-2 h-6 w-6 shrink-0"
+	fill={svg.match(/<svg[ \n][^>]*fill=["']([^"']+)["']/)?.[1] ?? "none"}
 	{...$$restProps}
 >
 	<title>{location.type}</title>

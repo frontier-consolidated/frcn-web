@@ -9,6 +9,6 @@ export function buildSuccessMessage(message: string) {
 		.setDescription(message);
 
 	return {
-		embeds: [embed],
+		embeds: [embed]
 	} satisfies BaseMessageOptions;
 }

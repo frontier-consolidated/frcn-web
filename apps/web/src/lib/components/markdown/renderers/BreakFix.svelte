@@ -8,6 +8,6 @@
 	);
 </script>
 
-{#each newlines as _}
+{#each newlines as _ (_)}
 	<br />
 {/each}

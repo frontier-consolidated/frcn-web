@@ -38,8 +38,7 @@
 	};
 
 	const innerBorderClasses = {
-		alternative:
-			"bg-white group-hover:bg-gray-100 dark:bg-gray-950 dark:group-hover:bg-gray-950",
+		alternative: "bg-white group-hover:bg-gray-100 dark:bg-gray-950 dark:group-hover:bg-gray-950",
 		blue: "",
 		dark: "",
 		green: "",
@@ -116,7 +115,7 @@
 	{#if outline}
 		<div
 			class={twMerge(
-				"w-full h-full inline-flex items-center justify-center group-hover:bg-transparent",
+				"inline-flex h-full w-full items-center justify-center group-hover:bg-transparent",
 				outlineBgColor,
 				outlineBgClasses[color],
 				clip,
@@ -130,7 +129,7 @@
 	{:else if borderClasses[color]}
 		<div
 			class={twMerge(
-				"w-full h-full inline-flex items-center justify-center",
+				"inline-flex h-full w-full items-center justify-center",
 				clip,
 				sizeClasses[size],
 				innerBorderClasses[color],

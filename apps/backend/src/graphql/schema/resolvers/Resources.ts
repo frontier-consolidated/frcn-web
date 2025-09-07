@@ -1,5 +1,5 @@
 import { Permission, hasOwnedObjectPermission } from "@frcn/shared";
-import type { Resource, User } from "@prisma/client";
+import type { Resource, User } from "../../../__generated__/client";
 
 import type { WithModel } from "./types";
 import { resolveUser } from "./User";
@@ -10,7 +10,7 @@ import { $resources } from "../../../services/resources";
 import type {
 	User as GQLUser,
 	Resource as GQLResource,
-	Resolvers,
+	Resolvers
 } from "../../__generated__/resolvers-types";
 import { calculatePermissions } from "../calculatePermissions";
 import { gqlErrorOwnership, gqlErrorUnauthenticated } from "../gqlError";
@@ -73,7 +73,7 @@ export const resourceResolvers: Resolvers = {
 			const result = await $resources.getResources(
 				{
 					search: search ?? undefined,
-					tags: tags ?? undefined,
+					tags: tags ?? undefined
 				},
 				page ?? undefined,
 				limit ?? undefined
@@ -85,9 +85,9 @@ export const resourceResolvers: Resolvers = {
 				page: result.page,
 				nextPage: result.nextPage,
 				prevPage: result.prevPage,
-				total: result.total,
+				total: result.total
 			};
-		},
+		}
 	},
 
 	Mutation: {
@@ -112,15 +112,18 @@ export const resourceResolvers: Resolvers = {
 			});
 			if (!resource) return null;
 
-			if (!hasOwnedObjectPermission({
-				user: {
-					id: context.user?.id,
-					permissions: await calculatePermissions(context)
-				},
-				owner: resource.owner,
-				required: Permission.CreateResources,
-				override: Permission.ManageResources
-			})) throw gqlErrorOwnership();
+			if (
+				!hasOwnedObjectPermission({
+					user: {
+						id: context.user?.id,
+						permissions: await calculatePermissions(context)
+					},
+					owner: resource.owner,
+					required: Permission.CreateResources,
+					override: Permission.ManageResources
+				})
+			)
+				throw gqlErrorOwnership();
 
 			logger.audit(context, "updated a Resource", args);
 			const updatedResource = await $resources.editResource(args.id, args.data);
@@ -141,15 +144,18 @@ export const resourceResolvers: Resolvers = {
 			});
 			if (!resource) return false;
 
-			if (!hasOwnedObjectPermission({
-				user: {
-					id: context.user?.id,
-					permissions: await calculatePermissions(context)
-				},
-				owner: resource.owner,
-				required: Permission.CreateResources,
-				override: Permission.ManageResources
-			})) throw gqlErrorOwnership();
+			if (
+				!hasOwnedObjectPermission({
+					user: {
+						id: context.user?.id,
+						permissions: await calculatePermissions(context)
+					},
+					owner: resource.owner,
+					required: Permission.CreateResources,
+					override: Permission.ManageResources
+				})
+			)
+				throw gqlErrorOwnership();
 
 			logger.audit(context, "deleted a Resource", args);
 			await $resources.deleteResource(context.app.s3Client, context.app.s3Bucket, resource.id);

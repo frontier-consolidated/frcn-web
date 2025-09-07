@@ -6,8 +6,7 @@
 
 	import type { Option } from "./types";
 
-	const searchClass =
-		"flex-1 bg-transparent border-transparent w-full text-sm focus:outline-none";
+	const searchClass = "flex-1 bg-transparent border-transparent w-full text-sm focus:outline-none";
 
 	// eslint-disable-next-line no-undef
 	type T = $$Generic;
@@ -116,7 +115,7 @@
 
 <div {id} class={twMerge("relative w-full", clazz)}>
 	<select {disabled} hidden id="{id}-select" {...$$restProps}>
-		{#each options as option}
+		{#each options as option (option.name)}
 			<option value={option.name}>{option.name}</option>
 		{/each}
 	</select>
@@ -125,29 +124,29 @@
 		tabindex="-1"
 		role="listbox"
 		class={twMerge(
-			"flex items-center w-full text-gray-900 dark:text-white bg-gray-50 border border-gray-300 rounded text-sm p-2.5 min-h-[3rem]",
+			"flex min-h-[3rem] w-full items-center rounded border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 dark:text-white",
 			background
-				? "dark:bg-gray-600 dark:border-gray-500"
-				: "dark:bg-gray-700 dark:border-gray-600",
+				? "dark:border-gray-500 dark:bg-gray-600"
+				: "dark:border-gray-600 dark:bg-gray-700",
 			disabled
 				? "cursor-not-allowed opacity-50"
 				: "focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-500 dark:focus:border-primary-500"
 		)}
 	>
-		<span class="flex flex-wrap gap-1 w-full">
+		<span class="flex w-full flex-wrap gap-1">
 			{#if selectedOptions.length > 0}
 				{#if multi}
-					{#each selectedOptions as option}
+					{#each selectedOptions as option (option)}
 						<Badge color="none">
 							<slot {option}>
 								<span>{option.name}</span>
 							</slot>
 							<button
-								class="focus:outline-none whitespace-normal m-0.5 rounded-sm focus:ring-1 p-0.5 ms-1.5 -me-1.5"
+								class="m-0.5 -me-1.5 ms-1.5 whitespace-normal rounded-sm p-0.5 focus:outline-none focus:ring-1"
 								on:click={() => removeOption(option)}
 							>
 								<span class="sr-only">Remove {option.name}</span>
-								<CloseSolid class="w-2.5 h-2.5" tabindex="-1" />
+								<CloseSolid class="h-2.5 w-2.5" tabindex="-1" />
 							</button>
 						</Badge>
 					{/each}
@@ -184,8 +183,8 @@
 				<span class="text-gray-400">{placeholder}</span>
 			{/if}
 		</span>
-		<div class="flex ms-auto items-center">
-			<AngleDownSolid size="xs" class="cursor-pointer ms-1 text-gray-500" tabindex="-1" />
+		<div class="ms-auto flex items-center">
+			<AngleDownSolid size="xs" class="ms-1 cursor-pointer text-gray-500" tabindex="-1" />
 		</div>
 	</div>
 	{#if !disabled && selectableOptions.length > 0}
@@ -197,18 +196,16 @@
 			<DropdownItem disabled defaultClass="font-medium py-2 px-4 text-sm text-gray-500"
 				>{placeholder}</DropdownItem
 			>
-			{#each selectableOptions as option}
-				{#key option}
-					<DropdownItem
-						on:click={() => {
-							selectOption(option);
-						}}
-					>
-						<slot {option}>
-							<span>{option.name}</span>
-						</slot>
-					</DropdownItem>
-				{/key}
+			{#each selectableOptions as option (option)}
+				<DropdownItem
+					on:click={() => {
+						selectOption(option);
+					}}
+				>
+					<slot {option}>
+						<span>{option.name}</span>
+					</slot>
+				</DropdownItem>
 			{/each}
 		</Dropdown>
 	{/if}

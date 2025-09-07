@@ -30,7 +30,7 @@ fetch(url)
 				names: emoji.names,
 				surrogate: emoji.surrogates,
 				svg,
-				category: emoji.category,
+				category: emoji.category
 			});
 		}
 
@@ -60,7 +60,7 @@ fetch(url)
 			path.join(__dirname, "emojis.json"),
 			JSON.stringify({
 				categories,
-				emojis,
+				emojis
 			})
 		);
 	})

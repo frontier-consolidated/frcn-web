@@ -16,13 +16,13 @@
 </script>
 
 {#if !token}
-	{#each tokens as token}
+	{#each tokens as token (token)}
 		<svelte:self {token} {disabled} {components} />
 	{/each}
 {:else if token.type in renderers && !disabled.includes(token.type)}
 	{#if token.type === "list"}
 		<svelte:component this={renderers.list} {token}>
-			{#each token.items as item}
+			{#each token.items as item (item)}
 				<svelte:component this={renderers.listitem} token={item}>
 					<svelte:self tokens={item.tokens} {disabled} {components} />
 				</svelte:component>

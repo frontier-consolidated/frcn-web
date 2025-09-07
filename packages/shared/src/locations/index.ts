@@ -82,9 +82,7 @@ export function getLocations(path: string[]) {
 		}
 
 		if ("children" in currentLocation) {
-			const location = getChildren(currentLocation)?.find(
-				(loc) => loc.name == name
-			) as AnyLocation;
+			const location = getChildren(currentLocation)?.find((loc) => loc.name == name) as AnyLocation;
 			if (!location) break;
 			pathLocations.push(location);
 		} else {

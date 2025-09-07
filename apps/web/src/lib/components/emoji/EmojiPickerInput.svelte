@@ -20,12 +20,12 @@
 	<Button
 		color="none"
 		{...$$restProps}
-		class={twMerge("p-1 hover:dark:bg-gray-700 cursor-pointer", clazz)}
+		class={twMerge("cursor-pointer p-1 hover:dark:bg-gray-700", clazz)}
 	>
 		{#if value}
-			<EmojiImage emoji={value} class="w-6 h-6" />
+			<EmojiImage emoji={value} class="h-6 w-6" />
 		{:else}
-			<svg class="w-6 h-6"></svg>
+			<svg class="h-6 w-6"></svg>
 		{/if}
 	</Button>
 	<EmojiPicker {init} {additionalEmojis} {categoryIcons} bind:value />

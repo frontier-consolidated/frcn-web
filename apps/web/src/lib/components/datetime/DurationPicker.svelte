@@ -30,13 +30,19 @@
 	}
 </script>
 
-<Input bind:value={inputValue} {id} placeholder="Select duration" {...$$restProps} class={twMerge("rounded", $$restProps.class)}>
+<Input
+	bind:value={inputValue}
+	{id}
+	placeholder="Select duration"
+	{...$$restProps}
+	class={twMerge("rounded", $$restProps.class)}
+>
 	<ClockSolid slot="left" size="sm" class="ms-1" tabindex="-1" />
 </Input>
 <Dropdown
 	bind:open={dropdownOpen}
 	containerClass="divide-y z-50 rounded"
-	class="border rounded border-gray-300 dark:border-gray-600 p-4"
+	class="rounded border border-gray-300 p-4 dark:border-gray-600"
 >
 	{#if title}
 		<DropdownHeader>

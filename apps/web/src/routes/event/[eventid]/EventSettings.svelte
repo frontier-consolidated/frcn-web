@@ -1,14 +1,13 @@
 <script lang="ts">
-	import { goto, invalidate } from "$app/navigation";
 	import { strings, EventTypeOptions } from "@frcn/shared";
 	import { Checkbox, Helper, Input, Label, Toggle } from "flowbite-svelte";
 	import { EditOutline, CaretRightSolid, CloseSolid, ArchiveSolid } from "flowbite-svelte-icons";
 	import { twMerge } from "tailwind-merge";
 	import isURL from "validator/lib/isURL";
 
+	import { goto, invalidate } from "$app/navigation";
 	import {
 		DatetimePicker,
-		LocationSelectInput,
 		MarkdownEditor,
 		ConfirmationModal,
 		SectionHeading,
@@ -17,6 +16,8 @@
 		FieldValidator,
 		Button
 	} from "$lib/components";
+	import DurationSelect from "$lib/components/datetime/DurationSelect.svelte";
+	import LocationInput from "$lib/components/location/LocationInput.svelte";
 	import { Mutations, Queries, getApollo } from "$lib/graphql";
 	import { EventAccessType } from "$lib/graphql/__generated__/graphql";
 	import preventNavigation from "$lib/preventNavigation";
@@ -25,8 +26,6 @@
 	import type { PageData } from "./$types";
 	import RsvpTable from "./RSVPTable.svelte";
 	import { checkIfDirty, cloneEventSettingsData } from "./settings";
-	import DurationSelect from "$lib/components/datetime/DurationSelect.svelte";
-	import LocationInput from "$lib/components/location/LocationInput.svelte";
 
 	export let data: PageData;
 	let editData = cloneEventSettingsData(data);
@@ -50,113 +49,143 @@
 	let deleteModalOpen = false;
 	let archiveModalOpen = false;
 
+	let submitting = false;
+
 	async function save(notifyOfSuccess = true) {
-		if (!validator.validate(!data.posted)) {
-			pushNotification({
-				type: "error",
-				message: "Check your inputs"
-			});
-			return false;
-		}
-		if (editData.location.some((loc) => !loc)) {
-			pushNotification({
-				type: "error",
-				message: "Invalid location"
-			});
-			return false;
-		}
+		try {
+			submitting = true;
 
-		const { errors } = await getApollo().mutate({
-			mutation: Mutations.EDIT_EVENT,
-			variables: {
-				eventId: data.id,
-				data: {
-					channel: editData.channel.id ? editData.channel.id : undefined,
-					name: editData.name ? editData.name : undefined,
-					summary: editData.summary ? editData.summary : undefined,
-					description: editData.description
-						? editData.description.slice(0, 2024)
-						: undefined,
-					imageUrl: editData.imageUrl,
-					eventType: editData.eventType,
-					location: editData.location.map((loc) => loc.name),
-					startAt: editData.startAt,
-					duration: editData.duration,
-					roles: editData.rsvpRoles.map((r) => ({
-						id: r.id,
-						name: r.name,
-						limit: r.limit,
-						emoji: r.emoji.name,
-						emojiId: r.emoji.id
-					})),
-					mentions: editData.mentions,
-					settings: {
-						createEventThread: editData.settings.createEventThread,
-						createThreadsForRoles: editData.settings.createThreadsForRoles,
-						hideLocation: editData.settings.hideLocation,
-						inviteOnly: editData.settings.inviteOnly,
-						openToJoinRequests: editData.settings.openToJoinRequests
-					},
-					accessType: editData.accessType,
-					accessRoles: editData.accessRoles.map((role) => role.id)
-				}
-			},
-			errorPolicy: "all"
-		});
+			if (!validator.validate(!data.posted)) {
+				submitting = false;
+				pushNotification({
+					type: "error",
+					message: "Check your inputs"
+				});
+				return false;
+			}
+			if (editData.location.some((loc) => !loc)) {
+				submitting = false;
+				pushNotification({
+					type: "error",
+					message: "Invalid location"
+				});
+				return false;
+			}
 
-		if (errors && errors.length > 0) {
 			pushNotification({
-				type: "error",
-				message: "Failed to save"
+				type: "info",
+				message: "Saving event..."
 			});
-			console.error(errors);
-			return false;
-		}
 
-		await invalidate("app:currentevent");
-
-		if (notifyOfSuccess) {
-			pushNotification({
-				type: "success",
-				message: "Event successfully saved!"
+			const { errors } = await getApollo().mutate({
+				mutation: Mutations.EDIT_EVENT,
+				variables: {
+					eventId: data.id,
+					data: {
+						channel: editData.channel.id ? editData.channel.id : undefined,
+						name: editData.name ? editData.name : undefined,
+						summary: editData.summary ? editData.summary : undefined,
+						description: editData.description ? editData.description.slice(0, 2024) : undefined,
+						imageUrl: editData.imageUrl,
+						eventType: editData.eventType,
+						location: editData.location.map((loc) => loc.name),
+						startAt: editData.startAt,
+						duration: editData.duration,
+						roles: editData.rsvpRoles.map((r) => ({
+							id: r.id,
+							name: r.name,
+							limit: r.limit,
+							emoji: r.emoji.name,
+							emojiId: r.emoji.id
+						})),
+						mentions: editData.mentions,
+						settings: {
+							createEventThread: editData.settings.createEventThread,
+							createThreadsForRoles: editData.settings.createThreadsForRoles,
+							hideLocation: editData.settings.hideLocation,
+							inviteOnly: editData.settings.inviteOnly,
+							openToJoinRequests: editData.settings.openToJoinRequests
+						},
+						accessType: editData.accessType,
+						accessRoles: editData.accessRoles.map((role) => role.id)
+					}
+				},
+				errorPolicy: "all"
 			});
+
+			if (errors && errors.length > 0) {
+				submitting = false;
+				pushNotification({
+					type: "error",
+					message: "Failed to save"
+				});
+				console.error(errors);
+				return false;
+			}
+
+			await invalidate("app:currentevent");
+
+			if (notifyOfSuccess) {
+				pushNotification({
+					type: "success",
+					message: "Event successfully saved!"
+				});
+			}
+			return true;
+		} finally {
+			submitting = false;
 		}
-		return true;
 	}
 
 	async function post() {
-		if (!validator.validate()) {
+		try {
+			submitting = true;
+
+			if (!validator.validate()) {
+				submitting = false;
+				pushNotification({
+					type: "error",
+					message: "Check your inputs"
+				});
+				return false;
+			}
+			if (isDirty && !(await save(false))) {
+				submitting = false;
+				return false;
+			}
+
 			pushNotification({
-				type: "error",
-				message: "Check your inputs"
+				type: "info",
+				message: "Posting event..."
 			});
-			return false;
-		}
-		if (isDirty && !(await save(false))) return false;
 
-		const { data: postData, errors } = await getApollo().mutate({
-			mutation: Mutations.POST_EVENT,
-			variables: {
-				eventId: data.id
-			},
-			errorPolicy: "all"
-		});
+			const { data: postData, errors } = await getApollo().mutate({
+				mutation: Mutations.POST_EVENT,
+				variables: {
+					eventId: data.id
+				},
+				errorPolicy: "all"
+			});
 
-		if (!postData?.success || (errors && errors.length > 0)) {
+			if (!postData?.success || (errors && errors.length > 0)) {
+				submitting = false;
+				pushNotification({
+					type: "error",
+					message: "Failed to post"
+				});
+				console.error(errors);
+				return false;
+			}
+
+			await invalidate("app:currentevent");
 			pushNotification({
-				type: "error",
-				message: "Failed to post"
+				type: "success",
+				message: "Event successfully posted!"
 			});
-			console.error(errors);
-			return false;
+			return true;
+		} finally {
+			submitting = false;
 		}
-
-		await invalidate("app:currentevent");
-		pushNotification({
-			type: "success",
-			message: "Event successfully posted!"
-		});
-		return true;
 	}
 
 	let guildOptions = data.options;
@@ -186,6 +215,7 @@
 						}
 					})
 					.then((options) => {
+						// eslint-disable-next-line svelte/infinite-reactive-loop
 						guildOptions = {
 							channels: data.options!.channels,
 							emojis: data.options!.emojis,
@@ -294,10 +324,7 @@
 							<img
 								src={editData.imageUrl}
 								alt="Event thumbnail"
-								class={twMerge(
-									"rounded h-48",
-									imagePlaceholder ? "hidden" : undefined
-								)}
+								class={twMerge("h-48 rounded", imagePlaceholder ? "hidden" : undefined)}
 								on:error={() => {
 									setTimeout(() => {
 										imagePlaceholder = true;
@@ -313,7 +340,7 @@
 						{#if editData.imageUrl && imagePlaceholder}
 							<div
 								role="status"
-								class="animate-pulse flex justify-center items-center w-full h-48 bg-gray-300 rounded dark:bg-gray-700"
+								class="flex h-48 w-full animate-pulse items-center justify-center rounded bg-gray-300 dark:bg-gray-700"
 							>
 								<svg
 									width="48"
@@ -381,16 +408,11 @@
 						Hide Location
 					</Checkbox>
 					<Helper>
-						If enabled, the event location will only be shown to users once the event
-						starts
+						If enabled, the event location will only be shown to users once the event starts
 					</Helper>
 				</Field>
 				<Field {validator} for="event-location" value={editData.location}>
-					<LocationInput
-						id="event-location"
-						disabled={!canEdit}
-						bind:value={editData.location}
-					/>
+					<LocationInput id="event-location" disabled={!canEdit} bind:value={editData.location} />
 				</Field>
 			</div>
 		</section>
@@ -402,12 +424,10 @@
 					<Select
 						id="event-access"
 						name="event-access"
-						options={[EventAccessType.Channel, EventAccessType.Everyone].map(
-							(type) => ({
-								value: type,
-								name: strings.toTitleCase(type)
-							})
-						)}
+						options={[EventAccessType.Channel, EventAccessType.Everyone].map((type) => ({
+							value: type,
+							name: strings.toTitleCase(type)
+						}))}
 						required
 						disabled={!canEdit}
 						bind:value={editData.accessType}
@@ -479,18 +499,14 @@
 					>
 						<div class="flex items-center">
 							<div
-								class="rounded-full w-3 h-3 me-2"
+								class="me-2 h-3 w-3 rounded-full"
 								style="background-color:{option.style?.color}"
 							/>
 							<span>{option.name}</span>
 						</div>
 					</Select>
 				</Field>
-				<Field
-					{validator}
-					for="event-create-thread"
-					value={editData.settings.createEventThread}
-				>
+				<Field {validator} for="event-create-thread" value={editData.settings.createEventThread}>
 					<Toggle
 						id="event-create-thread"
 						disabled={!canEdit || data.posted}
@@ -528,7 +544,7 @@
 		/>
 	</div>
 </section>
-<div class="flex flex-wrap justify-end items-center gap-2">
+<div class="flex flex-wrap items-center justify-end gap-2">
 	{#if data.posted && startDate && startDate <= new Date()}
 		<Button
 			disabled={data.archived}
@@ -566,9 +582,9 @@
 	</Button>
 	{#if data.posted}
 		<Button
-			disabled={!isDirty || !canEdit}
+			disabled={submitting || !isDirty || !canEdit}
 			on:click={() => {
-				if (!isDirty || !canEdit) return;
+				if (submitting || !isDirty || !canEdit) return;
 				save();
 			}}
 		>
@@ -577,18 +593,18 @@
 	{:else}
 		<Button
 			color="green"
-			disabled={!isDirty}
+			disabled={submitting || !isDirty}
 			on:click={() => {
-				if (!isDirty) return;
+				if (submitting || !isDirty) return;
 				save();
 			}}
 		>
 			<EditOutline class="me-2" tabindex="-1" /> Save Draft
 		</Button>
 		<Button
-			disabled={data.posted}
+			disabled={submitting || data.posted}
 			on:click={() => {
-				if (data.posted) return;
+				if (submitting || data.posted) return;
 				post();
 			}}
 		>

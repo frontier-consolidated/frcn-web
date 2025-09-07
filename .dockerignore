@@ -1,7 +1,13 @@
 .git
 *.md
 
+pulumi/
+backups/
+.github/
 **/node_modules
 **/.gitignore
 **/dist
 **/build
+**/.svelte-kit
+
+apps/backend/src/__generated__/

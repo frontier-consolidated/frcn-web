@@ -11,13 +11,16 @@
 
 	const dispatch = createEventDispatcher();
 
-	$: showSystemSettings = $user.data && hasOneOfPermissions($user.data.permissions, adminPermissions);
-	$: showCms = $user.data && hasAllOfPermissions($user.data.permissions, [Permission.CmsRead, Permission.CmsWrite]);
+	$: showSystemSettings =
+		$user.data && hasOneOfPermissions($user.data.permissions, adminPermissions);
+	$: showCms =
+		$user.data &&
+		hasAllOfPermissions($user.data.permissions, [Permission.CmsRead, Permission.CmsWrite]);
 
 	let adminMode = $user.adminMode;
 </script>
 
-<div class="shrink-0 flex items-center space-x-2 cursor-pointer">
+<div class="flex shrink-0 cursor-pointer items-center space-x-2">
 	<MediaQuery query="(min-width: 480px)" let:matches>
 		{#if matches}
 			<span class="text-md font-semibold">{$user.data?.name}</span>
@@ -26,15 +29,23 @@
 	<Avatar rounded size="sm" src={$user.data?.avatarUrl} />
 </div>
 <Dropdown containerClass="rounded divide-y z-50" class="w-44">
-	<DropdownItem on:click={() => {
-		if ($user.data) viewUserProfile($user.data);
-	}}>My Profile</DropdownItem>
+	<DropdownItem
+		on:click={() => {
+			if ($user.data) viewUserProfile($user.data);
+		}}>My Profile</DropdownItem
+	>
 	<DropdownItem href="/account">Settings</DropdownItem>
 	{#if hasAdmin($user.data?.__permissions ?? 0)}
 		<li>
-			<Toggle size="small" class="flex-row-reverse py-2 px-4 font-medium text-sm hover:bg-gray-100 dark:hover:bg-gray-600" classDiv="me-0 ms-3" bind:checked={adminMode} on:change={() => {
-				toggleAdminMode(adminMode);
-			}}>
+			<Toggle
+				size="small"
+				class="flex-row-reverse px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-600"
+				classDiv="me-0 ms-3"
+				bind:checked={adminMode}
+				on:change={() => {
+					toggleAdminMode(adminMode);
+				}}
+			>
 				<span class="mr-auto">Admin Mode</span>
 			</Toggle>
 		</li>

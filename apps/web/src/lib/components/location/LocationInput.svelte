@@ -2,6 +2,7 @@
 	import { type AnyLocation } from "@frcn/shared/locations";
 	import { Input } from "flowbite-svelte";
 	import { twMerge } from "tailwind-merge";
+
 	import LocationInputModal from "./LocationInputModal.svelte";
 	import Button from "../Button.svelte";
 
@@ -20,7 +21,7 @@
 		{id}
 		placeholder="Select location"
 		{...$$restProps}
-		class="flex-1 rounded overflow-x-hidden text-ellipsis"
+		class="flex-1 overflow-x-hidden text-ellipsis rounded"
 		on:click={() => {
 			if (disabled) return;
 			modalOpen = true;

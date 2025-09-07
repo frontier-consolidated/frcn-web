@@ -29,7 +29,7 @@ export enum Permission {
 	ManageResources = 1 << 27,
 	ManageRoles = 1 << 28,
 	ManageSystem = 1 << 29,
-	Admin = 1 << 30,
+	Admin = 1 << 30
 }
 
 export function permissions(masks: Permission[] = []) {
@@ -63,7 +63,17 @@ export function hasAllOfPermissions(permissions: number, allOf: Permission[]) {
 	return true;
 }
 
-export function hasOwnedObjectPermission({ user, owner, required, override }: { user: { id?: string, permissions: number } | null | undefined, owner: { id?: string } | null | undefined, required: Permission, override?: Permission }) {
+export function hasOwnedObjectPermission({
+	user,
+	owner,
+	required,
+	override
+}: {
+	user: { id?: string; permissions: number } | null | undefined;
+	owner: { id?: string } | null | undefined;
+	required: Permission;
+	override?: Permission;
+}) {
 	if (!user) return false;
 	const isOwner = !!user.id && !!owner?.id && user.id === owner?.id;
 

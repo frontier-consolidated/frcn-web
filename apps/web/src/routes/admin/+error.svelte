@@ -1,8 +1,9 @@
 <script lang="ts">
-    import { page } from "$app/stores";
 	import { Alert } from "flowbite-svelte";
+
+	import { page } from "$app/stores";
 </script>
 
 <Alert color="red">
-    {$page.status}: {$page.error?.message}
+	{$page.status}: {$page.error?.message}
 </Alert>

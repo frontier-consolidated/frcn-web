@@ -1,7 +1,6 @@
 import { planet, station, system, jumpPoint, moon, astroidField, outpost } from "../helpers";
 
 export const Pyro = system("Pyro", [
-	// star("Pyro"),
 	planet("Pyro I", { coordinates: { azimuthal: -163.22, distance: 8.27 } }, [
 		outpost("Rustville"),
 		outpost("Gray Gardens Depot"),
@@ -57,7 +56,86 @@ export const Pyro = system("Pyro", [
 			astroidField("RAB-ECHO", { coordinates: { azimuthal: -94.98, distance: 43.26 } })
 		])
 	]),
-	planet("Terminus"),
+	planet(
+		"Terminus",
+		{
+			coordinates: { azimuthal: 134.77, distance: 68.32 }
+		},
+		[
+			outpost("Watcher's Depot"),
+			outpost("Rough Landing"),
+			outpost("Scarper's Turn"),
+			outpost("Last Landings"),
+			outpost("Blackrock Exchange"),
+			outpost("Bullock's Reach"),
+			outpost("Canard View"),
+			outpost("Kinder Plots"),
+			outpost("Stonetree"),
+			station("Ruin Station", {
+				coordinates: { azimuthal: 134.77, distance: 68.32 }
+			}),
+			astroidField("RAB-COOK", { coordinates: { azimuthal: 130.52, distance: 74.79 } }),
+			astroidField("RMB-JADE", {
+				coordinates: { polar: -0.01, azimuthal: 133.33, distance: 76.31 }
+			}),
+			astroidField("RMB-NENE", {
+				coordinates: { polar: -0.01, azimuthal: 132.12, distance: 75.0 }
+			}),
+			astroidField("RMB-RAWN", {
+				coordinates: { polar: -0.01, azimuthal: 132.5, distance: 72.42 }
+			}),
+			astroidField("RMB-SEER", {
+				coordinates: { polar: -0.01, azimuthal: 131.35, distance: 70.83 }
+			}),
+			astroidField("RMB-CHAM", {
+				coordinates: { polar: -0.01, azimuthal: 130.72, distance: 69.77 }
+			}),
+			astroidField("RMB-KELT", {
+				coordinates: { polar: -0.01, azimuthal: 136.79, distance: 75.19 }
+			}),
+			astroidField("CLUSTER HJS-232", {
+				coordinates: { polar: -0.36, azimuthal: 135.47, distance: 73.36 }
+			}),
+			astroidField("RMB-MARA", {
+				coordinates: { polar: -0.01, azimuthal: 133.08, distance: 70.23 }
+			}),
+			astroidField("CLUSTER EMM-567", {
+				coordinates: { polar: -0.3, azimuthal: 132.68, distance: 69.08 }
+			}),
+			astroidField("RMB-LOWN", {
+				coordinates: { polar: -0.01, azimuthal: 131.47, distance: 68.33 }
+			}),
+			astroidField("RAB-LYNX", { coordinates: { azimuthal: 130.7, distance: 67.01 } }),
+			astroidField("RMB-RAIK", {
+				coordinates: { polar: -0.01, azimuthal: 138.11, distance: 73.27 }
+			}),
+			astroidField("RMB-QINS", {
+				coordinates: { polar: -0.01, azimuthal: 136.21, distance: 71.12 }
+			}),
+			astroidField("RMB-CRUE", {
+				coordinates: { polar: -0.01, azimuthal: 132.92, distance: 67.59 }
+			}),
+			astroidField("RMB-MOSK", {
+				coordinates: { polar: -0.01, azimuthal: 138.31, distance: 71.47 }
+			}),
+			astroidField("RMB-PIZE", {
+				coordinates: { polar: -0.01, azimuthal: 136.17, distance: 68.92 }
+			}),
+			astroidField("RMB-HARK", {
+				coordinates: { polar: -0.01, azimuthal: 134.11, distance: 65.76 }
+			}),
+			astroidField("RAB-ION", { coordinates: { azimuthal: 139.5, distance: 69.38 } }),
+			astroidField("RMB-SOWL", {
+				coordinates: { polar: -0.01, azimuthal: 137.65, distance: 66.88 }
+			}),
+			astroidField("RMB-UMUS", {
+				coordinates: { polar: -0.01, azimuthal: 136.04, distance: 64.45 }
+			}),
+			astroidField("RMB-MEFF", {
+				coordinates: { polar: -0.01, azimuthal: 137.87, distance: 64.63 }
+			})
+		]
+	),
 	astroidField("PYAM-EXHANG-0-1", {
 		coordinates: { polar: 18.21, azimuthal: -150.63, distance: 2.56 }
 	}),
@@ -110,20 +188,34 @@ export const Pyro = system("Pyro", [
 	astroidField("PYR1 L3", { coordinates: { azimuthal: 15.08, distance: 8.56 } }),
 	astroidField("PYR1 L4", { coordinates: { azimuthal: -103.22, distance: 8.27 } }),
 	astroidField("PYR1 L5", { coordinates: { azimuthal: 136.77, distance: 8.27 } }),
+
 	astroidField("PYR2 L1", { coordinates: { azimuthal: -54.22, distance: 9.55 } }),
 	astroidField("PYR2 L2", { coordinates: { azimuthal: -55.22, distance: 11.68 } }),
 	astroidField("PYR2 L3", { coordinates: { azimuthal: 104.77, distance: 10.62 } }),
 	station("Checkmate", { coordinates: { polar: 0.01, azimuthal: -5.19, distance: 10.59 } }),
 	astroidField("PYR2 L5", { coordinates: { azimuthal: -125.22, distance: 10.62 } }),
+
 	station("Starlight Service Station", { coordinates: { azimuthal: 155.79, distance: 16.01 } }),
 	astroidField("PYR3 L2", { coordinates: { azimuthal: 154.77, distance: 19.58 } }),
 	station("Patch City", { coordinates: { azimuthal: -35.26, distance: 17.79 } }),
 	astroidField("PYR3 L4", { coordinates: { azimuthal: -145.22, distance: 17.8 } }),
 	astroidField("PYR3 L5", { coordinates: { azimuthal: 44.77, distance: 17.8 } }),
 
-	jumpPoint("Pyro - Cano Jump Point", [station("Cano Gateway")]),
-	jumpPoint("Pyro - Terra Jump Point", [station("Terra Gateway")]),
-	jumpPoint("Pyro - Stanton Jump Point", [station("Stanton Gateway")]),
-	jumpPoint("Pyro - Nyx Jump Point", [station("Nyx Gateway")]),
-	jumpPoint("Pyro - Castra Jump Point", [station("Castra Gateway")])
+	astroidField("PYR5 L1", { coordinates: { azimuthal: -95.22, distance: 38.64 } }),
+	station("Gaslight", { coordinates: { polar: 0.02, azimuthal: -95.22, distance: 47.21 } }),
+	astroidField("PYR5 L3", { coordinates: { azimuthal: 64.77, distance: 42.93 } }),
+	station("Rod's Fuel 'n Supplies", {
+		coordinates: { polar: -0.01, azimuthal: -15.2, distance: 42.92 }
+	}),
+	station("Rat's Nest", { coordinates: { polar: 0.02, azimuthal: -170.24, distance: 42.92 } }),
+
+	astroidField("PYR6 L1", { coordinates: { azimuthal: 135.77, distance: 66.17 } }),
+	astroidField("PYR6 L2", { coordinates: { azimuthal: 134.77, distance: 70.88 } }),
+	station("Endgame", { coordinates: { azimuthal: -40.23, distance: 68.29 } }),
+	station("Dudley & Daughters", { coordinates: { azimuthal: -155.25, distance: 68.33 } }),
+	station("Megumi Refueling", { coordinates: { polar: 0.01, azimuthal: 64.77, distance: 68.29 } }),
+
+	jumpPoint("Stanton Gateway", {
+		coordinates: { azimuthal: 49.9, distance: 53.06 }
+	})
 ]);

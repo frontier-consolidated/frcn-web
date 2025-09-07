@@ -5,6 +5,6 @@
 	$: newlines = Array.from(token.raw.replace(/^[\n\r]/, "").matchAll(/[\n\r]/g));
 </script>
 
-{#each newlines as _}
+{#each newlines as _ (_)}
 	<br />
 {/each}<slot />

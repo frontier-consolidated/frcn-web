@@ -5,10 +5,9 @@
 	import Button from "../Button.svelte";
 	import type { Option } from "../select/types";
 
-
 	const rootOptions = locations.map((location) => ({
 		name: location.name,
-		value: location,
+		value: location
 	}));
 
 	export let value: AnyLocation[] = [];
@@ -27,7 +26,7 @@
 				refreshedOptions.push(
 					children.map((location) => ({
 						name: location.name,
-						value: location,
+						value: location
 					}))
 				);
 			}
@@ -47,7 +46,7 @@
 </script>
 
 <ul class="flex flex-col gap-2" {...$$restProps}>
-	{#each liOptions as options, i}
+	{#each liOptions as options, i (options)}
 		<LocationSelectLi
 			{options}
 			deletable={i > 0}
@@ -72,8 +71,8 @@
 					...liOptions,
 					children.map((location) => ({
 						name: location.name,
-						value: location,
-					})),
+						value: location
+					}))
 				];
 			}}>Add Location</Button
 		>

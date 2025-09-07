@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
 	import { A, Modal } from "flowbite-svelte";
 	import { queryParam } from "sveltekit-search-params";
 
+	import { browser } from "$app/environment";
 	import { Routes, api } from "$lib/api";
 	import { cookieConsentModal } from "$lib/stores/CookieConsentModalStore";
 
@@ -41,7 +41,7 @@
 		cleanup();
 	}}
 >
-	<span class="font-medium text-xl text-gray-800 dark:text-white">We use cookies</span>
+	<span class="text-xl font-medium text-gray-800 dark:text-white">We use cookies</span>
 	<p>
 		We use cookies to enhance site functionality, improve your site experience and track your
 		current login session. You may accept or reject by clicking below or at anytime by clicking

@@ -7,5 +7,10 @@ import type { SessionMiddlewareConfig } from "./types";
 export type * from "./types";
 
 export function sessionMiddlewares(config: SessionMiddlewareConfig) {
-	return [sessionMiddleware(config), consentMiddleware(config), deviceTrackMiddleware(config), authMiddleware(config)];
+	return [
+		sessionMiddleware(config),
+		consentMiddleware(config),
+		deviceTrackMiddleware(config),
+		authMiddleware(config)
+	];
 }

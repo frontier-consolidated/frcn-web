@@ -106,9 +106,7 @@ export function checkIfDirty(source: PageData, mutable: MutableData) {
 					clean &&= valueClean;
 
 					for (const accessRole of mutable.accessRoles) {
-						const sourceAccessRole = source.accessRoles!.find(
-							(r) => r.id === accessRole.id
-						);
+						const sourceAccessRole = source.accessRoles!.find((r) => r.id === accessRole.id);
 						if (!sourceAccessRole) {
 							diff.push(key + "." + accessRole.id);
 							clean = false;

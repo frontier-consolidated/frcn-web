@@ -1,0 +1,7 @@
+environment:
+  - frcn-web/prod-old
+  - frcn/pulumi-aws-access
+
+config:
+  kubernetes:context: frcn
+  frcn-web-old:repositoryName: frcn-web-old/prod

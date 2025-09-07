@@ -24,7 +24,7 @@
 			pedantic: false,
 			renderer: null,
 			silent: false,
-			tokenizer: null,
+			tokenizer: null
 		});
 
 		tokens = isInline ? lexer.inlineTokens(source as string) : lexer.lex(source as string);
