@@ -4,23 +4,24 @@ import { getLocations, type AnyLocation } from "@frcn/shared/locations";
 export function getLocationEmoji(location: AnyLocation) {
 	switch (location.type) {
 		case "SYSTEM":
-			return "<:System:1200467538841194506>";
+			return "<:System:1414211986031378554>";
 		case "PLANET":
-			return "<:Planet:1200467536358162553>";
+			return "<:Planet:1414211959741747210>";
 		case "MOON":
-			return "<:Moon:1200467530783920238>";
+			return "<:Moon:1414211936752762902>";
 		case "STATION":
 		case "COMM_ARRAY":
-			return "<:Station:1200467537574506526>";
-		case "LAGRANGE_POINT":
+			return "<:Station:1414211972529918023>";
 		case "JUMP_POINT":
-			return "<:OrbitalMarker:1200467532805574717>";
+			return "<:JumpPoint:1414211908059533422>";
 		case "CITY":
-			return "<:City:1200467529722761326>";
+			return "<:City:1414211896256757852>";
 		case "OUTPOST":
-			return "<:Outpost:1200467533975781507>";
+			return "<:Outpost:1414211948052090920>";
+		case "ASTROID_FIELD":
+			return "<:AstroidField:1414211877260496917>";
 		default:
-			return "";
+			return "<:Marker:1414211924303941662>";
 	}
 }
 
