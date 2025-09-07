@@ -54,6 +54,7 @@
 	height="64"
 	viewBox="0 0 64 64"
 	class="me-2 h-6 w-6 shrink-0"
+	fill={svg.match(/<svg[ \n][^>]*fill=["']([^"']+)["']/)?.[1] ?? "none"}
 	{...$$restProps}
 >
 	<title>{location.type}</title>
