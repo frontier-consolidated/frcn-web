@@ -92,7 +92,15 @@ const deployment = new k8s.apps.v1.Deployment(
 	appName,
 	{
 		metadata: {
-			namespace: namespace.metadata.name
+			namespace: namespace.metadata.name,
+			name: pulumi
+				.all([backendImage.repoDigest, webImage.repoDigest])
+				.apply(([backendDigest, webDigest]) => {
+					const backendSha = backendDigest.split("sha256:")[1];
+					const webSha = webDigest.split("sha256:")[1];
+
+					return `${appName}.${backendSha.slice(0, 8)}-${webSha.slice(0, 8)}`;
+				})
 		},
 		spec: {
 			selector: { matchLabels: appLabels },
