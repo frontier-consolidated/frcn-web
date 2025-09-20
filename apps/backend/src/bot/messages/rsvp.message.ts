@@ -14,7 +14,7 @@ import { PRIMARY_COLOR } from "../constants";
 export function buildRsvpMessage(
 	rsvp: EventRsvpRole,
 	dmMessageLink: string | null,
-	threadUrl?: string
+	threadId: string | null
 ) {
 	const emojiTag =
 		rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`;
@@ -23,7 +23,7 @@ export function buildRsvpMessage(
 		.setColor(PRIMARY_COLOR)
 		.setTitle(`${emojiTag} RSVP Confirmed`)
 		.setDescription(
-			`Successfully RSVPed as __${emojiTag} ${rsvp.name}__${threadUrl ? `\nJoin the discussion in the [thread](${threadUrl})!` : ""}${!dmMessageLink && `\n\n:warning: You must allow messages from <@${process.env.DISCORD_CLIENTID}> to set reminders.`}`
+			`Successfully RSVPed as __${emojiTag} ${rsvp.name}__${threadId ? `\nJoin the discussion in the thread: <#${threadId}>!` : ""}${!dmMessageLink ? `\n\n:warning: You must allow messages from <@${process.env.DISCORD_CLIENTID}> to set reminders.` : ""}`
 		);
 
 	const remindersButton = new ButtonBuilder().setEmoji("🔔").setLabel("Reminders");
