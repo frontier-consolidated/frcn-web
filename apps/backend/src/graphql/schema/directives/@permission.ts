@@ -29,10 +29,7 @@ export default function directive(schema: GraphQLSchema) {
 
 				const permissions = await calculatePermissions(context);
 
-				if (
-					directiveArgs.has &&
-					!hasPermission(permissions, Permission[directiveArgs.has])
-				) {
+				if (directiveArgs.has && !hasPermission(permissions, Permission[directiveArgs.has])) {
 					throw gqlErrorPermission(directiveArgs.has);
 				}
 
@@ -44,7 +41,7 @@ export default function directive(schema: GraphQLSchema) {
 					)
 				) {
 					throw gqlErrorPermission({
-						oneOf: directiveArgs.one,
+						oneOf: directiveArgs.one
 					});
 				}
 
@@ -56,7 +53,7 @@ export default function directive(schema: GraphQLSchema) {
 					)
 				) {
 					throw gqlErrorPermission({
-						allOf: directiveArgs.all,
+						allOf: directiveArgs.all
 					});
 				}
 
@@ -64,6 +61,6 @@ export default function directive(schema: GraphQLSchema) {
 			};
 
 			return fieldConfig;
-		},
+		}
 	});
 }

@@ -1,5 +1,5 @@
 import { dates } from "@frcn/shared";
-import type { Event } from "@prisma/client";
+import type { Event } from "../../__generated__/client";
 import { EmbedBuilder } from "discord.js";
 
 import type { DiscordClient } from "..";

@@ -1,5 +1,5 @@
 import { dates } from "@frcn/shared";
-import type { Event, EventRsvpRole } from "@prisma/client";
+import type { Event, EventRsvpRole } from "../../__generated__/client";
 import {
 	type BaseMessageOptions,
 	ButtonStyle,

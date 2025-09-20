@@ -9,7 +9,6 @@
 	import Select from "../select/Select.svelte";
 	import type { Option } from "../select/types";
 
-
 	const dispatch = createEventDispatcher();
 
 	export let deletable: boolean = true;
@@ -18,7 +17,7 @@
 	export let options: Option<AnyLocation>[];
 </script>
 
-<li class="flex gap-2 h-12">
+<li class="flex h-12 gap-2">
 	<Select
 		{options}
 		{disabled}
@@ -35,7 +34,10 @@
 			on:click={(ev) => {
 				dispatch("delete", ev);
 			}}
-			class={twMerge("aspect-square h-full rounded dark:hover:bg-red-600", disabled ? "bg-gray-500 dark:bg-gray-500" : "bg-red-500 dark:bg-red-500")}
+			class={twMerge(
+				"aspect-square h-full rounded dark:hover:bg-red-600",
+				disabled ? "bg-gray-500 dark:bg-gray-500" : "bg-red-500 dark:bg-red-500"
+			)}
 			size="sm"
 			{disabled}
 		>

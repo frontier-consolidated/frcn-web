@@ -8,7 +8,7 @@
 	<button
 		{...$$restProps}
 		class={twMerge(
-			"w-full flex items-center px-4 py-1 text-base font-normal rounded clip-tl-br-4 text-gray-900 dark:text-white bg-white hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700",
+			"clip-tl-br-4 flex w-full items-center rounded bg-white px-4 py-1 text-base font-normal text-gray-900 hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700",
 			$$restProps.class
 		)}
 		on:blur

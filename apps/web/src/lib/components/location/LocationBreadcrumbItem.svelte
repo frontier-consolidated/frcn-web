@@ -11,7 +11,7 @@
 	spanClass="flex items-center ms-1 text-sm font-medium text-gray-500 md:ms-2 dark:text-gray-400"
 >
 	{#key location}
-		<LocationIcon {location} class="shrink-0 w-4 h-4 me-2" />
+		<LocationIcon {location} class="me-2 h-4 w-4 shrink-0" />
 	{/key}
 	{location.name}
 </BreadcrumbItem>

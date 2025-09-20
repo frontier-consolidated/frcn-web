@@ -3,7 +3,7 @@
 
 	function getMonthAbbr(month: Date) {
 		return new Intl.DateTimeFormat($locale!, {
-			month: "short",
+			month: "short"
 		}).format(month);
 	}
 
@@ -20,13 +20,13 @@
 	}
 </script>
 
-<div class="grid grid-cols-4 w-64">
-	{#each months as month}
+<div class="grid w-64 grid-cols-4">
+	{#each months as month (month)}
 		<span
 			role="button"
 			tabindex="0"
 			data-timestamp={month.getTime()}
-			class="block rounded-lg text-center text-sm font-semibold p-2 dark:text-white cursor-pointer dark:hover:bg-gray-600"
+			class="block cursor-pointer rounded-lg p-2 text-center text-sm font-semibold dark:text-white dark:hover:bg-gray-600"
 			on:click={() => {
 				viewDate = month;
 				zoomLevel = 3;

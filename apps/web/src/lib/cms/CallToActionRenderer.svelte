@@ -1,16 +1,16 @@
 <script lang="ts">
-import { CallToActionPreset, type CtaContainer } from "@frcn/cms";
+	import { CallToActionPreset, type CtaContainer } from "@frcn/cms";
 
 	import { JoinDiscordButton, LoginButton } from "$lib/components";
 
-    export let container: CtaContainer;
-    $: preset = container.getPreset();
+	export let container: CtaContainer;
+	$: preset = container.getPreset();
 </script>
 
 {#if preset === CallToActionPreset.JoinDiscord}
-    <JoinDiscordButton />
+	<JoinDiscordButton />
 {:else if preset === CallToActionPreset.Login}
-    <LoginButton />
+	<LoginButton />
 {:else}
-    <slot {container} />
+	<slot {container} />
 {/if}

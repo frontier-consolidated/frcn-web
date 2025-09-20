@@ -1,10 +1,9 @@
 // eslint-disable-next-line import/default
-import PrismaClientPkg from "@prisma/client";
-import type { ITXClientDenyList } from "@prisma/client/runtime/library";
+import PrismaClientPkg from "../__generated__/client";
+import type { ITXClientDenyList } from "../__generated__/client/runtime/library";
 
 import { migrate } from "./migrate";
 import { seed } from "./seed";
-import { isProd } from "../env";
 import { logger } from "../logger";
 
 const PrismaClient = PrismaClientPkg.PrismaClient;
@@ -21,13 +20,7 @@ export const prisma = new PrismaClient({
 	]
 });
 
-if (isProd()) {
-	prisma.$on("query", event => {
-		logger.log(`[DATABASE] Query that took ${event.duration}ms`, { query: event.query, params: event.params });
-	});
-}
-
-prisma.$on("error", event => {
+prisma.$on("error", (event) => {
 	logger.error("[DATABASE] Database Error", event);
 });
 

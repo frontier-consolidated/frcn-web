@@ -6,8 +6,8 @@ export const TimestampScalar = new GraphQLScalarType<Date, number>({
 	extensions: {
 		codegenScalarType: "number",
 		jsonSchema: {
-			type: "number",
-		},
+			type: "number"
+		}
 	},
 	serialize(value) {
 		if (value instanceof Date) {
@@ -25,8 +25,7 @@ export const TimestampScalar = new GraphQLScalarType<Date, number>({
 			);
 		} else {
 			throw new GraphQLError(
-				"Timestamp cannot represent a non integer, or non Date type " +
-					JSON.stringify(value)
+				"Timestamp cannot represent a non integer, or non Date type " + JSON.stringify(value)
 			);
 		}
 	},
@@ -39,19 +38,17 @@ export const TimestampScalar = new GraphQLScalarType<Date, number>({
 				`Timestamp cannot represent an invalid epoch unix timestamp ${value}.`
 			);
 		}
-		throw new GraphQLError(
-			`Timestamp cannot represent non integer type ${JSON.stringify(value)}`
-		);
+		throw new GraphQLError(`Timestamp cannot represent non integer type ${JSON.stringify(value)}`);
 	},
 	parseLiteral(ast) {
 		if (ast.kind !== Kind.INT) {
 			throw new GraphQLError(
 				`Timestamp cannot represent non integer type ${"value" in ast && ast.value}`,
 				{
-					nodes: ast,
+					nodes: ast
 				}
 			);
 		}
 		return new Date(parseInt(ast.value, 10));
-	},
+	}
 });

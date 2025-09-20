@@ -13,12 +13,12 @@
 			case 3:
 				zoomText = new Intl.DateTimeFormat($locale!, {
 					month: "long",
-					year: "numeric",
+					year: "numeric"
 				}).format(viewDate);
 				break;
 			case 2:
 				zoomText = new Intl.DateTimeFormat($locale!, {
-					year: "numeric",
+					year: "numeric"
 				}).format(viewDate);
 				break;
 			case 1:
@@ -37,9 +37,9 @@
 	}
 </script>
 
-<div class="flex justify-between mb-2">
+<div class="mb-2 flex justify-between">
 	<Button
-		class="dark:bg-gray-700 dark:hover:bg-gray-600 p-3"
+		class="p-3 dark:bg-gray-700 dark:hover:bg-gray-600"
 		on:click={() => {
 			switch (zoomLevel) {
 				case 3:
@@ -68,7 +68,7 @@
 		{zoomText}
 	</Button>
 	<Button
-		class="dark:bg-gray-700 dark:hover:bg-gray-600 p-3"
+		class="p-3 dark:bg-gray-700 dark:hover:bg-gray-600"
 		on:click={() => {
 			switch (zoomLevel) {
 				case 3:

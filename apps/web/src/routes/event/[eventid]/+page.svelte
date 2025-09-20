@@ -18,8 +18,10 @@
 </script>
 
 <Head
-	title="{data.name ? `${data.name}` : "New Event"} - Event"
-	description={data.posted ? `Name: ${data.name}\nType: ${eventType}\nSummary: ${data.summary}` : "*Unposted Event*"}
+	title="{data.name ? `${data.name}` : 'New Event'} - Event"
+	description={data.posted
+		? `Name: ${data.name}\nType: ${eventType}\nSummary: ${data.summary}`
+		: "*Unposted Event*"}
 	image={data.imageUrl ?? undefined}
 >
 	{#if data.imageUrl}
@@ -27,13 +29,10 @@
 	{/if}
 </Head>
 
-<section class="flex-1 flex flex-col lg:flex-row lg:gap-8 lg:items-stretch mt-[72px]">
+<section class="mt-[72px] flex flex-1 flex-col lg:flex-row lg:items-stretch lg:gap-8">
 	<EventSidebar bind:data />
-	<section class="flex-1 p-4 pb-8 lg:pr-8 lg:pl-0">
-		<Tabs
-			style="underline"
-			contentClass="p-4 max-w-6xl mx-auto"
-		>
+	<section class="flex-1 p-4 pb-8 lg:pl-0 lg:pr-8">
+		<Tabs style="underline" contentClass="p-4 max-w-6xl mx-auto">
 			{#if data.posted}
 				<TabItem
 					open

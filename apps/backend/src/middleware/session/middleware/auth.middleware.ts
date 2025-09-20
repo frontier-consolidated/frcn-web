@@ -29,7 +29,7 @@ export const middleware: MiddlewareHandler = function ({ consent }) {
 		};
 
 		const consentValue = getConsent(req, consent.cookie);
-		
+
 		if (req.session.user && consentValue !== "reject") {
 			const user = await $users.getUser(req.session.user);
 			if (!user) {

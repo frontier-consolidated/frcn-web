@@ -1,4 +1,4 @@
-import type { Event, EventChannel } from "@prisma/client";
+import type { Event, EventChannel } from "../../__generated__/client";
 import { type BaseMessageOptions, EmbedBuilder, TextChannel } from "discord.js";
 
 import type { DiscordClient } from "..";
@@ -159,7 +159,7 @@ async function getEventChannelCalendarMessage(client: DiscordClient, channel: Ev
 		return channel.discordCalendarMessageId
 			? await discordChannel.messages.fetch(channel.discordCalendarMessageId)
 			: null;
-	} catch (err) {
+	} catch (_err) {
 		return null;
 	}
 }
@@ -194,10 +194,6 @@ export async function updateEventChannelCalendarMessage(
 			await message.edit(payload);
 		}
 	} catch (err) {
-		logger.error(
-			"Failed to update event channel calendar message",
-			{ channel: channel.id },
-			err
-		);
+		logger.error("Failed to update event channel calendar message", { channel: channel.id }, err);
 	}
 }

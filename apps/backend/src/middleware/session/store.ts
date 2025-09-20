@@ -8,7 +8,7 @@ import { prisma } from "../../database";
 export const SESSION_MAX_AGE = 12 * 60 * 60 * 1000;
 export const sessionStore = new PrismaSessionStoreAdapter(prisma, {
 	maxAge: SESSION_MAX_AGE,
-	allowTouch: false,
+	allowTouch: false
 });
 
 export function getSessionID(cookies: string, cookieName: string, secret: string) {

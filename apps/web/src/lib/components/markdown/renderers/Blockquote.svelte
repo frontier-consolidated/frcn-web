@@ -5,6 +5,7 @@
 	import BreakFix from "./BreakFix.svelte";
 
 	export let token: Tokens.Blockquote | Tokens.Generic;
+	// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 	token;
 </script>
 

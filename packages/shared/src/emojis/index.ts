@@ -1,8 +1,8 @@
 import type Data from "./emojis";
-import json from "./emojis.json" assert { type: "json" };
+import json from "./emojis.json" with { type: "json" };
 
 export const data = json as Data;
 
 export function getEmojiByName(name: string) {
-    return data.emojis.find(e => e.names.includes(name));
+	return data.emojis.find((e) => e.names.includes(name));
 }

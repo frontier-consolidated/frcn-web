@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import type { PrismaClient } from "@prisma/client";
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import type { PrismaClient } from "../../__generated__/client";
 import { type SessionData, Store } from "express-session";
 
 export interface PrismaSessionStoreAdapteOptions {
@@ -32,7 +32,7 @@ export default class PrismaSessionStoreAdapter extends Store {
 	get(sid: string, callback: (err: any, session?: SessionData | null | undefined) => void): void {
 		this.db.userSession
 			.findFirst({
-				where: { sid },
+				where: { sid }
 			})
 			.then((session) => {
 				if (!session) return callback(null);
@@ -64,10 +64,11 @@ export default class PrismaSessionStoreAdapter extends Store {
 		const deviceId = sessionData.deviceId!;
 		const data = JSON.stringify(sessionData);
 
-		this.db.userSession.findUnique({
-			where: { sid }
-		})
-			.then(session => {
+		this.db.userSession
+			.findUnique({
+				where: { sid }
+			})
+			.then((session) => {
 				return this.db.userSession.upsert({
 					where: { sid },
 					update: {
@@ -75,26 +76,26 @@ export default class PrismaSessionStoreAdapter extends Store {
 						user: {
 							connect: userId
 								? {
-										id: userId,
-								  }
+										id: userId
+									}
 								: undefined,
 							disconnect:
 								!userId && session?.userId
 									? {
-											id: session.userId,
-									  }
-									: undefined,
+											id: session.userId
+										}
+									: undefined
 						},
 						deviceId,
-						expiresAt: this.allowTouch ? expiresAt : undefined,
+						expiresAt: this.allowTouch ? expiresAt : undefined
 					},
 					create: {
 						sid,
 						data,
 						deviceId,
 						userId,
-						expiresAt,
-					},
+						expiresAt
+					}
 				});
 			})
 			.then(() => {
@@ -102,10 +103,10 @@ export default class PrismaSessionStoreAdapter extends Store {
 				return this.db.userSession.deleteMany({
 					where: {
 						sid: {
-							not: sid,
+							not: sid
 						},
-						deviceId,
-					},
+						deviceId
+					}
 				});
 			})
 			.then(() => {
@@ -119,24 +120,22 @@ export default class PrismaSessionStoreAdapter extends Store {
 	destroy(sid: string, callback?: ((err?: any) => void) | undefined): void {
 		this.db.userSession
 			.deleteMany({
-				where: { sid },
+				where: { sid }
 			})
 			.then(() => callback && callback())
 			.catch((err) => callback && callback(err));
 	}
 
-	all(
-		callback: (err: any, obj?: { [sid: string]: SessionData } | null | undefined) => void
-	): void {
+	all(callback: (err: any, obj?: { [sid: string]: SessionData } | null | undefined) => void): void {
 		const now = new Date();
 
 		this.db.userSession
 			.findMany({
 				where: {
 					expiresAt: {
-						gte: now,
-					},
-				},
+						gte: now
+					}
+				}
 			})
 			.then((sessions) => {
 				const obj: { [sid: string]: SessionData } = {};
@@ -162,9 +161,9 @@ export default class PrismaSessionStoreAdapter extends Store {
 			.count({
 				where: {
 					expiresAt: {
-						gte: now,
-					},
-				},
+						gte: now
+					}
+				}
 			})
 			.then((count) => {
 				callback(null, count);
@@ -192,9 +191,9 @@ export default class PrismaSessionStoreAdapter extends Store {
 			.deleteMany({
 				where: {
 					expiresAt: {
-						lt: now,
-					},
-				},
+						lt: now
+					}
+				}
 			})
 			.then(({ count }) => {
 				callback && callback(null, count);
@@ -221,8 +220,8 @@ export default class PrismaSessionStoreAdapter extends Store {
 			.update({
 				where: { sid },
 				data: {
-					expiresAt,
-				},
+					expiresAt
+				}
 			})
 			.then(() => {
 				callback && callback();

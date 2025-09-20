@@ -21,7 +21,7 @@
 	function formatDate(date: Date) {
 		return new Intl.DateTimeFormat($locale!, {
 			dateStyle: "short",
-			timeStyle: "short",
+			timeStyle: "short"
 		}).format(date);
 	}
 
@@ -81,14 +81,14 @@
 	bind:open={dropdownOpen}
 	triggeredBy="#{id}-ref"
 	containerClass="divide-y z-50 rounded"
-	class="border rounded border-gray-300 dark:border-gray-600 p-4"
+	class="rounded border border-gray-300 p-4 dark:border-gray-600"
 >
 	{#if title}
 		<DropdownHeader class="text-center">
 			{title}
 		</DropdownHeader>
 	{/if}
-	<div class="grid grid-flow-col auto-cols-max gap-2">
+	<div class="grid auto-cols-max grid-flow-col gap-2">
 		<DateControls
 			{disable}
 			bind:viewDate

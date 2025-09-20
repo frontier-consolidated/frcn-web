@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { browser } from "$app/environment";
 	import { Modal } from "flowbite-svelte";
 	import { queryParam } from "sveltekit-search-params";
+
+	import { browser } from "$app/environment";
 
 	import JoinDiscordButton from "../JoinDiscordButton.svelte";
 
@@ -18,12 +19,12 @@
 		notInGuild?.set(null);
 	}}
 >
-	<span class="block font-medium text-xl text-center text-gray-800 dark:text-white"
+	<span class="block text-center text-xl font-medium text-gray-800 dark:text-white"
 		>Join our Discord!</span
 	>
 	<p>
-		Due to security reasons we require you to be a member of our Discord server before you can
-		login to this site.
+		Due to security reasons we require you to be a member of our Discord server before you can login
+		to this site.
 	</p>
 	<div class="flex justify-center">
 		<JoinDiscordButton />

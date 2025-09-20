@@ -2,6 +2,9 @@
 node_modules
 dist
 .cache
+.svelte-kit
+build
+backups/
 
 /env
 .env

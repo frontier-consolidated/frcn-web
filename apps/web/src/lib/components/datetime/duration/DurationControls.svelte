@@ -12,7 +12,7 @@
 		hours,
 		minutes,
 		seconds,
-		milliseconds,
+		milliseconds
 	}: {
 		hours?: number;
 		minutes?: number;
@@ -23,7 +23,7 @@
 			hours: hours_,
 			minutes: minutes_,
 			seconds: seconds_,
-			milliseconds: milliseconds_,
+			milliseconds: milliseconds_
 		} = dates.toDurationComponents(value);
 		hours ??= hours_;
 		minutes ??= minutes_;
@@ -48,7 +48,7 @@
 		if (el)
 			el.scrollIntoView({
 				behavior: instant ? "instant" : "smooth",
-				block: "center",
+				block: "center"
 			});
 	}
 	function scrollToMinute(minute: number, instant?: boolean) {
@@ -56,7 +56,7 @@
 		if (el)
 			el.scrollIntoView({
 				behavior: instant ? "instant" : "smooth",
-				block: "center",
+				block: "center"
 			});
 	}
 	function scrollToSecond(second: number, instant?: boolean) {
@@ -64,7 +64,7 @@
 		if (el)
 			el.scrollIntoView({
 				behavior: instant ? "instant" : "smooth",
-				block: "center",
+				block: "center"
 			});
 	}
 
@@ -119,45 +119,49 @@
 		setSeconds(seconds.valueOf());
 	}
 
-	const spanClass = "block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer";
+	const spanClass =
+		"block rounded-lg text-center text-sm font-semibold px-2 py-1 dark:text-white cursor-pointer";
 	const activeClass = "bg-primary-600 dark:hover:bg-primary-700";
 	const inactiveClass = "dark:hover:bg-gray-600";
 </script>
 
 <div>
-	<div class="grid grid-flow-col items-center mb-2 p-1">
+	<div class="mb-2 grid grid-flow-col items-center p-1">
 		<Input
 			bind:value={inputHours}
-			class="w-10 text-center no-inner-spin rounded"
+			class="no-inner-spin w-10 rounded text-center"
 			type="number"
 			min="0"
 		/>
-		<span class="font-semibold p-1 me-1">hours</span>
+		<span class="me-1 p-1 font-semibold">hours</span>
 		<Input
 			bind:value={inputMinutes}
-			class="w-10 text-center no-inner-spin rounded"
+			class="no-inner-spin w-10 rounded text-center"
 			type="number"
 			min="0"
 			max="59"
 		/>
-		<span class="font-semibold p-1 me-1">mins</span>
+		<span class="me-1 p-1 font-semibold">mins</span>
 		<Input
 			bind:value={inputSeconds}
-			class="w-10 text-center no-inner-spin rounded"
+			class="no-inner-spin w-10 rounded text-center"
 			type="number"
 			min="0"
 			max="59"
 		/>
-		<span class="font-semibold p-1 me-1">secs</span>
+		<span class="me-1 p-1 font-semibold">secs</span>
 	</div>
-	<div class="grid grid-cols-3 h-28 w-full gap-4">
-		<div use:initHours class="overflow-y-scroll no-scrollbar">
-			{#each hours as hour}
+	<div class="grid h-28 w-full grid-cols-3 gap-4">
+		<div use:initHours class="no-scrollbar overflow-y-scroll">
+			{#each hours as hour (hour)}
 				<span
 					role="button"
 					tabindex="0"
 					data-hour={hour}
-					class={twMerge(spanClass, hour === dates.toDurationComponents(value).hours ? activeClass : inactiveClass)}
+					class={twMerge(
+						spanClass,
+						hour === dates.toDurationComponents(value).hours ? activeClass : inactiveClass
+					)}
 					on:click={() => setHours(hour)}
 					on:keydown={(ev) => {
 						if (ev.key == "Enter") setHours(hour);
@@ -167,13 +171,16 @@
 				</span>
 			{/each}
 		</div>
-		<div use:initMinutes class="overflow-y-scroll no-scrollbar">
-			{#each minutesAndSeconds as minute}
+		<div use:initMinutes class="no-scrollbar overflow-y-scroll">
+			{#each minutesAndSeconds as minute (minute)}
 				<span
 					role="button"
 					tabindex="0"
 					data-minute={minute}
-					class={twMerge(spanClass, minute === dates.toDurationComponents(value).minutes ? activeClass : inactiveClass)}
+					class={twMerge(
+						spanClass,
+						minute === dates.toDurationComponents(value).minutes ? activeClass : inactiveClass
+					)}
 					on:click={() => setMinutes(minute)}
 					on:keydown={(ev) => {
 						if (ev.key == "Enter") setMinutes(minute);
@@ -183,13 +190,16 @@
 				</span>
 			{/each}
 		</div>
-		<div use:initSeconds class="overflow-y-scroll no-scrollbar">
-			{#each minutesAndSeconds as second}
+		<div use:initSeconds class="no-scrollbar overflow-y-scroll">
+			{#each minutesAndSeconds as second (second)}
 				<span
 					role="button"
 					tabindex="0"
 					data-second={second}
-					class={twMerge(spanClass, second === dates.toDurationComponents(value).seconds ? activeClass : inactiveClass)}
+					class={twMerge(
+						spanClass,
+						second === dates.toDurationComponents(value).seconds ? activeClass : inactiveClass
+					)}
 					on:click={() => setSeconds(second)}
 					on:keydown={(ev) => {
 						if (ev.key == "Enter") setSeconds(second);

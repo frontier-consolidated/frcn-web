@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
 	import { Search, Table, TableHead, TableHeadCell } from "flowbite-svelte";
 	import { ArrowLeftSolid } from "flowbite-svelte-icons";
 	import { queryParam } from "sveltekit-search-params";
 
+	import { goto } from "$app/navigation";
 	import { Head } from "$lib/components";
 	import Button from "$lib/components/Button.svelte";
 	import SectionHeading from "$lib/components/SectionHeading.svelte";
@@ -18,59 +18,59 @@
 	export let data: PageData;
 </script>
 
-<Head
-	title="Access Keys - Admin"
-/>
+<Head title="Access Keys - Admin" />
 
-<a class="flex items-center text-gray-300 mb-2 p-2 cursor-pointer hover:text-gray-400" href="/admin/general">
+<a
+	class="mb-2 flex cursor-pointer items-center p-2 text-gray-300 hover:text-gray-400"
+	href="/admin/general"
+>
 	<ArrowLeftSolid class="me-2" tabindex="-1" /> Back to General
 </a>
-<SectionHeading>
-    Access Keys
-</SectionHeading>
-<div class="flex gap-2 px-2 my-4">
-    <Search size="md" bind:value={$keySearch} class="rounded" />
-    <Button class="shrink-0" on:click={async () => {
-		try {
-			const { data: createData } = await getApollo().mutate({
-				mutation: Mutations.CREATE_ACCESS_KEY,
-			});
-
-			if (createData && createData.key) {
-				await goto(`/admin/general/accesskeys/${createData.key.id}`, {
-					invalidateAll: true,
-					state: {
-						newAccessKey: createData.key
-					}
+<SectionHeading>Access Keys</SectionHeading>
+<div class="my-4 flex gap-2 px-2">
+	<Search size="md" bind:value={$keySearch} class="rounded" />
+	<Button
+		class="shrink-0"
+		on:click={async () => {
+			try {
+				const { data: createData } = await getApollo().mutate({
+					mutation: Mutations.CREATE_ACCESS_KEY
 				});
+
+				if (createData && createData.key) {
+					await goto(`/admin/general/accesskeys/${createData.key.id}`, {
+						invalidateAll: true,
+						state: {
+							newAccessKey: createData.key
+						}
+					});
+				}
+			} catch (err) {
+				pushNotification({
+					type: "error",
+					message: "Failed to create access key"
+				});
+				console.error(err);
 			}
-		} catch (err) {
-			pushNotification({
-				type: "error",
-				message: "Failed to create access key"
-			});
-			console.error(err);
-		}
-	}}>
-        Create Key
-    </Button>
+		}}
+	>
+		Create Key
+	</Button>
 </div>
-<div class="flex-1 flex flex-col">
+<div class="flex flex-1 flex-col">
 	<Table divClass="relative">
 		<TableHead>
 			<TableHeadCell>
 				Keys - {data.keys.length}
 			</TableHeadCell>
-			<TableHeadCell>
-				Description
-			</TableHeadCell>
+			<TableHeadCell>Description</TableHeadCell>
 			<TableHeadCell class="w-32"></TableHeadCell>
 		</TableHead>
 		<tbody class="divide-y">
-			{#each data.keys.filter(k => !$keySearch || k.id.toString() === $keySearch.trim() || k.description.toLowerCase().includes($keySearch.trim().toLowerCase())) as key}
-				{#key key.id}
-					<KeyRow accessKey={key} />
-				{/key}
+			{#each data.keys.filter((k) => !$keySearch || k.id.toString() === $keySearch.trim() || k.description
+						.toLowerCase()
+						.includes($keySearch.trim().toLowerCase())) as key (key.id)}
+				<KeyRow accessKey={key} />
 			{/each}
 		</tbody>
 	</Table>

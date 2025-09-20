@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const plugin = require("tailwindcss/plugin");
 
 const fallbackFonts = [

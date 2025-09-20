@@ -25,7 +25,7 @@
 	<span
 		role="button"
 		tabindex="0"
-		class="dark:text-primary-500 hover:underline cursor-pointer"
+		class="dark:text-primary-500 cursor-pointer hover:underline"
 		on:click={() => (more = !more)}
 		on:keydown={(ev) => {
 			if (ev.key == "Enter") more = !more;

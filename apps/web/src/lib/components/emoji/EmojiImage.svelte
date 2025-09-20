@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { twMerge } from "tailwind-merge";
 
-import type { Emoji } from "./types";
+	import type { Emoji } from "./types";
 
 	export let emoji: Emoji;
 	let clazz: string | undefined = undefined;

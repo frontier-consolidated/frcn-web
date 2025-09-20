@@ -385,8 +385,7 @@ type Query {
 		limit: Int @constraint(min: 1, max: 100)
 	): PagedUser! @permission(has: ManageSystem)
 
-	getAllEventChannels: [EventChannel!]!
-		@permission(one: [CreateEvents, ManageEvents, ManageSystem])
+	getAllEventChannels: [EventChannel!]! @permission(one: [CreateEvents, ManageEvents, ManageSystem])
 	getEventChannel(id: Int!): EventChannel @permission(has: ManageSystem)
 
 	getAllDiscordGuilds: [DiscordGuild!]! @permission(has: ManageSystem)
@@ -427,10 +426,8 @@ type Mutation {
 	deleteEvent(id: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
 	rsvpForEvent(id: ID!, rsvp: ID!): Boolean!
 	unrsvpForEvent(id: ID!): Boolean!
-	inviteToEvent(eventId: ID!, userId: ID!): Boolean!
-		@permission(one: [CreateEvents, ManageEvents])
-	setEventMemberTeam(member: ID!, team: ID): Boolean!
-		@permission(one: [CreateEvents, ManageEvents])
+	inviteToEvent(eventId: ID!, userId: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
+	setEventMemberTeam(member: ID!, team: ID): Boolean! @permission(one: [CreateEvents, ManageEvents])
 	kickEventMember(member: ID!): Boolean! @permission(one: [CreateEvents, ManageEvents])
 
 	createEventTeam(eventId: ID!, name: String!): EventTeam!
@@ -484,8 +481,7 @@ type Mutation {
 		@permission(has: CmsWrite)
 	reorderContentContainerChildren(id: ID!, order: [ID!]!): ContentContainer
 		@permission(has: CmsWrite)
-	reorderContentContainerFiles(id: ID!, order: [ID!]!): ContentContainer
-		@permission(has: CmsWrite)
+	reorderContentContainerFiles(id: ID!, order: [ID!]!): ContentContainer @permission(has: CmsWrite)
 	deleteContentContainer(id: ID!): Boolean! @permission(has: CmsWrite)
 	editContentContainerFile(id: ID!, data: ContentContainerFileEditInput!): ContentContainerFile
 		@permission(has: CmsWrite)
