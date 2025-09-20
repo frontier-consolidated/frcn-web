@@ -102,7 +102,12 @@
 
 	function onInputKeydown(ev: KeyboardEvent) {
 		if (ev.key === "Backspace") {
-			if (multi && Array.isArray(value)) {
+			//Logic for backspace if the text field is not empty
+			if (searchInput != "") {
+				searchInput = searchInput.slice(0, -1);
+			}
+			// We do this if the text field is empty (only tags)
+			else if (multi && Array.isArray(value)) {
 				value = value.slice(0, -1) as Value;
 			} else {
 				value = undefined as Value;
