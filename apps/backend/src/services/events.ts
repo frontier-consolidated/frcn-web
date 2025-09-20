@@ -62,8 +62,7 @@ async function getEvent(id: string) {
 
 async function getEventFromMessageId(id: string) {
 	const event = await database.event.findFirst({
-		where: { discordEventMessageId: id },
-		include: { channel: true }
+		where: { discordEventMessageId: id }
 	});
 	return event;
 }
