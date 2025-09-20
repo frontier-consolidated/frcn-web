@@ -189,7 +189,7 @@ async function handleEventRsvp(interaction: ButtonInteraction | AnySelectMenuInt
 		}
 
 		const threadUrl = event.discordThreadId
-			? `https://discord.com/channels/${interaction.guildId}/${event.discordThreadId}`
+			? `https://discord.com/channels/${event.channel?.discordGuildId}/${event.discordThreadId}`
 			: undefined;
 
 		const payload =
