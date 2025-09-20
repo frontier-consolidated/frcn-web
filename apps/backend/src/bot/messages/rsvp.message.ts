@@ -11,16 +11,19 @@ import {
 import { getWebURL } from "../../env";
 import { PRIMARY_COLOR } from "../constants";
 
-export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | null) {
+export function buildRsvpMessage(
+	rsvp: EventRsvpRole,
+	dmMessageLink: string | null,
+	threadUrl?: string
+) {
+	const emojiTag =
+		rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`;
+
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
-		.setTitle(
-			`${
-				rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`
-			} RSVP Confirmed`
-		)
+		.setTitle(`${emojiTag} RSVP Confirmed`)
 		.setDescription(
-			`You must allow messages from <@${process.env.DISCORD_CLIENTID}> to set reminders.`
+			`Successfully RSVPed as __${emojiTag} ${rsvp.name}__${threadUrl ? `\nJoin the discussion in the [thread](${threadUrl})!` : ""}${!dmMessageLink && `\n\n:warning: You must allow messages from <@${process.env.DISCORD_CLIENTID}> to set reminders.`}`
 		);
 
 	const remindersButton = new ButtonBuilder().setEmoji("🔔").setLabel("Reminders");
@@ -49,18 +52,13 @@ export function buildRsvpMessage(rsvp: EventRsvpRole, dmMessageLink: string | nu
 }
 
 export function buildRsvpSwitchMessage(rsvp: EventRsvpRole) {
+	const emojiTag =
+		rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`;
+
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
-		.setTitle(
-			`${
-				rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`
-			} RSVP Change Confirmed`
-		)
-		.setDescription(
-			`Successfully changed RSVP to __${
-				rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`
-			} ${rsvp.name}__`
-		);
+		.setTitle(`${emojiTag} RSVP Change Confirmed`)
+		.setDescription(`Successfully changed RSVP to __${emojiTag} ${rsvp.name}__`);
 
 	const weblinkButton = new ButtonBuilder()
 		.setLabel("Website")
@@ -78,14 +76,14 @@ export function buildRsvpSwitchMessage(rsvp: EventRsvpRole) {
 
 export function buildRsvpDmMessage(event: Event, rsvp: EventRsvpRole, eventMessageLink: string) {
 	const startAtSeconds = Math.floor(event.startAt!.getTime() / 1000);
+	const emojiTag =
+		rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`;
 
 	const embed = new EmbedBuilder()
 		.setColor(PRIMARY_COLOR)
 		.setTitle("RSVP Confirmation")
 		.setDescription(
-			`You have RSVPed as __${
-				rsvp.emoji === rsvp.emojiId ? `:${rsvp.emoji}:` : `<:${rsvp.emoji}:${rsvp.emojiId}>`
-			} ${rsvp.name}__ for **[${event.name}](${eventMessageLink})**`
+			`You have RSVPed as __${emojiTag} ${rsvp.name}__ for **[${event.name}](${eventMessageLink})**`
 		)
 		.addFields(
 			{

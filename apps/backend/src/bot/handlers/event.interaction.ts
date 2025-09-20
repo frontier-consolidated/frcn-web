@@ -188,10 +188,15 @@ async function handleEventRsvp(interaction: ButtonInteraction | AnySelectMenuInt
 			}
 		}
 
+		const threadUrl = event.discordThreadId
+			? `https://discord.com/channels/${event.channel?.discordGuildId}/${event.discordThreadId}`
+			: undefined;
+
 		const payload =
 			currentRsvp && currentRsvp.rsvpId
 				? buildRsvpSwitchMessage(role)
-				: buildRsvpMessage(role, dmMessageLink);
+				: buildRsvpMessage(role, dmMessageLink, threadUrl);
+
 		await interaction.editReply({
 			...payload
 		});
