@@ -191,7 +191,8 @@ async function handleEventRsvp(interaction: ButtonInteraction | AnySelectMenuInt
 		const payload =
 			currentRsvp && currentRsvp.rsvpId
 				? buildRsvpSwitchMessage(role)
-				: buildRsvpMessage(role, dmMessageLink);
+				: buildRsvpMessage(role, dmMessageLink, event.discordThreadId);
+
 		await interaction.editReply({
 			...payload
 		});
