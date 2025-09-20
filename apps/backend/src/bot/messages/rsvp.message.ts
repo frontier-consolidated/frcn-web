@@ -23,7 +23,7 @@ export function buildRsvpMessage(
 		.setColor(PRIMARY_COLOR)
 		.setTitle(`${emojiTag} RSVP Confirmed`)
 		.setDescription(
-			`Successfully RSVPed as __${emojiTag} ${rsvp.name}__${threadUrl ? `\nJoin the discussion in the [thread](${threadUrl})!` : ""}\n\nYou must allow messages from <@${process.env.DISCORD_CLIENTID}> to set reminders.`
+			`Successfully RSVPed as __${emojiTag} ${rsvp.name}__${threadUrl ? `\nJoin the discussion in the [thread](${threadUrl})!` : ""}${!dmMessageLink && `\n\n:warning: You must allow messages from <@${process.env.DISCORD_CLIENTID}> to set reminders.`}`
 		);
 
 	const remindersButton = new ButtonBuilder().setEmoji("🔔").setLabel("Reminders");
