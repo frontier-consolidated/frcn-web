@@ -177,7 +177,7 @@
 							{category.toUpperCase()}
 						</div>
 						<div class="grid grid-cols-9">
-							{#each getEmojisInCategory(category) as emoji (emoji.id)}
+							{#each getEmojisInCategory(category) as emoji (emoji)}
 								{#if emoji.svg || emoji.imageUrl}
 									<Button
 										data-emoji={emoji.id ?? emoji.name}
