@@ -16,6 +16,11 @@
 	import EventCard from "./EventCard.svelte";
 	import { createEvent } from "./helpers";
 
+	const timeFormatter = new Intl.DateTimeFormat($locale ?? "en", {
+		hour: "2-digit",
+		minute: "2-digit"
+	});
+
 	function toMonthString(value: Date) {
 		return `${value.getFullYear()}-${(value.getMonth() + 1).toString().padStart(2, "0")}`;
 	}
@@ -211,6 +216,7 @@
 							<div class="flex w-full flex-col items-stretch gap-px px-1">
 								{#each day.events as event (event.id)}
 									{@const eventStart = event.startAt && new Date(event.startAt)}
+									{@const eventEndTime = event.startAt && event.duration && new Date(event.startAt + event.duration)}
 									<Button
 										href="/event/{event.id}"
 										target="_blank"
@@ -226,12 +232,9 @@
 										<span class="flex-1 truncate">
 											{event.name}
 										</span>
-										{#if eventStart}
+										{#if eventStart && eventEndTime}
 											<span class="shrink-0 font-normal text-gray-300">
-												{new Intl.DateTimeFormat($locale ?? "en", {
-													hour: "2-digit",
-													minute: "2-digit"
-												}).format(eventStart)}
+												{timeFormatter.format(eventStart)} - {timeFormatter.format(eventEndTime)}
 											</span>
 										{/if}
 									</Button>

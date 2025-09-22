@@ -6,7 +6,7 @@ import { env } from "$env/dynamic/private";
 import { Queries, createApolloClient } from "$lib/graphql";
 
 export const handle: Handle = async ({ event, resolve }) => {
-	console.log(event.request.method, event.url);
+	// console.log(event.request.method, event.url);
 
 	const lang = event.request.headers.get("accept-language")?.split(",")[0];
 	if (lang) {

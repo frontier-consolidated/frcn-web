@@ -119,7 +119,7 @@
 
 <div {id} class={twMerge("relative w-full", clazz)}>
 	<select {disabled} hidden id="{id}-select" {...$$restProps}>
-		{#each options as option (option.name)}
+		{#each options as option (option)}
 			<option value={option.name}>{option.name}</option>
 		{/each}
 	</select>
