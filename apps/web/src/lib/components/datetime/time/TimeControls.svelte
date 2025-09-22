@@ -3,7 +3,7 @@
 	import { twMerge } from "tailwind-merge";
 
 	const hours = new Array(24).fill(0).map((_, index) => index);
-	const minutes = new Array(60).fill(0).map((_, index) => index);
+	const minutes = new Array(12).fill(0).map((_, index) => index*5);
 
 	export let selectedDate: Date | null;
 
