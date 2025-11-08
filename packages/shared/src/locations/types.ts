@@ -44,6 +44,10 @@ export type Prison = Location & {
 	type: "PRISON";
 };
 
+export type GameMode = Location & {
+	type: "GAME_MODE";
+};
+
 export type Station = LocationWithCoordinates & {
 	type: "STATION";
 };

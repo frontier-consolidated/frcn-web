@@ -1,4 +1,4 @@
-import { planet, station, system, jumpPoint, moon, astroidField, outpost } from "../helpers";
+import { planet, station, system, jumpPoint, moon, astroidField, outpost, gameMode } from "../helpers";
 
 export const ArenaCommander = system("Arena Commander", [
     station("Free Flight", { coordinates: { azimuthal: null, distance: null } }),

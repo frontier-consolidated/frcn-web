@@ -13,7 +13,8 @@ import type {
 	CommArray,
 	SecurityPost,
 	AstroidField,
-	SphericalCoordinates
+	SphericalCoordinates,
+	GameMode
 } from "./types";
 
 type InSpaceData =
@@ -145,4 +146,11 @@ export function securityPost(name: string, data: InSpaceData = { inSpace: false 
 		coordinates: "coordinates" in data ? data.coordinates : undefined,
 		name
 	} satisfies SecurityPost;
+}
+
+export function gameMode(name: string) {
+	return {
+		type: "GAME_MODE",
+		name
+	} satisfies GameMode;
 }

@@ -1,7 +1,7 @@
 import { Pyro } from "./systems/Pyro";
 import { Stanton } from "./systems/Stanton";
 import { ArenaCommander } from "./systems/ArenaCommander";
-import type { AnyFlatLocation, AnyLocation, Area, Galaxy } from "./types";
+import type { AnyFlatLocation, AnyLocation, Area, Galaxy, GameMode } from "./types";
 
 export type * from "./types";
 
