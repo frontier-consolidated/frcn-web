@@ -1,10 +1,11 @@
 import { Pyro } from "./systems/Pyro";
 import { Stanton } from "./systems/Stanton";
+import { ArenaCommander } from "./systems/ArenaCommander";
 import type { AnyFlatLocation, AnyLocation, Area, Galaxy } from "./types";
 
 export type * from "./types";
 
-export const locations = [Stanton, Pyro] satisfies Galaxy;
+export const locations = [Stanton, Pyro, ArenaCommander] satisfies Galaxy;
 
 export const areas = {
 	default: [
