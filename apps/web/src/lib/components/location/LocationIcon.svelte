@@ -10,6 +10,7 @@
 	import PlanetSvg from "./icons/Planet.svg?raw";
 	import StationSvg from "./icons/Station.svg?raw";
 	import SystemSvg from "./icons/System.svg?raw";
+	import GameModeSvg from "./icons/GameMode.svg?raw";
 
 	export let location: AnyLocation;
 
@@ -39,6 +40,9 @@
 			break;
 		case "ASTROID_FIELD":
 			svg = AstroidFieldSvg;
+			break;
+		case "GAME_MODE":
+			svg = GameModeSvg;
 			break;
 		default:
 			svg = MarkerSvg;

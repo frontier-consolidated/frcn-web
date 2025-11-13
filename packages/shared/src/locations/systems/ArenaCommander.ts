@@ -4,6 +4,6 @@ export const ArenaCommander = gameMode("Arena Commander", [
     gameMode("Free Flight"),
     gameMode("Ship PVP"),
     gameMode("Racing"),
-    gameMode("Gun rush / FPS"),
+    gameMode("FPS"),
     gameMode("Other / Experimental")
 ]);
