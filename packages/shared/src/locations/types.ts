@@ -46,6 +46,7 @@ export type Prison = Location & {
 
 export type GameMode = Location & {
 	type: "GAME_MODE";
+	children: GameMode[];
 };
 
 export type Station = LocationWithCoordinates & {
@@ -99,7 +100,7 @@ export type System = Location & {
 	children: (Star | Planet | LagrangePoint | JumpPoint | Station | AstroidField | Area)[];
 };
 
-export type Galaxy = System[];
+export type Galaxy = (System | GameMode)[];
 
 export type AnyLocation =
 	| System
@@ -111,6 +112,7 @@ export type AnyLocation =
 	| LagrangePoint
 	| SurfacePoi
 	| SpacePoi
+	| GameMode
 	| Area;
 
 export type AnyFlatLocation = AnyLocation & {

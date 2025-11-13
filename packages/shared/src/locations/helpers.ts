@@ -148,9 +148,10 @@ export function securityPost(name: string, data: InSpaceData = { inSpace: false 
 	} satisfies SecurityPost;
 }
 
-export function gameMode(name: string) {
+export function gameMode(name: string, children: GameMode["children"] = []) {
 	return {
 		type: "GAME_MODE",
-		name
+		name,
+		children
 	} satisfies GameMode;
 }
