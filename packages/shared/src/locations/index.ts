@@ -63,7 +63,13 @@ export function getChildren(location: AnyLocation) {
 		if (location.type in areas) {
 			children.unshift(...areas[location.type as keyof typeof areas]);
 		}
-		children.unshift(...areas.default);
+		const flat = locationsFlat.find(
+			(f) => f.path[f.path.length - 1] === location || f.name === location.name
+		);
+		const rootName = flat?.path?.[0]?.name;
+		if (rootName !== "ArenaCommander") {
+			children.unshift(...areas.default);
+		}
 		return children;
 	}
 	return null;
