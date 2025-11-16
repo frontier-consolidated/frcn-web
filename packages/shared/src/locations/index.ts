@@ -60,21 +60,17 @@ export function searchLocations(query: string) {
 export function getChildren(location: AnyLocation) {
 	if ("children" in location) {
 		const children = [...location.children];
-		if (location.type in areas) {
-			children.unshift(...areas[location.type as keyof typeof areas]);
-		}
-		const flat = locationsFlat.find(
-			(f) => f.path[f.path.length - 1] === location || f.name === location.name
-		);
-		// Looks for the noAnywhere flag on the root location, skips if it has it.
-		const root = flat?.path?.[0] as any;
-		if (!root?.noAnywhere) {
+		if (location.type !== "GAME_MODE") {
+			if (location.type in areas) {
+				children.unshift(...areas[location.type as keyof typeof areas]);
+			}
 			children.unshift(...areas.default);
 		}
 		return children;
 	}
 	return null;
 }
+
 
 export function getLocations(path: string[]) {
 	const pathLocations: AnyLocation[] = [];
