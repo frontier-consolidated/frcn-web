@@ -66,8 +66,9 @@ export function getChildren(location: AnyLocation) {
 		const flat = locationsFlat.find(
 			(f) => f.path[f.path.length - 1] === location || f.name === location.name
 		);
-		const rootName = flat?.path?.[0]?.name;
-		if (rootName !== "ArenaCommander") {
+		// Looks for the noAnywhere flag on the root location, skips if it has it.
+		const root = flat?.path?.[0] as any;
+		if (!root?.noAnywhere) {
 			children.unshift(...areas.default);
 		}
 		return children;
