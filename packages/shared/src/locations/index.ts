@@ -1,10 +1,11 @@
 import { Pyro } from "./systems/Pyro";
 import { Stanton } from "./systems/Stanton";
-import type { AnyFlatLocation, AnyLocation, Area, Galaxy } from "./types";
+import { ArenaCommander } from "./systems/ArenaCommander";
+import type { AnyFlatLocation, AnyLocation, Area, Galaxy, GameMode } from "./types";
 
 export type * from "./types";
 
-export const locations = [Stanton, Pyro] satisfies Galaxy;
+export const locations = [Stanton, Pyro, ArenaCommander] satisfies Galaxy;
 
 export const areas = {
 	default: [
@@ -59,14 +60,17 @@ export function searchLocations(query: string) {
 export function getChildren(location: AnyLocation) {
 	if ("children" in location) {
 		const children = [...location.children];
-		if (location.type in areas) {
-			children.unshift(...areas[location.type as keyof typeof areas]);
+		if (location.type !== "GAME_MODE") {
+			if (location.type in areas) {
+				children.unshift(...areas[location.type as keyof typeof areas]);
+			}
+			children.unshift(...areas.default);
 		}
-		children.unshift(...areas.default);
 		return children;
 	}
 	return null;
 }
+
 
 export function getLocations(path: string[]) {
 	const pathLocations: AnyLocation[] = [];
