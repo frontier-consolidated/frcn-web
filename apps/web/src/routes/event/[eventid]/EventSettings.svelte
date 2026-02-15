@@ -78,21 +78,18 @@
 				message: "Saving event..."
 			});
 
-			async function catsAsAService(): Promise<void> {
-				if (!editData.imageUrl)
-				{
-					try {
-							const red = await fetch("https://cataas.com/cat?json=true")
-							const cat = await red.json();
-							editData.imageUrl = cat.url;
-						}
-					catch (e) {
-						console.error(e);
+			// Finds a random cat picture if no image was provided :3
+			if (!editData.imageUrl)
+			{
+				try {
+						const red = await fetch("https://cataas.com/cat?json=true")
+						const cat = await red.json();
+						editData.imageUrl = cat.url;
 					}
+				catch (e) {
+					console.error(e);
 				}
 			}
-
-			await catsAsAService();
 
 			const { errors } = await getApollo().mutate({
 				mutation: Mutations.EDIT_EVENT,
