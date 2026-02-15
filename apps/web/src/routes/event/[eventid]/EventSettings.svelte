@@ -26,6 +26,7 @@
 	import type { PageData } from "./$types";
 	import RsvpTable from "./RSVPTable.svelte";
 	import { checkIfDirty, cloneEventSettingsData } from "./settings";
+	import { blob } from "stream/consumers";
 
 	export let data: PageData;
 	let editData = cloneEventSettingsData(data);
@@ -76,6 +77,22 @@
 				type: "info",
 				message: "Saving event..."
 			});
+
+			async function catsAsAService(): Promise<void> {
+				if (!editData.imageUrl)
+				{
+					try {
+							const red = await fetch("https://cataas.com/cat?json=true")
+							const cat = await red.json();
+							editData.imageUrl = cat.url;
+						}
+					catch (e) {
+						console.error(e);
+					}
+				}
+			}
+
+			await catsAsAService();
 
 			const { errors } = await getApollo().mutate({
 				mutation: Mutations.EDIT_EVENT,
