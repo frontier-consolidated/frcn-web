@@ -26,7 +26,6 @@
 	import type { PageData } from "./$types";
 	import RsvpTable from "./RSVPTable.svelte";
 	import { checkIfDirty, cloneEventSettingsData } from "./settings";
-	import { blob } from "stream/consumers";
 
 	export let data: PageData;
 	let editData = cloneEventSettingsData(data);
