@@ -77,6 +77,19 @@
 				message: "Saving event..."
 			});
 
+			// Finds a random cat picture if no image was provided :3
+			if (!editData.imageUrl)
+			{
+				try {
+						const red = await fetch("https://cataas.com/cat?json=true")
+						const cat = await red.json();
+						editData.imageUrl = cat.url;
+					}
+				catch (e) {
+					console.error(e);
+				}
+			}
+
 			const { errors } = await getApollo().mutate({
 				mutation: Mutations.EDIT_EVENT,
 				variables: {
