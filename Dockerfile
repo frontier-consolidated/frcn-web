@@ -52,7 +52,13 @@ RUN rm -rf $PROD/web/src && \
 FROM base AS backend
 COPY --from=build $PROD/backend $PROD/backend
 COPY --from=build $SRC/apps/backend/entrypoint.sh $PROD/backend
+
 WORKDIR $PROD/backend
+
+# Set executable permissions
+RUN chmod +x $(node -e "console.log(require('@ffmpeg-installer/ffmpeg').path)")
+RUN chmod +x $(node -e "console.log(require('@ffprobe-installer/ffprobe').path)")
+
 EXPOSE $PORT
 ENTRYPOINT ["bash", "entrypoint.sh"]
 
