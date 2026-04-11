@@ -8,5 +8,7 @@ export const tags = [
 	"Misc",
 	"Medical",
 	"Support",
-	"Trading"
+	"Trading",
+	"Science",
+	"Farming"
 ];
