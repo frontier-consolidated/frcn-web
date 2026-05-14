@@ -11,8 +11,6 @@ export const Nyx = system("Nyx", [
 	station("People's Service Station DELTA", {}),
 	station("People's Service Station THETA", {}),
 	station("People's Service Station LAMBDA", {}),
-	astroidField("Nyx belt alpha", {}),
-	astroidField("Nyx belt beta", {}),
 
 	jumpPoint("Pyro Gateway", {}),
 	jumpPoint("Stanton Gateway", {})
