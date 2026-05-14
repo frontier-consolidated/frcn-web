@@ -10,7 +10,7 @@ export type SphericalCoordinates = {
 };
 
 type LocationWithCoordinates = Location & {
-	coordinates: SphericalCoordinates;
+	coordinates?: SphericalCoordinates;
 };
 
 type SurfaceSpaceLocation = Location & {
