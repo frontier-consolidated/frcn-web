@@ -27,7 +27,7 @@ type InSpaceData =
 	  };
 
 type OrbitalData = {
-	coordinates: SphericalCoordinates;
+	coordinates?: SphericalCoordinates;
 };
 
 export function system(name: string, children: System["children"] = []) {
