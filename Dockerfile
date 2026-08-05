@@ -1,4 +1,4 @@
-FROM node:24-bookworm AS base
+FROM node:22-bookworm AS base
 
 # build args
 ARG SRC=/app/src
