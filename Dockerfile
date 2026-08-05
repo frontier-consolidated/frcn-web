@@ -1,4 +1,4 @@
-FROM node:22-trixie AS base
+FROM node:24-bookworm AS base
 
 # build args
 ARG SRC=/app/src
@@ -12,6 +12,7 @@ ENV NODE_ENV=production
 
 RUN corepack install --global pnpm@10.15.1 && corepack enable
 ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+ENV CI=true
 
 # Build
 FROM base AS build
