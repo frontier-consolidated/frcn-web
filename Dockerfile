@@ -1,14 +1,25 @@
-FROM node:23-bookworm AS base
+ARG NODE_VERSION=24
+
+FROM node:${NODE_VERSION}-bookworm AS base
+
+# PNPM
+ARG PNPM_VERSION=10
+ARG PNPM_STORE=/pnpm/store
 
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
+RUN npm install -g corepack@latest --force
+RUN corepack enable
+RUN corepack prepare pnpm@${PNPM_VERSION} --activate
+
+RUN --mount=type=cache,id=pnpm,target=${PNPM_STORE} \
+    pnpm config set store-dir ${PNPM_STORE}
+
 ARG PUBLIC_POSTHOG_KEY
 
 WORKDIR /app
-COPY . /app
-
-RUN corepack enable
+COPY . .
 
 FROM base AS prod-deps
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
