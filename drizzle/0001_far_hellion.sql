@@ -1,0 +1,1 @@
+ALTER TABLE "bot_ticket_channels" ADD COLUMN "ticket_thread_visibility" text DEFAULT 'private' NOT NULL;
