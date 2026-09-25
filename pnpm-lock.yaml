@@ -46,8 +46,8 @@ importers:
         specifier: ^6.17.0
         version: 6.19.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
       '@pulumi/docker':
-        specifier: ^5.0.0
-        version: 5.1.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
+        specifier: ^5.2.0
+        version: 5.2.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
       '@pulumi/kubernetes':
         specifier: ^4.31.1
         version: 4.33.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
@@ -1355,8 +1355,8 @@ packages:
   '@pulumi/cloudflare@6.19.0':
     resolution: {integrity: sha512-AP76ceRwCIws362nm7UpfvDvzI4zPaGThli0i3qsKqjektk1qNapyflA9g0LvpI2e6VEWAdTbkIK7WSucg00Sg==}
 
-  '@pulumi/docker@5.1.0':
-    resolution: {integrity: sha512-ooaxCDZxsu2ApVIQK/RO9Zx56DRK1JWCqwZrQwfMSz5WO37uKxgMefHDNdHezyPPCw9NOs9aihiZEKoywjLQFw==}
+  '@pulumi/docker@5.2.0':
+    resolution: {integrity: sha512-1H0UGH6TN16jzq8tjwxCLwytXvnTXmxLW27EiGuaP+aueXk+AgswTBCKFERMhhJYkc4EQxTyzJo37tLDIxf0wA==}
 
   '@pulumi/kubernetes@4.33.0':
     resolution: {integrity: sha512-tSMUDEWNl1pqOrANVqQRao5KRKB9waghbjpC29MUqCaqiVLZe6V0biVGC0TRDMy3hKXdP2VjiLAZ7DMnqts7rw==}
@@ -5418,7 +5418,7 @@ snapshots:
       - ts-node
       - typescript
 
-  '@pulumi/docker@5.1.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)':
+  '@pulumi/docker@5.2.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)':
     dependencies:
       '@pulumi/pulumi': 3.256.0(ts-node@10.9.2(@types/node@22.15.30)(typescript@5.8.3))(typescript@5.8.3)
       semver: 7.7.1
