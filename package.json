@@ -22,7 +22,7 @@
 		"db:studio": "drizzle-kit studio"
 	},
 	"devDependencies": {
-		"@l3dev/discord-bot-tickets-plugin": "^0.6.0",
+		"@l3dev/discord-bot-tickets-plugin": "^0.6.1",
 		"@l3dev/discord.js-helpers": "^0.9.1",
 		"@l3dev/drizzle-helpers": "^0.2.5",
 		"@l3dev/logger": "^0.3.0",
