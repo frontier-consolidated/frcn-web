@@ -22,8 +22,8 @@ importers:
         version: 8.16.0
     devDependencies:
       '@l3dev/discord-bot-tickets-plugin':
-        specifier: ^0.7.0
-        version: 0.7.0(@l3dev/discord.js-helpers@0.9.1(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))
+        specifier: ^0.7.1
+        version: 0.7.1(@l3dev/discord.js-helpers@0.9.1(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))
       '@l3dev/discord.js-helpers':
         specifier: ^0.9.1
         version: 0.9.1(discord.js@14.19.3)
@@ -1065,8 +1065,8 @@ packages:
   '@js-sdsl/ordered-map@4.4.2':
     resolution: {integrity: sha512-iUKgm52T8HOE/makSxjqoWhe95ZJA1/G1sYsGev2JDKUSS14KAgg1LHb+Ba+IPow0xflbnSkOsZcO08C7w1gYw==}
 
-  '@l3dev/discord-bot-tickets-plugin@0.7.0':
-    resolution: {integrity: sha512-8OJtVykUsxal0MbzhWH/nJ1wx7bUwOP/5tF3J0IVzrfp+oS30EnL/kzNZkuQA3kIJdzF/qSDU3Q8rfUI8aZ6iQ==}
+  '@l3dev/discord-bot-tickets-plugin@0.7.1':
+    resolution: {integrity: sha512-fzel+hDLCvmDNzo5N5Yw+/rwqa2iKU5yFdYJvMzKmBQdh3IqjXSGM4dwmu5gXpB3LgZLd+3s4x0w4opOqgUpmQ==}
     peerDependencies:
       '@l3dev/discord.js-helpers': '>=0.10.1 <1.0.0'
       discord.js: '>=14.23.2 <15.0.0'
@@ -5022,7 +5022,7 @@ snapshots:
 
   '@js-sdsl/ordered-map@4.4.2': {}
 
-  '@l3dev/discord-bot-tickets-plugin@0.7.0(@l3dev/discord.js-helpers@0.9.1(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))':
+  '@l3dev/discord-bot-tickets-plugin@0.7.1(@l3dev/discord.js-helpers@0.9.1(discord.js@14.19.3))(discord.js@14.19.3)(drizzle-orm@0.40.1(@opentelemetry/api@1.9.0)(@types/pg@8.15.4)(gel@2.1.0)(pg@8.16.0))':
     dependencies:
       '@l3dev/discord.js-helpers': 0.9.1(discord.js@14.19.3)
       '@l3dev/logger': 0.3.1
