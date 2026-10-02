@@ -37,6 +37,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          pnpm install
           cd ./pulumi
           pnpm install
 
