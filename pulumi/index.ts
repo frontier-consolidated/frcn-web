@@ -12,47 +12,56 @@ const port = 3000;
 const portName = `${appName}-port`;
 
 const buildArgs = ["PUBLIC_POSTHOG_KEY", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY"];
-
 const containerEnvVars = ["DATABASE_URL", "DISCORD_GUILD_ID", "DISCORD_CLIENT_ID", "DISCORD_TOKEN"];
+
+function createRepository(name: string) {
+	const repository = new aws.ecr.Repository(name);
+
+	new aws.ecr.LifecyclePolicy(
+		`${name}-lifecycle-policy`,
+		{
+			repository: repository.name,
+			policy: {
+				rules: [
+					{
+						rulePriority: 1,
+						description: "Remove untagged images",
+						selection: {
+							tagStatus: "untagged",
+							countType: "imageCountMoreThan",
+							countNumber: 1
+						},
+						action: {
+							type: "expire"
+						}
+					}
+				]
+			}
+		},
+		{
+			parent: repository
+		}
+	);
+
+	const registry = aws.ecr
+		.getAuthorizationTokenOutput({
+			registryId: repository.registryId
+		})
+		.apply(async (credentials) => {
+			return {
+				server: credentials.proxyEndpoint,
+				username: credentials.userName,
+				password: pulumi.secret(credentials.password)
+			};
+		});
+
+	return { repository, registry };
+}
 
 const config = new pulumi.Config();
 const repositoryName = config.require("repositoryName");
 
-const repository = new aws.ecr.Repository(repositoryName);
-
-new aws.ecr.LifecyclePolicy(`${repositoryName}-lifecycle-policy`, {
-	repository: repository.name,
-	policy: {
-		rules: [
-			{
-				rulePriority: 1,
-				description: "Remove untagged images",
-				selection: {
-					tagStatus: "untagged",
-					countType: "imageCountMoreThan",
-					countNumber: 1
-				},
-				action: {
-					type: "expire"
-				}
-			}
-		]
-	}
-});
-
-const imageName = repository.repositoryUrl;
-const registry = aws.ecr
-	.getAuthorizationTokenOutput({
-		registryId: repository.registryId
-	})
-	.apply(async (credentials) => {
-		return {
-			server: credentials.proxyEndpoint,
-			username: credentials.userName,
-			password: pulumi.secret(credentials.password)
-		};
-	});
-
+const repository = createRepository(repositoryName);
 const image = new docker.Image(`${appName}-image`, {
 	build: {
 		context: "../",
@@ -62,12 +71,9 @@ const image = new docker.Image(`${appName}-image`, {
 			...buildArgs.reduce((args, name) => ({ ...args, [name]: process.env[name] }), {})
 		}
 	},
-	imageName,
-	registry
+	imageName: repository.repository.repositoryUrl,
+	registry: repository.registry
 });
-
-export const baseImageName = image.baseImageName;
-export const fullImageName = image.imageName;
 
 const namespace = new k8s.core.v1.Namespace(namespaceName, {
 	metadata: {
@@ -80,6 +86,8 @@ new k8s.apps.v1.Deployment(appName, {
 		namespace: namespace.metadata.name
 	},
 	spec: {
+		selector: { matchLabels: appLabels },
+		replicas,
 		strategy: {
 			type: "RollingUpdate",
 			rollingUpdate: {
@@ -87,10 +95,13 @@ new k8s.apps.v1.Deployment(appName, {
 				maxUnavailable: 1
 			}
 		},
-		selector: { matchLabels: appLabels },
-		replicas,
 		template: {
-			metadata: { labels: appLabels },
+			metadata: {
+				labels: appLabels,
+				annotations: {
+					"ecr/image-digest": image.repoDigest
+				}
+			},
 			spec: {
 				containers: [
 					{

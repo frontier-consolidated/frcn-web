@@ -1,0 +1,20 @@
+{
+	"compilerOptions": {
+		"lib": ["esnext"],
+		"types": ["node"],
+		"target": "esnext",
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"isolatedModules": true,
+		"forceConsistentCasingInFileNames": true,
+		"noImplicitReturns": false,
+		"resolveJsonModule": true,
+		"strict": true,
+		"strictNullChecks": true,
+		"stripInternal": true,
+		"verbatimModuleSyntax": true
+	},
+	"include": ["./**/*.ts"]
+}
