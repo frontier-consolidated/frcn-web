@@ -65,7 +65,7 @@ const repository = createRepository(repositoryName);
 const image = new docker.Image(`${appName}-image`, {
 	build: {
 		context: "../",
-		dockerfile: "../Dockerfile",
+		dockerfile: "./Dockerfile",
 		platform: "linux/amd64",
 		args: {
 			...buildArgs.reduce((args, name) => ({ ...args, [name]: process.env[name] }), {})

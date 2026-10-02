@@ -16,32 +16,38 @@ RUN corepack prepare pnpm@${PNPM_VERSION} --activate
 RUN --mount=type=cache,id=pnpm,target=${PNPM_STORE} \
     pnpm config set store-dir ${PNPM_STORE}
 
-ARG PUBLIC_POSTHOG_KEY
+FROM base AS installer
 
 WORKDIR /app
 COPY . .
 
-FROM base AS prod-deps
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=${PNPM_STORE} \
+    pnpm install --frozen-lockfile
 
-FROM base AS build
+FROM base AS prod-installer
+
+WORKDIR /app
+COPY . .
+
+RUN --mount=type=cache,id=pnpm,target=${PNPM_STORE} \
+    pnpm install --prod --frozen-lockfile
+
+FROM installer AS builder
+
+ARG PUBLIC_POSTHOG_KEY
 ENV PUBLIC_POSTHOG_KEY=$PUBLIC_POSTHOG_KEY
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm check
 RUN pnpm build
 
 FROM base AS prod
-COPY --from=prod-deps /app/node_modules /app/node_modules
-COPY --from=build /app/build /app/build
 
-RUN rm -rf \
-    /app/src \
-    /app/static \
-    /app/docker-compose.yml \
-    /app/Dockerfile \
-    /app/tsconfig.json
-RUN rm -rf .[!.]* ..?*
+WORKDIR /app
+
+COPY package.json package.json
+COPY pnpm-lock.yaml pnpm-lock.yaml
+COPY --from=prod-installer /app/node_modules /app/node_modules
+COPY --from=builder /app/build /app/build
 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh

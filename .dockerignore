@@ -1,15 +1,19 @@
-.svelte-kit
 node_modules
-build
-pulumi
+**/node_modules
 
 .vscode
 .idea
 
-.git
-.gitignore
 .github
-*.md
+.gitignore
+**/.gitignore
 
 .env
 .env.*
+**/.env
+**/.env.*
+
+**/.svelte-kit
+**/.sveltepress
+**/dist
+**/build
