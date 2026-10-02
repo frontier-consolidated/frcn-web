@@ -36,7 +36,9 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install dependencies
-        run: pnpm install
+        run: |
+          cd ./pulumi
+          pnpm install
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v4
