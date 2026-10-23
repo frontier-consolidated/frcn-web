@@ -1,0 +1,12 @@
+name: Nightly Security Scan
+
+on:
+  schedule:
+    - cron: "0 2 * * *" # run at 2 AM UTC
+
+permissions:
+  contents: read
+
+jobs:
+  nightly-trivy:
+    uses: frontier-consolidated/frcn-web/.github/workflows/security-scan.yml@beta

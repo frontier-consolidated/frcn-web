@@ -5,6 +5,7 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -14,10 +15,10 @@ jobs:
     name: Run Trivy
     runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Cache Trivy database
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: ~/.cache/trivy/
           key: trivy-cache-${{ runner.os }}-${{ hashFiles('**/package-lock.json', '**/yarn.lock', '**/pnpm-lock.yaml') }}
