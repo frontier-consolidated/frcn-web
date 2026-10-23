@@ -3,13 +3,10 @@
   "version": "0.0.0",
   "private": true,
   "devDependencies": {
-    "@pulumi/aws": "^7.27.0",
+    "@pulumi/aws": "^7.32.0",
     "@pulumi/docker": "^5.0.0",
-    "@pulumi/kubernetes": "^4.30.0",
-    "@pulumi/pulumi": "^3.267.0",
-    "@types/node": "^24.3.0",
-    "tsx": "^4.23.15",
-    "typescript": "^6.0.0"
+    "@pulumi/kubernetes": "^4.31.1",
+    "@pulumi/pulumi": "^3.244.0"
   },
   "packageManager": "pnpm@10.24.0"
 }

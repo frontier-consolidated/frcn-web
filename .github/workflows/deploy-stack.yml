@@ -38,8 +38,6 @@ jobs:
       - name: Install dependencies
         run: |
           pnpm install
-          cd ./pulumi
-          pnpm install
 
       - name: Setup kubectl
         uses: azure/setup-kubectl@v5
