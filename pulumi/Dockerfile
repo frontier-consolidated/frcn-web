@@ -1,6 +1,6 @@
 ARG NODE_VERSION=24
 
-FROM node:${NODE_VERSION}-bookworm AS base
+FROM node:${NODE_VERSION}-trixie AS base
 
 # PNPM
 ARG PNPM_VERSION=10
