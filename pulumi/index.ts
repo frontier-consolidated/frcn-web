@@ -262,7 +262,7 @@ const ingress = new k8s.networking.v1.Ingress(`${appName}-ingress`, {
 		name: `${appName}-ingress`,
 		annotations: {
 			"kubernetes.io/ingress.class": "nginx",
-			"nginx.ingress.kubernetes.io/proxy-buffer-size": "8k"
+			"nginx.ingress.kubernetes.io/proxy-buffer-size": "128m"
 		}
 	},
 	spec: {
