@@ -93,7 +93,7 @@ function internal_log(stream: NodeJS.WriteStream, ...params: any[]) {
 	//     return;
 	// }
 
-	stream.write(`(${new Date().toISOString()}) ` + log + "\n");
+	stream.write(log + "\n");
 }
 
 function log(...params: any[]) {
