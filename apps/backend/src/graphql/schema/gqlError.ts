@@ -1,11 +1,13 @@
 import { Permission } from "@frcn/shared";
 import { createGraphQLError } from "@graphql-tools/utils";
+import type { PermissionResolvable } from "discord.js";
 import type { GraphQLErrorOptions } from "graphql";
 
 type GraphQLErrorType =
 	| "NOT_FOUND"
 	| "UNAUTHENTICATED"
 	| "MISSING_PERMISSION"
+	| "BOT_MISSING_PERMISSION"
 	| "NOT_OWNED"
 	| "BAD_USER_INPUT"
 	| "BAD_STATE";
@@ -48,12 +50,24 @@ type PermissionErrorExtension =
 			allOf: (keyof typeof Permission)[];
 	  };
 
-export function gqlErrorPermission(permission: PermissionErrorExtension) {
+export function gqlErrorPermission(permission: PermissionErrorExtension, message?: string) {
 	return gqlError("MISSING_PERMISSION", "Missing permission", {
 		extensions: {
 			missingPermission: permission
 		}
 	});
+}
+
+export function gqlErrorBotPermission(permissions: PermissionResolvable[], message?: string) {
+	return gqlError(
+		"BOT_MISSING_PERMISSION",
+		"Bot missing permission" + (message ? `: ${message}` : ""),
+		{
+			extensions: {
+				missingPermissions: permissions
+			}
+		}
+	);
 }
 
 export function gqlErrorBadInput(message: string) {
