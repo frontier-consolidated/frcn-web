@@ -1,15 +1,6 @@
 import { randomUUID } from "crypto";
 
 import type { EventType } from "@frcn/shared";
-import type {
-	Event,
-	EventChannel,
-	EventRsvpRole,
-	EventSettings,
-	EventUser,
-	Prisma,
-	User
-} from "../__generated__/client";
 import {
 	ChannelType,
 	TextChannel,
@@ -23,6 +14,15 @@ import {
 import { $discord } from "./discord";
 import { $roles } from "./roles";
 import { $system } from "./system";
+import type {
+	Event,
+	EventChannel,
+	EventRsvpRole,
+	EventSettings,
+	EventUser,
+	Prisma,
+	User
+} from "../__generated__/client";
 import type { DiscordClient } from "../bot";
 import {
 	deleteEventMessage,
@@ -39,6 +39,7 @@ import {
 	type EventChannelEditInput,
 	type EventEditInput
 } from "../graphql/__generated__/resolvers-types";
+import { gqlErrorBadState, gqlErrorBotPermission } from "../graphql/schema/gqlError";
 import { logger } from "../logger";
 
 const EVENT_EXPIRE_AFTER = 24 * 3600 * 1000;
@@ -237,21 +238,23 @@ async function getEventEventChannel<T extends Prisma.Event$channelArgs>(
 
 async function getEventDiscordChannel(event: Event, discordClient: DiscordClient) {
 	const eventChannel = await getEventEventChannel(event.id);
-	if (!eventChannel) throw new Error("Event has no event channel");
+	if (!eventChannel) throw gqlErrorBadState("Event has no event channel");
 
 	const channel = await $discord.getChannel(
 		discordClient,
 		eventChannel.discordId,
 		eventChannel.discordGuildId ?? undefined
 	);
-	if (!channel?.isTextBased() || !(channel instanceof TextChannel))
-		throw new Error("Could not find event channel, or channel is somehow not text based");
+	if (!channel?.isTextBased() || !(channel instanceof TextChannel)) {
+		throw gqlErrorBadState("Could not find event channel, or channel is somehow not text based");
+	}
 	return channel;
 }
 
 async function getEventThread(discordClient: DiscordClient, event: Event, role?: EventRsvpRole) {
-	if ((role && !role.discordThreadId) || (!role && !event.discordThreadId))
-		throw new Error("Event has no thread!");
+	if ((role && !role.discordThreadId) || (!role && !event.discordThreadId)) {
+		throw gqlErrorBadState("Event has no thread!");
+	}
 
 	const eventChannel = event.channelId ? await getEventChannel(event.channelId) : null;
 
@@ -260,7 +263,9 @@ async function getEventThread(discordClient: DiscordClient, event: Event, role?:
 		role ? role.discordThreadId! : event.discordThreadId!,
 		eventChannel?.discordGuildId ?? undefined
 	);
-	if (!thread?.isThread()) throw new Error("Could not find thread or channel is not a thread");
+	if (!thread?.isThread()) {
+		throw gqlErrorBadState("Could not find thread or channel is not a thread");
+	}
 
 	return thread;
 }
@@ -624,26 +629,46 @@ async function setEventReminder(event: Event, reminder: EventReminder) {
 
 async function createEvent(owner: User, startAt: Date | undefined, discordClient: DiscordClient) {
 	const { defaultEventChannel } = await $system.getSystemSettings();
-	if (!defaultEventChannel) throw new Error("No default event channel");
+	if (!defaultEventChannel) {
+		throw gqlErrorBadState("No default event channel");
+	}
 
 	const guild = await $discord.getSystemGuild(discordClient);
-	if (!guild) throw new Error("Could not fetch guild");
+	if (!guild) {
+		throw gqlErrorBadState("Could not fetch guild");
+	}
 
 	const discordChannel = await $discord.getChannel(discordClient, defaultEventChannel.discordId);
-	if (!discordChannel) throw new Error("Could not fetch default event discord channel");
+	if (!discordChannel) {
+		throw gqlErrorBadState("Could not fetch default event discord channel");
+	}
 
 	const discordCategory = await $discord.getChannel(
 		discordClient,
 		defaultEventChannel.discordCategoryId
 	);
-	if (!discordCategory) throw new Error("Could not fetch default event channel discord category");
+	if (!discordCategory) {
+		throw gqlErrorBadState("Could not fetch default event channel discord category");
+	}
 
-	if (!(await $discord.canPostInChannel(discordChannel)))
-		throw new Error("Cannot post messages in default event channel");
-	if (!(await $discord.canCreateThreadInChannel(discordChannel)))
-		throw new Error("Cannot create threads in default event channel");
-	if (!(await $discord.canManageChannelsInCategory(discordCategory)))
-		throw new Error("Cannot manage channels in default event channel category");
+	if (!(await $discord.canPostInChannel(discordChannel))) {
+		throw gqlErrorBotPermission(
+			["SendMessages", "SendMessagesInThreads", "ViewChannel", "MentionEveryone"],
+			"Cannot post messages in default event channel"
+		);
+	}
+	if (!(await $discord.canCreateThreadInChannel(discordChannel))) {
+		throw gqlErrorBotPermission(
+			["CreatePrivateThreads", "SendMessagesInThreads"],
+			"Cannot create threads in default event channel"
+		);
+	}
+	if (!(await $discord.canManageChannelsInCategory(discordCategory))) {
+		throw gqlErrorBotPermission(
+			["ManageChannels", "ViewChannel", "MoveMembers"],
+			"Cannot manage channels in default event channel category"
+		);
+	}
 
 	const event = await database.event.create({
 		data: {
@@ -995,7 +1020,7 @@ async function rsvpForEvent(
 	discordClient: DiscordClient
 ) {
 	const canRsvp = await canJoinRsvp(rsvp);
-	if (!canRsvp) throw new Error(`Cannot rsvp to ${rsvp.name}, role is full`);
+	if (!canRsvp) throw gqlErrorBadState(`Cannot rsvp to ${rsvp.name}, role is full`);
 
 	const currentRsvpRole = currentRsvp ? await getEventMemberRsvp(currentRsvp.id) : null;
 

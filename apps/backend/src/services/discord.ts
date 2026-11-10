@@ -1,4 +1,3 @@
-import type { User } from "../__generated__/client";
 import {
 	type APIUser,
 	ChannelType,
@@ -12,6 +11,7 @@ import {
 } from "discord.js";
 
 import { $system } from "./system";
+import type { User } from "../__generated__/client";
 import type { DiscordClient } from "../bot";
 import { diffCheckUser } from "../bot/events/guildMemberUpdate.event";
 import type { Context } from "../context";
@@ -143,7 +143,6 @@ async function canManageChannelsInCategory(category: GuildBasedChannel) {
 	return (
 		permissions.has("ManageChannels") &&
 		permissions.has("ViewChannel") &&
-		permissions.has("Connect") &&
 		permissions.has("MoveMembers")
 	);
 }

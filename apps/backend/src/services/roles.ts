@@ -1,6 +1,5 @@
-import type { Prisma, User, UserRole } from "../__generated__/client";
-
 import { $users } from "./users";
+import type { Prisma, User, UserRole } from "../__generated__/client";
 import { database } from "../database";
 import type { RoleEditInput } from "../graphql/__generated__/resolvers-types";
 import { publishRolesUpdated, publishUserRolesUpdated } from "../graphql/events";
@@ -180,8 +179,9 @@ async function deleteRole(role: UserRole) {
 }
 
 async function hasPrimaryRolePrivileges(role: UserRole, user: User) {
-	if (!role.primary)
+	if (!role.primary) {
 		throw new Error(`Checking hasPrimaryRolePrivileges() with non-primary role ${role.name}`);
+	}
 
 	if (user.primaryRoleId === role.id) return true;
 
@@ -207,7 +207,9 @@ async function hasOneOfRoles(roles: UserRole[], user: User) {
 }
 
 async function changePrimaryRole(role: UserRole, user: User) {
-	if (!role.primary) throw new Error("Use giveRole()/removeRole() to add/remove non primary roles");
+	if (!role.primary) {
+		throw new Error("Use giveRole()/removeRole() to add/remove non primary roles");
+	}
 
 	await database.user.update({
 		where: { id: user.id },
@@ -225,7 +227,9 @@ async function changePrimaryRole(role: UserRole, user: User) {
 }
 
 async function giveRole(role: UserRole, user: User) {
-	if (role.primary) throw new Error("Use changePrimaryRole() to change a user's primary role");
+	if (role.primary) {
+		throw new Error("Use changePrimaryRole() to change a user's primary role");
+	}
 
 	await database.user.update({
 		where: { id: user.id },
@@ -247,7 +251,9 @@ async function giveRole(role: UserRole, user: User) {
 }
 
 async function removeRole(role: UserRole, user: User) {
-	if (role.primary) throw new Error("Use changePrimaryRole() to change a user's primary role");
+	if (role.primary) {
+		throw new Error("Use changePrimaryRole() to change a user's primary role");
+	}
 
 	await database.user.update({
 		where: { id: user.id },
