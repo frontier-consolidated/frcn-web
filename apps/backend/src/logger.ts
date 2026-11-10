@@ -1,8 +1,8 @@
 import util from "util";
 
-import type { AccessKey, User } from "./__generated__/client";
 import type { Request } from "express";
 
+import type { AccessKey, User } from "./__generated__/client";
 import { isProd } from "./env";
 import type { GQLContext } from "./graphql/context";
 
@@ -80,9 +80,9 @@ function internal_log(stream: NodeJS.WriteStream, ...params: any[]) {
 				depth: 3,
 				maxArrayLength: 10,
 				compact: true,
-				breakLength: 512
+				breakLength: Infinity
 			},
-			`${message}${args.length > 0 ? "\n" : ""}`,
+			`${message}${args.length > 0 ? " " : ""}`,
 			...args
 		)
 		.trimEnd();
@@ -93,7 +93,7 @@ function internal_log(stream: NodeJS.WriteStream, ...params: any[]) {
 	//     return;
 	// }
 
-	stream.write(`(${new Date().toISOString()}) ` + log + "\n");
+	stream.write(log + "\n");
 }
 
 function log(...params: any[]) {
