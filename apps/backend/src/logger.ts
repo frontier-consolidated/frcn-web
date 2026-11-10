@@ -82,7 +82,7 @@ function internal_log(stream: NodeJS.WriteStream, ...params: any[]) {
 				compact: true,
 				breakLength: Infinity
 			},
-			`${message}${args.length > 0 ? "\n" : ""}`,
+			`${message}${args.length > 0 ? " " : ""}`,
 			...args
 		)
 		.trimEnd();
